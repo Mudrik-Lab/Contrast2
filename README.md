@@ -8,7 +8,7 @@ Contrast2 api repo
 
 
 # Technology and setup
-
+python 3.10
 Django + drf + django-filter
 DB in postgresql
 Django configurations for settings file
@@ -25,7 +25,7 @@ We are using poetry to manage the projects dependencies.
 2. Get the code:    
 Clone this project    
    ```
-   git clone still_missing
+   git clone git@github.com:Mudrik-Lab/Contrast2.git
    ```
    
 

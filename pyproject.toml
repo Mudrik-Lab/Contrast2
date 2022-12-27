@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "contrast-api"
+version = "0.1.0"
+description = ""
+authors = []
+
+[tool.poetry.dependencies]
+python = ">3.10,<3.11"
+Django = "^4.1"
+django-configurations = "^2.4"
+dj-database-url = "^1.0.0"
+djangorestframework = "^3.14.0"
+django-filter = "^22.1"
+django-extensions = "^3.2.1"
+django-import-export = "^3.0.1"
+django-storages = "^1.13.1"
+Pillow = "^9.2.0"
+django-cors-headers = "^3.13.0"
+django-querycount = "^0.7.0"
+gunicorn = "^20.1.0"
+djangorestframework-simplejwt = "^5.2.1"
+psycopg2 = "^2.9.4"
+drf-nested-routers = "^0.93.4"
+drf-spectacular = "^0.24.2"
+boto3 = ">=1.26.24"
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.3"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

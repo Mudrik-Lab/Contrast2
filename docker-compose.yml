@@ -33,7 +33,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./ecs/Dockerfile
+      dockerfile: deploy/Dockerfile
 
     environment:
       - DJANGO_ALLOWED_HOSTS=web,localhost,127.0.0.1

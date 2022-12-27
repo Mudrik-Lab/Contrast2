@@ -28,7 +28,7 @@ class Base(Configuration):
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
 
-    ALLOWED_HOSTS = values.ListValue([])  # Would be passed from above in the ecs task
+    ALLOWED_HOSTS = values.ListValue([])  # Would be passed from above in the deploy task
     CORS_ALLOWED_ORIGINS = values.ListValue([])
     # Application definition
     THIRD_PARTY_APPS = [

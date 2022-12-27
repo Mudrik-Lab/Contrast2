@@ -47,7 +47,7 @@ class Base(Configuration):
         'django.contrib.messages',
         'django.contrib.staticfiles',
     ]
-    CONTRAST_API_APPS = []
+    CONTRAST_API_APPS = ['approval_process', 'configuration', 'studies', 'users']
     INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CONTRAST_API_APPS
 
     MIDDLEWARE = [

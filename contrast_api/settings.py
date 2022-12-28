@@ -37,7 +37,9 @@ class Base(Configuration):
         'rest_framework',
         'django_extensions',
         'import_export',
-        'drf_spectacular'
+        'drf_spectacular',
+        'nested_inline',
+        'admin_reorder',
     ]
     DJANGO_APPS = [
         'django.contrib.admin',
@@ -60,7 +62,8 @@ class Base(Configuration):
         'django.contrib.messages.middleware.MessageMiddleware',
         'django.middleware.clickjacking.XFrameOptionsMiddleware',
         "contrast_api.middleware.TimezoneMiddleware",
-        'querycount.middleware.QueryCountMiddleware'
+        'querycount.middleware.QueryCountMiddleware',
+        'admin_reorder.middleware.ModelAdminReorder'
 
     ]
     QUERYCOUNT = {

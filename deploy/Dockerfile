@@ -8,7 +8,7 @@ RUN set -ex \
     # install system build deps
 &&  apt install -y gcc \
     # install system runtime deps
-&&  apt install -y libpq-dev \
+&&  apt install -y libpq-dev curl\
     # install python app requirements
 &&  pip install poetry
 

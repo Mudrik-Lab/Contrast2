@@ -26,14 +26,14 @@ tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy
 
 [[package]]
 name = "boto3"
-version = "1.26.37"
+version = "1.26.38"
 description = "The AWS SDK for Python"
 category = "main"
 optional = false
 python-versions = ">= 3.7"
 
 [package.dependencies]
-botocore = ">=1.29.37,<1.30.0"
+botocore = ">=1.29.38,<1.30.0"
 jmespath = ">=0.7.1,<2.0.0"
 s3transfer = ">=0.6.0,<0.7.0"
 
@@ -42,7 +42,7 @@ crt = ["botocore[crt] (>=1.21.0,<2.0a0)"]
 
 [[package]]
 name = "botocore"
-version = "1.29.37"
+version = "1.29.38"
 description = "Low-level, data-driven core of boto 3."
 category = "main"
 optional = false
@@ -171,6 +171,32 @@ python-versions = ">=3.7"
 diff-match-patch = "*"
 Django = ">=3.2"
 tablib = {version = ">=3.2.1", extras = ["html", "ods", "xls", "xlsx", "yaml"]}
+
+[[package]]
+name = "django-modeladmin-reorder"
+version = "0.3.1"
+description = "Custom ordering for the apps and models in the admin app."
+category = "main"
+optional = false
+python-versions = "*"
+develop = false
+
+[package.dependencies]
+django = "*"
+
+[package.source]
+type = "git"
+url = "https://github.com/bloodwithmilk25/django-modeladmin-reorder.git"
+reference = "master"
+resolved_reference = "6cc5060dec2fe1e894c3ba17aeb703b56737c3e8"
+
+[[package]]
+name = "django-nested-inline"
+version = "0.4.5"
+description = "Recursive nesting of inline forms for Django Admin"
+category = "main"
+optional = false
+python-versions = "*"
 
 [[package]]
 name = "django-querycount"
@@ -609,7 +635,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.10,<3.11"
-content-hash = "e0e7686ff8546e3308153eb87c8a6e95225ecaac8ceb00dcf823f634f38567ff"
+content-hash = "a8aa7787808a5f55328bf5761e2e6ab9bc247ba7df2ea7aa93ef71d813428b0d"
 
 [metadata.files]
 asgiref = [
@@ -621,12 +647,12 @@ attrs = [
     {file = "attrs-22.2.0.tar.gz", hash = "sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99"},
 ]
 boto3 = [
-    {file = "boto3-1.26.37-py3-none-any.whl", hash = "sha256:7a6766c7177a9c6f85365e02aabd96ca4d72e08bc5cb127cb51b0a97ac9b9d1b"},
-    {file = "boto3-1.26.37.tar.gz", hash = "sha256:82b790b1dabd0746b028d2013b5d4d636a41f3aaf25520081f4c173cb6eb395d"},
+    {file = "boto3-1.26.38-py3-none-any.whl", hash = "sha256:ee787e36f1d02434eb5a757bba640f90663438f420bb06cd9f81ff30188ca65b"},
+    {file = "boto3-1.26.38.tar.gz", hash = "sha256:5764d6401c2bec28d3fa565978d82ff35f4017b99e2d8625c7faac6a86cddd8c"},
 ]
 botocore = [
-    {file = "botocore-1.29.37-py3-none-any.whl", hash = "sha256:18ab8e95345a6d0d2653ce65d261a0aef6fef8a57a35a89e3cea6ffe315e92fc"},
-    {file = "botocore-1.29.37.tar.gz", hash = "sha256:3afa4fec9f7713caa05116563b38f81bec7bd20585d517155484d3f25efab5aa"},
+    {file = "botocore-1.29.38-py3-none-any.whl", hash = "sha256:e22615f233a90dfeff4ec5a42df8c641d31125f8c9da26898cccbf869743a6bd"},
+    {file = "botocore-1.29.38.tar.gz", hash = "sha256:2b98c7da8668cdc022b4d8a56b50686454d0a10c11518702fde41881d20618b6"},
 ]
 colorama = [
     {file = "colorama-0.4.6-py2.py3-none-any.whl", hash = "sha256:4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"},
@@ -667,6 +693,11 @@ django-filter = [
 django-import-export = [
     {file = "django-import-export-3.0.2.tar.gz", hash = "sha256:ae77a44c08d94b98e50dec11ea53fd5f65702b7d8c3c929c88c310a4e4444507"},
     {file = "django_import_export-3.0.2-py3-none-any.whl", hash = "sha256:f0f08f119b1f3a39e67dab8f945609ee13e264a798be532bdd7210e1c851efe2"},
+]
+django-modeladmin-reorder = []
+django-nested-inline = [
+    {file = "django-nested-inline-0.4.5.tar.gz", hash = "sha256:d7e51dc1ebf805df53ec7ff9b4108dfe1dfb8a7e02212700a4e467f2caafe34b"},
+    {file = "django_nested_inline-0.4.5-py3-none-any.whl", hash = "sha256:fc6998e7d607c1414e25897ae1a544105ada93d63c5cff3ac9582fbf14d8ec63"},
 ]
 django-querycount = [
     {file = "django-querycount-0.7.0.tar.gz", hash = "sha256:8f5123d78716ff0704f2373e746a7200b8d8417798ce4a99bf2de87e3768f9ce"},

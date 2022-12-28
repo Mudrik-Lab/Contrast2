@@ -23,6 +23,8 @@ psycopg2 = "^2.9.4"
 drf-nested-routers = "^0.93.4"
 drf-spectacular = "^0.24.2"
 boto3 = ">=1.26.24"
+django-nested-inline = "^0.4.5"
+django-modeladmin-reorder = {git = "https://github.com/bloodwithmilk25/django-modeladmin-reorder.git", rev = "master"}
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.1.3"

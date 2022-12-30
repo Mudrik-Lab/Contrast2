@@ -5,7 +5,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
 from studies.models import Study, Experiment
-from studies.serializers import StudySerializer, ExperimentSerializer
+from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer
 
 
 # Create your views here.
@@ -19,7 +19,7 @@ class ApprovedStudiesViewSet(
 
     # TODO: handle creation
     queryset = Study.objects.select_related("approval_process").filter(
-        approval_status=ApprovalChoices.APPROVED)
+        approval_status=ApprovalChoices.APPROVED) # TODO migrate this to custom manager
 
 
 class ExperimentsViewSet(mixins.RetrieveModelMixin,
@@ -35,7 +35,7 @@ class ExcludedStudiesViewSet(mixins.RetrieveModelMixin,
                              mixins.ListModelMixin,
                              GenericViewSet):
     permission_classes = [AllowAny]
-    serializer_class = StudySerializer
+    serializer_class = ExcludedStudySerializer
 
     queryset = Study.objects.select_related("approval_process").filter(
-        approval_status=ApprovalChoices.REJECTED)
+        approval_status=ApprovalChoices.REJECTED) # TODO migrate this to custom manager

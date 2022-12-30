@@ -98,6 +98,8 @@ class Base(Configuration):
         },
     ]
 
+    ADMIN_REORDER = ("auth", )
+
     WSGI_APPLICATION = "contrast_api.wsgi.application"
 
     # Database

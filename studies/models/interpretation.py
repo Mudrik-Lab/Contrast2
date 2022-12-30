@@ -1,6 +1,10 @@
 from django.db import models
+from django.db.models import CASCADE
+
+from studies.choices import InterpretationsChoices
 
 
 class Interpretation(models.Model):
-    # TODO a through model between theory and experiment
-    pass
+    experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE)
+    theory = models.ForeignKey(to="studies.Theory", on_delete=CASCADE)
+    type = models.CharField(null=False, blank=False, choices=InterpretationsChoices.choices, max_length=30)

@@ -40,6 +40,7 @@ class Base(Configuration):
         'drf_spectacular',
         'nested_inline',
         'admin_reorder',
+        'django_countries'
     ]
     DJANGO_APPS = [
         'django.contrib.admin',

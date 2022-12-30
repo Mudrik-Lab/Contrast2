@@ -14,7 +14,6 @@ class StudySerializer(serializers.ModelSerializer):
     class Meta:
         model = Study
         fields = ["authors",
-                  "name",
                   "DOI",
                   "title",
                   "year",

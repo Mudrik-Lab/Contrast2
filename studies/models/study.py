@@ -12,10 +12,9 @@ from approval_process.choices import ApprovalChoices
 
 class Study(models.Model):
     # TODO should it be through affiliation?
-    authors = models.ManyToManyField(to="studies.Author", related_name="studies", )
-    name = models.TextField(null=False, blank=False)
+    authors = models.ManyToManyField(to="studies.Author", related_name="studies")
     DOI = models.CharField(null=False, blank=False, unique=True, max_length=100)
-    title = models.TextField(null=True, blank=True)
+    title = models.TextField(null=False, blank=False)
     year = models.PositiveIntegerField(null=False, blank=False, validators=[validators.MinValueValidator(1900),
                                                                             validators.MaxValueValidator(2100)])
     corresponding_author_email = models.EmailField(null=False, blank=False)

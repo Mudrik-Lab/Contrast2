@@ -10,8 +10,9 @@ class ExperimentAdmin(ImportExportModelAdmin):
     model = Experiment
     list_filter = ()
 
+
 # TODO: add filters for experiment
-# TODO: add relevant inlines for experiment
+# TODO: add relevant inlines for experiment (everything that has foreign key to it)
 
 class ExperimentInline(admin.StackedInline):
     model = Experiment

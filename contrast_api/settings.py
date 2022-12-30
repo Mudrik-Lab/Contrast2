@@ -179,10 +179,18 @@ class Development(Base):
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 
+class Testing(Base):
+    PASSWORD_HASHERS = [
+        'django.contrib.auth.hashers.MD5PasswordHasher',
+    ]
+    DATABASES = values.DatabaseURLValue(
+        "postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5433/contrast_api_db")
+
 class Staging(Base):
     DEBUG = False
     CORS_ALLOW_ALL_ORIGINS = False
     AWS_STORAGE_BUCKET_NAME = values.Value(environ_name="S3_STORAGE")
+
 
 
 class Production(Base):

@@ -5,7 +5,7 @@ services:
     image: nginx:latest
     container_name: nginx_contrast_api
     ports:
-      - "8000:8080"
+      - "8080:8080"
     volumes:
       - ./nginx_compose:/etc/nginx/conf.d
       - ./data/static:/static
@@ -56,7 +56,7 @@ services:
         000
         python manage.py collectstatic --noinput
         cp /srv/app/static/* -r /static/
-        gunicorn contrast_api.wsgi --timeout 180 --bind 0.0.0.0
+        gunicorn contrast_api.wsgi --timeout 180 --bind 0.0.0.0 --reload
 
     volumes:
       - ./data/static:/static

@@ -75,6 +75,12 @@ class StudiesViewSetTestCase(APITestCase):
 
         self.assertEqual(data["results"][0]["title"], "rejected_title")
 
+    def test_excluded_studies_groupd_by_categories(self):
+        pass
+
+    def test_excluded_studies_grouped_by_exclusion_reason(self):
+        pass
+
     def given_study_exists(self, **kwargs):
         default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
                              corresponding_author_email="test@example.com",

@@ -21,13 +21,14 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 from contrast_api import views
 
-admin.site.site_header = "contrast-api admin site"
+admin.site.site_header = "contrast2  admin site"
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health_check', views.healthcheck, name='healthcheck'),
     path('api-token-auth/', TokenObtainPairView.as_view(), name='api-token-obtain-pair'),
     path('api-token-refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
+    path('api/studies', include('studies.urls'))
 ]
 
 configuration_name = settings.CONFIGURATION.split(".")[-1]
@@ -41,4 +42,3 @@ if configuration_name == "Development":
 
     if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-

@@ -2,7 +2,7 @@ from django.db.models import TextChoices
 
 
 class SampleChoices(TextChoices):
-    HEALTHY_ADULTS = "health_adults"
+    HEALTHY_ADULTS = "healthy_adults"
     CHILDREN = "children"
     PATIENTS = "patients"
     NON_HUMAN = "non_human"

@@ -35,7 +35,6 @@ class ExperimentsViewSetTestCase(APITestCase):
     def test_frequencies_graph(self):
         pass
 
-
     def test_timings_graphs(self):
         pass
 

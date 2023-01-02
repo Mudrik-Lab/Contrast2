@@ -3,9 +3,8 @@ from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 
 
-
-
 def setup_profile(sender, instance, created, **kwargs):
+    # Imported here because else it would run before the models are ready
     from users.models import Profile
 
     if created:

@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import IntegerChoices, TextChoices, SET_NULL, CASCADE
 
-from studies.choices import AnalysisTypeChoices
+from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
 
 
 class FindingTag(models.Model):
@@ -17,7 +17,11 @@ class FindingTag(models.Model):
     band_higher_bound = models.PositiveBigIntegerField(null=True, blank=True)  # HZ
     AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=100)
     notes = models.TextField(null=True, blank=True)
-    analysis_type = models.CharField(null=True, blank=True, max_length=100, choices=AnalysisTypeChoices.choices)
-    correlation_sign = models.CharField(null=True, blank=True, max_length=100)
+    analysis_type = models.CharField(null=True, blank=True, max_length=100,
+                                     choices=AnalysisTypeChoices.choices,
+                                     default=AnalysisTypeChoices.POWER)
+    correlation_sign = models.CharField(null=True, blank=True, max_length=10,
+                                        choices=CorrelationSignChoices.choices,
+                                        default=CorrelationSignChoices.POSITIVE)
     technique = models.ForeignKey(null=True, blank=True, to="studies.Technique", related_name="findings_tags",
                                   on_delete=SET_NULL)

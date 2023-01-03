@@ -9,7 +9,7 @@ class Experiment(models.Model):
     This is a major model here, lot's of data "belongs" to the experiment in related models, so the experiment is codified there
     """
     study = models.ForeignKey(to="studies.Study", on_delete=CASCADE, related_name="experiments")
-    finding_description = models.CharField(null=False, blank=False, max_length=254)
+    finding_description = models.TextField(null=False, blank=False)
     techniques = models.ManyToManyField(to="studies.Technique", related_name="experiments")
     interpretations = models.ManyToManyField(to="studies.Theory",
                                              related_name="experiments_interpretations",

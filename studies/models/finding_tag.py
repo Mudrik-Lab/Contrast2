@@ -4,13 +4,21 @@ from django.db.models import IntegerChoices, TextChoices, SET_NULL, CASCADE
 from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
 
 
+class FindingTagFamily(models.Model):
+    name = models.CharField(null=False, blank=False, max_length=50)
+
+
+class FindingTagType(models.Model):
+    name = models.CharField(null=False, blank=False, max_length=50)
+
+
 class FindingTag(models.Model):
     # TODO validator + custom admin form
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",
                                    on_delete=CASCADE,
                                    related_name="finding_tags")
-    family = models.CharField(null=False, blank=False, max_length=100)
-    name = models.CharField(null=False, blank=True, max_length=100)
+    family = models.ForeignKey(null=False, blank=False, on_delete=CASCADE, to=FindingTagFamily)
+    type = models.ForeignKey(null=False, blank=False, on_delete=CASCADE, to=FindingTagType)
     onset = models.PositiveBigIntegerField(null=True, blank=True)  # ms
     offset = models.PositiveBigIntegerField(null=True, blank=True)  # ma
     band_lower_bound = models.PositiveBigIntegerField(null=True, blank=True)  # HZ

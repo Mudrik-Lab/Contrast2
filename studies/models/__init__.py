@@ -1,16 +1,17 @@
 from studies.models.author import Author
-from studies.models.stimulus import Stimulus
+from studies.models.stimulus import Stimulus, ModalityType
 from studies.models.study import Study
 from studies.models.experiment import Experiment
 from studies.models.technique import Technique
-from studies.models.finding_tag import FindingTag
+from studies.models.finding_tag import FindingTag, FindingTagFamily, FindingTagType
 from studies.models.interpretation import Interpretation
 from studies.models.theory import Theory
-from studies.models.task import Task
-from studies.models.consciousness_measure import ConsciousnessMeasure
+from studies.models.task import Task, TaskType
+from studies.models.consciousness_measure import ConsciousnessMeasure, ConsciousnessMeasureType, \
+    ConsciousnessMeasurePhaseType
 from studies.models.sample import Sample
 from studies.models.paradigm import Paradigm
-from studies.models.measure import Measure
+from studies.models.measure import Measure, MeasureType
 
 __all__ = [Experiment,
            Paradigm,
@@ -19,9 +20,15 @@ __all__ = [Experiment,
            Author,
            Technique,
            FindingTag,
+           FindingTagFamily,
+           FindingTagType,
            Interpretation,
            Theory,
            Task,
+           TaskType,
            Measure,
+           MeasureType,
            ConsciousnessMeasure,
+           ConsciousnessMeasureType,
+           ConsciousnessMeasurePhaseType,
            Sample]

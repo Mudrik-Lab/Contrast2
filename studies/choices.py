@@ -31,7 +31,7 @@ class ReportingChoices(TextChoices):
 class TheoryDrivenChoices(TextChoices):
     DRIVEN = "driven", _("Driven")
     MENTIONING = "mentioning", _("Mentioning")
-    BOTH = "both", _("Both")
+    POST_HOC = "post-hoc", _("Post hoc")
 
 
 class CorrelationSignChoices(TextChoices):

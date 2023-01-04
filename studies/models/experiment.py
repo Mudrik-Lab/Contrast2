@@ -25,3 +25,6 @@ class Experiment(models.Model):
 
     # TODO add all relevant Interpretations on creations
 
+    def __str__(self):
+        return f"study {self.study_id}, id {self.id}"
+

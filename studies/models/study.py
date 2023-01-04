@@ -35,6 +35,8 @@ class Study(models.Model):
     countries = ArrayField(CountryField(null=False, blank=False)) # Wondering if this is a good modeling, but we'll see
     affiliations = models.TextField(null=False, blank=False)
 
+    def __str__(self):
+        return f"{self.id} {self.title}"
     def save(
             self, force_insert=False, force_update=False, using=None, update_fields=None
     ):

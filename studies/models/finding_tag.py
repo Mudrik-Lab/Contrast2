@@ -33,3 +33,7 @@ class FindingTag(models.Model):
                                         default=CorrelationSignChoices.POSITIVE)
     technique = models.ForeignKey(null=True, blank=True, to="studies.Technique", related_name="findings_tags",
                                   on_delete=SET_NULL)
+
+    def __str__(self):
+        return f"experiment: {self.experiment_id} family {self.family}, type {self.type}"
+

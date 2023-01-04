@@ -9,4 +9,7 @@ class Paradigm(models.Model):
                                on_delete=SET_NULL)
     name = models.CharField(null=False, blank=False, max_length=100)
 
+    def __str__(self):
+        return f"{self.name} parent {self.parent and self.parent.name}"
+
 # TODO: data migration to create existing paradigms

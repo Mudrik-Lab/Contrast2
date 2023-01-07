@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import CASCADE
 
-from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices
+from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
 
 
 class Experiment(models.Model):
@@ -22,6 +22,7 @@ class Experiment(models.Model):
     theory_driven_theories = models.ManyToManyField(to="studies.Theory",
                                                     related_name="experiments_driven",
                                                     )
+    type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices)
 
     # TODO add all relevant Interpretations on creations
 

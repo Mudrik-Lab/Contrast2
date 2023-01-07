@@ -3,7 +3,8 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices
+from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
+    ExperimentTypeChoices
 from studies.models import Experiment, Theory, Interpretation
 from studies.tests.base import BaseTestCase
 
@@ -99,6 +100,7 @@ class ExperimentsViewSetTestCase(BaseTestCase):
                                   finding_description="look what we found",
                                   is_reporting=ReportingChoices.NO_REPORT,
                                   theory_driven=TheoryDrivenChoices.POST_HOC,
+                                  type=ExperimentTypeChoices.NEUROSCIENTIFIC,
                                   type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
 
         experiment_params = {**default_experiment, **kwargs}

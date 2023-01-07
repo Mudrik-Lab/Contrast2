@@ -14,6 +14,10 @@ class Stimulus(models.Model):
 
     category = models.CharField(null=False, blank=False, max_length=50)
     sub_category = models.CharField(null=True, blank=True, max_length=50)  # TODO validators from config
-    modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE, to=ModalityType)  # TODO validators from config
+    modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
+                                 to=ModalityType)  # TODO validators from config
     description = models.TextField(null=True, blank=True)
     duration = models.PositiveBigIntegerField(null=True, blank=True)  # ms
+
+    def __str__(self):
+        return f"experiment: {self.experiment_id}  modality {self.modality}"

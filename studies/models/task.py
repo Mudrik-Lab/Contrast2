@@ -14,3 +14,7 @@ class Task(models.Model):
     description = models.TextField(null=True, blank=True)
     type = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                              to=TaskType)  # TODO validators from configuration
+
+    def __str__(self):
+        return f"experiment: {self.experiment_id}, type {self.type}"
+

@@ -5,9 +5,15 @@ from django.db.models import CASCADE
 class ConsciousnessMeasurePhaseType(models.Model):
     name = models.CharField(blank=False, null=False, max_length=30)
 
+    def __str__(self):
+        return self.name
+
 
 class ConsciousnessMeasureType(models.Model):
     name = models.CharField(blank=False, null=False, max_length=30)
+
+    def __str__(self):
+        return self.name
 
 
 class ConsciousnessMeasure(models.Model):
@@ -16,3 +22,5 @@ class ConsciousnessMeasure(models.Model):
     type = models.ForeignKey(blank=False, null=False, on_delete=CASCADE, to=ConsciousnessMeasureType)
     description = models.TextField(null=True, blank=True)
 
+    def __str__(self):
+        return f"experiment: {self.experiment_id} phase {self.phase}, type {self.type}"

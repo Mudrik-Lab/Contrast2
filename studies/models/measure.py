@@ -13,3 +13,7 @@ class Measure(models.Model):
 
     type = models.ForeignKey(null=False, blank=False, to=MeasureType, related_name="measures", on_delete=CASCADE)
     notes = models.TextField(null=True, blank=True)
+
+    def __str__(self):
+        return f"experiment: {self.experiment_id}  type {self.type}"
+

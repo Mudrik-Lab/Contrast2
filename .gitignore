@@ -13,3 +13,7 @@ __pycache__
 /scanned_results
 /created_files
 /data
+
+studies/data/*.csv
+studies/data/*.xls
+studies/data/*.xlsx

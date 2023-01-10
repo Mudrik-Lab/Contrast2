@@ -46,3 +46,13 @@ class NationOfConsciousnessGraphSerializer(serializers.Serializer):
     country = serializers.CharField()
     count = serializers.IntegerField()
     theory = serializers.CharField(source="theory__parent__name")
+
+
+class YearlySeriesSerializer(serializers.Serializer):
+    year = serializers.IntegerField()
+    value = serializers.IntegerField()
+
+
+class AcrossTheYearsGraphSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    series = YearlySeriesSerializer(many=True)

@@ -1,3 +1,5 @@
+from typing import Optional
+
 from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
@@ -5,7 +7,7 @@ from rest_framework.test import APITestCase
 
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
     ExperimentTypeChoices
-from studies.models import Experiment, Theory, Interpretation
+from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure
 from studies.tests.base import BaseTestCase
 
 
@@ -28,9 +30,9 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         returns experiments grouped by country and interpretations (positive to theory)
         """
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
-                                                DOI="10.1016/j.cortex.2017.07.011")
+                                                DOI="10.1016/j.cortex.2017.07.011", year=2002)
         british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
-                                                        DOI="10.1016/j.cortex.2017.07.012")
+                                                        DOI="10.1016/j.cortex.2017.07.012", year=2004)
 
         gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
         rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
@@ -77,10 +79,49 @@ class ExperimentsViewSetTestCase(BaseTestCase):
 
     def test_publications_by_theory_family_data(self):
         """
-        provide graph_type=publications_by_theory, min_experiments?=int, theory=GNW
-        group by publications names
+
         """
         pass
+
+    def test_across_the_years(self):
+        """
+        provide graph_type=across_the_years, min_experiments?=int, breakdown=str
+        returns experiments grouped by breakdown and by year within breakdown
+        """
+        israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
+                                                DOI="10.1016/j.cortex.2017.07.011", year=2002)
+        british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
+                                                        DOI="10.1016/j.cortex.2017.07.012", year=2004)
+
+        gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
+        rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
+        gnw_child_theory = self.given_theory_exists(parent=gnw_parent_theory, name="GNW_child")
+        rpt_child_theory = self.given_theory_exists(parent=rpt_parent_theory, name="RPT_child")
+
+        masking_parent_paradigm = self.given_paradigm_exists(name="masking_parent_paradigm")
+        masking_child_paradigm = self.given_paradigm_exists(name="masking_child_paradigm",
+                                                            parent=masking_parent_paradigm)
+        different_parent_paradigm = self.given_paradigm_exists(name="different_parent_paradigm")
+        different_child_paradigm = self.given_paradigm_exists(name="different_child_paradigm",
+                                                              parent=different_parent_paradigm)
+
+        israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study, paradigms=[masking_child_paradigm])
+        israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study, paradigms=[different_child_paradigm, masking_parent_paradigm])
+        british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study, paradigms=[different_child_paradigm])
+
+        self.given_interpretation_exist(experiment=israeli_study_experiment,
+                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
+        self.given_interpretation_exist(experiment=israeli_study_experiment_2,
+                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
+        self.given_interpretation_exist(experiment=british_israeli_study_experiment,
+                                        theory=rpt_child_theory, type=InterpretationsChoices.PRO)
+        self.given_interpretation_exist(experiment=british_israeli_study_experiment,
+                                        theory=gnw_child_theory, type=InterpretationsChoices.CHALLENGES)
+
+        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+                                                    breakdown="paradigm_family")
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_frequencies_graph(self):
         pass
@@ -102,9 +143,13 @@ class ExperimentsViewSetTestCase(BaseTestCase):
                                   theory_driven=TheoryDrivenChoices.POST_HOC,
                                   type=ExperimentTypeChoices.NEUROSCIENTIFIC,
                                   type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
+        paradigms = kwargs.pop("paradigms")
 
         experiment_params = {**default_experiment, **kwargs}
         experiment, created = Experiment.objects.get_or_create(**experiment_params)
+        if paradigms:
+            for item in paradigms:
+                experiment.paradigms.add(item)
         return experiment
 
     def reverse_with_query_params(self, url_name: str, *args, **queryparams) -> str:
@@ -113,10 +158,20 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         url = f'{url}?{params}'
         return url
 
-    def given_theory_exists(self, name:str, parent:Theory = None):
+    def given_theory_exists(self, name: str, parent: Theory = None):
         theory, created = Theory.objects.get_or_create(parent=parent, name=name)
         return theory
 
-    def given_interpretation_exist(self, experiment:Experiment, theory:Theory, type: str):
+    def given_interpretation_exist(self, experiment: Experiment, theory: Theory, type: str):
         interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=type)
         return interpretation
+
+    def given_paradigm_exists(self, name:str, parent:Optional[Paradigm] = None):
+        params = dict(name=name, parent=parent)
+        paradigm, created = Paradigm.objects.get_or_create(**params)
+        return paradigm
+
+    def given_measure_exists(self, experiment_id, measure_type, notes:Optional[str] = None):
+        params = dict(experiment_id=experiment_id, type=measure_type, notes=notes)
+        measure, created = Measure.objects.get_or_create(**params)
+        return measure

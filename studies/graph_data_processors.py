@@ -7,11 +7,20 @@ from studies.models import Study, Experiment, Interpretation
 
 
 class BaseProcessor:
-    def __init__(self, experiments: QuerySet[Experiment]):
+    def __init__(self, experiments: QuerySet[Experiment], **kwargs):
         self.experiments = experiments
 
     def process(self):
         raise NotImplementedError()
+
+
+class AcrossTheYearsGraphDataProcessor(BaseProcessor):
+    def __init__(self, experiments: QuerySet[Experiment], breakout, **kwargs):
+        super().__init__(experiments=experiments, **kwargs)
+        self.breakout = breakout
+
+    def process(self):
+        pass
 
 
 class NationOfConsciousnessDataProcessor(BaseProcessor):

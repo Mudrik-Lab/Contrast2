@@ -1,7 +1,10 @@
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-
+from typing import Optional
 from approval_process.choices import ApprovalChoices
-from studies.models import Study
+from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
+    ExperimentTypeChoices
+from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, Technique, Study
 
 
 class BaseTestCase(APITestCase):
@@ -13,3 +16,75 @@ class BaseTestCase(APITestCase):
         study_params = {**default_study, **kwargs}
         study, created = Study.objects.get_or_create(**study_params)
         return study
+
+    def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
+        default_experiment = dict(study=study,
+                                  finding_description="look what we found",
+                                  is_reporting=ReportingChoices.NO_REPORT,
+                                  theory_driven=TheoryDrivenChoices.POST_HOC,
+                                  type=ExperimentTypeChoices.NEUROSCIENTIFIC,
+                                  type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
+        paradigms = None
+        techniques = None
+        theory_driven_theories = None
+        if "paradigms" in kwargs:
+            paradigms = kwargs.pop("paradigms")
+
+        if "techniques" in kwargs:
+            techniques = kwargs.pop("techniques")
+
+        if "theory_driven_theories" in kwargs:
+            theory_driven_theories = kwargs.pop("theory_driven_theories")
+
+        experiment_params = {**default_experiment, **kwargs}
+        experiment, created = Experiment.objects.get_or_create(**experiment_params)
+        if paradigms:
+            for item in paradigms:
+                experiment.paradigms.add(item)
+
+        if techniques:
+            for item in techniques:
+                experiment.techniques.add(item)
+        if theory_driven_theories:
+            for item in theory_driven_theories:
+                experiment.theory_driven_theories.add(item)
+        return experiment
+
+
+    def reverse_with_query_params(self, url_name: str, *args, **queryparams) -> str:
+        params = "&".join([f"{k}={v}" for k, v in queryparams.items()])
+        url = reverse(url_name, args=args)
+        url = f'{url}?{params}'
+        return url
+
+    def given_theory_exists(self, name: str, parent: Theory = None):
+        theory, created = Theory.objects.get_or_create(parent=parent, name=name)
+        return theory
+
+    def given_interpretation_exist(self, experiment: Experiment, theory: Theory, type: str):
+        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=type)
+        return interpretation
+
+    def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):
+        params = dict(name=name, parent=parent)
+        paradigm, created = Paradigm.objects.get_or_create(**params)
+        return paradigm
+
+    def given_technique_exists(self, name: str):
+        params = dict(name=name)
+        technique, created = Technique.objects.get_or_create(**params)
+        return technique
+
+    def given_measure_exists(self, experiment_id, measure_type, notes: Optional[str] = None):
+        measure_type_instance, created = MeasureType.objects.get_or_create(name=measure_type)
+        params = dict(experiment_id=experiment_id, type=measure_type_instance, notes=notes)
+
+        measure, created = Measure.objects.get_or_create(**params)
+        return measure
+
+    def given_task_exists(self, experiment_id, task_type, description: Optional[str] = None):
+        task_type_instance, created = TaskType.objects.get_or_create(name=task_type)
+        params = dict(experiment_id=experiment_id, type=task_type_instance, description=description)
+
+        task, created = Task.objects.get_or_create(**params)
+        return task

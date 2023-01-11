@@ -13,7 +13,7 @@ from studies.models import Study, Experiment, Interpretation, Paradigm, Sample, 
 
 class BaseProcessor:
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
-        self.experiments = experiments
+        self.experiments:QuerySet[Experiment] = experiments
 
     def process(self):
         raise NotImplementedError()
@@ -74,7 +74,13 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_reporting(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(is_reporting=OuterRef("series_name"))
+
+        breakdown_query = Experiment.objects.values("is_reporting").distinct(
+            "is_reporting").annotate(series_name=F("is_reporting"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_task(self):
         experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
@@ -86,6 +92,7 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_stimuli_category(self):
+        # TODO: awaiting the model changes
         pass
 
     def process_modality(self):
@@ -116,7 +123,13 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_type_of_consciousness(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(type_of_consciousness=OuterRef("series_name"))
+
+        breakdown_query = Experiment.objects.values("type_of_consciousness").distinct(
+            "type_of_consciousness").annotate(series_name=F("type_of_consciousness"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_technique(self):
         experiments_subquery_by_breakdown = self.experiments.filter(techniques=OuterRef("pk"))

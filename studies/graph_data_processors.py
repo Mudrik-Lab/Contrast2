@@ -6,7 +6,8 @@ from django.db.models import QuerySet, Func, F, Count, OuterRef, Sum, Value
 from django.db.models.functions import JSONObject
 
 from studies.choices import InterpretationsChoices
-from studies.models import Study, Experiment, Interpretation, Paradigm
+from studies.models import Study, Experiment, Interpretation, Paradigm, Sample, Task, Stimulus, ConsciousnessMeasure, \
+    Technique, Measure, FindingTag
 
 
 class BaseProcessor:
@@ -45,26 +46,75 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_population(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(samples=OuterRef("pk"))
+
+        breakdown_query = Sample.objects.values("type__name").distinct(
+            "type__name").annotate(series_name=F("type__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_finding_tag(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags=OuterRef("pk"))
+
+        breakdown_query = FindingTag.objects.values("type__name").distinct(
+            "type__name").annotate(series_name=F("type__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_finding_tag_family(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags=OuterRef("pk"))
+
+        breakdown_query = FindingTag.objects.values("family__name").distinct(
+            "family__name").annotate(series_name=F("family__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_reporting(self):
         pass
 
     def process_task(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(tasks=OuterRef("pk"))
+
+        breakdown_query = Task.objects.values("type__name").distinct(
+            "type__name").annotate(series_name=F("type__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_stimuli_category(self):
         pass
 
     def process_modality(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(stimuli=OuterRef("pk"))
+
+        breakdown_query = Stimulus.objects.values("modality__name").distinct(
+            "modality__name").annotate(series_name=F("modality__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
 
     def process_consciousness_measure_phase(self):
-        pass
+
+        experiments_subquery_by_breakdown = self.experiments.filter(consciousness_measures=OuterRef("pk"))
+
+        breakdown_query = ConsciousnessMeasure.objects.values("consciousness_measures__phase__name").distinct(
+            "consciousness_measures__phase__name").annotate(series_name=F("consciousness_measures__phase__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_consciousness_measure_type(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(consciousness_measures=OuterRef("pk"))
+
+        breakdown_query = ConsciousnessMeasure.objects.values("consciousness_measures__type__name").distinct(
+            "consciousness_measures__type__name").annotate(series_name=F("consciousness_measures__type__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
 
     def process_type_of_consciousness(self):
@@ -72,10 +122,21 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
 
 
     def process_technique(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(techniques=OuterRef("pk"))
+        breakdown_query = Technique.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_measure(self):
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(measures=OuterRef("pk"))
+
+        breakdown_query = Measure.objects.values("type__name").distinct(
+            "type__name").annotate(series_name=F("type__name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
 
 

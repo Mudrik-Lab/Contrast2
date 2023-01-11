@@ -19,14 +19,10 @@ class StudySerializer(serializers.ModelSerializer):
                   "year",
                   "corresponding_author_email",
                   "approval_status",
-                  "key_words",
-                  "references",
+                  "authors_key_words",
                   "funding",
                   "source_title",
                   "abbreviated_source_title",
-                  "link",
-                  "publisher",
-                  "abstract",
                   "countries",
                   "affiliations"
                   ]

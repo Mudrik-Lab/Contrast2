@@ -7,7 +7,7 @@ from rest_framework.test import APITestCase
 
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
     ExperimentTypeChoices
-from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure
+from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task
 from studies.tests.base import BaseTestCase
 
 
@@ -117,8 +117,16 @@ class ExperimentsViewSetTestCase(BaseTestCase):
                                                                                   paradigms=[
                                                                                       another_different_child_paradigm])
 
+        first_measure = self.given_measure_exists(experiment_id=israeli_study_experiment.id, measure_type="a_first_measure")
+        second_measure = self.given_measure_exists(experiment_id=israeli_study_experiment.id, measure_type="b_second_measure")
+        third_measure_with_second_type = self.given_measure_exists(experiment_id=israeli_study_experiment_2.id, measure_type="b_second_measure")
+        fourth_measure = self.given_measure_exists(experiment_id=british_israeli_study_experiment.id, measure_type="c_third_measure")
+
         self._test_across_the_years_breakdown_paradigm_family(different_parent_paradigm, masking_parent_paradigm)
-        self._test_across_the_years_breakdown_paradigm(different_child_paradigm, another_different_child_paradigm, masking_child_paradigm)
+        self._test_across_the_years_breakdown_paradigm(different_child_paradigm, another_different_child_paradigm,
+                                                       masking_child_paradigm)
+        self._test_across_the_years_breakdown_measures(first_measure, second_measure,
+                                                       third_measure_with_second_type, fourth_measure)
 
     def _test_across_the_years_breakdown_paradigm_family(self, different_parent_paradigm, masking_parent_paradigm):
         target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
@@ -136,7 +144,8 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
         self.assertDictEqual(first_series["series"][1], dict(year=2004, value=1))
 
-    def _test_across_the_years_breakdown_paradigm(self, different_child_paradigm, another_different_child_paradigm, masking_child_paradigm):
+    def _test_across_the_years_breakdown_paradigm(self, different_child_paradigm, another_different_child_paradigm,
+                                                  masking_child_paradigm):
         target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
                                                     breakdown="paradigm")
         res = self.client.get(target_url)
@@ -151,6 +160,25 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         # masking_child_paradigm exists only on the isreali study from 2002 on two different experiments
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
         self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
+        self.assertDictEqual(third_series["series"][0], dict(year=2004, value=1))
+
+    def _test_across_the_years_breakdown_measures(self, first_measure, second_measure,
+                                                  third_measure, fourth_measure):
+        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+                                                    breakdown="measure")
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 3)
+        first_series = res.data[0]
+        second_series = res.data[1]
+        third_series = res.data[2]
+
+        self.assertEqual(first_series["series_name"], first_measure.type.name)
+        self.assertEqual(second_series["series_name"], second_measure.type.name)
+        self.assertEqual(third_series["series_name"], fourth_measure.type.name)
+        # second measure type happened twice
+        self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
+        self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
         self.assertDictEqual(third_series["series"][0], dict(year=2004, value=1))
 
     def test_frequencies_graph(self):
@@ -202,6 +230,15 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         return paradigm
 
     def given_measure_exists(self, experiment_id, measure_type, notes: Optional[str] = None):
-        params = dict(experiment_id=experiment_id, type=measure_type, notes=notes)
+        measure_type_instance, created = MeasureType.objects.get_or_create(name=measure_type)
+        params = dict(experiment_id=experiment_id, type=measure_type_instance, notes=notes)
+
         measure, created = Measure.objects.get_or_create(**params)
         return measure
+
+    def given_task_exists(self, experiment_id, task_type, description: Optional[str] = None):
+        task_type_instance, created = TaskType.objects.get_or_create(name=task_type)
+        params = dict(experiment_id=experiment_id, type=task_type_instance, description=description)
+
+        task, created = Task.objects.get_or_create(**params)
+        return task

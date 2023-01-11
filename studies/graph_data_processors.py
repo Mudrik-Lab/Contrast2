@@ -7,7 +7,7 @@ from django.db.models.functions import JSONObject
 
 from studies.choices import InterpretationsChoices
 from studies.models import Study, Experiment, Interpretation, Paradigm, Sample, Task, Stimulus, ConsciousnessMeasure, \
-    Technique, Measure, FindingTag
+    Technique, Measure, FindingTag, MeasureType
 
 
 class BaseProcessor:
@@ -130,10 +130,10 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_measure(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(measures=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(measures__type=OuterRef("pk"))
 
-        breakdown_query = Measure.objects.values("type__name").distinct(
-            "type__name").annotate(series_name=F("type__name"))
+        breakdown_query = MeasureType.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

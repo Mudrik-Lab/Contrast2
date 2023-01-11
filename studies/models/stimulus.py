@@ -6,14 +6,25 @@ class ModalityType(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
 
 
+class StimulusCategory(models.Model):
+    name = models.CharField(null=False, blank=False, max_length=50)
+
+
+class StimulusSubCategory(models.Model):
+    name = models.CharField(null=False, blank=False, max_length=50)
+    parent = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
+                               to=StimulusCategory)
+
+
 class Stimulus(models.Model):
     # TODO validator
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",
                                    on_delete=CASCADE,
                                    related_name="stimuli")
 
-    category = models.CharField(null=False, blank=False, max_length=50)
-    sub_category = models.CharField(null=True, blank=True, max_length=50)  # TODO validators from config
+    category = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
+                                 to=StimulusCategory)
+    sub_category = models.ForeignKey(null=True, blank=True, max_length=50)  # TODO validators from config
     modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=ModalityType)  # TODO validators from config
     description = models.TextField(null=True, blank=True)

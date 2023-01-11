@@ -54,5 +54,5 @@ class YearlySeriesSerializer(serializers.Serializer):
 
 
 class AcrossTheYearsGraphSerializer(serializers.Serializer):
-    name = serializers.CharField()
+    series_name = serializers.CharField()
     series = YearlySeriesSerializer(many=True)

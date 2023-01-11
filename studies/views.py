@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -68,10 +68,10 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
         if graph_data_processor is None:
             raise GraphProcessNotRegisteredException(graph_type)
 
-        graph_data = graph_data_processor(queryset, request.query_params).process()
+        graph_data = graph_data_processor(queryset, **request.query_params).process()
         serializer = self.get_serializer_by_graph_type(graph_type, graph_data, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ExcludedStudiesViewSet(mixins.RetrieveModelMixin,

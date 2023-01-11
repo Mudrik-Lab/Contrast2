@@ -104,24 +104,54 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         different_parent_paradigm = self.given_paradigm_exists(name="different_parent_paradigm")
         different_child_paradigm = self.given_paradigm_exists(name="different_child_paradigm",
                                                               parent=different_parent_paradigm)
+        another_different_child_paradigm = self.given_paradigm_exists(name="zz_another_different_child_paradigm",
+                                                                      parent=different_parent_paradigm)
 
-        israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study, paradigms=[masking_child_paradigm])
-        israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study, paradigms=[different_child_paradigm, masking_parent_paradigm])
-        british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study, paradigms=[different_child_paradigm])
+        israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
+                                                                          paradigms=[masking_child_paradigm])
+        israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
+                                                                            finding_description="brave new world",
+                                                                            paradigms=[different_child_paradigm,
+                                                                                       masking_child_paradigm])
+        british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study,
+                                                                                  paradigms=[
+                                                                                      another_different_child_paradigm])
 
-        self.given_interpretation_exist(experiment=israeli_study_experiment,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
-        self.given_interpretation_exist(experiment=israeli_study_experiment_2,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
-        self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=rpt_child_theory, type=InterpretationsChoices.PRO)
-        self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.CHALLENGES)
+        self._test_across_the_years_breakdown_paradigm_family(different_parent_paradigm, masking_parent_paradigm)
+        self._test_across_the_years_breakdown_paradigm(different_child_paradigm, another_different_child_paradigm, masking_child_paradigm)
 
+    def _test_across_the_years_breakdown_paradigm_family(self, different_parent_paradigm, masking_parent_paradigm):
         target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
                                                     breakdown="paradigm_family")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)
+        first_series = res.data[0]
+        second_series = res.data[1]
+        self.assertEqual(first_series["series_name"], different_parent_paradigm.name)
+        self.assertEqual(second_series["series_name"], masking_parent_paradigm.name)
+        # masking_child_paradigm exists only on the isreali study from 2002 on two different experiments
+        self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
+        # While different_child_paradigm is on both studies, so one in 2002 and one in 2004
+        self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
+        self.assertDictEqual(first_series["series"][1], dict(year=2004, value=1))
+
+    def _test_across_the_years_breakdown_paradigm(self, different_child_paradigm, another_different_child_paradigm, masking_child_paradigm):
+        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+                                                    breakdown="paradigm")
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 3)
+        first_series = res.data[0]
+        second_series = res.data[1]
+        third_series = res.data[2]
+        self.assertEqual(first_series["series_name"], different_child_paradigm.name)
+        self.assertEqual(second_series["series_name"], masking_child_paradigm.name)
+        self.assertEqual(third_series["series_name"], another_different_child_paradigm.name)
+        # masking_child_paradigm exists only on the isreali study from 2002 on two different experiments
+        self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
+        self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
+        self.assertDictEqual(third_series["series"][0], dict(year=2004, value=1))
 
     def test_frequencies_graph(self):
         pass
@@ -166,12 +196,12 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=type)
         return interpretation
 
-    def given_paradigm_exists(self, name:str, parent:Optional[Paradigm] = None):
+    def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):
         params = dict(name=name, parent=parent)
         paradigm, created = Paradigm.objects.get_or_create(**params)
         return paradigm
 
-    def given_measure_exists(self, experiment_id, measure_type, notes:Optional[str] = None):
+    def given_measure_exists(self, experiment_id, measure_type, notes: Optional[str] = None):
         params = dict(experiment_id=experiment_id, type=measure_type, notes=notes)
         measure, created = Measure.objects.get_or_create(**params)
         return measure

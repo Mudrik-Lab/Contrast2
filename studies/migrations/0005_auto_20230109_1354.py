@@ -21,6 +21,18 @@ def bootstrap_type_models(apps, schema_editor):
                           "Objective"]:
         ConsciousnessMeasurePhaseType.objects.get_or_create(name=measure_phase)
 
+    Theory = apps.get_model("studies", "Theory")
+    for theory in ["Global Workspace",
+                   "Integrated Information",
+                   "Higher Order Thought",
+                   "First Order & Predictive Processing",
+                   "Other"]:
+        Theory.objects.get_or_create(name=theory)
+    Theory.objects.get_or_create(name="GNW", parent="Global Workspace")
+    Theory.objects.get_or_create(name="IIT", parent="Integrated Information")
+    Theory.objects.get_or_create(name="HOT", parent="Higher Order Thought")
+    Theory.objects.get_or_create(name="RPT", parent="First Order & Predictive Processing")
+
     ModalityType = apps.get_model("studies", "ModalityType")
     for modality in ["Auditory",
                      "None",
@@ -29,66 +41,71 @@ def bootstrap_type_models(apps, schema_editor):
                      "Visual"]:
         ModalityType.objects.get_or_create(name=modality)
 
-        Stimulus = apps.get_model("studies", "Stimulus")
-        for category in ["Animals",
-                         "Artificial Scenes",
-                         "Bodies",
-                         "Checkerboard",
-                         "Chinese Pictographs",
-                         "Color",
-                         "Contours",
-                         "Digits",
-                         "Drawings",
-                         "Electric Stimulation",
-                         "Epithelium Stimulation",
-                         "Faces",
-                         "Figure-Ground",
-                         "Geometric Shapes",
-                         "Gratings/ Kanizsa",
-                         "Landolt",
-                         "Letters",
-                         "Light Flashes",
+    StimulusCategory = apps.get_model("studies", "StimulusCategory")
+    for category in ["Animals",
+                     "Artificial Scenes",
+                     "Bodies",
+                     "Checkerboard",
+                     "Chinese Pictographs",
+                     "Color",
+                     "Contours",
+                     "Digits",
+                     "Drawings",
+                     "Electric Stimulation",
+                     "Epithelium Stimulation",
+                     "Faces",
+                     "Figure-Ground",
+                     "Geometric Shapes",
+                     "Gratings/Kanizsa",
+                     "Landolt",
+                     "Letters",
+                     "Light Flashes",
+                     "Motion",
+                     "Music",
+                     "Natural Scenes",
+                     "Nociceptive stimulation",
+                     "Noise",
+                     "None",
+                     "Numbers",
+                     "Objects",
+                     "Pacman",
+                     "Patterns",
+                     "Pneumatic stimulations",
+                     "Real Objects",
+                     "Sexual Images",
+                     "Sounds",
+                     "Speech",
+                     "Symbols",
+                     "Textures",
+                     "Verniers",
+                     "Videos",
+                     "Virtual Reality Objects",
+                     "Words"]:
+        StimulusCategory.objects.get_or_create(name=category)
+
+    for sub_category in ["Arrows",
                          "Motion",
-                         "Music",
-                         "Natural Scenes",
-                         "Nociceptive stimulation",
-                         "Noise",
-                         "None",
-                         "Numbers",
-                         "Objects",
-                         "Pacman",
-                         "Patterns",
-                         "Pneumatic stimulations",
-                         "Real Objects",
-                         "Sexual Images",
-                         "Sounds",
-                         "Speech",
-                         "Symbols",
-                         "Textures",
-                         "Verniers",
-                         "Videos",
-                         "Virtual Reality Objects",
-                         "Words"]:
-            Stimulus.objects.get_or_create(category=category)
+                         "Lines",
+                         "Disc",
+                         "Dots",
+                         "Rings",
+                         "Bars Circles",
+                         "Rectangles",
+                         "Squares",
+                         "Diamonds"]:
+        StimulusSubCategory.objects.get_or_create(name=sub_category, parent="Geometric Shapes")
 
-        for sub_category in ["Arrows",
-                             "Motion",
-                             "Lines",
-                             "Disc",
-                             "Dots",
-                             "Rings",
-                             "Bars Circles",
-                             "Rectangles",
-                             "Squares",
-                             "Diamonds"]:
-            Stimulus.objects.get_or_create(sub_category=sub_category, category="Geometric Shapes")
+    StimulusSubCategory.objects.get_or_create(name="Gabor", parent="Gratings/Kanizsa")
 
-        Stimulus.objects.get_or_create(sub_category="Gabor", category="Gratings/ Kanizsa")
+    for sub_category in ["Houses",
+                         "Clocks",
+                         "Domino"]:
+        StimulusSubCategory.objects.get_or_create(name=sub_category, parent="Objects")
 
-        for sub_category in ["Houses",
-                             "Road",
-                             "Moon"]:
-            Stimulus.objects.get_or_create(sub_category=sub_category, category="Virtual Reality Objects")
+    for sub_category in ["Houses",
+                         "Road",
+                         "Moon"]:
+        StimulusSubCategory.objects.get_or_create(name=sub_category, parent="Virtual Reality Objects")
 
     Technique = apps.get_model("studies", "Technique")
     for technique in ["Ca2 Imaging",
@@ -133,15 +150,6 @@ def bootstrap_type_models(apps, schema_editor):
                       "Mood",
                       "Mathematics"]:
         TaskType.objects.get_or_create(name=task_type)
-
-    # Sample = apps.get_model("studies", "Sample")
-    # for sample_type in ["Healthy Adults"
-    #                     "Children"
-    #                     "Patients"
-    #                     "Nonhuman"
-    #                     "Computer"]:
-    #     Sample.objects.get_or_create(type=sample_type)
-    # TODO: is there a different to do this since it already exist is choices.py?
 
     Paradigm = apps.get_model("studies", "Paradigm")
     for paradigm in ["Abnormal Contents of Consciousness",
@@ -303,8 +311,8 @@ def bootstrap_type_models(apps, schema_editor):
                      "Zwicker Tone"]:
         Paradigm.objects.get_or_create(name=paradigm, parent="Illusions")
 
-    for paradigm in ["Motoric"]:  # TODO: is this correct classification? there is ambiguity in parameters list
-        Paradigm.objects.get_or_create(name=paradigm, parent="Imagination")
+    # TODO: is this correct classification? there is ambiguity in parameters list
+    Paradigm.objects.get_or_create(name="Motoric", parent="Imagination")
 
     for paradigm in ["Backward Masking"
                      "Dynamic Masking"
@@ -339,6 +347,94 @@ def bootstrap_type_models(apps, schema_editor):
                      "Intensity Reduction",
                      "Noise Induction"]:
         Paradigm.objects.get_or_create(name=paradigm, parent="Stimulus Degradation")
+
+    FindingTagFamily = apps.get_model("studies", "FindingTagFamily")
+    for family in ["Temporal",
+                   "Spatial Areas",
+                   "Frequency",
+                   "miscellaneous (no Family)"]:
+        FindingTagFamily.objects.get_or_create(name=family)
+
+    FindingTagType = apps.get_model("studies", "FindingTagType")
+    for type in ["M130"
+                 "M280"
+                 "M70"
+                 "N1"
+                 "N140"
+                 "N150"
+                 "N170"
+                 "N2"
+                 "N2pc"
+                 "N400"
+                 "P1"
+                 "P2"
+                 "P300"
+                 "VAN"
+                 "CNV"
+                 "Recurrent Processing"
+                 "MMN"
+                 "ART"
+                 "Early Components"
+                 "Late Components"
+                 "SN"
+                 "Prestimulus Timing"
+                 "SPCN"
+                 "ERN"
+                 "Pe"
+                 "EPN"
+                 "Border Difference"
+                 "Figure Ground difference"
+                 "Change related positivity"
+                 "AAN"
+                 "Intermediate Components"]:
+        FindingTagType.objects.get_or_create(name=type, family="Temporal")
+
+    for type in ["Frontal",
+                 "Parietal",
+                 "Posterior",
+                 "Temporal",
+                 "Ventral Stream",
+                 "V1",
+                 "A1",
+                 "Dorsal Stream",
+                 "DMN",
+                 "V4",
+                 "S1",
+                 "Subcortical structures",
+                 "Uncinate Fasciculus",
+                 "Dorsal Attention Network",
+                 "Visual Network"]:
+        FindingTagType.objects.get_or_create(name=type, family="Spatial Areas")
+
+    for type in ["Alpha",
+                 "Beta",
+                 "Delta",
+                 "Gamma",
+                 "Theta"]:
+        FindingTagType.objects.get_or_create(name=type, family="Frequency")
+
+    for type in ["Acetylcholine",
+                 "Anatomic Functional connectivity similarity",
+                 "Anterior Posterior Connectivity",
+                 "Centrality",
+                 "CFC",
+                 "Complexity",
+                 "Cortical Subcortical connectivity",
+                 "Metacognition",
+                 "Motor areas connectivity",
+                 "PHI Approximation",
+                 "Plasticity",
+                 "Slow Waves Activity",
+                 "Small Worldness",
+                 "SSVEP",
+                 "Temporal Occipital connectivity",
+                 "Temporal Parietal Connectivity",
+                 "Ultra slow fluctuations",
+                 "Uncinate Fasciculus",
+                 "Variability",
+                 "Intrinsic Ignition",
+                 "Local Synchronization"]:
+        FindingTagType.objects.get_or_create(name=type, family="miscellaneous (no Family)")
 
 
 class Migration(migrations.Migration):

@@ -82,6 +82,15 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
+    def process_theory_driven(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(theory_driven=OuterRef("series_name"))
+
+        breakdown_query = Experiment.objects.values("theory_driven").distinct(
+            "theory_driven").annotate(series_name=F("theory_driven"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
     def process_task(self):
         experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
 

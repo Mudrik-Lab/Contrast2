@@ -7,7 +7,8 @@ from django.db.models.functions import JSONObject
 
 from studies.choices import InterpretationsChoices
 from studies.models import Study, Experiment, Interpretation, Paradigm, Sample, Task, Stimulus, ConsciousnessMeasure, \
-    Technique, Measure, FindingTag, MeasureType
+    Technique, Measure, FindingTag, MeasureType, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, ModalityType, \
+    TaskType, FindingTagFamily, FindingTagType
 
 
 class BaseProcessor:
@@ -48,26 +49,26 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
     def process_population(self):
         experiments_subquery_by_breakdown = self.experiments.filter(samples=OuterRef("pk"))
 
-        breakdown_query = Sample.objects.values("type__name").distinct(
-            "type__name").annotate(series_name=F("type__name"))
+        breakdown_query = Sample.objects.values("type").distinct(
+            "type").annotate(series_name=F("type"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_finding_tag(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__type=OuterRef("pk"))
 
-        breakdown_query = FindingTag.objects.values("type__name").distinct(
-            "type__name").annotate(series_name=F("type__name"))
+        breakdown_query = FindingTagType.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_finding_tag_family(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__family=OuterRef("pk"))
 
-        breakdown_query = FindingTag.objects.values("family__name").distinct(
-            "family__name").annotate(series_name=F("family__name"))
+        breakdown_query = FindingTagFamily.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -76,10 +77,10 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         pass
 
     def process_task(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(tasks=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
 
-        breakdown_query = Task.objects.values("type__name").distinct(
-            "type__name").annotate(series_name=F("type__name"))
+        breakdown_query = TaskType.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -88,38 +89,34 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         pass
 
     def process_modality(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(stimuli=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(stimuli__modality=OuterRef("pk"))
 
-        breakdown_query = Stimulus.objects.values("modality__name").distinct(
-            "modality__name").annotate(series_name=F("modality__name"))
+        breakdown_query = ModalityType.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
-
     def process_consciousness_measure_phase(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(consciousness_measures__phase=OuterRef("pk"))
 
-        experiments_subquery_by_breakdown = self.experiments.filter(consciousness_measures=OuterRef("pk"))
-
-        breakdown_query = ConsciousnessMeasure.objects.values("consciousness_measures__phase__name").distinct(
-            "consciousness_measures__phase__name").annotate(series_name=F("consciousness_measures__phase__name"))
+        breakdown_query = ConsciousnessMeasurePhaseType.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_consciousness_measure_type(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(consciousness_measures=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(consciousness_measures__type=OuterRef("pk"))
 
-        breakdown_query = ConsciousnessMeasure.objects.values("consciousness_measures__type__name").distinct(
-            "consciousness_measures__type__name").annotate(series_name=F("consciousness_measures__type__name"))
+        breakdown_query = ConsciousnessMeasureType.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
-
     def process_type_of_consciousness(self):
         pass
-
 
     def process_technique(self):
         experiments_subquery_by_breakdown = self.experiments.filter(techniques=OuterRef("pk"))
@@ -138,8 +135,6 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
-
-
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
         subquery = filtered_subquery.annotate(year=F("study__year")) \
@@ -151,7 +146,7 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
 
         qs = queryset \
             .values("series_name").annotate(series=ArraySubquery(subquery)) \
-            .values("series_name", "series")\
+            .values("series_name", "series") \
             .order_by("series_name")
         return qs
 

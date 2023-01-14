@@ -12,7 +12,7 @@ class StimulusCategory(models.Model):
 
 class StimulusSubCategory(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
-    parent = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
+    parent = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
                                to=StimulusCategory)
 
 
@@ -24,7 +24,8 @@ class Stimulus(models.Model):
 
     category = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=StimulusCategory)
-    sub_category = models.ForeignKey(null=True, blank=True, max_length=50)  # TODO validators from config
+    sub_category = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
+                               to=StimulusSubCategory)  # TODO validators from config
     modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=ModalityType)  # TODO validators from config
     description = models.TextField(null=True, blank=True)

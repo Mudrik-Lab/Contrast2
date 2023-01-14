@@ -10,7 +10,7 @@ class FindingTagFamily(models.Model):
 
 class FindingTagType(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
-    family = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
+    family = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
                                to=FindingTagFamily)
 
 

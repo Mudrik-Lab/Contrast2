@@ -15,11 +15,11 @@ def bootstrap_type_models(apps, schema_editor):
 
     FindingTagType = apps.get_model("studies", "FindingTagType")
     for finding_tag_type in finding_tag_types['Temporal']:
-        temporal = FindingTagType.objects.get(name='Temporal')
-        FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
+        temporal = FindingTagFamily.objects.get(name='Temporal')
+        # FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
 
     for finding_tag_type in finding_tag_types['Spatial_Areas']:
-        spatial_areas = FindingTagType.objects.get(name='Spatial Areas')
+        spatial_areas = FindingTagFamily.objects.get(name='Spatial Areas')
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=spatial_areas)
 
     for finding_tag_type in ["Alpha",
@@ -27,11 +27,11 @@ def bootstrap_type_models(apps, schema_editor):
                              "Delta",
                              "Gamma",
                              "Theta"]:
-        frequency = FindingTagType.objects.get(name='Frequency')
+        frequency = FindingTagFamily.objects.get(name='Frequency')
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=frequency)
 
     for finding_tag_type in finding_tag_types['miscellaneous']:
-        miscellaneous = FindingTagType.objects.get(name='miscellaneous (no Family)')
+        miscellaneous = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=miscellaneous)
 
     StimulusCategory = apps.get_model("studies", "StimulusCategory")
@@ -41,22 +41,22 @@ def bootstrap_type_models(apps, schema_editor):
     StimulusSubCategory = apps.get_model("studies", "StimulusSubCategory")
 
     for sub_category in stimulus_sub_category["Geometric_Shapes"]:
-        geometric_shapes = StimulusSubCategory.objects.get(name='Geometric_Shapes')
+        geometric_shapes = StimulusCategory.objects.get(name='Geometric Shapes')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=geometric_shapes)
 
-    gratings_kanizsa = StimulusSubCategory.objects.get(name='Gratings/Kanizsa')
+    gratings_kanizsa = StimulusCategory.objects.get(name='Gratings/Kanizsa')
     StimulusSubCategory.objects.get_or_create(name="Gabor", parent=gratings_kanizsa)
 
     for sub_category in ["Houses",
                          "Clocks",
                          "Domino"]:
-        objects = StimulusSubCategory.objects.get(name='Objects')
+        objects = StimulusCategory.objects.get(name='Objects')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=objects)
 
     for sub_category in ["Houses",
                          "Road",
                          "Moon"]:
-        virtual_reality_objects = StimulusSubCategory.objects.get(name='Virtual Reality Objects')
+        virtual_reality_objects = StimulusCategory.objects.get(name='Virtual Reality Objects')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=virtual_reality_objects)
 
 

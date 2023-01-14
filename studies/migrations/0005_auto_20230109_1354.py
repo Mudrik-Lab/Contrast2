@@ -2,6 +2,8 @@
 
 from django.db import migrations
 
+from configuration.initial_setup import paradigms, task_types, techniques
+
 
 def bootstrap_type_models(apps, schema_editor):
     ConsciousnessMeasureType = apps.get_model("studies", "ConsciousnessMeasureType")
@@ -28,10 +30,16 @@ def bootstrap_type_models(apps, schema_editor):
                    "First Order & Predictive Processing",
                    "Other"]:
         Theory.objects.get_or_create(name=theory)
-    Theory.objects.get_or_create(name="GNW", parent="Global Workspace")
-    Theory.objects.get_or_create(name="IIT", parent="Integrated Information")
-    Theory.objects.get_or_create(name="HOT", parent="Higher Order Thought")
-    Theory.objects.get_or_create(name="RPT", parent="First Order & Predictive Processing")
+
+    global_workspace_theory = Theory.objects.get(name='Global Workspace')
+    integrated_information = Theory.objects.get(name='Integrated Information')
+    higher_order_thought = Theory.objects.get(name='Higher Order Thought')
+    first_order_and_predictive_processing = Theory.objects.get(name='First Order & Predictive Processing')
+
+    Theory.objects.get_or_create(name='GNW', parent=global_workspace_theory)
+    Theory.objects.get_or_create(name='IIT', parent=integrated_information)
+    Theory.objects.get_or_create(name='HOT', parent=higher_order_thought)
+    Theory.objects.get_or_create(name='RPT', parent=first_order_and_predictive_processing)
 
     ModalityType = apps.get_model("studies", "ModalityType")
     for modality in ["Auditory",
@@ -41,400 +49,89 @@ def bootstrap_type_models(apps, schema_editor):
                      "Visual"]:
         ModalityType.objects.get_or_create(name=modality)
 
-    StimulusCategory = apps.get_model("studies", "StimulusCategory")
-    for category in ["Animals",
-                     "Artificial Scenes",
-                     "Bodies",
-                     "Checkerboard",
-                     "Chinese Pictographs",
-                     "Color",
-                     "Contours",
-                     "Digits",
-                     "Drawings",
-                     "Electric Stimulation",
-                     "Epithelium Stimulation",
-                     "Faces",
-                     "Figure-Ground",
-                     "Geometric Shapes",
-                     "Gratings/Kanizsa",
-                     "Landolt",
-                     "Letters",
-                     "Light Flashes",
-                     "Motion",
-                     "Music",
-                     "Natural Scenes",
-                     "Nociceptive stimulation",
-                     "Noise",
-                     "None",
-                     "Numbers",
-                     "Objects",
-                     "Pacman",
-                     "Patterns",
-                     "Pneumatic stimulations",
-                     "Real Objects",
-                     "Sexual Images",
-                     "Sounds",
-                     "Speech",
-                     "Symbols",
-                     "Textures",
-                     "Verniers",
-                     "Videos",
-                     "Virtual Reality Objects",
-                     "Words"]:
-        StimulusCategory.objects.get_or_create(name=category)
-
-    for sub_category in ["Arrows",
-                         "Motion",
-                         "Lines",
-                         "Disc",
-                         "Dots",
-                         "Rings",
-                         "Bars Circles",
-                         "Rectangles",
-                         "Squares",
-                         "Diamonds"]:
-        StimulusSubCategory.objects.get_or_create(name=sub_category, parent="Geometric Shapes")
-
-    StimulusSubCategory.objects.get_or_create(name="Gabor", parent="Gratings/Kanizsa")
-
-    for sub_category in ["Houses",
-                         "Clocks",
-                         "Domino"]:
-        StimulusSubCategory.objects.get_or_create(name=sub_category, parent="Objects")
-
-    for sub_category in ["Houses",
-                         "Road",
-                         "Moon"]:
-        StimulusSubCategory.objects.get_or_create(name=sub_category, parent="Virtual Reality Objects")
-
     Technique = apps.get_model("studies", "Technique")
-    for technique in ["Ca2 Imaging",
-                      "Computational Modelling",
-                      "EEG",
-                      "fMRI",
-                      "Intracranial EEG",
-                      "Intracranial Stimulation",
-                      "MEG",
-                      "MRI",
-                      "PET",
-                      "tACS",
-                      "tDCS",
-                      "TMS"]:
+    for technique in techniques:
         Technique.objects.get_or_create(name=technique)
 
     TaskType = apps.get_model("studies", "TaskType")
-    for task_type in ["No Task",
-                      "Discrimination",
-                      "Detection",
-                      "Go/No-Go",
-                      "Deviant Detection",
-                      "Stimulus Judgement",
-                      "Memory",
-                      "Change Detection",
-                      "Counting Task",
-                      "Delayed Task",
-                      "Task Switching",
-                      "NBack",
-                      "Dual Task",
-                      "Awareness Report",
-                      "Confidence Report",
-                      "Binocular Rivalry Task",
-                      "Visual Search",
-                      "Identification",
-                      "NA",
-                      "Driving",
-                      "Imagination",
-                      "Task Switching",
-                      "Mental Rotation",
-                      "Color Matching",
-                      "Mood",
-                      "Mathematics"]:
+    for task_type in task_types:
         TaskType.objects.get_or_create(name=task_type)
 
     Paradigm = apps.get_model("studies", "Paradigm")
-    for paradigm in ["Abnormal Contents of Consciousness",
-                     "Alcohol Consumption",
-                     "Anesthesia",
-                     "Attentional Manipulation",
-                     "Caffeine Consumption",
-                     "Case Study",
-                     "Change Blindness",
-                     "Cognitive Tasks",
-                     "Competition (Binocular)",
-                     "Competition (Monocular)",
-                     "Computational Modelling",
-                     "Contour Integration",
-                     "Dichoptic Masking",
-                     "Direct Stimulation",
-                     "Disorders of Consciousness",
-                     "Drowsiness",
-                     "Emotion",
-                     "Expectation",
-                     "Familiarity",
-                     "Family Nurture Intervention",
-                     "Figure-Ground",
-                     "Filling In",
-                     "Fusion (Color)",
-                     "Genetics",
-                     "Illusions",
-                     "Imagination",
-                     "Lifespan",
-                     "Locked In Syndrome",
-                     "Masking",
-                     "Mirror Masking",
-                     "Motion Detection",
-                     "Motion induced Blindness",
-                     "N-Back",
-                     "Pain",
-                     "Passive Exposure",
-                     "Pop out",
-                     "Psychedelic Drugs",
-                     "Repetition Suppression",
-                     "Resting State",
-                     "Reward",
-                     "Sedation",
-                     "Size Constancy",
-                     "Sleep",
-                     "Sperling Like",
-                     "Stimulus Degradation",
-                     "SWIFT",
-                     "Task Relevance",
-                     "Visual Persistence",
-                     "Visual Search"]:
+    for paradigm in paradigms["parent_paradigms"]:
         Paradigm.objects.get_or_create(name=paradigm)
 
-    for paradigm in ["Amusia",
-                     "Blindsight",
-                     "Conversion Deafness",
-                     "Hypoactive delirium",
-                     "Neglect",
-                     "Parkinson Disease",
-                     "Schizophrenia",
-                     "Synesthesia",
-                     "Tinnitus",
-                     "Visual Extinction"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Abnormal Contents of Consciousness")
+    for paradigm in paradigms["Abnormal_Contents_of_Consciousness"]:
+        abnormal_contents_of_consciousness = Paradigm.objects.get(name='Abnormal Contents of Consciousness')
+        Paradigm.objects.get_or_create(name=paradigm, parent=abnormal_contents_of_consciousness)
 
-    for paradigm in ["Dexmedetomidine",
-                     "Dextromethorphan",
-                     "Enflurane",
-                     "Halothane",
-                     "Isoflurane",
-                     "Ketamine",
-                     "Medetomidine",
-                     "Midazolam",
-                     "Pancuronium",
-                     "Propofol",
-                     "Sevoflurane",
-                     "Sufentanil",
-                     "Urethane",
-                     "Xenon"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Anesthesia")
+    for paradigm in paradigms["Anesthesia"]:
+        anesthesia = Paradigm.objects.get(name='Anesthesia')
+        Paradigm.objects.get_or_create(name=paradigm, parent=anesthesia)
 
-    for paradigm in ["Attentional Blink",
-                     "Auditory Cueing",
-                     "Crowding",
-                     "Dichotic Listening",
-                     "Distractor induced blindness",
-                     "Dual Task",
-                     "Inattentional Blindness",
-                     "Selective Attention",
-                     "Spatial Cueing"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Attentional Manipulation")
+    for paradigm in paradigms["Attentional_Manipulation"]:
+        attentional_manipulation = Paradigm.objects.get(name='Attentional Manipulation')
+        Paradigm.objects.get_or_create(name=paradigm, parent=attentional_manipulation)
 
-    for paradigm in ["Bilateral Frontal Affectation",
-                     "Blindsight (Case Study)",
-                     "Conversion Deafness (Case Study)",
-                     "Locked In Syndrome (Case Study)",
-                     "Posterior Callosal Section",
-                     "Tinnitus (Case Study)",
-                     "Unresponsive Wakefulness Syndrome (Case Study)",
-                     "Visual Extinction (Case Study)"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Case Study")
+    for paradigm in paradigms["Case_Study"]:
+        case_study = Paradigm.objects.get(name='Case Study')
+        Paradigm.objects.get_or_create(name=paradigm, parent=case_study)
 
-    for paradigm in ["Executive Control",
-                     "Flankers Task",
-                     "Language",
-                     "Memory",
-                     "Task Switching",
-                     "Working Memory"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Cognitive Tasks")
+    for paradigm in paradigms["Cognitive_Tasks"]:
+        cognitive_tasks = Paradigm.objects.get(name='Cognitive Tasks')
+        Paradigm.objects.get_or_create(name=paradigm, parent=cognitive_tasks)
 
-    for paradigm in ["b-CFS",
-                     "Binocular Rivalry",
-                     "Bistable percepts",
-                     "CFS",
-                     "Flash Supression"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Competition (Binocular)")
+    for paradigm in paradigms["Competition_Binocular"]:
+        competition_binocular = Paradigm.objects.get(name='Competition (Binocular)')
+        Paradigm.objects.get_or_create(name=paradigm, parent=competition_binocular)
 
-    for paradigm in ["Intracranial Stimulation",
-                     "Olfactory Epithelium Stimulation",
-                     "tACS",
-                     "tDCS",
-                     "TMS",
-                     "Deep Brain Stimulation"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Direct Stimulation")
+    for paradigm in paradigms["Direct_Stimulation"]:
+        direct_stimulation = Paradigm.objects.get(name='Direct Stimulation')
+        Paradigm.objects.get_or_create(name=paradigm, parent=direct_stimulation)
 
-    for paradigm in ["Coma",
-                     "Emergence from MCS",
-                     "Epilepsy",
-                     "Minimal Consciousness State",
-                     "Seizures / Unclassified DOC",
-                     "Unresponsive Wakefulness Syndrome"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Disorders of Consciousness")
+    for paradigm in paradigms["Disorders_of_Consciousness"]:
+        disorders_of_consciousness = Paradigm.objects.get(name='Disorders of Consciousness')
+        Paradigm.objects.get_or_create(name=paradigm, parent=disorders_of_consciousness)
 
     for paradigm in ["Emotional",
                      "Oddball",
                      "Prior Exposure"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Expectation")
+        expectation = Paradigm.objects.get(name='Expectation')
+        Paradigm.objects.get_or_create(name=paradigm, parent=expectation)
 
     for paradigm in ["Own Name",
                      "Prior Exposure (Familiarity)",
                      "Self-Face"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Familiarity")
+        familiarity = Paradigm.objects.get(name='Familiarity')
+        Paradigm.objects.get_or_create(name=paradigm, parent=familiarity)
 
-    for paradigm in ["Apparent Motion",
-                     "Benham's top Illusion",
-                     "Flash-grab",
-                     "Illusory Limb Movements",
-                     "Illusory Motion Reversal",
-                     "Illusory Rebound Motion",
-                     "Implied Motion",
-                     "SAM",
-                     "Kanizsa",
-                     "Moon Illusion",
-                     "Octave Illusion",
-                     "Pinna-Brelstaff",
-                     "Proprioceptive Illusion",
-                     "Tilt Illusion",
-                     "Verbal Transformation",
-                     "Zwicker Tone"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Illusions")
+    for paradigm in paradigms["Illusions"]:
+        illusions = Paradigm.objects.get(name='Illusions')
+        Paradigm.objects.get_or_create(name=paradigm, parent=illusions)
 
-    # TODO: is this correct classification? there is ambiguity in parameters list
-    Paradigm.objects.get_or_create(name="Motoric", parent="Imagination")
+    # is this correct classification? there is some ambiguity in the parameters list
+    imagination = Paradigm.objects.get(name='Imagination')
+    Paradigm.objects.get_or_create(name="Motoric", parent=imagination)
 
-    for paradigm in ["Backward Masking"
-                     "Dynamic Masking"
-                     "Forward Masking"
-                     "Metacontrast Masking"
-                     "Object Substitution Masking"
-                     "Paracontrast Masking"
-                     "Target Masking"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Masking")
+    for paradigm in paradigms["Masking"]:
+        masking = Paradigm.objects.get(name='Masking')
+        Paradigm.objects.get_or_create(name=paradigm, parent=masking)
 
     for paradigm in ["Ketamine (Psychedelic Drugs)",
                      "Psilocybin"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Psychedelic Drugs")
+        psychedelic_drugs = Paradigm.objects.get(name='Psychedelic Drugs')
+        Paradigm.objects.get_or_create(name=paradigm, parent=psychedelic_drugs)
 
-    for paradigm in ["Chloral Hydrate",
-                     "Dexmedetomidine (Sedation)",
-                     "Dextromethorphan (Sedation)",
-                     "Halothane (Sedation)",
-                     "Isoflurane (Sedation)",
-                     "Ketamine (Sedation)",
-                     "Lorazepam",
-                     "Medetomidine (Sedation)",
-                     "Midazolam (Sedation)",
-                     "Nitrous Oxide",
-                     "Propofol (Sedation)",
-                     "Scopolamine",
-                     "Urethane (Sedation)"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Sedation")
+    for paradigm in paradigms["Sedation"]:
+        sedation = Paradigm.objects.get(name='Sedation')
+        Paradigm.objects.get_or_create(name=paradigm, parent=sedation)
 
     for paradigm in ["Brief Presentation",
                      "Coherence Reduction",
                      "Intensity Reduction",
                      "Noise Induction"]:
-        Paradigm.objects.get_or_create(name=paradigm, parent="Stimulus Degradation")
-
-    FindingTagFamily = apps.get_model("studies", "FindingTagFamily")
-    for family in ["Temporal",
-                   "Spatial Areas",
-                   "Frequency",
-                   "miscellaneous (no Family)"]:
-        FindingTagFamily.objects.get_or_create(name=family)
-
-    FindingTagType = apps.get_model("studies", "FindingTagType")
-    for type in ["M130"
-                 "M280"
-                 "M70"
-                 "N1"
-                 "N140"
-                 "N150"
-                 "N170"
-                 "N2"
-                 "N2pc"
-                 "N400"
-                 "P1"
-                 "P2"
-                 "P300"
-                 "VAN"
-                 "CNV"
-                 "Recurrent Processing"
-                 "MMN"
-                 "ART"
-                 "Early Components"
-                 "Late Components"
-                 "SN"
-                 "Prestimulus Timing"
-                 "SPCN"
-                 "ERN"
-                 "Pe"
-                 "EPN"
-                 "Border Difference"
-                 "Figure Ground difference"
-                 "Change related positivity"
-                 "AAN"
-                 "Intermediate Components"]:
-        FindingTagType.objects.get_or_create(name=type, family="Temporal")
-
-    for type in ["Frontal",
-                 "Parietal",
-                 "Posterior",
-                 "Temporal",
-                 "Ventral Stream",
-                 "V1",
-                 "A1",
-                 "Dorsal Stream",
-                 "DMN",
-                 "V4",
-                 "S1",
-                 "Subcortical structures",
-                 "Uncinate Fasciculus",
-                 "Dorsal Attention Network",
-                 "Visual Network"]:
-        FindingTagType.objects.get_or_create(name=type, family="Spatial Areas")
-
-    for type in ["Alpha",
-                 "Beta",
-                 "Delta",
-                 "Gamma",
-                 "Theta"]:
-        FindingTagType.objects.get_or_create(name=type, family="Frequency")
-
-    for type in ["Acetylcholine",
-                 "Anatomic Functional connectivity similarity",
-                 "Anterior Posterior Connectivity",
-                 "Centrality",
-                 "CFC",
-                 "Complexity",
-                 "Cortical Subcortical connectivity",
-                 "Metacognition",
-                 "Motor areas connectivity",
-                 "PHI Approximation",
-                 "Plasticity",
-                 "Slow Waves Activity",
-                 "Small Worldness",
-                 "SSVEP",
-                 "Temporal Occipital connectivity",
-                 "Temporal Parietal Connectivity",
-                 "Ultra slow fluctuations",
-                 "Uncinate Fasciculus",
-                 "Variability",
-                 "Intrinsic Ignition",
-                 "Local Synchronization"]:
-        FindingTagType.objects.get_or_create(name=type, family="miscellaneous (no Family)")
+        stimulus_degradation = Paradigm.objects.get(name='Stimulus Degradation')
+        Paradigm.objects.get_or_create(name=paradigm, parent=stimulus_degradation)
 
 
 class Migration(migrations.Migration):

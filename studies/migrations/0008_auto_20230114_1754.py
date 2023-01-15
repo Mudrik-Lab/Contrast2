@@ -16,7 +16,7 @@ def bootstrap_type_models(apps, schema_editor):
     FindingTagType = apps.get_model("studies", "FindingTagType")
     for finding_tag_type in finding_tag_types['Temporal']:
         temporal = FindingTagFamily.objects.get(name='Temporal')
-        # FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
+        FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
 
     for finding_tag_type in finding_tag_types['Spatial_Areas']:
         spatial_areas = FindingTagFamily.objects.get(name='Spatial Areas')

@@ -6,34 +6,6 @@ from configuration.initial_setup import finding_tag_types, stimulus_category, st
 
 
 def bootstrap_type_models(apps, schema_editor):
-    FindingTagFamily = apps.get_model("studies", "FindingTagFamily")
-    for finding_tag_family in ["Temporal",
-                               "Spatial Areas",
-                               "Frequency",
-                               "miscellaneous (no Family)"]:
-        FindingTagFamily.objects.get_or_create(name=finding_tag_family)
-
-    FindingTagType = apps.get_model("studies", "FindingTagType")
-    for finding_tag_type in finding_tag_types['Temporal']:
-        temporal = FindingTagFamily.objects.get(name='Temporal')
-        FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
-
-    for finding_tag_type in finding_tag_types['Spatial_Areas']:
-        spatial_areas = FindingTagFamily.objects.get(name='Spatial Areas')
-        FindingTagType.objects.get_or_create(name=finding_tag_type, family=spatial_areas)
-
-    for finding_tag_type in ["Alpha",
-                             "Beta",
-                             "Delta",
-                             "Gamma",
-                             "Theta"]:
-        frequency = FindingTagFamily.objects.get(name='Frequency')
-        FindingTagType.objects.get_or_create(name=finding_tag_type, family=frequency)
-
-    for finding_tag_type in finding_tag_types['miscellaneous']:
-        miscellaneous = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
-        FindingTagType.objects.get_or_create(name=finding_tag_type, family=miscellaneous)
-
     StimulusCategory = apps.get_model("studies", "StimulusCategory")
     for category in stimulus_category:
         StimulusCategory.objects.get_or_create(name=category)

@@ -5,11 +5,13 @@ from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
 
 
 class FindingTagFamily(models.Model):
-    name = models.CharField(null=False, blank=False, max_length=50)
+    name = models.CharField(null=False, blank=False, max_length=250)
 
 
 class FindingTagType(models.Model):
-    name = models.CharField(null=False, blank=False, max_length=50)
+    name = models.CharField(null=False, blank=False, max_length=250)
+    family = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
+                               to=FindingTagFamily)
 
 
 class FindingTag(models.Model):

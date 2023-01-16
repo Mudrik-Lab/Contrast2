@@ -7,18 +7,3 @@ class Technique(models.Model):
     def __str__(self):
         return self.name
 
-    """
-    TODO: data migration adding all options
-    Ca2 Imaging
-    Computational Modelling
-    EEG
-    fMRI
-    Intracranial EEG
-    Intracranial Stimulation
-    MEG
-    MRI
-    PET
-    tACS
-    tDCS
-    TMS
-    """

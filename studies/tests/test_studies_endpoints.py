@@ -1,15 +1,15 @@
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
 from approval_process.choices import ApprovalChoices
 from approval_process.models import ApprovalProcess
-from studies.models import Study
+from studies.tests.base import BaseTestCase
 
 
 # Create your tests here.
-class StudiesViewSetTestCase(APITestCase):
+
+
+class StudiesViewSetTestCase(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
 
@@ -74,16 +74,6 @@ class StudiesViewSetTestCase(APITestCase):
         self.assertEqual(data["count"], 1)
 
         self.assertEqual(data["results"][0]["title"], "rejected_title")
-
-    def given_study_exists(self, **kwargs):
-        default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
-                             corresponding_author_email="test@example.com",
-                             approval_status=ApprovalChoices.APPROVED, key_words=["key", "word"],
-                             link="http://dontgohere.com",
-                             affiliations="some affiliations", countries=["IL"])
-        study_params = {**default_study, **kwargs}
-        study, created = Study.objects.get_or_create(**study_params)
-        return study
 
     def given_study_rejected_with_reason(self, study, exclusion_reason: str):
         study.approval_process = ApprovalProcess.objects.create(exclusion_reason=exclusion_reason)

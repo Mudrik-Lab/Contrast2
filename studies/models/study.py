@@ -24,17 +24,15 @@ class Study(models.Model):
                                             on_delete=SET_NULL)
     approval_status = models.IntegerField(choices=ApprovalChoices.choices, null=False, blank=False,
                                           default=ApprovalChoices.PENDING)
-    key_words = ArrayField(models.CharField(max_length=50, blank=False, null=False))
-    references = models.TextField(null=True, blank=True)
+    authors_key_words = ArrayField(models.CharField(max_length=50, blank=False, null=False))
     funding = models.TextField(null=True, blank=True)
     source_title = models.CharField(null=True, blank=True, max_length=200)
     abbreviated_source_title = models.CharField(null=True, blank=True, max_length=200)
-    link = models.URLField(null=False, blank=False)
-    publisher = models.CharField(null=True, blank=True, max_length=100)
-    abstract = models.TextField(null=True, blank=True)
     countries = ArrayField(CountryField(null=False, blank=False)) # Wondering if this is a good modeling, but we'll see
     affiliations = models.TextField(null=False, blank=False)
 
+    def __str__(self):
+        return f"{self.id} {self.title}"
     def save(
             self, force_insert=False, force_update=False, using=None, update_fields=None
     ):

@@ -54,11 +54,12 @@ We are currently using postgres. You need to set up a user,
    ```
    * create a database, a user and a role
     ```
-    CREATE DATABASE contrast-api_db;
-    CREATE USER contrast-api_user WITH PASSWORD 'contrast-api_pass';
-    ALTER ROLE contrast-api_user SET client_encoding TO 'utf8';
-    GRANT ALL PRIVILEGES ON DATABASE contrast-api_db TO contrast-api_user;
-    ALTER ROLE contrast-api_user CREATEDB;
+    CREATE DATABASE contrast_api_db;
+    CREATE USER contrast_api_user WITH PASSWORD 'contrast_api_pass';
+    ALTER ROLE contrast_api_user SET client_encoding TO 'utf8';
+    GRANT ALL PRIVILEGES ON DATABASE contrast_api_db TO contrast_api_user;
+    ALTER ROLE contrast_api_user CREATEDB;
+    ALTER DATABASE contrast_api_db OWNER TO contrast_api_user;
    ```
    * to exit postgres cli:   
    `Ctrl+D`

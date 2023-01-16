@@ -1,4 +1,4 @@
-from django.db.models import TextChoices
+from django.db.models import TextChoices, IntegerChoices
 from django.utils.translation import gettext_lazy as _
 
 
@@ -31,7 +31,7 @@ class ReportingChoices(TextChoices):
 class TheoryDrivenChoices(TextChoices):
     DRIVEN = "driven", _("Driven")
     MENTIONING = "mentioning", _("Mentioning")
-    BOTH = "both", _("Both")
+    POST_HOC = "post-hoc", _("Post hoc")
 
 
 class CorrelationSignChoices(TextChoices):
@@ -50,3 +50,9 @@ class AnalysisTypeChoices(TextChoices):
     MICROSTATES = "microstates", _("Microstates")
     CD = "cd", _("CD - correlation dimension")
     CLUSTERING = "clustering", _("Clustering")
+
+
+class ExperimentTypeChoices(IntegerChoices):
+    NEUROSCIENTIFIC = 1
+    BEHAVIORAL = 2
+    BOTH = 3

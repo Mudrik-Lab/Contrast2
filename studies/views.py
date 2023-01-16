@@ -5,7 +5,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.graph_data_processors import NationOfConsciousnessDataProcessor, AcrossTheYearsGraphDataProcessor
+from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
+from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.models import Study, Experiment
 from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
     NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer

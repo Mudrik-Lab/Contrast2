@@ -1,22 +1,10 @@
-from typing import Union, List, Iterable
-
-from django.contrib.postgres.aggregates import ArrayAgg
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, Func, F, Count, OuterRef, Sum, Value
+from django.db.models import QuerySet, OuterRef, F, Count
 from django.db.models.functions import JSONObject
 
-from studies.choices import InterpretationsChoices
-from studies.models import Study, Experiment, Interpretation, Paradigm, Sample, Task, Stimulus, ConsciousnessMeasure, \
-    Technique, Measure, FindingTag, MeasureType, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, ModalityType, \
-    TaskType, FindingTagFamily, FindingTagType
-
-
-class BaseProcessor:
-    def __init__(self, experiments: QuerySet[Experiment], **kwargs):
-        self.experiments:QuerySet[Experiment] = experiments
-
-    def process(self):
-        raise NotImplementedError()
+from studies.models import Experiment, Paradigm, Sample, FindingTagType, FindingTagFamily, TaskType, ModalityType, \
+    ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType
+from studies.processors.base import BaseProcessor
 
 
 class AcrossTheYearsGraphDataProcessor(BaseProcessor):
@@ -171,33 +159,3 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
             .values("series_name", "series") \
             .order_by("series_name")
         return qs
-
-
-class NationOfConsciousnessDataProcessor(BaseProcessor):
-    def process(self):
-        """
-        do a transpose "experiment per country in study" with unset on the array field
-        aggregate on country and theory relation
-
-
-        """
-        # First we'll get an experiment per country
-        experiments_by_countries_and_theories = self.resolve_queryset()
-
-        aggregate = self.aggregate(experiments_by_countries_and_theories)
-
-        return aggregate
-
-    def resolve_queryset(self):
-        experiments_by_countries_and_theories = Interpretation.objects \
-            .filter(type=InterpretationsChoices.PRO,
-                    experiment__in=self.experiments) \
-            .select_related("experiment", "experiment__study") \
-            .values("experiment", "experiment__study", "theory__parent__name") \
-            .annotate(country=Func(F("experiment__study__countries"),
-                                   function='unnest'))
-        return experiments_by_countries_and_theories
-
-    def aggregate(self, qs):
-        # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-        return qs.values("country", "theory__parent__name").annotate(count=Count("id")).order_by("-count", "country")

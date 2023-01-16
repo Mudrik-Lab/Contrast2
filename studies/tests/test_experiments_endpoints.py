@@ -1,11 +1,7 @@
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
-from rest_framework.test import APITestCase
 
-from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
-    ExperimentTypeChoices
-from studies.models import Experiment, Theory, Interpretation
+from studies.choices import ReportingChoices, InterpretationsChoices
 from studies.tests.base import BaseTestCase
 
 
@@ -28,9 +24,9 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         returns experiments grouped by country and interpretations (positive to theory)
         """
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
-                                                DOI="10.1016/j.cortex.2017.07.011")
+                                                DOI="10.1016/j.cortex.2017.07.011", year=2002)
         british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
-                                                        DOI="10.1016/j.cortex.2017.07.012")
+                                                        DOI="10.1016/j.cortex.2017.07.012", year=2004)
 
         gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
         rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
@@ -75,12 +71,26 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         self.assertEqual(third_result["count"], 1)
         self.assertEqual(third_result["theory"], "RPT")
 
-    def test_publications_by_theory_family_data(self):
+    def test_journals_by_theory_family_data(self):
         """
-        provide graph_type=publications_by_theory, min_experiments?=int, theory=GNW
-        group by publications names
+
         """
-        pass
+        israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
+                                                DOI="10.1016/j.cortex.2017.07.011", year=2002)
+        british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
+                                                        DOI="10.1016/j.cortex.2017.07.012", year=2004)
+        gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
+        rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
+        gnw_child_theory = self.given_theory_exists(parent=gnw_parent_theory, name="GNW_child")
+        rpt_child_theory = self.given_theory_exists(parent=rpt_parent_theory, name="RPT_child")
+        israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
+                                                                          is_reporting=ReportingChoices.NO_REPORT)
+        israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
+                                                                            finding_description="brave new world",
+                                                                            is_reporting=ReportingChoices.NO_REPORT)
+        british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study,
+                                                                                  is_reporting=ReportingChoices.BOTH,
+                                                                                    )
 
     def test_frequencies_graph(self):
         pass
@@ -94,29 +104,3 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         hint: use request.query_params.getlist
         """
         pass
-
-    def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
-        default_experiment = dict(study=study,
-                                  finding_description="look what we found",
-                                  is_reporting=ReportingChoices.NO_REPORT,
-                                  theory_driven=TheoryDrivenChoices.POST_HOC,
-                                  type=ExperimentTypeChoices.NEUROSCIENTIFIC,
-                                  type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
-
-        experiment_params = {**default_experiment, **kwargs}
-        experiment, created = Experiment.objects.get_or_create(**experiment_params)
-        return experiment
-
-    def reverse_with_query_params(self, url_name: str, *args, **queryparams) -> str:
-        params = "&".join([f"{k}={v}" for k, v in queryparams.items()])
-        url = reverse(url_name, args=args)
-        url = f'{url}?{params}'
-        return url
-
-    def given_theory_exists(self, name:str, parent:Theory = None):
-        theory, created = Theory.objects.get_or_create(parent=parent, name=name)
-        return theory
-
-    def given_interpretation_exist(self, experiment:Experiment, theory:Theory, type: str):
-        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=type)
-        return interpretation

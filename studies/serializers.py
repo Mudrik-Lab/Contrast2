@@ -19,14 +19,10 @@ class StudySerializer(serializers.ModelSerializer):
                   "year",
                   "corresponding_author_email",
                   "approval_status",
-                  "key_words",
-                  "references",
+                  "authors_key_words",
                   "funding",
                   "source_title",
                   "abbreviated_source_title",
-                  "link",
-                  "publisher",
-                  "abstract",
                   "countries",
                   "affiliations"
                   ]
@@ -46,3 +42,13 @@ class NationOfConsciousnessGraphSerializer(serializers.Serializer):
     country = serializers.CharField()
     count = serializers.IntegerField()
     theory = serializers.CharField(source="theory__parent__name")
+
+
+class YearlySeriesSerializer(serializers.Serializer):
+    year = serializers.IntegerField()
+    value = serializers.IntegerField()
+
+
+class AcrossTheYearsGraphSerializer(serializers.Serializer):
+    series_name = serializers.CharField()
+    series = YearlySeriesSerializer(many=True)

@@ -6,7 +6,6 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studies', '0007_rename_key_words_study_authors_key_words_and_more'),
         ('studies', '0009_alter_findingtagfamily_name_and_more'),
     ]
 

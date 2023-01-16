@@ -1,17 +1,8 @@
-from typing import Union, List, Iterable
-
-from django.db.models import QuerySet, Func, F, Count
+from django.db.models import Func, F, Count
 
 from studies.choices import InterpretationsChoices
-from studies.models import Study, Experiment, Interpretation
-
-
-class BaseProcessor:
-    def __init__(self, experiments: QuerySet[Experiment]):
-        self.experiments = experiments
-
-    def process(self):
-        raise NotImplementedError()
+from studies.models import Interpretation
+from studies.processors.base import BaseProcessor
 
 
 class NationOfConsciousnessDataProcessor(BaseProcessor):
@@ -23,8 +14,6 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
 
         """
         # First we'll get an experiment per country
-        experiments_by_countries = self.experiments.annotate(country=Func(F("study__countries"),
-                                                                          function="unnest"))
         experiments_by_countries_and_theories = self.resolve_queryset()
 
         aggregate = self.aggregate(experiments_by_countries_and_theories)

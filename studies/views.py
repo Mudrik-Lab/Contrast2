@@ -1,14 +1,15 @@
 from django.shortcuts import render
-from rest_framework import mixins
+from rest_framework import mixins, status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.graph_data_processors import NationOfConsciousnessDataProcessor
+from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
+from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.models import Study, Experiment
 from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
-    NationOfConsciousnessGraphSerializer
+    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer
 
 
 # Create your views here.
@@ -25,6 +26,10 @@ class ApprovedStudiesViewSet(
         approval_status=ApprovalChoices.APPROVED)  # TODO migrate this to custom manager
 
 
+class GraphProcessNotRegisteredException(Exception):
+    pass
+
+
 class ExperimentsViewSet(mixins.RetrieveModelMixin,
                          mixins.ListModelMixin,
                          GenericViewSet):
@@ -33,11 +38,14 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     # TODO: handle creation
     queryset = Experiment.objects.select_related("study").filter(study__approval_status=ApprovalChoices.APPROVED)
     graph_serializers = {
-        "nations_of_consciousness": NationOfConsciousnessGraphSerializer
+        "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
+        "across_the_years": AcrossTheYearsGraphSerializer
     }
 
     graph_processors = {
-        "nations_of_consciousness": NationOfConsciousnessDataProcessor
+        "nations_of_consciousness": NationOfConsciousnessDataProcessor,
+        "across_the_years": AcrossTheYearsGraphDataProcessor
+
     }
 
     def list(self, request, *args, **kwargs):
@@ -58,11 +66,13 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     def graph(self, request, graph_type, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         graph_data_processor = self.graph_processors.get(graph_type)
+        if graph_data_processor is None:
+            raise GraphProcessNotRegisteredException(graph_type)
 
-        graph_data = graph_data_processor(queryset).process()
+        graph_data = graph_data_processor(queryset, **request.query_params).process()
         serializer = self.get_serializer_by_graph_type(graph_type, graph_data, many=True)
 
-        return Response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class ExcludedStudiesViewSet(mixins.RetrieveModelMixin,

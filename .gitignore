@@ -14,6 +14,8 @@ __pycache__
 /created_files
 /data
 
+
 studies/data/*.csv
 studies/data/*.xls
 studies/data/*.xlsx
+.DS_Store

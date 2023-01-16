@@ -37,6 +37,7 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     serializer_class = ExperimentSerializer
     # TODO: handle creation
     queryset = Experiment.objects.select_related("study").filter(study__approval_status=ApprovalChoices.APPROVED)
+    filterset_fields = ("is_reporting", "theory_driven", "type_of_consciousness")
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
         "across_the_years": AcrossTheYearsGraphSerializer

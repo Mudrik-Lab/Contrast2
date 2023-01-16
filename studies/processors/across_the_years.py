@@ -1,5 +1,5 @@
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Count
+from django.db.models import QuerySet, OuterRef, F, Count, Func
 from django.db.models.functions import JSONObject
 
 from studies.models import Experiment, Paradigm, Sample, FindingTagType, FindingTagFamily, TaskType, ModalityType, \
@@ -156,6 +156,10 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
 
         qs = queryset \
             .values("series_name").annotate(series=ArraySubquery(subquery)) \
+            .annotate(field_len=Func(F('series'), function='CARDINALITY'))\
+            .filter(field_len__gt=0)\
             .values("series_name", "series") \
             .order_by("series_name")
+        # Note we're filtering out empty timeseries with the cardinality option
         return qs
+

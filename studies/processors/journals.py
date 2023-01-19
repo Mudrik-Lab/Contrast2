@@ -6,8 +6,11 @@ from studies.processors.base import BaseProcessor
 
 
 class JournalsGraphDataProcessor(BaseProcessor):
+    """
+    This expects as input the ID of the parent theory..
+    """
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
-        self.theory = kwargs.pop("theory")
+        self.theory = kwargs.pop("theory")[0]
 
         super().__init__(experiments=experiments, **kwargs)
 
@@ -21,7 +24,7 @@ class JournalsGraphDataProcessor(BaseProcessor):
     def get_queryset(self):
         experiments_by_theory = Interpretation.objects \
             .filter(type=InterpretationsChoices.PRO,
-                    theory__parent__name=self.theory,
+                    theory__parent_id=self.theory,
                     experiment__in=self.experiments) \
             .select_related("experiment", "experiment__study") \
             .values("experiment", "experiment__study") \
@@ -30,4 +33,10 @@ class JournalsGraphDataProcessor(BaseProcessor):
 
     def aggregate(self, qs):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-        return qs.values("journal").annotate(count=Count("id")).order_by("-count", "journal")
+        return qs.values("journal").annotate(count=Count("id")) \
+            .annotate(value=F("count"),
+                      key=F("journal"))\
+            .values("value", "key")\
+            .order_by("-value", "key")
+
+

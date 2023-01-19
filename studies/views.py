@@ -13,7 +13,7 @@ from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.models import Study, Experiment
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
-    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer
+    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer, BarSerializer
 
 
 # Create your views here.
@@ -44,7 +44,8 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     filterset_class = ExperimentFilter
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
-        "across_the_years": AcrossTheYearsGraphSerializer
+        "across_the_years": AcrossTheYearsGraphSerializer,
+        "journals": BarSerializer,
     }
 
     graph_processors = {
@@ -62,14 +63,14 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
 
         return super().list(request=request, *args, **kwargs)
 
-    def get_serializer_by_graph_type(self, graph_type, *args, **kwargs):
+    def get_serializer_by_graph_type(self, graph_type, data, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
         serializer_class = self.graph_serializers.get(graph_type)
         kwargs.setdefault('context', self.get_serializer_context())
-        return serializer_class(*args, **kwargs)
+        return serializer_class(instance=data, *args, **kwargs)
 
     def graph(self, request, graph_type, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -78,7 +79,7 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
             raise GraphProcessNotRegisteredException(graph_type)
 
         graph_data = graph_data_processor(queryset, **request.query_params).process()
-        serializer = self.get_serializer_by_graph_type(graph_type, graph_data, many=True)
+        serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

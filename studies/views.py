@@ -5,9 +5,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
+from studies.filters import ExperimentFilter
+from studies.processors.frequencies import FrequenciesGraphDataProcessor
+from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
 from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.models import Study, Experiment
+from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
     NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer
 
@@ -37,7 +41,7 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     serializer_class = ExperimentSerializer
     # TODO: handle creation
     queryset = Experiment.objects.select_related("study").filter(study__approval_status=ApprovalChoices.APPROVED)
-    filterset_fields = ("is_reporting", "theory_driven", "type_of_consciousness")
+    filterset_class = ExperimentFilter
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
         "across_the_years": AcrossTheYearsGraphSerializer
@@ -45,7 +49,10 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
 
     graph_processors = {
         "nations_of_consciousness": NationOfConsciousnessDataProcessor,
-        "across_the_years": AcrossTheYearsGraphDataProcessor
+        "across_the_years": AcrossTheYearsGraphDataProcessor,
+        "journals": JournalsGraphDataProcessor,
+        "frequencies": FrequenciesGraphDataProcessor,
+        "timings": TimingsGraphDataProcessor,
 
     }
 

@@ -54,8 +54,11 @@ class AcrossTheYearsGraphSerializer(serializers.Serializer):
     series = YearlySeriesSerializer(many=True)
 
 
-class BarSerializer(serializers.Serializer):
+class BarGraphSerializer(serializers.Serializer):
     value = serializers.IntegerField()
     key = serializers.CharField()
 
 
+class StackedBarGraphSerializer(serializers.Serializer):
+    series_name = serializers.CharField()
+    series = BarGraphSerializer(many=True)

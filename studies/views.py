@@ -11,9 +11,10 @@ from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
 from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.models import Study, Experiment
+from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
-    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer, BarSerializer
+    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer
 
 
 # Create your views here.
@@ -45,13 +46,15 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
         "across_the_years": AcrossTheYearsGraphSerializer,
-        "journals": BarSerializer,
+        "journals": BarGraphSerializer,
+        "parameters_distribution_bar":StackedBarGraphSerializer
     }
 
     graph_processors = {
         "nations_of_consciousness": NationOfConsciousnessDataProcessor,
         "across_the_years": AcrossTheYearsGraphDataProcessor,
         "journals": JournalsGraphDataProcessor,
+        "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
         "frequencies": FrequenciesGraphDataProcessor,
         "timings": TimingsGraphDataProcessor,
 

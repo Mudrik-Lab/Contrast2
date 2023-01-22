@@ -93,6 +93,7 @@ class ParadigmAdmin(ImportExportModelAdmin):
 class SampleAdmin(ImportExportModelAdmin):
     model = Sample
     list_filter = ("type",)
+    list_display = ("type", "total_size", "size_included", "experiment")
 
 
 class ModalityTypeAdmin(ImportExportModelAdmin):
@@ -127,6 +128,7 @@ class TechniqueAdmin(ImportExportModelAdmin):
 
 class TheoryAdmin(ImportExportModelAdmin):
     model = Theory
+    list_filter = ("parent__name", )
 
 
 admin.site.disable_action('delete_selected')  # Site wide

@@ -8,5 +8,8 @@ class Theory(models.Model):
     parent = models.ForeignKey(null=True, blank=True, to="studies.Theory", on_delete=CASCADE)
 
     def __str__(self):
-        return f"theory {self.name} parent {self.parent and self.parent.name}"
+        if self.parent is not None:
+            return f"{self.name} parent {self.parent and self.parent.name}"
+        else:
+            return f"{self.name}"
 # TODO: data migration to create existing theories

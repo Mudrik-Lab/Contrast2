@@ -7,11 +7,17 @@ from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
 class FindingTagFamily(models.Model):
     name = models.CharField(null=False, blank=False, max_length=250)
 
+    def __str__(self):
+        return self.name
+
 
 class FindingTagType(models.Model):
     name = models.CharField(null=False, blank=False, max_length=250)
     family = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
                                to=FindingTagFamily)
+
+    def __str__(self):
+        return self.name
 
 
 class FindingTag(models.Model):

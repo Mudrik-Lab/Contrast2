@@ -39,8 +39,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = Paradigm.objects.filter(parent__isnull=False).values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = Paradigm.objects.filter(parent__isnull=False).values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -51,8 +52,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = Sample.objects.values("type").distinct(
-            "type").annotate(series_name=F("type"))
+        breakdown_query = Sample.objects.values("type")\
+            .distinct().\
+            annotate(series_name=F("type"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -63,8 +65,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = FindingTagType.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = FindingTagType.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -75,8 +78,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = FindingTagFamily.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = FindingTagFamily.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -87,8 +91,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = Experiment.objects.values("is_reporting").distinct(
-            "is_reporting").annotate(series_name=F("is_reporting"))
+        breakdown_query = Experiment.objects.values("is_reporting")\
+            .distinct()\
+            .annotate(series_name=F("is_reporting"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -99,8 +104,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = Experiment.objects.values("theory_driven").distinct(
-            "theory_driven").annotate(series_name=F("theory_driven"))
+        breakdown_query = Experiment.objects.values("theory_driven")\
+            .distinct()\
+            .annotate(series_name=F("theory_driven"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -111,8 +117,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = TaskType.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = TaskType.objects.values("name")\
+            .distinct().\
+            annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -123,8 +130,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = StimulusCategory.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = StimulusCategory.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -135,8 +143,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = ModalityType.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = ModalityType.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -147,8 +156,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = ConsciousnessMeasurePhaseType.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = ConsciousnessMeasurePhaseType.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -159,8 +169,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = ConsciousnessMeasureType.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = ConsciousnessMeasureType.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -171,8 +182,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = Experiment.objects.values("type_of_consciousness").distinct(
-            "type_of_consciousness").annotate(series_name=F("type_of_consciousness"))
+        breakdown_query = Experiment.objects.values("type_of_consciousness")\
+            .distinct()\
+            .annotate(series_name=F("type_of_consciousness"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -182,8 +194,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .filter(experiment__techniques=OuterRef("pk"))\
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
-        breakdown_query = Technique.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = Technique.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -194,8 +207,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
-        breakdown_query = MeasureType.objects.values("name").distinct(
-            "name").annotate(series_name=F("name"))
+        breakdown_query = MeasureType.objects.values("name")\
+            .distinct()\
+            .annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

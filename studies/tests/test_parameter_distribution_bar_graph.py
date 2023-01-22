@@ -13,7 +13,6 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
-
     def _given_world_setup(self):
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
                                                 DOI="10.1016/j.cortex.2017.07.011", year=2002)
@@ -59,19 +58,21 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
          gnw - pro: 1 against: 1
          rpt - pro:1  against: 
         """
-        self.given_interpretation_exist(experiment=israeli_study_experiment, #masking_child_paradigm
+        self.given_interpretation_exist(experiment=israeli_study_experiment,  # masking_child_paradigm
                                         theory=gnw_child_theory, type=InterpretationsChoices.PRO)
 
-        self.given_interpretation_exist(experiment=british_israeli_study_experiment, # masking_child_paradigm, different
+        self.given_interpretation_exist(experiment=british_israeli_study_experiment,
+                                        # masking_child_paradigm, different
                                         theory=gnw_child_theory, type=InterpretationsChoices.CHALLENGES)
 
-        self.given_interpretation_exist(experiment=israeli_study_experiment, # masking_child_paradigm
+        self.given_interpretation_exist(experiment=israeli_study_experiment,  # masking_child_paradigm
                                         theory=rpt_child_theory, type=InterpretationsChoices.CHALLENGES)
 
-        self.given_interpretation_exist(experiment=israeli_study_experiment_2, # masking_child_paradigm, different
+        self.given_interpretation_exist(experiment=israeli_study_experiment_2,  # masking_child_paradigm, different
                                         theory=gnw_child_theory, type=InterpretationsChoices.PRO)
 
-        self.given_interpretation_exist(experiment=british_israeli_study_experiment, # masking_child_paradigm, different
+        self.given_interpretation_exist(experiment=british_israeli_study_experiment,
+                                        # masking_child_paradigm, different
                                         theory=rpt_child_theory, type=InterpretationsChoices.PRO)
         first_measure = self.given_measure_exists(experiment_id=israeli_study_experiment.id,
                                                   measure_type="a_first_measure")
@@ -92,11 +93,11 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
         target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
-                                                    breakdown="paradigm_family", theory=self.gnw_parent_theory.id)
+                                                    breakdown="paradigm_family", theory=self.technique.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(len(res.data), 2) #as gnw child interperation to two paradigms
+        self.assertEqual(len(res.data), 2)  # as gnw child interperation to two paradigms
         """
         masking parent paradigm 
          gnw -pro: 2 against: 1
@@ -106,8 +107,8 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
          rpt - pro:1  against: """
         first_series = res.data[0]
         second_series = res.data[1]
-        self.assertEqual(first_series["series_name"], masking_parent_paradigm.name) # 3 total
-        self.assertEqual(second_series["series_name"], different_parent_paradigm.name) # 2
+        self.assertEqual(first_series["series_name"], masking_parent_paradigm.name)  # 3 total
+        self.assertEqual(second_series["series_name"], different_parent_paradigm.name)  # 2
 
         self.assertEqual(first_series["series"][0]["key"], InterpretationsChoices.PRO)
         self.assertEqual(first_series["series"][0]["value"], 2)
@@ -121,7 +122,6 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
         self.assertEqual(second_series["series"][1]["key"], InterpretationsChoices.CHALLENGES)
         self.assertEqual(second_series["series"][1]["value"], 1)
 
-
         target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
                                                     breakdown="paradigm_family", theory=self.rpt_parent_theory.id)
         res = self.client.get(target_url)
@@ -132,4 +132,35 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
         self.assertEqual(first_series["series_name"], masking_parent_paradigm.name)  # 2 total
         self.assertEqual(second_series["series_name"], different_parent_paradigm.name)  # 1
 
-
+    def test_all_options_sanity_test(self):
+        """
+        This is just a basic sanity test, that nothing throws an exception, later we might add more here
+        """
+        another_different_child_paradigm, \
+        different_child_paradigm, \
+        different_parent_paradigm, \
+        first_measure, first_technique, \
+        fourth_measure, masking_child_paradigm, \
+        masking_parent_paradigm, second_measure, \
+        second_technique, third_measure_with_second_type = self._given_world_setup()
+        for breakdown in {
+            "paradigm_family",
+            "paradigm",
+            "population",
+            "finding_tag",
+            "finding_tag_family",
+            "reporting",
+            "theory_driven",
+            "task",
+            "stimuli_category",
+            "modality",
+            "consciousness_measure_phase",
+            "consciousness_measure_type",
+            "type_of_consciousness",
+            "technique",
+            "measure"
+        }:
+            target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
+                                                        breakdown=breakdown, theory=self.gnw_parent_theory.id)
+            res = self.client.get(target_url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)

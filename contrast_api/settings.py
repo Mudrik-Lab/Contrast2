@@ -99,7 +99,7 @@ class Base(Configuration):
         },
     ]
 
-    ADMIN_REORDER = ("auth", )
+    ADMIN_REORDER = ("auth", "users", "studies", "approval_process", "configuration")
 
     WSGI_APPLICATION = "contrast_api.wsgi.application"
 

@@ -15,5 +15,7 @@ class TimingsGraphDataProcessor(BaseProcessor):
         self.theory = kwargs.pop("theory")[0]
         self.is_theory_driven_only = kwargs.pop("is_theory_driven", [False])[0]
         self.tags_types = kwargs.pop("tags_types")
+        self.techniques = kwargs.pop("techniques")
+
     def process(self):
         pass

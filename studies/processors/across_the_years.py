@@ -4,6 +4,7 @@ from django.db.models.functions import JSONObject
 
 from studies.models import Experiment, Paradigm, Sample, FindingTagType, FindingTagFamily, TaskType, ModalityType, \
     ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType
+from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
 
@@ -89,8 +90,13 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_stimuli_category(self):
-        # TODO: awaiting the model changes
-        pass
+        experiments_subquery_by_breakdown = self.experiments.filter(stimuli__category=OuterRef("pk"))
+
+        breakdown_query = StimulusCategory.objects.values("name").distinct(
+            "name").annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_modality(self):
         experiments_subquery_by_breakdown = self.experiments.filter(stimuli__modality=OuterRef("pk"))

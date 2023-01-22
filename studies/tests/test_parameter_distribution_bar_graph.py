@@ -84,7 +84,7 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
                                                    measure_type="c_third_measure")
         return another_different_child_paradigm, different_child_paradigm, different_parent_paradigm, first_measure, first_technique, fourth_measure, masking_child_paradigm, masking_parent_paradigm, second_measure, second_technique, third_measure_with_second_type
 
-    def test_across_the_years_breakdown_paradigm_family(self):
+    def test_parameters_distribution_bar_breakdown_paradigm_family(self):
         another_different_child_paradigm, \
         different_child_paradigm, \
         different_parent_paradigm, \
@@ -93,7 +93,7 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
         target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
-                                                    breakdown="paradigm_family", theory=self.technique.id)
+                                                    breakdown="paradigm_family", theory=self.gnw_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

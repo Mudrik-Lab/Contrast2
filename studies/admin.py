@@ -128,7 +128,14 @@ class TechniqueAdmin(ImportExportModelAdmin):
 
 class TheoryAdmin(ImportExportModelAdmin):
     model = Theory
-    list_filter = ("parent__name", )
+    list_display = ("name", "parent_theory")
+
+    @admin.display(empty_value="")
+    def parent_theory(self, obj):
+        if obj.parent is not None:
+            return obj.parent.name
+        else:
+            return ""
 
 
 admin.site.disable_action('delete_selected')  # Site wide

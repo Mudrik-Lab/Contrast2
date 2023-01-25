@@ -1,12 +1,12 @@
 from unittest import TestCase
 
-from studies.studies_parsing_helpers import parse_authors_from_affiliation_text, resolve_country_from_affiliation_text
+from studies.studies_parsing_helpers import parse_authors_from_authors_text, resolve_country_from_affiliation_text
 
 
 class StudyParserHelpersTestCase(TestCase):
     def test_parsing_authors_from_affiliation_text(self):
         text = 'Zhou S., Zou G., Xu J., Su Z., Zhu H., Zou Q., Gao J.-H.'
-        res = parse_authors_from_affiliation_text(text)
+        res = parse_authors_from_authors_text(text)
         self.assertEqual(res, ['Zhou S.', 'Zou G.', 'Xu J.', 'Su Z.', 'Zhu H.', 'Zou Q.', 'Gao J.-H.'])
 
     # TODO: somewhere we need to make sure names don't include ", " so they don't break

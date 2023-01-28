@@ -17,15 +17,15 @@ class InterpretationsChoices(TextChoices):
 
 
 class TypeOfConsciousnessChoices(TextChoices):
-    CONTENT = "content", _("Content")
-    STATE = "state", _("State")
-    BOTH = "both", _("Both")
+    CONTENT = "content", _("Content"), 1
+    STATE = "state", _("State"), 0
+    BOTH = "both", _("Both"), 2
 
 
 class ReportingChoices(TextChoices):
-    REPORT = "report", _("Report")
-    NO_REPORT = "no_report", _("No_report")
-    BOTH = "both", _("Both")
+    REPORT = "report", _("Report"), 1
+    NO_REPORT = "no_report", _("No_report"), 0
+    BOTH = "both", _("Both"), 2
 
 
 class TheoryDrivenChoices(TextChoices):

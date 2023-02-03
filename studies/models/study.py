@@ -8,7 +8,8 @@ from approval_process.choices import ApprovalChoices
 
 
 class Study(models.Model):
-    # TODO should it be through affiliation?
+    class Meta:
+        verbose_name_plural = "studies"
     authors = models.ManyToManyField(to="studies.Author", related_name="studies")
     DOI = models.CharField(null=False, blank=False, unique=True, max_length=100)
     title = models.TextField(null=False, blank=False)

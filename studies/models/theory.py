@@ -4,6 +4,9 @@ from django.db import models
 
 
 class Theory(models.Model):
+    class Meta:
+        verbose_name_plural = "theories"
+
     name = models.CharField(null=False, blank=False, max_length=100)
     parent = models.ForeignKey(null=True, blank=True, to="studies.Theory", on_delete=CASCADE)
 

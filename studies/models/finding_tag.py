@@ -5,6 +5,9 @@ from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
 
 
 class FindingTagFamily(models.Model):
+    class Meta:
+        verbose_name_plural = "findings tags families"
+
     name = models.CharField(null=False, blank=False, max_length=250)
 
     def __str__(self):
@@ -21,6 +24,7 @@ class FindingTagType(models.Model):
 
 
 class FindingTag(models.Model):
+
     # TODO validator + custom admin form
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",
                                    on_delete=CASCADE,

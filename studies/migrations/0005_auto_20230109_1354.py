@@ -8,19 +8,20 @@ from configuration.initial_setup import paradigms, task_types, techniques
 def bootstrap_type_models(apps, schema_editor):
     ConsciousnessMeasureType = apps.get_model("studies", "ConsciousnessMeasureType")
     for measure_type in ["None",
-                         "Post Experiment",
-                         "Pre Experiment",
-                         "Separate Experiment",
-                         "Trial By Trial"]:
+                         "Condition Assessment",
+                          "Subjective",
+                          "State Induction Assessment",
+                          "Sleep Monitoring",
+                          "Objective"]:
         ConsciousnessMeasureType.objects.get_or_create(name=measure_type)
 
     ConsciousnessMeasurePhaseType = apps.get_model("studies", "ConsciousnessMeasurePhaseType")
     for measure_phase in ["None",
-                          "Condition Assessment",
-                          "Subjective",
-                          "State induction Assessment",
-                          "Sleep Monitoring",
-                          "Objective"]:
+                          "Post Experiment",
+                          "Pre Experiment",
+                          "Separate Experiment",
+                          "Trial By Trial"
+                          ]:
         ConsciousnessMeasurePhaseType.objects.get_or_create(name=measure_phase)
 
     Theory = apps.get_model("studies", "Theory")

@@ -3,11 +3,8 @@ from django.core import validators
 from django.db.models import CASCADE, SET_NULL
 from django.db import models
 from django_countries.fields import CountryField
-
+from django.conf import settings
 from approval_process.choices import ApprovalChoices
-
-
-# from studies.models.author import Author
 
 
 class Study(models.Model):
@@ -28,11 +25,13 @@ class Study(models.Model):
     funding = models.TextField(null=True, blank=True)
     source_title = models.CharField(null=True, blank=True, max_length=200)
     abbreviated_source_title = models.CharField(null=True, blank=True, max_length=200)
-    countries = ArrayField(CountryField(null=False, blank=False)) # Wondering if this is a good modeling, but we'll see
+    countries = ArrayField(CountryField(null=False, blank=False))  # Wondering if this is a good modeling, but we'll see
     affiliations = models.TextField(null=False, blank=False)
+    submitter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL) #Optional submitter
 
     def __str__(self):
         return f"{self.id} {self.title}"
+
     def save(
             self, force_insert=False, force_update=False, using=None, update_fields=None
     ):

@@ -1,4 +1,6 @@
 # constants
+from typing import List
+
 ITEM_SEP = '+'
 FINDING_INNER_S_SEP = '<'
 FINDING_INNER_E_SEP = '>'
@@ -137,7 +139,7 @@ tag_to_findings = spatial_to_finding | temporal_to_finding | frequency_to_findin
 
 
 # parses findings for a given tag
-def parse_findings_per_tag(tag_code, finding_text):
+def parse_findings_per_tag(tag_code: str, finding_text: str) -> List[BaseFinding]:
     # each tag text may include different finding, first split the text
     inner_findings = [finding.strip() for finding in finding_text.split(INNER_ITEM_SEP)]
     # we map only positive tags to decoders (same decoder regardless of negative/positive finding)
@@ -152,7 +154,7 @@ def parse_findings_per_tag(tag_code, finding_text):
 
 
 # go over an experiment's findings and return a list of findings (here a list of class instances)
-def parse_findings_per_experiment(txt):
+def parse_findings_per_experiment(txt: str) -> List[BaseFinding]:
     # each experiment findings text includes different tags, first split the text
     findings_txt = [tag_txt.strip() for tag_txt in txt.split(ITEM_SEP)]
     # in cases where no information is provided for the tag, create mock start and end signs

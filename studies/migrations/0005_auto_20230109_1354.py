@@ -9,10 +9,10 @@ def bootstrap_type_models(apps, schema_editor):
     ConsciousnessMeasureType = apps.get_model("studies", "ConsciousnessMeasureType")
     for measure_type in ["None",
                          "Condition Assessment",
-                          "Subjective",
-                          "State Induction Assessment",
-                          "Sleep Monitoring",
-                          "Objective"]:
+                         "Subjective",
+                         "State Induction Assessment",
+                         "Sleep Monitoring",
+                         "Objective"]:
         ConsciousnessMeasureType.objects.get_or_create(name=measure_type)
 
     ConsciousnessMeasurePhaseType = apps.get_model("studies", "ConsciousnessMeasurePhaseType")

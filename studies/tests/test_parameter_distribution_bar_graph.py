@@ -92,7 +92,7 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="parameters_distribution_bar",
                                                     breakdown="paradigm_family", theory=self.gnw_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -122,7 +122,7 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
         self.assertEqual(second_series["series"][1]["key"], InterpretationsChoices.CHALLENGES)
         self.assertEqual(second_series["series"][1]["value"], 1)
 
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="parameters_distribution_bar",
                                                     breakdown="paradigm_family", theory=self.rpt_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -160,7 +160,7 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
             "technique",
             "measure"
         }:
-            target_url = self.reverse_with_query_params("experiments-list", graph_type="parameters_distribution_bar",
+            target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="parameters_distribution_bar",
                                                         breakdown=breakdown, theory=self.gnw_parent_theory.id)
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)

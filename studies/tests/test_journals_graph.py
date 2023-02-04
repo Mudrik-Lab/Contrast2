@@ -84,7 +84,7 @@ class JournalsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="journals",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="journals",
                                                     theory=self.gnw_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -94,7 +94,7 @@ class JournalsGraphTestCase(BaseTestCase):
         self.assertEqual(first_result["value"], 2) #two experiments
 
         # Now check for another theory, rememebr we query by PARENT theory, of the actual theories connected
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="journals",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="journals",
                                                     theory=self.rpt_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

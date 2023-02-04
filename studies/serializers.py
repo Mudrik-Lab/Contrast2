@@ -82,7 +82,7 @@ class StimulusSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    task = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
     class Meta:
         model = Task
@@ -91,12 +91,12 @@ class TaskSerializer(serializers.ModelSerializer):
 
 class ExperimentSerializer(serializers.ModelSerializer):
     interpretations = InterpretationSerializer(many=True)
-    finding_tags = FindingTagSerializer(many=True, source="finding_tags")
-    measures = MeasureSerializer(many=True, source="measures")
-    samples = SampleSerializer(many=True, source="samples")
-    stimuli = StimulusSerializer(many=True, source="stimuli")
-    tasks = TaskSerializer(many=True, source="tasks")
-    consciousness_measures = ConsciousnessMeasureSerializer(many=True, source="consciousness_measures")
+    finding_tags = FindingTagSerializer(many=True)
+    measures = MeasureSerializer(many=True)
+    samples = SampleSerializer(many=True)
+    stimuli = StimulusSerializer(many=True)
+    tasks = TaskSerializer(many=True)
+    consciousness_measures = ConsciousnessMeasureSerializer(many=True)
     techniques = serializers.SlugRelatedField(many=True, slug_field="name", read_only=True)
     paradigms = serializers.SlugRelatedField(many=True, slug_field="name", read_only=True)
     theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", read_only=True)
@@ -151,6 +151,27 @@ class StudySerializer(serializers.ModelSerializer):
                   ]
 
 
+class StudyWithExperimentsSerializer(serializers.Serializer):
+    authors = AuthorSerializer(many=True)
+    experiments = ExperimentSerializer(many=True)
+
+    class Meta:
+        model = Study
+        fields = ["authors",
+                  "DOI",
+                  "title",
+                  "year",
+                  "corresponding_author_email",
+                  "approval_status",
+                  "authors_key_words",
+                  "funding",
+                  "source_title",
+                  "abbreviated_source_title",
+                  "countries",
+                  "affiliations",
+                  "submitter",
+                  "experiments"
+                  ]
 class ExcludedStudySerializer(StudySerializer):
     sub_research_area = serializers.CharField(source="approval_process.sub_research_area")
     research_area = serializers.CharField(source="approval_process.research_area")

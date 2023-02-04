@@ -12,7 +12,7 @@ class Theory(models.Model):
 
     def __str__(self):
         if self.parent is not None:
-            return f"{self.name} parent {self.parent.name}"
+            return f"{self.name} child of {self.parent.name}"
         else:
             return f"{self.name}"
 # TODO: data migration to create existing theories

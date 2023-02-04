@@ -13,7 +13,7 @@ class Experiment(models.Model):
     techniques = models.ManyToManyField(to="studies.Technique", related_name="experiments")  # validator at least one
     interpretations = models.ManyToManyField(to="studies.Theory",
                                              related_name="experiments_interpretations",
-                                             limit_choices_to={"parent": None},
+                                             limit_choices_to={"theory__parent": None},
                                              through="studies.Interpretation")
     paradigms = models.ManyToManyField(to="studies.Paradigm", related_name="experiments")  # validator at least one
     type_of_consciousness = models.CharField(null=False, blank=False, choices=TypeOfConsciousnessChoices.choices,

@@ -1,5 +1,6 @@
 from collections import namedtuple
-from typing import NamedTuple
+
+from studies.models import Theory
 
 
 def parse_authors_from_authors_text(text: str):
@@ -37,8 +38,8 @@ def find_in_list(lookup_value: str, search_list: list):
 TypeFromData = namedtuple("TypeFromData", ["input_type", "input_comment"])
 
 
-def parse_consciousness_measure_type_from_data(
-        text: str):  # TODO: change return type to list of dicts instead of tuples
+# TODO: change return type to list of dicts instead of tuples
+def parse_consciousness_measure_type_from_data(text: str):
     ITEM_SEP = '+'
     START_FINDING_SEP = '('
     END_FINDING_SEP = ')'
@@ -62,3 +63,21 @@ def parse_consciousness_measure_type_from_data(
         consciousness_measure_types_list.append(type_from_data)
 
     return consciousness_measure_types_list
+
+
+def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
+    theory_driven_theories = []
+    for key, value in item.items():
+        if "Theory Driven" not in key:
+            continue
+        theory_driven = value[0]
+        if theory_driven != "0":
+            for theory in theories:
+                if theory not in value:
+                    continue
+                theory = Theory.objects.get(name=theory)
+                theory_driven_theories.append(theory)
+        else:
+            theory_driven_theories = []
+
+        return theory_driven, theory_driven_theories

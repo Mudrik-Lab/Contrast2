@@ -3,13 +3,12 @@ import pandas
 from configuration.initial_setup import task_types, techniques, paradigms, finding_tag_types, finding_tags_map
 from studies.parsers.finding_tag_parsers import parse_findings_per_experiment, FrequencyFinding, TemporalFinding, \
     SpatialFinding
-from studies.parsers.historic_data_helpers import get_paradigms_from_data, get_finding_tag_type_from_data, \
-    get_finding_tag_data
+from studies.parsers.historic_data_helpers import get_paradigms_from_data
 
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
-    TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType
+    TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Interpretation, Theory
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, parse_authors_keywords_from_text, \
-    resolve_country_from_affiliation_text
+    resolve_country_from_affiliation_text, parse_theory_driven_from_data
 
 
 class Command(BaseCommand):
@@ -53,25 +52,29 @@ class Command(BaseCommand):
             study = Study.objects.get(DOI=item["Paper.DOI"])
 
             theories = ['GNW', 'IIT', 'HOT', 'RPT']
-            theory_driven_theories = []
-            theory_driven = ""
-            for (key, value) in item.items():
-                if "Theory Driven" not in key:
-                    continue
-                theory_driven = value[0]
-                for theory in theories:
-                    if theory not in value:
+            theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
+
+            type_of_consciousness = item['State - Content [0=State,1=Content,2 = State And Content]']
+            is_reporting = item['Experimental paradigms.Report [0 = No-Report, 1 = Report, 2 = Report And No-Report]']
+
+            experiment = Experiment.objects.create(study=study, finding_description=item["Findings.Summary"],
+                                                   type_of_consciousness=type_of_consciousness, is_reporting=is_reporting,
+                                                   theory_driven=theory_driven, type)
+
+            for theory in theory_driven_theories:
+                experiment.theory_driven_theories.add(theory)
+
+            interpretations = []
+            for theory in theories:
+                for key, value in item.items():
+                    if theory not in key:
                         continue
-                    theory_driven_theories.append(theory)
+                    interpretation = value
+                    interpretations.append(interpretation)
 
+            for interpretation in interpretations:
+                experiment.interpretations.add(interpretation)
 
-
-            experiment = Experiment.objects.create(study=study, finding_description, interpretations,
-                                                          type_of_consciousness=item[
-                                                              'State - Content [0=State,1=Content,2 = State And Content]'],
-                                                          is_reporting=item['Experimental paradigms.Report [0 = No-Report, \
-                                                          1 = Report, 2 = Report And No-Report]'], theory_driven=theory_driven,
-                                                          theory_driven_theories=theory_driven_theories, type)
             techniques_in_historic_data = []
             for technique in techniques:
                 if technique not in item["Techniques"]:
@@ -82,8 +85,11 @@ class Command(BaseCommand):
             for technique in techniques_in_historic_data:
                 experiment.techniques.add(technique)
 
-            findings_ncc_tags = get_finding_tag_data(item)
+            for key in item.keys:
+                if 'Findings.NCC Tags' in key:
+                    findings_ncc_tags = key
             findings = parse_findings_per_experiment(findings_ncc_tags)
+
             finding_classes = []
             for finding in findings:
                 tag_type = finding_tags_map[finding.tag]
@@ -129,7 +135,7 @@ class Command(BaseCommand):
             sample = Sample.objects.get_or_create(experiment=experiment, type=item["Sample.Type"],total_size=["Sample.Total"],
                                                   size_included=["Sample.Included"])
             coded_task_type = ""
-            for (key, value) in item.items():
+            for key, value in item.items():
                 if "Task.Code" not in key:
                     continue
                 task_code = value[0]
@@ -137,10 +143,3 @@ class Command(BaseCommand):
             task_type = TaskType.objects.get_or_create(name=coded_task_type)
             task = Task.objects.get_or_create(experiment=experiment, description=item["Task.Description"], type=task_type)
 
-
-
-            # TODO: parse the data related to finding_tag in historic_data_helpers
-            tag_type_in_data, tag_type_family_in_data = get_finding_tag_type_from_data(finding_tag_types, item)
-            tag_family = FindingTagFamily.objects.get_or_create(name=tag_type_family_in_data)
-            tag_type = FindingTagType.objects.get_or_create(name=tag_type_in_data, family=tag_family)
-            finding_tag = FindingTag.objects.get_or_create(experiment=experiment, type=tag_type, family=tag_family)

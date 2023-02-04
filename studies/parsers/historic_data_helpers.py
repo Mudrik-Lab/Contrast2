@@ -69,10 +69,5 @@ def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
     return paradigms_in_data
 
 
-def get_finding_tag_data(item: dict) -> str:
-    for key, value in item:
-        if 'Findings.NCC Tags' in key:
-            findings_ncc_tags = key
 
-    return findings_ncc_tags
 

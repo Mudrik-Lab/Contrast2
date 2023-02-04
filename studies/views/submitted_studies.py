@@ -1,5 +1,8 @@
-from rest_framework import mixins
+import copy
+
+from rest_framework import mixins, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
@@ -34,5 +37,15 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
     serializer_class = StudyWithExperimentsSerializer
 
     def get_queryset(self):
-        super().get_queryset() \
-            .filter(ubmitter=self.request.user)
+        return super().get_queryset() \
+            .filter(submitter=self.request.user)
+
+    def create(self, request, *args, **kwargs):
+        data = copy.deepcopy(request.data)
+        data["submitter"] = request.user.id
+        data["approval_status"] = ApprovalChoices.PENDING
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

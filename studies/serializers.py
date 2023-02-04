@@ -151,9 +151,9 @@ class StudySerializer(serializers.ModelSerializer):
                   ]
 
 
-class StudyWithExperimentsSerializer(serializers.Serializer):
-    authors = AuthorSerializer(many=True)
-    experiments = ExperimentSerializer(many=True)
+class StudyWithExperimentsSerializer(serializers.ModelSerializer):
+    authors = AuthorSerializer(many=True, required=False)
+    experiments = ExperimentSerializer(many=True, required=False)
 
     class Meta:
         model = Study
@@ -172,6 +172,8 @@ class StudyWithExperimentsSerializer(serializers.Serializer):
                   "submitter",
                   "experiments"
                   ]
+
+
 class ExcludedStudySerializer(StudySerializer):
     sub_research_area = serializers.CharField(source="approval_process.sub_research_area")
     research_area = serializers.CharField(source="approval_process.research_area")

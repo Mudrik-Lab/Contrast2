@@ -110,7 +110,6 @@ def bootstrap_type_models(apps, schema_editor):
         illusions = Paradigm.objects.get(name='Illusions')
         Paradigm.objects.get_or_create(name=paradigm, parent=illusions)
 
-    # is this correct classification? there is some ambiguity in the parameters list
     imagination = Paradigm.objects.get(name='Imagination')
     Paradigm.objects.get_or_create(name="Motoric", parent=imagination)
 

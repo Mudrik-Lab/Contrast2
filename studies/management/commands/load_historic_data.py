@@ -1,6 +1,7 @@
 from django.core.management import BaseCommand
 import pandas
-from configuration.initial_setup import task_types, techniques, paradigms, finding_tag_types, finding_tags_map
+from configuration.initial_setup import task_types, techniques, paradigms, finding_tag_types, finding_tags_map, \
+    task_types_mapping
 from studies.parsers.finding_tag_parsers import parse_findings_per_experiment, FrequencyFinding, TemporalFinding, \
     SpatialFinding
 from studies.parsers.historic_data_helpers import get_paradigms_from_data
@@ -8,7 +9,7 @@ from studies.parsers.historic_data_helpers import get_paradigms_from_data
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
     TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Interpretation, Theory
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, parse_authors_keywords_from_text, \
-    resolve_country_from_affiliation_text, parse_theory_driven_from_data
+    resolve_country_from_affiliation_text, parse_theory_driven_from_data, parse_task_types
 
 
 class Command(BaseCommand):
@@ -59,7 +60,7 @@ class Command(BaseCommand):
 
             experiment = Experiment.objects.create(study=study, finding_description=item["Findings.Summary"],
                                                    type_of_consciousness=type_of_consciousness, is_reporting=is_reporting,
-                                                   theory_driven=theory_driven, type)
+                                                   theory_driven=theory_driven, type=item[])
 
             for theory in theory_driven_theories:
                 experiment.theory_driven_theories.add(theory)
@@ -120,6 +121,7 @@ class Command(BaseCommand):
                     finding_class = FindingTag(experiment=experiment, family='miscellaneous (no Family)', type=tag_type,
                                                notes=comment, technique=technique)
                     finding_classes.append(finding_class)
+
             for finding_class in finding_classes:
                 FindingTag.objects.create(finding_class)
 
@@ -132,14 +134,11 @@ class Command(BaseCommand):
             consciousness_measure_type = ConsciousnessMeasureType.objects.get_or_create(name=item["Measures of consciousness.Type"])
 
 
-            sample = Sample.objects.get_or_create(experiment=experiment, type=item["Sample.Type"],total_size=["Sample.Total"],
+            sample = Sample.objects.create(experiment=experiment, type=item["Sample.Type"],total_size=["Sample.Total"],
                                                   size_included=["Sample.Included"])
-            coded_task_type = ""
-            for key, value in item.items():
-                if "Task.Code" not in key:
-                    continue
-                task_code = value[0]
-                coded_task_type = task_types[task_code - 1]
-            task_type = TaskType.objects.get_or_create(name=coded_task_type)
+
+            for parsed_task_type in parse_task_types(item):
+                task_type = TaskType.objects.get_or_create(name=parsed_task_type)
+
             task = Task.objects.get_or_create(experiment=experiment, description=item["Task.Description"], type=task_type)
 

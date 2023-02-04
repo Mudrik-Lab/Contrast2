@@ -354,3 +354,11 @@ finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300
                     "81": "Intrinsic Ignition", "82": "Ignition Variability", "83": "Hierarchical Structure",
                     "84": "SCP", "85": "AAN", "86": "Dorsal Attention Network", "87": "Visual network"
                     }
+
+task_types_mapping = {"0": "No Task","1": "Discrimination", "2": "Detection", "3": "Go/No-Go", "4": "Deviant Detection",
+                      "5": "Stimulus Judgement", "7": "Memory", "8": "Change Detection", "9": "Counting Task",
+                      "10": "Delayed Task", "14": "Task Switching", "17": "NBack", "18": "Dual Task",
+                      "19": "Awareness Report", "21": "Confidence Report", "22": "Binocular Rivalry Task",
+                      "23": "Visual Search", "24": "Identification", "26": "NA", "27": "Driving", "30": "Imagination",
+                      "32": "Task Switching", "33": "Mental Rotation", "35": "Color Matching", "36": "Mood",
+                      "37": "Mathematics"}

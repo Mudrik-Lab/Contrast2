@@ -1,5 +1,6 @@
 from collections import namedtuple
 
+from configuration.initial_setup import task_types_mapping
 from studies.models import Theory
 
 
@@ -80,4 +81,18 @@ def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
         else:
             theory_driven_theories = []
 
-        return theory_driven, theory_driven_theories
+    return theory_driven, theory_driven_theories
+
+
+def parse_task_types(item: dict):
+    parsed_task_types = []
+    for key, value in item.items():
+        if "Task.Code" not in key:
+            continue
+        tasks_codes_breakdown = value.split("+")
+        for task_code in tasks_codes_breakdown:
+            parsed_task_code = task_code.split("(")[0].strip()
+            parsed_task = task_types_mapping[parsed_task_code]
+            parsed_task_types.append(parsed_task)
+
+    return parsed_task_types

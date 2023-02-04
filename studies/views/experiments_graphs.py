@@ -1,85 +1,20 @@
-from django.shortcuts import render
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, status
-from rest_framework.permissions import IsAuthenticated, AllowAny, IsAuthenticatedOrReadOnly
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
 from studies.filters import ExperimentFilter
+from studies.models import Experiment
+from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
-from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
-from studies.models import Study, Experiment
 from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
-from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
-    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, \
-    StudyWithExperimentsSerializer
-
-
-# Create your views here.
-
-class ApprovedStudiesViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    GenericViewSet):
-    permission_classes = [AllowAny]
-    serializer_class = StudySerializer
-
-    # TODO: handle creation
-    queryset = Study.objects.select_related("approval_process").prefetch_related("authors").filter(
-        approval_status=ApprovalChoices.APPROVED)  # TODO migrate this to custom manager
-
-
-class SubmitStudiesViewSet(mixins.CreateModelMixin,
-                           mixins.ListModelMixin,
-                           mixins.RetrieveModelMixin,
-                           GenericViewSet):
-    """
-    Getting/creating studies I'm submitting, adding experiments, editing, etc
-    """
-    queryset = Study.objects.select_related("approval_process") \
-        .prefetch_related("experiments",
-                          "authors",
-                          "experiments__stimuli",
-                          "experiments__samples",
-                          "experiments__tasks",
-                          "experiments__tasks",
-                          "experiments__consciousness_measures",
-                          "experiments__consciousness_measures__phase",
-                          "experiments__consciousness_measures__type",
-                          "experiments__finding_tags",
-                          "experiments__finding_tags__family",
-                          "experiments__finding_tags__type",
-                          "experiments__finding_tags__technique"
-                          ) \
-        .filter(approval_status=ApprovalChoices.PENDING)
-    permission_classes = [IsAuthenticated]
-    serializer_class = StudyWithExperimentsSerializer
-
-    def get_queryset(self):
-        super().get_queryset() \
-            .filter(ubmitter=self.request.user)
-
-
-class GraphProcessNotRegisteredException(Exception):
-    pass
-
-
-class SubmittedStudyExperiments(mixins.RetrieveModelMixin, mixins.ListModelMixin, mixins.DestroyModelMixin,
-                                mixins.UpdateModelMixin, GenericViewSet):
-    permission_classes = [IsAuthenticated]
-    serializer_class = ExperimentSerializer
-    queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter") \
-        .filter(study__approval_status=ApprovalChoices.PENDING)
-
-    def get_queryset(self):
-        super().get_queryset() \
-            .filter(study__approval_status=ApprovalChoices.PENDING) \
-            .filter(study=self.kwargs.get("study_pk")) \
-            .filter(study__submitter=self.request.user)
+from studies.serializers import ExperimentSerializer, NationOfConsciousnessGraphSerializer, \
+    AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer
 
 
 class ExperimentsGraphsViewSet(mixins.ListModelMixin,
@@ -119,7 +54,30 @@ class ExperimentsGraphsViewSet(mixins.ListModelMixin,
                                                       "frequencies",
                                                       "timings"
                                                       ],
-                                                required=True)])
+                                                required=True),
+                               OpenApiParameter(name='theory',
+                                                type=str,
+                                                required=False, #TODO add supported enum
+                                                description='theory filter needed for certain graphs'),
+                               OpenApiParameter(name='breakdown',
+                                                description='breakdown needed for certain graphs',
+                                                type=str,
+                                                enum=["paradigm_family",
+                                                      "paradigm",
+                                                      "population",
+                                                      "finding_tag",
+                                                      "finding_tag_family",
+                                                      "reporting",
+                                                      "theory_driven",
+                                                      "task",
+                                                      "stimuli_category",
+                                                      "modality",
+                                                      "consciousness_measure_phase",
+                                                      "consciousness_measure_type",
+                                                      "type_of_consciousness",
+                                                      "technique",
+                                                      "measure"],
+                                                required=False)])
     def list(self, request, *args, **kwargs):
         if request.query_params.get("graph_type"):
             return self.graph(request, graph_type=request.query_params.get("graph_type"), *args, **kwargs)
@@ -147,11 +105,5 @@ class ExperimentsGraphsViewSet(mixins.ListModelMixin,
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
-class ExcludedStudiesViewSet(mixins.RetrieveModelMixin,
-                             mixins.ListModelMixin,
-                             GenericViewSet):
-    permission_classes = [AllowAny]
-    serializer_class = ExcludedStudySerializer
-
-    queryset = Study.objects.select_related("approval_process").filter(
-        approval_status=ApprovalChoices.REJECTED)  # TODO migrate this to custom manager
+class GraphProcessNotRegisteredException(Exception):
+    pass

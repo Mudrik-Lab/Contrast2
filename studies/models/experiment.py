@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE, Q
 
@@ -15,7 +16,8 @@ class Experiment(models.Model):
                                              related_name="experiments_interpretations",
                                              limit_choices_to=Q(parent__isnull=False),
                                              through="studies.Interpretation")
-    paradigms = models.ManyToManyField(to="studies.Paradigm", related_name="experiments", limit_choices_to=Q(parent__isnull=False))  # validator at least one
+    paradigms = models.ManyToManyField(to="studies.Paradigm", related_name="experiments",
+                                       limit_choices_to=Q(parent__isnull=False))  # validator at least one
     type_of_consciousness = models.CharField(null=False, blank=False, choices=TypeOfConsciousnessChoices.choices,
                                              max_length=20)
     is_reporting = models.CharField(null=False, blank=False, choices=ReportingChoices.choices, max_length=20)
@@ -28,6 +30,12 @@ class Experiment(models.Model):
     type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices)
 
     # TODO add all relevant Interpretations on creations
+
+    def clean(self):
+        if len(self.paradigms) == 0 or self.paradigms is None:
+            raise ValidationError({"paradigms": "There should be at least one"})
+        if len(self.techniques) == 0 or self.techniques is None:
+            raise ValidationError({"techniques": "There should be at least one"})
 
     def __str__(self):
         return f"study {self.study_id}, id {self.id}"

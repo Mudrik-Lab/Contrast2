@@ -34,8 +34,8 @@ def bootstrap_type_models(apps, schema_editor):
         miscellaneous = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=miscellaneous)
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
         ('studies', '0010_merge_20230115_1027'),
     ]

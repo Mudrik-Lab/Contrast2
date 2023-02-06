@@ -172,6 +172,8 @@ def parse_findings_per_experiment(txt: str) -> List[BaseFinding]:
     return findings
 
 
+# TODO: write a test for this parser
+
 if __name__ == '__main__':
     # a complex example for one experiment
     finding_txt = '5 (Connectivity Neg 90-120Hz <300-550ms> <EEG> # a comment & ' \

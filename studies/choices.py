@@ -11,27 +11,27 @@ class SampleChoices(TextChoices):
 
 
 class InterpretationsChoices(TextChoices):
-    PRO = "pro", _("Pro"), 1
-    CHALLENGES = "challenges", _("Challenges"), 0
-    NEUTRAL = "neutral", _("Neutral"), "X"
+    PRO = "pro", _("Pro")
+    CHALLENGES = "challenges", _("Challenges")
+    NEUTRAL = "neutral", _("Neutral")
 
 
 class TypeOfConsciousnessChoices(TextChoices):
-    CONTENT = "content", _("Content"), 1
-    STATE = "state", _("State"), 0
-    BOTH = "both", _("Both"), 2
+    CONTENT = "content", _("Content")
+    STATE = "state", _("State")
+    BOTH = "both", _("Both")
 
 
 class ReportingChoices(TextChoices):
-    REPORT = "report", _("Report"), 1
-    NO_REPORT = "no_report", _("No_report"), 0
-    BOTH = "both", _("Both"), 2
+    REPORT = "report", _("Report")
+    NO_REPORT = "no_report", _("No_report")
+    BOTH = "both", _("Both")
 
 
 class TheoryDrivenChoices(TextChoices):
-    DRIVEN = "driven", _("Driven"), 2
-    MENTIONING = "mentioning", _("Mentioning"), 1
-    POST_HOC = "post-hoc", _("Post hoc"), 0
+    DRIVEN = "driven", _("Driven")
+    MENTIONING = "mentioning", _("Mentioning")
+    POST_HOC = "post-hoc", _("Post hoc")
 
 
 class CorrelationSignChoices(TextChoices):

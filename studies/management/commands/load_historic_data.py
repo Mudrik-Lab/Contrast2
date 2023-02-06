@@ -1,15 +1,15 @@
 from django.core.management import BaseCommand
 import pandas
-from configuration.initial_setup import task_types, techniques, paradigms, finding_tag_types, finding_tags_map, \
-    task_types_mapping
+from configuration.initial_setup import techniques, paradigms, finding_tags_map
+from studies.choices import ExperimentTypeChoices, InterpretationsChoices, ReportingChoices, TypeOfConsciousnessChoices
 from studies.parsers.finding_tag_parsers import parse_findings_per_experiment, FrequencyFinding, TemporalFinding, \
     SpatialFinding
-from studies.parsers.historic_data_helpers import get_paradigms_from_data
+from studies.parsers.historic_data_helpers import get_paradigms_from_data, parse_theory_driven_from_data, parse_task_types
 
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
     TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Interpretation, Theory
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, parse_authors_keywords_from_text, \
-    resolve_country_from_affiliation_text, parse_theory_driven_from_data, parse_task_types
+    resolve_country_from_affiliation_text
 
 
 class Command(BaseCommand):
@@ -43,7 +43,6 @@ class Command(BaseCommand):
             for author in authors:
                 study.authors.add(author)
 
-
         # iterate over experiments
         for item in historic_data_list:
             is_included = bool(item["Should be included? [0 = Not Included, 1 = Included]"])
@@ -55,12 +54,25 @@ class Command(BaseCommand):
             theories = ['GNW', 'IIT', 'HOT', 'RPT']
             theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
 
-            type_of_consciousness = item['State - Content [0=State,1=Content,2 = State And Content]']
-            is_reporting = item['Experimental paradigms.Report [0 = No-Report, 1 = Report, 2 = Report And No-Report]']
+            type_of_consciousness_choice = item['State - Content [0=State,1=Content,2 = State And Content]']
+            if type_of_consciousness_choice == "0":
+                type_of_consciousness = TypeOfConsciousnessChoices.STATE
+            elif type_of_consciousness_choice == "1":
+                type_of_consciousness = TypeOfConsciousnessChoices.CONTENT
+            elif type_of_consciousness_choice == "2":
+                type_of_consciousness = TypeOfConsciousnessChoices.BOTH
+
+            reporting_choice = item['Experimental paradigms.Report [0 = No-Report, 1 = Report, 2 = Report And No-Report]']
+            if reporting_choice == "0":
+                is_reporting = ReportingChoices.NO_REPORT
+            elif reporting_choice == "1":
+                is_reporting = ReportingChoices.REPORT
+            elif reporting_choice == "2":
+                is_reporting = ReportingChoices.BOTH
 
             experiment = Experiment.objects.create(study=study, finding_description=item["Findings.Summary"],
-                                                   type_of_consciousness=type_of_consciousness, is_reporting=is_reporting,
-                                                   theory_driven=theory_driven, type=item[])
+                                                   type_of_consciousness=type_of_consciousness,
+                                                   is_reporting=is_reporting, theory_driven=theory_driven, type=ExperimentTypeChoices.NEUROSCIENTIFIC)
 
             for theory in theory_driven_theories:
                 experiment.theory_driven_theories.add(theory)
@@ -70,7 +82,13 @@ class Command(BaseCommand):
                 for key, value in item.items():
                     if theory not in key:
                         continue
-                    interpretation = value
+                    if value == "1":
+                        interpretation = InterpretationsChoices.PRO
+                    elif value == "0":
+                        interpretation = InterpretationsChoices.CHALLENGES
+                    elif value == "X":
+                        interpretation = InterpretationsChoices.NEUTRAL
+
                     interpretations.append(interpretation)
 
             for interpretation in interpretations:
@@ -94,7 +112,6 @@ class Command(BaseCommand):
             finding_classes = []
             for finding in findings:
                 tag_type = finding_tags_map[finding.tag]
-                # is_negative = finding.is_negative TODO: where does this data come in?
                 comment = finding.comment
                 if len(techniques_in_historic_data) == 1:
                     technique = techniques_in_historic_data[0]
@@ -115,11 +132,11 @@ class Command(BaseCommand):
                     finding_classes.append(finding_class)
                 elif isinstance(finding, SpatialFinding):
                     finding_class = FindingTag(experiment=experiment, family='Spatial Areas', type=tag_type,
-                                               AAL_atlas_tag=finding.area ,notes=comment, technique=technique)
+                                               AAL_atlas_tag=finding.area, notes=comment, technique=technique)
                     finding_classes.append(finding_class)
                 else:
                     finding_class = FindingTag(experiment=experiment, family='miscellaneous (no Family)', type=tag_type,
-                                               notes=comment, technique=technique)
+                                               notes=comment)
                     finding_classes.append(finding_class)
 
             for finding_class in finding_classes:
@@ -133,12 +150,10 @@ class Command(BaseCommand):
 
             consciousness_measure_type = ConsciousnessMeasureType.objects.get_or_create(name=item["Measures of consciousness.Type"])
 
-
-            sample = Sample.objects.create(experiment=experiment, type=item["Sample.Type"],total_size=["Sample.Total"],
-                                                  size_included=["Sample.Included"])
+            sample = Sample.objects.create(experiment=experiment, type=item["Sample.Type"],total_size=0,
+                                           size_included=["Sample.Included"]) #TODO: write sample size parser
 
             for parsed_task_type in parse_task_types(item):
                 task_type = TaskType.objects.get_or_create(name=parsed_task_type)
-
-            task = Task.objects.get_or_create(experiment=experiment, description=item["Task.Description"], type=task_type)
+                task = Task.objects.create(experiment=experiment, description=item["Task.Description"], type=task_type)
 

@@ -13,14 +13,14 @@ from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
 from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
-from studies.serializers import ExperimentSerializer, NationOfConsciousnessGraphSerializer, \
+from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer
 
 
 class ExperimentsGraphsViewSet(mixins.ListModelMixin,
                                GenericViewSet):
     permission_classes = [AllowAny]
-    serializer_class = ExperimentSerializer
+    serializer_class = FullExperimentSerializer
     # TODO: handle creation
     queryset = Experiment.objects \
         .select_related("study", "study__approval_process", "study__submitter") \

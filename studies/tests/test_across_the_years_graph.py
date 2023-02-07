@@ -13,20 +13,6 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
-    def test_across_the_years(self):
-        """
-        provide graph_type=across_the_years, min_experiments?=int, breakdown=str
-        returns experiments grouped by breakdown and by year within breakdown
-        """
-        another_different_child_paradigm, \
-        different_child_paradigm, \
-        different_parent_paradigm, \
-        first_measure, first_technique, \
-        fourth_measure, masking_child_paradigm, \
-        masking_parent_paradigm, second_measure, \
-        second_technique, third_measure_with_second_type = self._given_world_setup()
-
-        # self._test_across_the_years_is_reporting_breakdown()
 
     def _given_world_setup(self):
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],

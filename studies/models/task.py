@@ -5,6 +5,9 @@ from django.db.models import CASCADE
 class TaskType(models.Model):
     name = models.CharField(null=False, blank=False, max_length=30)
 
+    def __str__(self):
+        return self.name
+
 
 class Task(models.Model):
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",

@@ -14,13 +14,13 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
 
         """
         # First we'll get an experiment per country
-        experiments_by_countries_and_theories = self.resolve_queryset()
+        experiments_by_countries_and_theories = self.get_queryset()
 
         aggregate = self.aggregate(experiments_by_countries_and_theories)
 
         return aggregate
 
-    def resolve_queryset(self):
+    def get_queryset(self):
         experiments_by_countries_and_theories = Interpretation.objects \
             .filter(type=InterpretationsChoices.PRO,
                     experiment__in=self.experiments) \

@@ -8,7 +8,7 @@ def setup_profile(sender, instance, created, **kwargs):
     from users.models import Profile
 
     if created:
-        Profile.objects.create(user=instance)
+        Profile.create_profile(user=instance)
 
 
 class UsersConfig(AppConfig):

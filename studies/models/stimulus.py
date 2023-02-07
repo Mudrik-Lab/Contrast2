@@ -5,15 +5,24 @@ from django.db.models import CASCADE
 class ModalityType(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
 
+    def __str__(self):
+        return self.name
+
 
 class StimulusCategory(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
+
+    def __str__(self):
+        return self.name
 
 
 class StimulusSubCategory(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
     parent = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
                                to=StimulusCategory)
+
+    def __str__(self):
+        return self.name
 
 
 class Stimulus(models.Model):
@@ -25,7 +34,7 @@ class Stimulus(models.Model):
     category = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=StimulusCategory)
     sub_category = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
-                               to=StimulusSubCategory)  # TODO validators from config
+                                     to=StimulusSubCategory)  # TODO validators from config
     modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=ModalityType)  # TODO validators from config
     description = models.TextField(null=True, blank=True)

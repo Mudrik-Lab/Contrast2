@@ -5,6 +5,9 @@ from django.db.models import CASCADE
 class MeasureType(models.Model):
     name = models.CharField(max_length=50)
 
+    def __str__(self):
+        return self.name
+
 
 class Measure(models.Model):
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",

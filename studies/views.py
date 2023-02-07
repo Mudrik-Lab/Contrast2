@@ -5,11 +5,16 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
+from studies.filters import ExperimentFilter
+from studies.processors.frequencies import FrequenciesGraphDataProcessor
+from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
 from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.models import Study, Experiment
+from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
+from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import StudySerializer, ExperimentSerializer, ExcludedStudySerializer, \
-    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer
+    NationOfConsciousnessGraphSerializer, AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer
 
 
 # Create your views here.
@@ -37,14 +42,21 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
     serializer_class = ExperimentSerializer
     # TODO: handle creation
     queryset = Experiment.objects.select_related("study").filter(study__approval_status=ApprovalChoices.APPROVED)
+    filterset_class = ExperimentFilter
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
-        "across_the_years": AcrossTheYearsGraphSerializer
+        "across_the_years": AcrossTheYearsGraphSerializer,
+        "journals": BarGraphSerializer,
+        "parameters_distribution_bar":StackedBarGraphSerializer
     }
 
     graph_processors = {
         "nations_of_consciousness": NationOfConsciousnessDataProcessor,
-        "across_the_years": AcrossTheYearsGraphDataProcessor
+        "across_the_years": AcrossTheYearsGraphDataProcessor,
+        "journals": JournalsGraphDataProcessor,
+        "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
+        "frequencies": FrequenciesGraphDataProcessor,
+        "timings": TimingsGraphDataProcessor,
 
     }
 
@@ -54,14 +66,14 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
 
         return super().list(request=request, *args, **kwargs)
 
-    def get_serializer_by_graph_type(self, graph_type, *args, **kwargs):
+    def get_serializer_by_graph_type(self, graph_type, data, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and
         deserializing input, and for serializing output.
         """
         serializer_class = self.graph_serializers.get(graph_type)
         kwargs.setdefault('context', self.get_serializer_context())
-        return serializer_class(*args, **kwargs)
+        return serializer_class(instance=data, *args, **kwargs)
 
     def graph(self, request, graph_type, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
@@ -70,7 +82,7 @@ class ExperimentsViewSet(mixins.RetrieveModelMixin,
             raise GraphProcessNotRegisteredException(graph_type)
 
         graph_data = graph_data_processor(queryset, **request.query_params).process()
-        serializer = self.get_serializer_by_graph_type(graph_type, graph_data, many=True)
+        serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
 
         return Response(serializer.data, status=status.HTTP_200_OK)
 

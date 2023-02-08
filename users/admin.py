@@ -8,7 +8,12 @@ from users.models import Profile
 
 
 class ProfileAdmin(ImportExportModelAdmin):
-    fields = ("user",)
+    list_display = ("user", "email", "country_of_residence", "has_ASSC_membership", "academic_stage")
+    list_filter = ("has_ASSC_membership", "academic_stage")
+
+    @admin.display
+    def email(self, obj):
+        return obj.user.email
 
 
 admin.site.register(Profile, ProfileAdmin)

@@ -14,7 +14,7 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         super().tearDown()
 
     def test_experiments_endpoint_is_responding_to_list(self):
-        target_url = reverse("experiments-list")
+        target_url = reverse("experiments-graphs-list")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -46,7 +46,7 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
                                         theory=gnw_child_theory, type=InterpretationsChoices.CHALLENGES)
 
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="nations_of_consciousness")
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="nations_of_consciousness")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

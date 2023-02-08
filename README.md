@@ -2,7 +2,10 @@
 Contrast2 api repo
 
 ## About this project
+Relevant docs:
 
+* [parameters list](https://docs.google.com/spreadsheets/d/1ZrSEdJrwjikTdF_IJ3A6S6rGjU3UV7vx/edit#gid=1895565395)
+* [structure](https://docs.google.com/document/d/11E_O41yWsau9-m7zqWexPv16NjtAX3u1/edit)
 
 ## Contributing
 

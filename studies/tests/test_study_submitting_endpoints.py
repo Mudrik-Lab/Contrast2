@@ -72,7 +72,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
             is_reporting=ReportingChoices.NO_REPORT,
             theory_driven=TheoryDrivenChoices.POST_HOC,
             tasks=[dict(description="a task", type="Deviant Detection")],
-            samples=[dict(total_size=5, size_included=10, type=SampleChoices.CHILDREN)],
+            samples=[dict(total_size=10, size_included=5, type=SampleChoices.CHILDREN)],
             stimuli=[],
             measures=[],
             interpretations=[],

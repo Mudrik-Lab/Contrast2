@@ -1,17 +1,23 @@
 from collections import namedtuple
 
-from configuration.initial_setup import task_types_mapping
+from configuration.initial_setup import task_types_mapping, findings_measures
 from studies.choices import TheoryDrivenChoices
-from studies.models import Theory, Paradigm
-
+from studies.models import Theory, Paradigm, MeasureType, Measure
 
 SampleSizeFromData = namedtuple("SampleSizeFromData", ["total_size", "included_size"])
 
 
 def get_sample_size_from_data(item):
-    total_samples = item["Sample.Total"].split("(")[0]
-    sample_total_list = [sample.split("(")[0].strip() for sample in total_samples]
-    included_samples = item["Sample.Total"].split("(")[0]
+    total_sample_data = item["Sample.Total"]
+    if "(" in total_sample_data:
+        total_samples = total_sample_data.split("(")
+    included_sample_data = item["Sample.Included"]
+    if "(" in included_sample_data:
+        total_samples = included_sample_data.split("(")
+
+    # sample_total_list = [sample.split("(")[0].strip() for sample in total_samples]
+
+    # included_samples = item["Sample.Total"].split("(")[0]
 
     pass
 
@@ -24,34 +30,43 @@ def find_in_list(lookup_value: str, search_list: list):
     return found_item
 
 
-TypeFromData = namedtuple("TypeFromData", ["input_type", "input_comment"])
-
-
-# TODO: change return type to list of dicts instead of tuples
 def parse_consciousness_measure_type_from_data(text: str):
-    ITEM_SEP = '+'
-    START_FINDING_SEP = '('
-    END_FINDING_SEP = ')'
-    LOOKUP_LIST = ["None",
-                   "Condition Assessment",
-                   "Subjective",
-                   "State Induction Assessment",
-                   "Sleep Monitoring",
-                   "Objective"]
+    consciousness_measure_type_lookup = ["None",
+                                         "Condition Assessment",
+                                         "Subjective",
+                                         "State Induction Assessment",
+                                         "Sleep Monitoring",
+                                         "Objective"]
 
-    consciousness_measure_types = text.split(ITEM_SEP)
+    consciousness_measure_types = text.split("+")
     consciousness_measure_types_list = []
     for consciousness_measure_type in consciousness_measure_types:
-        if START_FINDING_SEP in consciousness_measure_type:
-            resolved_type = find_in_list(consciousness_measure_type.split(START_FINDING_SEP)[0], LOOKUP_LIST)
-            comment = consciousness_measure_type.split(START_FINDING_SEP)[1].replace(END_FINDING_SEP, '').strip()
+        if "(" in consciousness_measure_type:
+            resolved_type = find_in_list(consciousness_measure_type.split("(")[0], consciousness_measure_type_lookup)
         else:
-            comment = ''
-            resolved_type = (find_in_list(consciousness_measure_type, LOOKUP_LIST))
-        type_from_data = TypeFromData(resolved_type, comment)
-        consciousness_measure_types_list.append(type_from_data)
+            resolved_type = (find_in_list(consciousness_measure_type, consciousness_measure_type_lookup))
+        consciousness_measure_types_list.append(resolved_type)
 
     return consciousness_measure_types_list
+
+
+def parse_consciousness_measure_phases_from_data(text: str):
+    consciousness_measure_phase_lookup = ["None",
+                                          "Post Experiment",
+                                          "Pre Experiment",
+                                          "Separate Experiment",
+                                          "Trial By Trial"]
+
+    consciousness_measure_phases = text.split("+")
+    consciousness_measure_phases_list = []
+    for consciousness_measure_phase in consciousness_measure_phases:
+        if "(" in consciousness_measure_phase:
+            resolved_phase = find_in_list(consciousness_measure_phase.split("(")[0], consciousness_measure_phase_lookup)
+        else:
+            resolved_phase = (find_in_list(consciousness_measure_phase, consciousness_measure_phase_lookup))
+        consciousness_measure_phases_list.append(resolved_phase)
+
+    return consciousness_measure_phases_list
 
 
 def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
@@ -98,12 +113,12 @@ def parse_task_types(item: dict):
 def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
     paradigms_in_data = []
     # parent = Paradigm()
-    parent_paradigms = item["Experimental paradigms.Main Paradigm"].split(" + ")
+    parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split(" + ")
     parsed_paradigms = item["Experimental paradigms.Specific Paradigm"].split(" + ")
     specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in parsed_paradigms]
 
     for paradigm in paradigms["parent_paradigms"]:
-        if paradigm not in parent_paradigms:
+        if paradigm not in parsed_main_paradigms:
             continue
         parent = Paradigm.objects.get_or_create(name=paradigm)
         paradigms_in_data.append(parent)
@@ -228,5 +243,27 @@ def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
     return paradigms_in_data
 
 
+MeasureFromData = namedtuple("MeasureFromData", ["measure_type", "measure_notes"])
 
 
+def get_measures_from_data(item: dict):
+    measures_data = item[
+        'Findings.Measures [0 = Decoding, 1 = BOLD, 2 = Frequencies, 3= ERP, 4 = Mutual Information, 5 = Synchronization, 6 = Behavioral (Accuracy), 7 = Behavioral (RT), 9 = Connectivity, 10 = PHI, 11 = Graph theoretical measures, 14 = Entropy, 15 = Global Field Power, 16 = PCA, 17 = Lempel Ziv, 18 = H2_15O, 19 = Variability, 20 = Adaptation, 21 = Metacognition, 22 = Visibility, 25 = Dimension of activation, 26 = fALFF, 27 = 18F Fluorodeoxyglucose, 28 = CFC , 29 = LRTC, 30 = Calcium Imaging, 31 = K Complex, 32 = TCT, 33 = DISS, 34 = Observation, 35 = Microstates, 36 = Stimulation Reactivity, 37 = Frequency Tagging, 39 = Hopf bifurcation parameter, 41 = Slow Wave Activity, 42 = Auto Information Flow, 43 = Cross Information Flow ciF, 44 = Auto Correlation, 45 = Topo, 46 = PCI, 47 = Physiological Measure, 49 = Computer Simulations, 50 = Phosphene Threshold, 51 = Frequency Change Index, 52 = Brain Behavior Correlation, 56 = Nonlinear correlation index, 57 =DSI, 58 = Complexity of functional connectivity, 63 = BIS, 64 = Correlation dimension, 65 = Dominance, 66 = Epileptogenicity Index, 67 = Spike Suppression, 68 = Mean Dwell Time, 69 = Network Backbones, 70 = SSVEP, 71= Fractal Dimension]']
+    measures_data_split = measures_data.split("+")
+    measures_from_data = []
+    for measure in measures_data_split:
+        if "(" not in measure:
+            measure_type_code = measure.strip()
+            for key, value in findings_measures.items():
+                if measure_type_code == key:
+                    measure_type = value
+                    measures_from_data.append(MeasureFromData(measure_type, ""))
+        else:
+            measure_type_code = measure.split("(")[0].strip()
+            notes = measure.split("(")[1].split(")")[0].strip()
+            for key, value in findings_measures.items():
+                if measure_type_code == key:
+                    measure_type = value
+                    measures_from_data.append(MeasureFromData(measure_type, notes))
+
+    return measures_from_data

@@ -68,7 +68,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
                                                     breakdown="paradigm_family")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -91,7 +91,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
                                                     breakdown="paradigm")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -115,7 +115,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
                                                     breakdown="measure")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -141,7 +141,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
 
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
                                                     breakdown="technique")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -178,7 +178,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
 
-        target_url = self.reverse_with_query_params("experiments-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
                                                     breakdown="reporting")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

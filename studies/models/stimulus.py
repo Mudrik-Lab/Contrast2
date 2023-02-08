@@ -3,6 +3,9 @@ from django.db.models import CASCADE
 
 
 class ModalityType(models.Model):
+    class Meta:
+        verbose_name_plural = "stimulus modalities"
+
     name = models.CharField(null=False, blank=False, max_length=50)
 
     def __str__(self):
@@ -10,6 +13,9 @@ class ModalityType(models.Model):
 
 
 class StimulusCategory(models.Model):
+    class Meta:
+        verbose_name_plural = "stimulus categories"
+
     name = models.CharField(null=False, blank=False, max_length=50)
 
     def __str__(self):
@@ -17,6 +23,8 @@ class StimulusCategory(models.Model):
 
 
 class StimulusSubCategory(models.Model):
+    class Meta:
+        verbose_name_plural = "stimulus sub categories"
     name = models.CharField(null=False, blank=False, max_length=50)
     parent = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
                                to=StimulusCategory)
@@ -26,7 +34,9 @@ class StimulusSubCategory(models.Model):
 
 
 class Stimulus(models.Model):
-    # TODO validator
+    class Meta:
+        verbose_name_plural = "stimuli"
+
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",
                                    on_delete=CASCADE,
                                    related_name="stimuli")

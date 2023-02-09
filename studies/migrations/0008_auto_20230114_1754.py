@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from configuration.initial_setup import finding_tag_types, stimulus_category, stimulus_sub_category
+from configuration.initial_setup import stimulus_category, stimulus_sub_category
 
 
 def bootstrap_type_models(apps, schema_editor):

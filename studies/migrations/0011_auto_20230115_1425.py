@@ -14,24 +14,26 @@ def bootstrap_type_models(apps, schema_editor):
         FindingTagFamily.objects.get_or_create(name=finding_tag_family)
 
     FindingTagType = apps.get_model("studies", "FindingTagType")
+    temporal = FindingTagFamily.objects.get(name='Temporal')
     for finding_tag_type in finding_tag_types['Temporal']:
-        temporal = FindingTagFamily.objects.get(name='Temporal')
+
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
 
+    spatial_areas = FindingTagFamily.objects.get(name='Spatial Areas')
     for finding_tag_type in finding_tag_types['Spatial_Areas']:
-        spatial_areas = FindingTagFamily.objects.get(name='Spatial Areas')
+
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=spatial_areas)
 
+    frequency = FindingTagFamily.objects.get(name='Frequency')
     for finding_tag_type in ["Alpha",
                              "Beta",
                              "Delta",
                              "Gamma",
                              "Theta"]:
-        frequency = FindingTagFamily.objects.get(name='Frequency')
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=frequency)
 
+    miscellaneous = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
     for finding_tag_type in finding_tag_types['miscellaneous']:
-        miscellaneous = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=miscellaneous)
 
 class Migration(migrations.Migration):

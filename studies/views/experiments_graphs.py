@@ -14,7 +14,64 @@ from studies.processors.nations_of_consciousness import NationOfConsciousnessDat
 from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
-    AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer
+    AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer
+
+graphs_queryparams = {OpenApiParameter(name='graph_type',
+                                       description='Graph type',
+                                       type=str,
+                                       enum=["nations_of_consciousness",
+                                             "across_the_years",
+                                             "journals",
+                                             "parameters_distribution_bar",
+                                             "frequencies",
+                                             "timings"
+                                             ],
+                                       required=True),
+                      OpenApiParameter(name='theory',
+                                       type=str,
+                                       required=False,  # TODO add supported enum
+                                       description='theory filter needed for certain graphs'),
+                      OpenApiParameter(name='breakdown',
+                                       description='breakdown needed for certain graphs',
+                                       type=str,
+                                       enum=["paradigm_family",
+                                             "paradigm",
+                                             "population",
+                                             "finding_tag",
+                                             "finding_tag_family",
+                                             "reporting",
+                                             "theory_driven",
+                                             "task",
+                                             "stimuli_category",
+                                             "modality",
+                                             "consciousness_measure_phase",
+                                             "consciousness_measure_type",
+                                             "type_of_consciousness",
+                                             "technique",
+                                             "measure"],
+                                       required=False),
+                      OpenApiParameter(name='sort_first',
+                                       description='sort needed for certain graphs',
+                                       type=str,
+                                       required=False),
+                      OpenApiParameter(name='theory',
+                                       description='theory optional for frequencies graphs',
+                                       type=str,
+                                       required=False),
+                      OpenApiParameter(name='is_theory_driven',
+                                       description='is_theory_driven optional for frequencies/timings graphs',
+                                       type=str,
+                                       required=False),
+                      OpenApiParameter(name='techniques',
+                                       description='techniques optional for frequencies/timings graphs',
+                                       type=str,
+                                       required=False),
+                      OpenApiParameter(name='tags_types',
+                                       description='tags_types optional for timings graphs',
+                                       type=str,
+                                       required=False)
+
+                      }
 
 
 class ExperimentsGraphsViewSet(mixins.ListModelMixin,
@@ -31,7 +88,9 @@ class ExperimentsGraphsViewSet(mixins.ListModelMixin,
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
         "across_the_years": AcrossTheYearsGraphSerializer,
         "journals": BarGraphSerializer,
-        "parameters_distribution_bar": StackedBarGraphSerializer
+        "parameters_distribution_bar": StackedBarGraphSerializer,
+        "timings": DurationGraphSerializer,
+        "frequencies": DurationGraphSerializer
     }
 
     graph_processors = {
@@ -44,40 +103,7 @@ class ExperimentsGraphsViewSet(mixins.ListModelMixin,
 
     }
 
-    @extend_schema(parameters=[OpenApiParameter(name='graph_type',
-                                                description='Graph type',
-                                                type=str,
-                                                enum=["nations_of_consciousness",
-                                                      "across_the_years",
-                                                      "journals",
-                                                      "parameters_distribution_bar",
-                                                      "frequencies",
-                                                      "timings"
-                                                      ],
-                                                required=True),
-                               OpenApiParameter(name='theory',
-                                                type=str,
-                                                required=False, #TODO add supported enum
-                                                description='theory filter needed for certain graphs'),
-                               OpenApiParameter(name='breakdown',
-                                                description='breakdown needed for certain graphs',
-                                                type=str,
-                                                enum=["paradigm_family",
-                                                      "paradigm",
-                                                      "population",
-                                                      "finding_tag",
-                                                      "finding_tag_family",
-                                                      "reporting",
-                                                      "theory_driven",
-                                                      "task",
-                                                      "stimuli_category",
-                                                      "modality",
-                                                      "consciousness_measure_phase",
-                                                      "consciousness_measure_type",
-                                                      "type_of_consciousness",
-                                                      "technique",
-                                                      "measure"],
-                                                required=False)])
+    @extend_schema(parameters=graphs_queryparams)
     def list(self, request, *args, **kwargs):
         if request.query_params.get("graph_type"):
             return self.graph(request, graph_type=request.query_params.get("graph_type"), *args, **kwargs)

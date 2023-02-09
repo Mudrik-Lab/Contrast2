@@ -2,15 +2,16 @@ from django.core.management import BaseCommand
 import pandas
 from configuration.initial_setup import techniques, paradigms, finding_tags_map, findings_measures
 from studies.choices import ExperimentTypeChoices, InterpretationsChoices, ReportingChoices, TypeOfConsciousnessChoices
+from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from studies.parsers.finding_tag_parsers import parse_findings_per_experiment, FrequencyFinding, TemporalFinding, \
     SpatialFinding
 from studies.parsers.historic_data_helpers import get_paradigms_from_data, parse_theory_driven_from_data, \
     parse_task_types, get_measures_from_data, parse_consciousness_measure_type_from_data, \
-    parse_consciousness_measure_phases_from_data
+    parse_consciousness_measure_phases_from_data, get_stimuli_from_data
 
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
     TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Interpretation, Theory, \
-    ConsciousnessMeasure, MeasureType, Measure
+    ConsciousnessMeasure, MeasureType, Measure, ModalityType
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, parse_authors_keywords_from_text, \
     resolve_country_from_affiliation_text
 
@@ -207,6 +208,13 @@ class Command(BaseCommand):
                 Task.objects.create(experiment=experiment, description=description, type=task_type)
 
             # stimuli
-            modality_type = get_modality_type_from_data(item)
-            stimulus_category
-            stimulus_description = item["Stimuli Features.Description"]
+            stimuli_from_data = get_stimuli_from_data(item)
+            for stimulus in stimuli_from_data:
+                modality_type, created = ModalityType.objects.get_or_create(name=stimulus.modality)
+                stimulus_category, created = StimulusCategory.objects.get_or_create(name=stimulus.category)
+                if stimulus.sub_category:
+                    stimulus_sub_category, created = StimulusSubCategory.objects.get_or_create(name=stimulus.sub_category, parent=stimulus.category)
+                duration = int(stimulus.duration)
+                stimulus_description = item["Stimuli Features.Description"]
+                Stimulus.objects.create(experiment=experiment, category=stimulus_category, sub_category=stimulus_sub_category,
+                                        modality=modality_type, description=stimulus_description, duration=duration)

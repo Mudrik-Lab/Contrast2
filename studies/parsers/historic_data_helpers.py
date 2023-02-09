@@ -247,8 +247,20 @@ MeasureFromData = namedtuple("MeasureFromData", ["measure_type", "measure_notes"
 
 
 def get_measures_from_data(item: dict):
-    measures_data = item[
-        'Findings.Measures [0 = Decoding, 1 = BOLD, 2 = Frequencies, 3= ERP, 4 = Mutual Information, 5 = Synchronization, 6 = Behavioral (Accuracy), 7 = Behavioral (RT), 9 = Connectivity, 10 = PHI, 11 = Graph theoretical measures, 14 = Entropy, 15 = Global Field Power, 16 = PCA, 17 = Lempel Ziv, 18 = H2_15O, 19 = Variability, 20 = Adaptation, 21 = Metacognition, 22 = Visibility, 25 = Dimension of activation, 26 = fALFF, 27 = 18F Fluorodeoxyglucose, 28 = CFC , 29 = LRTC, 30 = Calcium Imaging, 31 = K Complex, 32 = TCT, 33 = DISS, 34 = Observation, 35 = Microstates, 36 = Stimulation Reactivity, 37 = Frequency Tagging, 39 = Hopf bifurcation parameter, 41 = Slow Wave Activity, 42 = Auto Information Flow, 43 = Cross Information Flow ciF, 44 = Auto Correlation, 45 = Topo, 46 = PCI, 47 = Physiological Measure, 49 = Computer Simulations, 50 = Phosphene Threshold, 51 = Frequency Change Index, 52 = Brain Behavior Correlation, 56 = Nonlinear correlation index, 57 =DSI, 58 = Complexity of functional connectivity, 63 = BIS, 64 = Correlation dimension, 65 = Dominance, 66 = Epileptogenicity Index, 67 = Spike Suppression, 68 = Mean Dwell Time, 69 = Network Backbones, 70 = SSVEP, 71= Fractal Dimension]']
+    measures_data = item['Findings.Measures [0 = Decoding, 1 = BOLD, 2 = Frequencies, 3= ERP, 4 = Mutual Information,' \
+                         '5 = Synchronization, 6 = Behavioral (Accuracy), 7 = Behavioral (RT), 9 = Connectivity, ' \
+                         '10 = PHI, 11 = Graph theoretical measures, 14 = Entropy, 15 = Global Field Power, 16 = PCA, ' \
+                         '17 = Lempel Ziv, 18 = H2_15O, 19 = Variability, 20 = Adaptation, 21 = Metacognition, ' \
+                         '22 = Visibility, 25 = Dimension of activation, 26 = fALFF, 27 = 18F Fluorodeoxyglucose, ' \
+                         '28 = CFC , 29 = LRTC, 30 = Calcium Imaging, 31 = K Complex, 32 = TCT, 33 = DISS, ' \
+                         '34 = Observation, 35 = Microstates, 36 = Stimulation Reactivity, 37 = Frequency Tagging, ' \
+                         '39 = Hopf bifurcation parameter, 41 = Slow Wave Activity, 42 = Auto Information Flow, ' \
+                         '43 = Cross Information Flow ciF, 44 = Auto Correlation, 45 = Topo, 46 = PCI, ' \
+                         '47 = Physiological Measure, 49 = Computer Simulations, 50 = Phosphene Threshold, ' \
+                         '51 = Frequency Change Index, 52 = Brain Behavior Correlation, 56 = Nonlinear correlation index, ' \
+                         '57 =DSI, 58 = Complexity of functional connectivity, 63 = BIS, 64 = Correlation dimension, ' \
+                         '65 = Dominance, 66 = Epileptogenicity Index, 67 = Spike Suppression, 68 = Mean Dwell Time, ' \
+                         '69 = Network Backbones, 70 = SSVEP, 71= Fractal Dimension]']
     measures_data_split = measures_data.split("+")
     measures_from_data = []
     for measure in measures_data_split:
@@ -267,3 +279,61 @@ def get_measures_from_data(item: dict):
                     measures_from_data.append(MeasureFromData(measure_type, notes))
 
     return measures_from_data
+
+
+StimulusFromData = namedtuple("StimulusFromData", ["category", "sub_category", "modality", "duration"])
+
+
+def get_stimuli_from_data(item):
+    stimuli_from_data = []
+    stimuli_categories = item["Stimuli Features.Categories"].split("+")
+    stimuli_modalities = item["Stimuli Features.Modality"].split("+")
+    stimuli_durations = item["Stimuli Features.Duration"].split("+")
+    if not len(stimuli_categories) == len(stimuli_modalities) == len(stimuli_durations):
+        raise ProblemInExistingDataException
+    for category, modality, duration in zip(stimuli_categories, stimuli_modalities, stimuli_durations):
+        # resolve category and sub-category (if existing)
+        resolved_category = ""
+        sub_category = ""
+        if "(" not in category:
+            resolved_category = category.strip()
+            sub_category = None
+        else:
+            resolved_category = category.split("(")[0].strip
+            sub_category = category.split("(")[1].split(")")[0].strip()
+        # resolve modality
+        modality_type = modality.strip()
+        resolved_modality = ""
+        for modality in ["Auditory",
+                         "None",
+                         "Olfactory",
+                         "Tactile",
+                         "Visual"]:
+            if modality_type == modality:
+                resolved_modality = modality_type
+        # resolve duration
+        stimulus_duration = duration
+        if "minute" in stimulus_duration:
+            raw_duration = stimulus_duration.split("minute")[0].strip
+            duration_ms = int(raw_duration) * 60000
+        elif "ms" in stimulus_duration:
+            raw_duration = stimulus_duration.split("ms")[0]
+            duration_ms = float(raw_duration.strip().split(" ")[-1].strip())
+        elif "micro" in stimulus_duration:
+            raw_duration = stimulus_duration.split("micro")[0].strip
+            duration_ms = float(raw_duration) / 1000
+        elif "sec" in stimulus_duration:
+            raw_duration = stimulus_duration.split("sec")[0].strip
+            duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
+        else:
+            duration_ms = 0
+        duration_micros = int(duration_ms * 1000)
+        resolved_duration = duration_ms # TODO: change to duration_micros if needed
+
+        stimuli_from_data.append(StimulusFromData(category=resolved_category, sub_category=sub_category,
+                                                  modality=resolved_modality, duration=resolved_duration))
+    return stimuli_from_data
+
+
+class ProblemInExistingDataException(Exception):
+    pass

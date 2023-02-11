@@ -203,36 +203,36 @@ techniques = ["Ca2 Imaging",
               "TMS"]
 
 finding_tag_types = {
-    'Temporal': ["M130"
-                 "M280"
-                 "M70"
-                 "N1"
-                 "N140"
-                 "N150"
-                 "N170"
-                 "N2"
-                 "N2pc"
-                 "N400"
-                 "P1"
-                 "P2"
-                 "P300"
-                 "VAN"
-                 "CNV"
-                 "Recurrent Processing"
-                 "MMN"
-                 "ART"
-                 "Early Components"
-                 "Late Components"
-                 "SN"
-                 "Prestimulus Timing"
-                 "SPCN"
-                 "ERN"
-                 "Pe"
-                 "EPN"
-                 "Border Difference"
-                 "Figure Ground difference"
-                 "Change related positivity"
-                 "AAN"
+    'Temporal': ["M130",
+                 "M280",
+                 "M70",
+                 "N1",
+                 "N140",
+                 "N150",
+                 "N170",
+                 "N2",
+                 "N2pc",
+                 "N400",
+                 "P1",
+                 "P2",
+                 "P300",
+                 "VAN",
+                 "CNV",
+                 "Recurrent Processing",
+                 "MMN",
+                 "ART",
+                 "Early Components",
+                 "Late Components",
+                 "SN",
+                 "Prestimulus Timing",
+                 "SPCN",
+                 "ERN",
+                 "Pe",
+                 "EPN",
+                 "Border Difference",
+                 "Figure Ground difference",
+                 "Change related positivity",
+                 "AAN",
                  "Intermediate Components"],
 
     'Spatial_Areas': ["Frontal",

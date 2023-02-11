@@ -1,10 +1,12 @@
 from unittest import TestCase
 
+from studies.parsers.historic_data_helpers import find_in_list
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
-    resolve_country_from_affiliation_text, parse_consciousness_measure_type_from_data, TypeFromData
+    resolve_country_from_affiliation_text
+from studies.tests.base import BaseTestCase
 
 
-class StudyParserHelpersTestCase(TestCase):
+class StudyParserHelpersTestCase(BaseTestCase):
     def test_parsing_authors_from_affiliation_text(self):
         text = 'Zhou S., Zou G., Xu J., Su Z., Zhu H., Zou Q., Gao J.-H.'
         res = parse_authors_from_authors_text(text)
@@ -24,9 +26,18 @@ class StudyParserHelpersTestCase(TestCase):
         res = resolve_country_from_affiliation_text(text)
         self.assertEqual(res, {"United Kingdom", "China"})
 
-    def test_resolving_consciousness_measure_type_from_data(self):
+    def test_getting_resolved_list_from_data(self):
+        consciousness_measure_type_lookup = ["None",
+                                             "Condition Assessment",
+                                             "Subjective",
+                                             "State Induction Assessment",
+                                             "Sleep Monitoring",
+                                             "Objective"]
         text = "Objective + Subjective (Confidence) + Sleep Monitoring + State Induction Assessment + Condition + Assessment + Objective"
-        res = parse_consciousness_measure_type_from_data(text)
+        lookup_list = text.split("+")
+        res = find_in_list(lookup_list, consciousness_measure_type_lookup)
+
         self.assertEqual(len(res), 7)
-        self.assertEqual(res[0], TypeFromData('Objective', ''))
-        self.assertEqual(res[1], TypeFromData('Subjective', 'Confidence'))
+        self.assertEqual(res[2], "Sleep Monitoring")
+        self.assertEqual(res[1], "Subjective")
+

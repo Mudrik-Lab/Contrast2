@@ -6,12 +6,11 @@ from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimu
 from studies.parsers.finding_tag_parsers import parse_findings_per_experiment, FrequencyFinding, TemporalFinding, \
     SpatialFinding
 from studies.parsers.historic_data_helpers import get_paradigms_from_data, parse_theory_driven_from_data, \
-    parse_task_types, get_measures_from_data, parse_consciousness_measure_type_from_data, \
-    parse_consciousness_measure_phases_from_data, get_stimuli_from_data
+    parse_task_types, get_measures_from_data, get_stimuli_from_data, get_consciousness_measure_type_and_phase_from_data
 
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
     TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Interpretation, Theory, \
-    ConsciousnessMeasure, MeasureType, Measure, ModalityType
+    ConsciousnessMeasure, MeasureType, Measure, ModalityType, Paradigm
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, parse_authors_keywords_from_text, \
     resolve_country_from_affiliation_text
 
@@ -34,17 +33,19 @@ class Command(BaseCommand):
             author_keywords = parse_authors_keywords_from_text(item["Author.Keywords"])
             countries = resolve_country_from_affiliation_text(item["Affiliations"])
 
-            study = Study.objects.get_or_create(DOI=item["DOI"], title=item["Title"], year=item["Year"],
-                                                corresponding_author_email="placeholder@email", approval_status=1,
-                                                authors_key_words=author_keywords, funding=item["Funding.Details"],
-                                                source_title=item["Source.Title"],
-                                                abbreviated_source_title=item["Abbreviated.Source.Title"],
-                                                countries=countries, affiliations=item["Affiliations"])
+            study, created = Study.objects.get_or_create(DOI=item["DOI"], title=item["Title"], year=item["Year"],
+                                                         corresponding_author_email="placeholder@email",
+                                                         approval_status=1,
+                                                         authors_key_words=author_keywords,
+                                                         funding=item["Funding.Details"],
+                                                         source_title=item["Source.Title"],
+                                                         abbreviated_source_title=item["Abbreviated.Source.Title"],
+                                                         countries=countries, affiliations=item["Affiliations"])
             # parse authors and add to study
             authors = []
             authors_names = parse_authors_from_authors_text(item["Authors"])
             for author_name in authors_names:
-                author = Author.objects.get_or_create(name=author_name)
+                author, created = Author.objects.get_or_create(name=author_name)
                 authors.append(author)
             for author in authors:
                 study.authors.add(author)
@@ -102,8 +103,8 @@ class Command(BaseCommand):
                     elif value == "X":
                         interpretation = InterpretationsChoices.NEUTRAL
 
-                    experiment_interpretation = Interpretation.objects.get_or_create(experiment=experiment,
-                                                                                     theory=theory, type=interpretation)
+                    experiment_interpretation = Interpretation.objects.create(experiment=experiment,
+                                                                              theory=theory, type=interpretation)
                     interpretations.append(experiment_interpretation)
 
             for interpretation in interpretations:
@@ -113,25 +114,28 @@ class Command(BaseCommand):
             for technique in techniques:
                 if technique not in item["Techniques"]:
                     continue
-                parsed_technique = Technique.objects.get_or_create(name=technique)
+                parsed_technique = Technique.objects.get(name=technique)
                 techniques_in_historic_data.append(parsed_technique)
 
             for technique in techniques_in_historic_data:
                 experiment.techniques.add(technique)
 
             paradigms_in_data = get_paradigms_from_data(paradigms, item)
-            for paradigm in paradigms_in_data:
+            for parsed_paradigm in paradigms_in_data:
+                name = parsed_paradigm.name
+                parent = parsed_paradigm.parent
+                paradigm = Paradigm.objects.create(name=name, parent=parent)
                 experiment.paradigms.add(paradigm)
 
             # resolve and create findings
-            for key in item.keys:
+            findings_ncc_tags = ""
+            for key in item.keys():
                 if 'Findings.NCC Tags' in key:
                     findings_ncc_tags = key
             findings = parse_findings_per_experiment(findings_ncc_tags)
 
-            finding_classes = []
             for finding in findings:
-                tag_type = finding_tags_map[finding.tag]
+                resolved_tag_type = finding_tags_map[finding.tag]
                 comment = finding.comment
                 if len(techniques_in_historic_data) == 1:
                     technique = techniques_in_historic_data[0]
@@ -139,60 +143,53 @@ class Command(BaseCommand):
                     technique = finding.technique
 
                 if isinstance(finding, FrequencyFinding):
-                    finding_class = FindingTag(experiment=experiment, family='Frequency', type=tag_type,
-                                               onset=finding.onset, offset=finding.offset,
-                                               band_lower_bound=finding.band_low, band_higher_bound=finding.band_high,
-                                               notes=comment, analysis_type=finding.analysis,
-                                               correlation_sign=finding.cor_type, technique=technique)
-                    finding_classes.append(finding_class)
-                elif isinstance(finding, TemporalFinding):
-                    finding_class = FindingTag(experiment=experiment, family='Temporal', type=tag_type,
-                                               onset=finding.onset, offset=finding.offset, notes=comment,
-                                               technique=technique)
-                    finding_classes.append(finding_class)
-                elif isinstance(finding, SpatialFinding):
-                    finding_class = FindingTag(experiment=experiment, family='Spatial Areas', type=tag_type,
-                                               AAL_atlas_tag=finding.area, notes=comment, technique=technique)
-                    finding_classes.append(finding_class)
-                else:
-                    finding_class = FindingTag(experiment=experiment, family='miscellaneous (no Family)', type=tag_type,
-                                               notes=comment)
-                    finding_classes.append(finding_class)
+                    family = FindingTagFamily.objects.get(name='Frequency')
+                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                              onset=finding.onset, offset=finding.offset,
+                                              band_lower_bound=finding.band_low,
+                                              band_higher_bound=finding.band_high,
+                                              notes=comment, analysis_type=finding.analysis,
+                                              correlation_sign=finding.cor_type, technique=technique)
 
-            for finding_class in finding_classes:
-                FindingTag.objects.create(finding_class)
+                elif isinstance(finding, TemporalFinding):
+                    family = FindingTagFamily.objects.get(name='Temporal')
+                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                              onset=finding.onset, offset=finding.offset, notes=comment,
+                                              technique=technique)
+
+                elif isinstance(finding, SpatialFinding):
+                    family = FindingTagFamily.objects.get(name='Spatial Areas')
+                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                              AAL_atlas_tag=finding.area, notes=comment,
+                                              technique=technique)
+
+                else:
+                    family = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
+                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                              notes=comment)
 
             # resolve and create consciousness measures
-            type_text = item['Measures of consciousness.Measures Taken']
-            consciousness_types = parse_consciousness_measure_type_from_data(type_text)
-            types = []
-            for consciousness_type in consciousness_types:
-                consciousness_measure_type = ConsciousnessMeasureType.objects.get_or_create(name=consciousness_type)
-                types.append(consciousness_measure_type)
-
-            phase_text = item['Measures of consciousness.Type']
-            consciousness_measure_phases = parse_consciousness_measure_phases_from_data(phase_text)
-            phases = []
-            for consciousness_phase in consciousness_measure_phases:
-                consciousness_measure_phase = ConsciousnessMeasurePhaseType.objects.get_or_create(
+            consciousness_measures_from_data = get_consciousness_measure_type_and_phase_from_data(item)
+            for consciousness_measure in consciousness_measures_from_data:
+                consciousness_type = consciousness_measure.type
+                consciousness_phase = consciousness_measure.phase
+                consciousness_measure_type = ConsciousnessMeasureType.objects.get(name=consciousness_type)
+                consciousness_measure_phase = ConsciousnessMeasurePhaseType.objects.get(
                     name=consciousness_phase)
-                phases.append(consciousness_measure_phase)
-
-            consciousness_measure_description = item["Measures of consciousness.Description"]
-
-            for index in types, phases:
-                consciousness_measure_phase = phases[index]
-                consciousness_measure_type = types[index]
-                ConsciousnessMeasure.objects.get_or_create(experiment=experiment, phase=consciousness_measure_phase,
-                                                           type=consciousness_measure_type,
-                                                           description=consciousness_measure_description)
-
+                consciousness_measure_description = item["Measures of consciousness.Description"]
+                ConsciousnessMeasure.objects.create(experiment=experiment, phase=consciousness_measure_phase,
+                                                    type=consciousness_measure_type,
+                                                    description=consciousness_measure_description)
             # resolve and create finding measures
             measures = get_measures_from_data(item)
             for measure in measures:
                 measure_type = measure.measure_type
                 notes = measure.measure_notes
-                measure_name = MeasureType.objects.get_or_create(name=measure_type)
+                measure_name = MeasureType.objects.get(name=measure_type)
                 Measure.objects.create(experiment=experiment, type=measure_name, notes=notes)
 
             # resolve and create samples
@@ -203,18 +200,20 @@ class Command(BaseCommand):
 
             # resolve and create tasks
             for parsed_task_type in parse_task_types(item):
-                task_type = TaskType.objects.get_or_create(name=parsed_task_type)
+                task_type = TaskType.objects.get(name=parsed_task_type)
                 description = item["Task.Description"]
                 Task.objects.create(experiment=experiment, description=description, type=task_type)
 
             # stimuli
             stimuli_from_data = get_stimuli_from_data(item)
             for stimulus in stimuli_from_data:
-                modality_type, created = ModalityType.objects.get_or_create(name=stimulus.modality)
-                stimulus_category, created = StimulusCategory.objects.get_or_create(name=stimulus.category)
+                modality_type = ModalityType.objects.get(name=stimulus.modality)
+                stimulus_category = StimulusCategory.objects.get(name=stimulus.category)
                 if stimulus.sub_category:
-                    stimulus_sub_category, created = StimulusSubCategory.objects.get_or_create(name=stimulus.sub_category, parent=stimulus.category)
+                    stimulus_sub_category = StimulusSubCategory.objects.get(
+                        name=stimulus.sub_category, parent=stimulus.category)
                 duration = int(stimulus.duration)
                 stimulus_description = item["Stimuli Features.Description"]
-                Stimulus.objects.create(experiment=experiment, category=stimulus_category, sub_category=stimulus_sub_category,
+                Stimulus.objects.create(experiment=experiment, category=stimulus_category,
+                                        sub_category=stimulus_sub_category,
                                         modality=modality_type, description=stimulus_description, duration=duration)

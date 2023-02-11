@@ -36,27 +36,31 @@ class TimingsrGraphTestCase(BaseTestCase):
         temporal_family = FindingTagFamily.objects.get(name="Temporal")
         tag_type_N400 = FindingTagType.objects.create(name="N400", family=temporal_family)
         tag_type_P300 = FindingTagType.objects.create(name="P300", family=temporal_family)
-        first_tag_data = dict(type=tag_type_N400, technique=first_technique, family=temporal_family)
-        second_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family)
-        third_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family)
+        first_tag_data = dict(type=tag_type_N400, technique=first_technique, family=temporal_family, onset=100,
+                              offset=150)
+        second_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=120,
+                               offset=150)
+        third_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=200,
+                              offset=250)
 
         israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
                                                                           paradigms=[masking_child_paradigm],
                                                                           is_reporting=ReportingChoices.NO_REPORT,
                                                                           techniques=[second_technique],
-                                                                          finding_tags=[first_tag_data])
+                                                                          finding_tags=[third_tag_data])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
                                                                             finding_description="brave new world",
                                                                             techniques=[second_technique],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
-                                                                            finding_tags=[second_tag_data],
+                                                                            finding_tags=[second_tag_data,
+                                                                                          third_tag_data],
                                                                             paradigms=[different_child_paradigm,
                                                                                        masking_child_paradigm])
         british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study,
                                                                                   techniques=[first_technique,
                                                                                               second_technique],
                                                                                   is_reporting=ReportingChoices.BOTH,
-                                                                                  finding_tags=[second_tag_data,
+                                                                                  finding_tags=[first_tag_data,
                                                                                                 third_tag_data],
                                                                                   paradigms=[
                                                                                       masking_child_paradigm,
@@ -113,5 +117,9 @@ class TimingsrGraphTestCase(BaseTestCase):
 
         self.assertEqual(len(res.data), 2)  # as gnw child PRO interpretation to two experiments
 
-        first_series = res.data[0]
-        second_series = res.data[1]
+        first_series = res.data[0]  # supposed to tags of experiment 2 (P300 120, 150)(P300, 200, 250)
+        second_series = res.data[1]  # supposed to tags of experiment 1 (P300, 200, 250)
+
+        self.assertEqual(len(first_series["series"]), 2)  # supposed to be second experiment which has two tags
+        # Verify order
+        self.assertLess(first_series["series"][0]["start"], second_series["series"][0]["start"])

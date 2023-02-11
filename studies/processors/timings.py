@@ -1,5 +1,6 @@
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, Subquery, OuterRef, Count, F
+from django.db.models import QuerySet, Subquery, OuterRef, Count, F, Func, IntegerField
+from django.db.models.expressions import RawSQL
 from django.db.models.functions import JSONObject
 
 from studies.choices import TheoryDrivenChoices, InterpretationsChoices
@@ -21,26 +22,35 @@ class TimingsGraphDataProcessor(BaseProcessor):
         experiments_interpretations = Interpretation.objects.filter(theory__parent__name=self.theory,
                                                                     type=InterpretationsChoices.PRO) \
             .filter(experiment__finding_tags__technique__name__in=self.techniques) \
-            .filter(experiment__finding_tags__type__name__in=self.tags_types)\
+            .filter(experiment__finding_tags__type__name__in=self.tags_types) \
             .filter(experiment__in=self.experiments)
 
         if self.is_theory_driven_only:
             experiments_interpretations = experiments_interpretations.filter(
                 experiment__theory_driven=TheoryDrivenChoices.DRIVEN)
 
-        experiments = experiments_interpretations.values("experiment")
+        experiments = experiments_interpretations  # .values("experiment")
 
-        relevant_finding_tags = FindingTag.objects \
-            .select_related("experiment") \
+        relevant_finding_tags = FindingTag.objects.select_related("experiment") \
             .prefetch_related("type", "technique") \
-            .filter(experiment__in=OuterRef("pk")) \
             .filter(type__name__in=self.tags_types) \
-            .filter(technique__name__in=self.techniques) \
+            .filter(technique__name__in=self.techniques)
+
+        finding_tags_subquery_series = relevant_finding_tags \
+            .filter(experiment__in=OuterRef("experiment_id")) \
+            .order_by("onset") \
             .annotate(data=JSONObject(start=F("onset"), end=F("offset"), name=F("type__name"))) \
             .values_list("data")
 
+        order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id")).order_by("onset")
+
         qs = experiments \
-            .values("id").annotate(series=ArraySubquery(relevant_finding_tags)).values("series")
-        # TODO: filter out empty series
-        # TODO: sort by order
+            .annotate(min_onset=Subquery(order_query.values("onset")[:1])) \
+            .values("experiment_id").annotate(series=ArraySubquery(finding_tags_subquery_series)) \
+            .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
+            .filter(field_len__gt=0) \
+            .order_by("min_onset") \
+            .distinct() \
+            .values("series")
+
         return qs

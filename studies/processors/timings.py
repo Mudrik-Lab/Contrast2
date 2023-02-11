@@ -52,5 +52,5 @@ class TimingsGraphDataProcessor(BaseProcessor):
             .order_by("min_onset") \
             .distinct() \
             .values("series")
-
+        #TODO implement custom sort
         return qs

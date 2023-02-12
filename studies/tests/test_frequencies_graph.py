@@ -7,7 +7,7 @@ from studies.tests.base import BaseTestCase
 
 
 # Create your tests here.
-class TimingsGraphTestCase(BaseTestCase):
+class FrequenciesGraphTestCase(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
 
@@ -33,15 +33,15 @@ class TimingsGraphTestCase(BaseTestCase):
                                                                       parent=different_parent_paradigm)
         first_technique = self.given_technique_exists("a_first_technique")
         second_technique = self.given_technique_exists("b_second_technique")
-        temporal_family = FindingTagFamily.objects.get(name="Temporal")
-        tag_type_N400 = FindingTagType.objects.create(name="N400", family=temporal_family)
-        tag_type_P300 = FindingTagType.objects.create(name="P300", family=temporal_family)
-        first_tag_data = dict(type=tag_type_N400, technique=first_technique, family=temporal_family, onset=100,
-                              offset=150)
-        second_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=120,
-                               offset=150)
-        third_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=200,
-                              offset=250)
+        frequency_family = FindingTagFamily.objects.get(name="Frequency")
+        tag_type_beta = FindingTagType.objects.create(name="Beta", family=frequency_family)
+        tag_type_gamma = FindingTagType.objects.create(name="Gamma", family=frequency_family)
+        first_tag_data = dict(type=tag_type_beta, technique=first_technique, family=frequency_family, onset=100,
+                              offset=150, band_lower_bound=50, band_higher_bound=100)
+        second_tag_data = dict(type=tag_type_gamma, technique=second_technique, family=frequency_family, onset=120,
+                               offset=150, band_lower_bound=120, band_higher_bound=150)
+        third_tag_data = dict(type=tag_type_gamma, technique=second_technique, family=frequency_family, onset=200,
+                              offset=250, band_lower_bound=200, band_higher_bound=250)
 
         israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
                                                                           paradigms=[masking_child_paradigm],
@@ -100,7 +100,7 @@ class TimingsGraphTestCase(BaseTestCase):
                                                    measure_type="c_third_measure")
         return another_different_child_paradigm, different_child_paradigm, different_parent_paradigm, first_measure, first_technique, fourth_measure, masking_child_paradigm, masking_parent_paradigm, second_measure, second_technique, third_measure_with_second_type
 
-    def test_timings_basic_implementation(self):
+    def test_frequencies_basic_implementation(self):
         another_different_child_paradigm, \
         different_child_paradigm, \
         different_parent_paradigm, \
@@ -108,10 +108,10 @@ class TimingsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="timings",
+        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="frequencies",
                                                     theory=self.gnw_parent_theory.name,
                                                     techniques=[first_technique.name, second_technique.name],
-                                                    tags_types=["N400", "P300"])
+                                                    )
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

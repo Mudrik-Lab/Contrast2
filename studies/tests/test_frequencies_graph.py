@@ -36,8 +36,8 @@ class FrequenciesGraphTestCase(BaseTestCase):
         frequency_family = FindingTagFamily.objects.get(name="Frequency")
         tag_type_beta = FindingTagType.objects.create(name="Beta", family=frequency_family)
         tag_type_gamma = FindingTagType.objects.create(name="Gamma", family=frequency_family)
-        first_tag_data = dict(type=tag_type_beta, technique=first_technique, family=frequency_family, onset=100,
-                              offset=150, band_lower_bound=50, band_higher_bound=100)
+        first_tag_data = dict(type=tag_type_beta, technique=first_technique, family=frequency_family, onset=500,
+                              offset=600, band_lower_bound=50, band_higher_bound=100)
         second_tag_data = dict(type=tag_type_gamma, technique=second_technique, family=frequency_family, onset=120,
                                offset=150, band_lower_bound=120, band_higher_bound=150)
         third_tag_data = dict(type=tag_type_gamma, technique=second_technique, family=frequency_family, onset=200,

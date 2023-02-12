@@ -48,7 +48,7 @@ class InterpretationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interpretation
-        fields = ("experiment","theory", "type")
+        fields = ("experiment", "theory", "type")
 
 
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
@@ -240,3 +240,13 @@ class BarGraphSerializer(serializers.Serializer):
 class StackedBarGraphSerializer(serializers.Serializer):
     series_name = serializers.CharField()
     series = BarGraphSerializer(many=True)
+
+
+class DurationBarSerializer(serializers.Serializer):
+    start = serializers.IntegerField()
+    end = serializers.IntegerField()
+    name = serializers.CharField()
+
+
+class DurationGraphSerializer(serializers.Serializer):
+    series = DurationBarSerializer(many=True)

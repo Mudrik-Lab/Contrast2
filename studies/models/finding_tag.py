@@ -33,7 +33,7 @@ class FindingTag(models.Model):
     """
     available_properties_by_family = {
         "Temporal": ["onset", "offset"],
-        "Frequency": ["onset", "offset", "correlation_sign", "band_lower_bound", "band_higher_bound"],
+        "Frequency": ["onset", "offset", "correlation_sign", "band_lower_bound", "band_higher_bound", "analysis_type"],
         "Spatial Areas": ["AAL_atlas_tag"]
     }
     # properties changing by type, if you add one, you need to add it here also

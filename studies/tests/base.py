@@ -4,7 +4,8 @@ from typing import Optional
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
     ExperimentTypeChoices
-from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, Technique, Study
+from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, \
+    Technique, Study, FindingTag
 
 
 class BaseTestCase(APITestCase):
@@ -27,11 +28,15 @@ class BaseTestCase(APITestCase):
         paradigms = None
         techniques = None
         theory_driven_theories = None
+        finding_tags = None
         if "paradigms" in kwargs:
             paradigms = kwargs.pop("paradigms")
 
         if "techniques" in kwargs:
             techniques = kwargs.pop("techniques")
+
+        if "finding_tags" in kwargs:
+            finding_tags = kwargs.pop("finding_tags")
 
         if "theory_driven_theories" in kwargs:
             theory_driven_theories = kwargs.pop("theory_driven_theories")
@@ -48,11 +53,23 @@ class BaseTestCase(APITestCase):
         if theory_driven_theories:
             for item in theory_driven_theories:
                 experiment.theory_driven_theories.add(item)
+
+        if finding_tags:
+            for item in finding_tags:
+                tag = FindingTag.objects.create(**dict(experiment=experiment, **item))
+                experiment.finding_tags.add(tag)
+
         return experiment
 
-
     def reverse_with_query_params(self, url_name: str, *args, **queryparams) -> str:
-        params = "&".join([f"{k}={v}" for k, v in queryparams.items()])
+        parts = []
+        for k, v in queryparams.items():
+            if isinstance(v, list):
+                part = "&".join([f"{k}={v_item}" for v_item in v])
+            else:
+                part = f"{k}={v}"
+            parts.append(part)
+        params = "&".join(parts)
         url = reverse(url_name, args=args)
         url = f'{url}?{params}'
         return url

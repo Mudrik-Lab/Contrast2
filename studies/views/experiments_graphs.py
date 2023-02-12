@@ -16,7 +16,7 @@ from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer
 
-graphs_queryparams = {OpenApiParameter(name='graph_type',
+graphs_queryparams = [OpenApiParameter(name='graph_type',
                                        description='Graph type',
                                        type=str,
                                        enum=["nations_of_consciousness",
@@ -54,10 +54,6 @@ graphs_queryparams = {OpenApiParameter(name='graph_type',
                                        description='sort needed for certain graphs',
                                        type=str,
                                        required=False),
-                      OpenApiParameter(name='theory',
-                                       description='theory optional for frequencies graphs',
-                                       type=str,
-                                       required=False),
                       OpenApiParameter(name='is_theory_driven',
                                        description='is_theory_driven optional for frequencies/timings graphs',
                                        type=str,
@@ -71,7 +67,7 @@ graphs_queryparams = {OpenApiParameter(name='graph_type',
                                        type=str,
                                        required=False)
 
-                      }
+                      ]
 
 
 class ExperimentsGraphsViewSet(mixins.ListModelMixin,

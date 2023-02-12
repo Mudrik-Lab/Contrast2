@@ -3,8 +3,8 @@ from django.utils.translation import gettext_lazy as _
 
 
 class GenderChoices(TextChoices):
-    MALE = "man"
-    FEMALE = "woman"
+    MAN = "man"
+    WOMAN = "woman"
     OTHER = "other"
     NOT_REPORTING = "not_reporting"
 

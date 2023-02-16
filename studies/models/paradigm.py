@@ -12,4 +12,3 @@ class Paradigm(models.Model):
     def __str__(self):
         return f"{self.name} parent {self.parent and self.parent.name}"
 
-# TODO: data migration to create existing paradigms

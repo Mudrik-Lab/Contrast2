@@ -1,26 +1,89 @@
+import re
 from collections import namedtuple
 from itertools import zip_longest, chain
 
 from configuration.initial_setup import task_types_mapping, findings_measures
-from studies.choices import TheoryDrivenChoices
-from studies.models import Theory, Paradigm
-
-SampleSizeFromData = namedtuple("SampleSizeFromData", ["total_size", "included_size"])
+from studies.choices import TheoryDrivenChoices, SampleChoices
+from studies.models import Theory, Paradigm, Stimulus
 
 
-def get_sample_size_from_data(item):
-    total_sample_data = item["Sample.Total"]
-    if "(" in total_sample_data:
-        total_samples = total_sample_data.split("(")
-    included_sample_data = item["Sample.Included"]
-    if "(" in included_sample_data:
-        total_samples = included_sample_data.split("(")
-
-    # sample_total_list = [sample.split("(")[0].strip() for sample in total_samples]
-
-    # included_samples = item["Sample.Total"].split("(")[0]
-
+class ProblemInTheoryDrivenExistingDataException(Exception):
     pass
+
+
+class ProblemInStimuliExistingDataException(Exception):
+    pass
+
+
+class ProblemInSampleExistingDataException(Exception):
+    pass
+
+
+ConsciousnessMeasureFromData = namedtuple("ConsciousnessMeasureFromData", ["type", "phase"])
+ParadigmFromData = namedtuple("ParadigmFromData", ["parent", "name"])
+MeasureFromData = namedtuple("MeasureFromData", ["measure_type", "measure_notes"])
+StimulusFromData = namedtuple("StimulusFromData", ["category", "sub_category", "modality", "duration"])
+SampleFromData = namedtuple("SampleFromData", ["sample_type", "total_size", "included_size", "note"])
+
+
+def add_to_notes(prefix, text: str):
+    note = f'{prefix} notes: {text}; '
+    return note
+
+
+def get_sample_from_data(item):
+    sample_type_data = item["Sample.Type"].split("+")
+    total_sample_data = item["Sample.Total"]
+    included_sample_data = item["Sample.Included"]
+    notes = []
+
+    if len(sample_type_data) == 1:
+        sample_type = sample_type_data[0]
+        if "(" in sample_type:
+            sample_type_number = sample_type.split("(")[0].strip()
+            sample_type_notes = sample_type.split("(")[1].split(")")[0]
+            note = add_to_notes("sample type", sample_type_notes)
+            notes.append(note)
+        else:
+            sample_type_number = sample_type.strip()
+
+        if sample_type_number == "0":
+            resolved_sample_type = SampleChoices.HEALTHY_ADULTS
+        elif sample_type_number == "1":
+            resolved_sample_type = SampleChoices.HEALTHY_COLLEGE_STUDENTS
+        elif sample_type_number == "2":
+            resolved_sample_type = SampleChoices.CHILDREN
+        elif sample_type_number == "3":
+            resolved_sample_type = SampleChoices.PATIENTS
+        elif sample_type_number == "5":
+            resolved_sample_type = SampleChoices.NON_HUMAN
+        elif sample_type_number == "6":
+            resolved_sample_type = SampleChoices.COMPUTER
+        else:
+            raise ProblemInSampleExistingDataException
+
+        if "(" in total_sample_data:
+            resolved_total_sample = total_sample_data.split("(")[0].strip()
+            sample_total_notes = total_sample_data.split("(")[1].split(")")[0]
+            note = add_to_notes("sample total", sample_total_notes)
+            notes.append(note)
+        else:
+            resolved_total_sample = total_sample_data.strip()
+
+        if "(" in included_sample_data:
+            resolved_included_sample = included_sample_data.split("(")[0].strip()
+            included_sample_notes = total_sample_data.split("(")[1].split(")")[0]
+            note = add_to_notes("sample included", included_sample_notes)
+            notes.append(note)
+        else:
+            resolved_included_sample = included_sample_data.strip()
+        notes_string = chain.from_iterable(notes)
+        sample = SampleFromData(sample_type=resolved_sample_type, total_size=resolved_total_sample,
+                                included_size=resolved_included_sample, note=notes_string)
+    else:
+        raise ProblemInSampleExistingDataException()
+
+    return sample
 
 
 def find_in_list(lookup_list: list, search_list: list):
@@ -30,9 +93,6 @@ def find_in_list(lookup_list: list, search_list: list):
                      for lookup_value in lookup_list]
 
     return resolved_list
-
-
-ConsciousnessMeasureFromData = namedtuple("ConsciousnessMeasureFromData", ["type", "phase"])
 
 
 def get_consciousness_measure_type_and_phase_from_data(item):
@@ -63,15 +123,19 @@ def get_consciousness_measure_type_and_phase_from_data(item):
                       else [item for item in consciousness_measure_type_lookup if
                             lookup_value.strip().lower() == item.lower()]
                       for lookup_value in cm_type_list]
+
     phases = chain.from_iterable(resolved_phases)
     types = chain.from_iterable(resolved_types)
+
     for resolved_phase, resolved_type in zip_longest(phases, types):
         if resolved_phase and resolved_type:
             results.append(ConsciousnessMeasureFromData(type=resolved_type, phase=resolved_phase))
-        elif not resolved_type:
+        elif resolved_phase and not resolved_type:
             results.append(ConsciousnessMeasureFromData(type=resolved_types[0], phase=resolved_phase))
-        elif not resolved_phase:
+        elif resolved_type and not resolved_phase:
             results.append(ConsciousnessMeasureFromData(type=resolved_type, phase=resolved_phases[0]))
+        else:
+            break
 
     return results
 
@@ -99,6 +163,8 @@ def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
                     continue
                 theory = Theory.objects.get(name=theory)
                 theory_driven_theories.append(theory)
+        else:
+            raise ProblemInTheoryDrivenExistingDataException()
 
     return theory_driven, theory_driven_theories
 
@@ -115,9 +181,6 @@ def parse_task_types(item: dict):
             parsed_task_types.append(parsed_task)
 
     return parsed_task_types
-
-
-ParadigmFromData = namedtuple("ParadigmFromData", ["parent", "name"])
 
 
 def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
@@ -252,24 +315,12 @@ def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
     return paradigms_in_data
 
 
-MeasureFromData = namedtuple("MeasureFromData", ["measure_type", "measure_notes"])
-
-
 def get_measures_from_data(item: dict):
-    measures_data = item['Findings.Measures [0 = Decoding, 1 = BOLD, 2 = Frequencies, 3= ERP, 4 = Mutual Information,'
-                         '5 = Synchronization, 6 = Behavioral (Accuracy), 7 = Behavioral (RT), 9 = Connectivity,'
-                         '10 = PHI, 11 = Graph theoretical measures, 14 = Entropy, 15 = Global Field Power, 16 = PCA,'
-                         '17 = Lempel Ziv, 18 = H2_15O, 19 = Variability, 20 = Adaptation, 21 = Metacognition,'
-                         '22 = Visibility, 25 = Dimension of activation, 26 = fALFF, 27 = 18F Fluorodeoxyglucose,'
-                         '28 = CFC , 29 = LRTC, 30 = Calcium Imaging, 31 = K Complex, 32 = TCT, 33 = DISS,'
-                         '34 = Observation, 35 = Microstates, 36 = Stimulation Reactivity, 37 = Frequency Tagging,'
-                         '39 = Hopf bifurcation parameter, 41 = Slow Wave Activity, 42 = Auto Information Flow, '
-                         '43 = Cross Information Flow ciF, 44 = Auto Correlation, 45 = Topo, 46 = PCI, '
-                         '47 = Physiological Measure, 49 = Computer Simulations, 50 = Phosphene Threshold, '
-                         '51 = Frequency Change Index, 52 = Brain Behavior Correlation, 56 = Nonlinear correlation index,'
-                         '57 =DSI, 58 = Complexity of functional connectivity, 63 = BIS, 64 = Correlation dimension, '
-                         '65 = Dominance, 66 = Epileptogenicity Index, 67 = Spike Suppression, 68 = Mean Dwell Time, '
-                         '69 = Network Backbones, 70 = SSVEP, 71= Fractal Dimension]']
+    measures_data = ""
+    for key, value in item.items():
+        if 'Findings.Measures' not in key:
+            continue
+        measures_data = value
     measures_data_split = measures_data.split("+")
     measures_from_data = []
     for measure in measures_data_split:
@@ -290,7 +341,19 @@ def get_measures_from_data(item: dict):
     return measures_from_data
 
 
-StimulusFromData = namedtuple("StimulusFromData", ["category", "sub_category", "modality", "duration"])
+def clean_stimulus_text(text):
+    if "(" in text:
+        main_text = text.split("(")[0].strip()
+    else:
+        main_text = text
+
+    multiple_entries = re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
+    verbose = re.search("[a-z]+\s[0-9]+", main_text)
+
+    if multiple_entries or verbose:
+        raise ProblemInStimuliExistingDataException()
+    else:
+        return main_text
 
 
 def get_stimuli_from_data(item):
@@ -298,8 +361,10 @@ def get_stimuli_from_data(item):
     stimuli_categories = item["Stimuli Features.Categories"].split("+")
     stimuli_modalities = item["Stimuli Features.Modality"].split("+")
     stimuli_durations = item["Stimuli Features.Duration"].split("+")
+    allowed_categories_by_modality = Stimulus.allowed_categories_by_modality
+
     if not len(stimuli_categories) == len(stimuli_modalities) == len(stimuli_durations):
-        raise ProblemInExistingDataException()
+        raise ProblemInStimuliExistingDataException()
 
     for category, modality, duration in zip(stimuli_categories, stimuli_modalities, stimuli_durations):
         # resolve category and sub-category (if existing)
@@ -311,6 +376,7 @@ def get_stimuli_from_data(item):
         else:
             resolved_category = category.split("(")[0].strip
             sub_category = category.split("(")[1].split(")")[0].strip()
+
         # resolve modality
         modality_type = modality.strip()
         resolved_modality = ""
@@ -321,8 +387,15 @@ def get_stimuli_from_data(item):
                               "Visual"]:
             if modality_type == modality_name:
                 resolved_modality = modality_type
+
+        # check for fit between modality and category
+        if resolved_category not in allowed_categories_by_modality[resolved_modality]:
+            raise ProblemInStimuliExistingDataException()
+
         # resolve duration
-        stimulus_duration = duration
+        full_text_stimulus_duration = duration
+        stimulus_duration = clean_stimulus_text(full_text_stimulus_duration)
+
         if "minute" in stimulus_duration:
             raw_duration = stimulus_duration.split("minute")[0].strip
             duration_ms = int(raw_duration) * 60000
@@ -335,15 +408,15 @@ def get_stimuli_from_data(item):
         elif "sec" in stimulus_duration:
             raw_duration = stimulus_duration.split("sec")[0].strip
             duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
+        elif stimulus_duration == "N/A" or stimulus_duration == "NA" or stimulus_duration == "N.A" or \
+                stimulus_duration == "None" or stimulus_duration == "0":
+            duration_ms = None
         else:
-            duration_ms = 0
+            raise ProblemInStimuliExistingDataException()
+
         duration_micros = int(duration_ms * 1000)
-        resolved_duration = duration_ms  # TODO: change to duration_micros if needed
+        resolved_duration = str(duration_ms)  # TODO: change to duration_micros if needed
 
         stimuli_from_data.append(StimulusFromData(category=resolved_category, sub_category=sub_category,
                                                   modality=resolved_modality, duration=resolved_duration))
     return stimuli_from_data
-
-
-class ProblemInExistingDataException(Exception):
-    pass

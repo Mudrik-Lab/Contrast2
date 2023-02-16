@@ -2,7 +2,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from typing import Optional
 from approval_process.choices import ApprovalChoices
-from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, InterpretationsChoices, \
+from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, \
     ExperimentTypeChoices
 from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, \
     Technique, Study, FindingTag
@@ -78,8 +78,8 @@ class BaseTestCase(APITestCase):
         theory, created = Theory.objects.get_or_create(parent=parent, name=name)
         return theory
 
-    def given_interpretation_exist(self, experiment: Experiment, theory: Theory, type: str):
-        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=type)
+    def given_interpretation_exist(self, experiment: Experiment, theory: Theory, interpretation_type: str):
+        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=interpretation_type)
         return interpretation
 
     def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):

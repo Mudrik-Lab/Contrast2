@@ -8,7 +8,7 @@ from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
     SampleChoices
 from studies.models import Study
-from studies.tests.base import BaseTestCase
+from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.

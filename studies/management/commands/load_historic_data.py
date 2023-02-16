@@ -1,12 +1,15 @@
 from django.core.management import BaseCommand
+from django.db import transaction
 import pandas
-from configuration.initial_setup import techniques, paradigms, finding_tags_map, findings_measures
+from configuration.initial_setup import techniques, paradigms, finding_tags_map
 from studies.choices import ExperimentTypeChoices, InterpretationsChoices, ReportingChoices, TypeOfConsciousnessChoices
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from studies.parsers.finding_tag_parsers import parse_findings_per_experiment, FrequencyFinding, TemporalFinding, \
     SpatialFinding
 from studies.parsers.historic_data_helpers import get_paradigms_from_data, parse_theory_driven_from_data, \
-    parse_task_types, get_measures_from_data, get_stimuli_from_data, get_consciousness_measure_type_and_phase_from_data
+    parse_task_types, get_measures_from_data, get_stimuli_from_data, get_consciousness_measure_type_and_phase_from_data, \
+    get_sample_from_data, ProblemInStimuliExistingDataException, ProblemInTheoryDrivenExistingDataException, \
+    ProblemInSampleExistingDataException
 
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
     TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Interpretation, Theory, \
@@ -51,169 +54,197 @@ class Command(BaseCommand):
                 study.authors.add(author)
 
         # iterate over experiments
+        stimuli_problematic_data_log = []
+        theory_driven_problematic_data_log = []
+        sample_problematic_data_log = []
+
         for item in historic_data_list:
             is_included = bool(item["Should be included? [0 = Not Included, 1 = Included]"])
             if not is_included:
                 historic_data_list.remove(item)
+            try:
+                with transaction.atomic():
+                    # start with straight-forward data (study, finding description, type)
+                    study = Study.objects.get(DOI=item["Paper.DOI"])
+                    finding_description = item["Findings.Summary"]
+                    experiment_type = ExperimentTypeChoices.NEUROSCIENTIFIC
 
-            # start with straight-forward data (study, finding description, type)
-            study = Study.objects.get(DOI=item["Paper.DOI"])
-            finding_description = item["Findings.Summary"]
-            experiment_type = ExperimentTypeChoices.NEUROSCIENTIFIC
+                    # resolve choices fields (theory_driven, type_of_consciousness, is_reporting)
+                    theories = ['GNW', 'IIT', 'HOT', 'RPT']
+                    theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
 
-            # resolve choices fields (theory_driven, type_of_consciousness, is_reporting)
-            theories = ['GNW', 'IIT', 'HOT', 'RPT']
-            theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
+                    type_of_consciousness = ""
+                    type_of_consciousness_choice = item['State - Content [0=State,1=Content,2 = State And Content]']
+                    if type_of_consciousness_choice == "0":
+                        type_of_consciousness = TypeOfConsciousnessChoices.STATE
+                    elif type_of_consciousness_choice == "1":
+                        type_of_consciousness = TypeOfConsciousnessChoices.CONTENT
+                    elif type_of_consciousness_choice == "2":
+                        type_of_consciousness = TypeOfConsciousnessChoices.BOTH
 
-            type_of_consciousness_choice = item['State - Content [0=State,1=Content,2 = State And Content]']
-            if type_of_consciousness_choice == "0":
-                type_of_consciousness = TypeOfConsciousnessChoices.STATE
-            elif type_of_consciousness_choice == "1":
-                type_of_consciousness = TypeOfConsciousnessChoices.CONTENT
-            elif type_of_consciousness_choice == "2":
-                type_of_consciousness = TypeOfConsciousnessChoices.BOTH
+                    is_reporting = ""
+                    reporting_choice = item[
+                        'Experimental paradigms.Report [0 = No-Report, 1 = Report, 2 = Report And No-Report]']
+                    if reporting_choice == "0":
+                        is_reporting = ReportingChoices.NO_REPORT
+                    elif reporting_choice == "1":
+                        is_reporting = ReportingChoices.REPORT
+                    elif reporting_choice == "2":
+                        is_reporting = ReportingChoices.BOTH
 
-            reporting_choice = item[
-                'Experimental paradigms.Report [0 = No-Report, 1 = Report, 2 = Report And No-Report]']
-            if reporting_choice == "0":
-                is_reporting = ReportingChoices.NO_REPORT
-            elif reporting_choice == "1":
-                is_reporting = ReportingChoices.REPORT
-            elif reporting_choice == "2":
-                is_reporting = ReportingChoices.BOTH
+                    experiment = Experiment.objects.create(study=study, type_of_consciousness=type_of_consciousness,
+                                                           finding_description=finding_description,
+                                                           is_reporting=is_reporting, theory_driven=theory_driven,
+                                                           type=experiment_type)
 
-            experiment = Experiment.objects.create(study=study, type_of_consciousness=type_of_consciousness,
-                                                   finding_description=finding_description,
-                                                   is_reporting=is_reporting, theory_driven=theory_driven,
-                                                   type=experiment_type)
+                    # resolve and add ManyToMany fields (theory-driven theories, interpretations, paradigms, techniques)
+                    for theory in theory_driven_theories:
+                        experiment.theory_driven_theories.add(theory)
 
-            # resolve and add ManyToMany fields (theory-driven theories, interpretations, paradigms, techniques)
-            for theory in theory_driven_theories:
-                experiment.theory_driven_theories.add(theory)
+                    interpretation = ""
+                    for theory in theories:
+                        for key, value in item.items():
+                            if theory not in key:
+                                continue
+                            if value == "1":
+                                interpretation = InterpretationsChoices.PRO
+                            elif value == "0":
+                                interpretation = InterpretationsChoices.CHALLENGES
+                            elif value == "X":
+                                interpretation = InterpretationsChoices.NEUTRAL
 
-            interpretations = []
-            for theory in theories:
-                for key, value in item.items():
-                    if theory not in key:
-                        continue
-                    if value == "1":
-                        interpretation = InterpretationsChoices.PRO
-                    elif value == "0":
-                        interpretation = InterpretationsChoices.CHALLENGES
-                    elif value == "X":
-                        interpretation = InterpretationsChoices.NEUTRAL
+                        experiment_interpretation = Interpretation.objects.create(experiment=experiment,
+                                                                                  theory=theory, type=interpretation)
+                        experiment.interpretations.add(experiment_interpretation,
+                                                       through_defaults={'type': interpretation})
 
-                    experiment_interpretation = Interpretation.objects.create(experiment=experiment,
-                                                                              theory=theory, type=interpretation)
-                    interpretations.append(experiment_interpretation)
+                    techniques_in_historic_data = []
+                    for technique in techniques:
+                        if technique not in item["Techniques"]:
+                            continue
+                        parsed_technique = Technique.objects.get(name=technique)
+                        techniques_in_historic_data.append(parsed_technique)
 
-            for interpretation in interpretations:
-                experiment.interpretations.add(interpretation)
+                    for technique in techniques_in_historic_data:
+                        experiment.techniques.add(technique)
 
-            techniques_in_historic_data = []
-            for technique in techniques:
-                if technique not in item["Techniques"]:
-                    continue
-                parsed_technique = Technique.objects.get(name=technique)
-                techniques_in_historic_data.append(parsed_technique)
+                    paradigms_in_data = get_paradigms_from_data(paradigms, item)
+                    for parsed_paradigm in paradigms_in_data:
+                        name = parsed_paradigm.name
+                        parent = parsed_paradigm.parent
+                        paradigm = Paradigm.objects.create(name=name, parent=parent)
+                        experiment.paradigms.add(paradigm)
 
-            for technique in techniques_in_historic_data:
-                experiment.techniques.add(technique)
+                    # resolve and create findings
+                    findings_ncc_tags = ""
+                    for key in item.keys():
+                        if 'Findings.NCC Tags' in key:
+                            findings_ncc_tags = key
+                    findings = parse_findings_per_experiment(findings_ncc_tags)
 
-            paradigms_in_data = get_paradigms_from_data(paradigms, item)
-            for parsed_paradigm in paradigms_in_data:
-                name = parsed_paradigm.name
-                parent = parsed_paradigm.parent
-                paradigm = Paradigm.objects.create(name=name, parent=parent)
-                experiment.paradigms.add(paradigm)
+                    for finding in findings:
+                        resolved_tag_type = finding_tags_map[finding.tag]
+                        comment = finding.comment
+                        if len(techniques_in_historic_data) == 1:
+                            technique = techniques_in_historic_data[0]
+                        else:
+                            technique = finding.technique
 
-            # resolve and create findings
-            findings_ncc_tags = ""
-            for key in item.keys():
-                if 'Findings.NCC Tags' in key:
-                    findings_ncc_tags = key
-            findings = parse_findings_per_experiment(findings_ncc_tags)
+                        if isinstance(finding, FrequencyFinding):
+                            family = FindingTagFamily.objects.get(name='Frequency')
+                            tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                            FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                                      onset=finding.onset, offset=finding.offset,
+                                                      band_lower_bound=finding.band_low,
+                                                      band_higher_bound=finding.band_high,
+                                                      notes=comment, analysis_type=finding.analysis,
+                                                      correlation_sign=finding.cor_type, technique=technique)
 
-            for finding in findings:
-                resolved_tag_type = finding_tags_map[finding.tag]
-                comment = finding.comment
-                if len(techniques_in_historic_data) == 1:
-                    technique = techniques_in_historic_data[0]
-                else:
-                    technique = finding.technique
+                        elif isinstance(finding, TemporalFinding):
+                            family = FindingTagFamily.objects.get(name='Temporal')
+                            tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                            FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                                      onset=finding.onset, offset=finding.offset, notes=comment,
+                                                      technique=technique)
 
-                if isinstance(finding, FrequencyFinding):
-                    family = FindingTagFamily.objects.get(name='Frequency')
-                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
-                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
-                                              onset=finding.onset, offset=finding.offset,
-                                              band_lower_bound=finding.band_low,
-                                              band_higher_bound=finding.band_high,
-                                              notes=comment, analysis_type=finding.analysis,
-                                              correlation_sign=finding.cor_type, technique=technique)
+                        elif isinstance(finding, SpatialFinding):
+                            family = FindingTagFamily.objects.get(name='Spatial Areas')
+                            tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                            FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                                      AAL_atlas_tag=finding.area, notes=comment,
+                                                      technique=technique)
 
-                elif isinstance(finding, TemporalFinding):
-                    family = FindingTagFamily.objects.get(name='Temporal')
-                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
-                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
-                                              onset=finding.onset, offset=finding.offset, notes=comment,
-                                              technique=technique)
+                        else:
+                            family = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
+                            tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                            FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
+                                                      notes=comment)
 
-                elif isinstance(finding, SpatialFinding):
-                    family = FindingTagFamily.objects.get(name='Spatial Areas')
-                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
-                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
-                                              AAL_atlas_tag=finding.area, notes=comment,
-                                              technique=technique)
+                    # resolve and create consciousness measures
+                    consciousness_measures_from_data = get_consciousness_measure_type_and_phase_from_data(item)
+                    for consciousness_measure in consciousness_measures_from_data:
+                        consciousness_type = consciousness_measure.type
+                        consciousness_phase = consciousness_measure.phase
+                        consciousness_measure_type = ConsciousnessMeasureType.objects.get(name=consciousness_type)
+                        consciousness_measure_phase = ConsciousnessMeasurePhaseType.objects.get(
+                            name=consciousness_phase)
+                        consciousness_measure_description = item["Measures of consciousness.Description"]
+                        ConsciousnessMeasure.objects.create(experiment=experiment, phase=consciousness_measure_phase,
+                                                            type=consciousness_measure_type,
+                                                            description=consciousness_measure_description)
+                    # resolve and create finding measures
+                    measures = get_measures_from_data(item)
+                    for measure in measures:
+                        measure_type = measure.measure_type
+                        notes = measure.measure_notes
+                        measure_name = MeasureType.objects.get(name=measure_type)
+                        Measure.objects.create(experiment=experiment, type=measure_name, notes=notes)
 
-                else:
-                    family = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
-                    tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
-                    FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
-                                              notes=comment)
+                    # resolve and create samples
+                    sample_from_data = get_sample_from_data(item)
+                    sample_type = sample_from_data.sample_type
+                    total_size = int(sample_from_data.total_size)
+                    included_size = int(sample_from_data.included_size)
+                    notes = sample_from_data.notes
+                    Sample.objects.create(experiment=experiment, type=sample_type, total_size=total_size,
+                                          size_included=included_size)
+                    experiment.notes.add(notes)
 
-            # resolve and create consciousness measures
-            consciousness_measures_from_data = get_consciousness_measure_type_and_phase_from_data(item)
-            for consciousness_measure in consciousness_measures_from_data:
-                consciousness_type = consciousness_measure.type
-                consciousness_phase = consciousness_measure.phase
-                consciousness_measure_type = ConsciousnessMeasureType.objects.get(name=consciousness_type)
-                consciousness_measure_phase = ConsciousnessMeasurePhaseType.objects.get(
-                    name=consciousness_phase)
-                consciousness_measure_description = item["Measures of consciousness.Description"]
-                ConsciousnessMeasure.objects.create(experiment=experiment, phase=consciousness_measure_phase,
-                                                    type=consciousness_measure_type,
-                                                    description=consciousness_measure_description)
-            # resolve and create finding measures
-            measures = get_measures_from_data(item)
-            for measure in measures:
-                measure_type = measure.measure_type
-                notes = measure.measure_notes
-                measure_name = MeasureType.objects.get(name=measure_type)
-                Measure.objects.create(experiment=experiment, type=measure_name, notes=notes)
+                    # resolve and create tasks
+                    for parsed_task_type in parse_task_types(item):
+                        task_type = TaskType.objects.get(name=parsed_task_type)
+                        description = item["Task.Description"]
+                        Task.objects.create(experiment=experiment, description=description, type=task_type)
 
-            # resolve and create samples
-            sample_type = item["Sample.Type"]
+                    # resolve and create stimuli
+                    stimuli_from_data = get_stimuli_from_data(item)
+                    stimulus_sub_category = ""
+                    for stimulus in stimuli_from_data:
+                        modality_type = ModalityType.objects.get(name=stimulus.modality)
+                        stimulus_category = StimulusCategory.objects.get(name=stimulus.category)
+                        if stimulus.sub_category:
+                            stimulus_sub_category = StimulusSubCategory.objects.get(
+                                name=stimulus.sub_category, parent=stimulus.category)
+                        duration = int(stimulus.duration)
+                        stimulus_description = item["Stimuli Features.Description"]
+                        Stimulus.objects.create(experiment=experiment, category=stimulus_category,
+                                                sub_category=stimulus_sub_category,
+                                                modality=modality_type, description=stimulus_description,
+                                                duration=duration)
 
-            Sample.objects.create(experiment=experiment, sample=sample_type, total_size=0,
-                                  size_included=["Sample.Included"])  # TODO: write sample size parser
+            except ProblemInStimuliExistingDataException:
+                stimuli_problematic_data_log.append(item)
 
-            # resolve and create tasks
-            for parsed_task_type in parse_task_types(item):
-                task_type = TaskType.objects.get(name=parsed_task_type)
-                description = item["Task.Description"]
-                Task.objects.create(experiment=experiment, description=description, type=task_type)
+            except ProblemInTheoryDrivenExistingDataException:
+                theory_driven_problematic_data_log.append(item)
 
-            # stimuli
-            stimuli_from_data = get_stimuli_from_data(item)
-            for stimulus in stimuli_from_data:
-                modality_type = ModalityType.objects.get(name=stimulus.modality)
-                stimulus_category = StimulusCategory.objects.get(name=stimulus.category)
-                if stimulus.sub_category:
-                    stimulus_sub_category = StimulusSubCategory.objects.get(
-                        name=stimulus.sub_category, parent=stimulus.category)
-                duration = int(stimulus.duration)
-                stimulus_description = item["Stimuli Features.Description"]
-                Stimulus.objects.create(experiment=experiment, category=stimulus_category,
-                                        sub_category=stimulus_sub_category,
-                                        modality=modality_type, description=stimulus_description, duration=duration)
+            except ProblemInSampleExistingDataException:
+                sample_problematic_data_log.append(item)
+
+            df_stimuli = pandas.DataFrame.from_records(stimuli_problematic_data_log)
+            df_theory_driven = pandas.DataFrame.from_records(theory_driven_problematic_data_log)
+            df_sample = pandas.DataFrame.from_records(sample_problematic_data_log)
+            with pandas.ExcelWriter('studies/data/Contrast2_Data_For_Drorsoft.xlsx') as writer:
+                df_stimuli.to_excel(writer, sheet_name='ProblematicStimuliData')
+                df_theory_driven.to_excel(writer, sheet_name='ProblematicTheoryDrivenData')
+                df_sample.to_excel(writer, sheet_name='ProblematicSampleData')

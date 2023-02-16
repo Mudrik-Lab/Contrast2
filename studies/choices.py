@@ -4,7 +4,6 @@ from django.utils.translation import gettext_lazy as _
 
 class SampleChoices(TextChoices):
     HEALTHY_ADULTS = "healthy_adults", _("Healthy_adults")
-    HEALTHY_COLLEGE_STUDENTS = "Healthy_college_students", _("Healthy_college_students")
     CHILDREN = "children", _("Children")
     PATIENTS = "patients", _("Patients")
     NON_HUMAN = "non_human", _("Non_human")

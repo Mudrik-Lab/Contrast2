@@ -30,7 +30,6 @@ class Experiment(models.Model):
 
                                                     )
     type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices)
-    notes = models.TextField(null=True, blank=True)
 
     # TODO add all relevant Interpretations on creations
 

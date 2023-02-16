@@ -28,7 +28,8 @@ urlpatterns = [
     path('health_check', views.healthcheck, name='healthcheck'),
     path('api-token-auth/', TokenObtainPairView.as_view(), name='api-token-obtain-pair'),
     path('api-token-refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
-    path('api/studies/', include('studies.urls'))
+    path('api/studies/', include('studies.urls')),
+    path('api/configuration/', include('configuration.urls'))
 ]
 
 configuration_name = settings.CONFIGURATION.split(".")[-1]

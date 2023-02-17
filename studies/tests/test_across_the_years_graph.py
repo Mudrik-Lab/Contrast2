@@ -1,8 +1,7 @@
-from django.urls import reverse
 from rest_framework import status
 
-from studies.choices import ReportingChoices, InterpretationsChoices
-from studies.tests.base import BaseTestCase
+from studies.choices import ReportingChoices
+from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.

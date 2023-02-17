@@ -1,8 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 
-from studies.choices import ReportingChoices, InterpretationsChoices
-from studies.tests.base import BaseTestCase
+from studies.choices import InterpretationsChoices
+from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.
@@ -38,13 +38,13 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study)
 
         self.given_interpretation_exist(experiment=israeli_study_experiment,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
+                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
         self.given_interpretation_exist(experiment=israeli_study_experiment_2,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
+                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=rpt_child_theory, type=InterpretationsChoices.PRO)
+                                        theory=rpt_child_theory, interpretation_type=InterpretationsChoices.PRO)
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.CHALLENGES)
+                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
 
         target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="nations_of_consciousness")
         res = self.client.get(target_url)

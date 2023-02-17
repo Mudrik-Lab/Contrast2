@@ -3,7 +3,7 @@ from rest_framework import status
 
 from approval_process.choices import ApprovalChoices
 from approval_process.models import ApprovalProcess
-from studies.tests.base import BaseTestCase
+from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.

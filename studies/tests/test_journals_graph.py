@@ -1,8 +1,7 @@
-from django.urls import reverse
 from rest_framework import status
 
 from studies.choices import ReportingChoices, InterpretationsChoices
-from studies.tests.base import BaseTestCase
+from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.
@@ -54,17 +53,17 @@ class JournalsGraphTestCase(BaseTestCase):
 
                                                                                       another_different_child_paradigm])
         self.given_interpretation_exist(experiment=israeli_study_experiment,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
+                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
 
         # this is expected not to be counted
         self.given_interpretation_exist(experiment=israeli_study_experiment,
-                                        theory=rpt_child_theory, type=InterpretationsChoices.CHALLENGES)
+                                        theory=rpt_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
 
         self.given_interpretation_exist(experiment=israeli_study_experiment_2,
-                                        theory=gnw_child_theory, type=InterpretationsChoices.PRO)
+                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
 
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=rpt_child_theory, type=InterpretationsChoices.PRO)
+                                        theory=rpt_child_theory, interpretation_type=InterpretationsChoices.PRO)
 
         first_measure = self.given_measure_exists(experiment_id=israeli_study_experiment.id,
                                                   measure_type="a_first_measure")

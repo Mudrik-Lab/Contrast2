@@ -1,18 +1,16 @@
+from django.urls import reverse
 from rest_framework import status
 
-from studies.choices import ReportingChoices, InterpretationsChoices
 from contrast_api.tests.base import BaseTestCase
+from studies.choices import ReportingChoices, InterpretationsChoices
+from studies.models import FindingTagFamily, FindingTagType
 
 
-# Create your tests here.
-class ParameterDistributionBarGraphTestCase(BaseTestCase):
+class ConfigurationViewsTestCase(BaseTestCase):
     def setUp(self) -> None:
-        super().setUp()
+        self.given_world_setup()
 
-    def tearDown(self) -> None:
-        super().tearDown()
-
-    def _given_world_setup(self):
+    def given_world_setup(self):
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
                                                 DOI="10.1016/j.cortex.2017.07.011", year=2002)
         british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
@@ -31,20 +29,35 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
                                                                       parent=different_parent_paradigm)
         first_technique = self.given_technique_exists("a_first_technique")
         second_technique = self.given_technique_exists("b_second_technique")
+        temporal_family = FindingTagFamily.objects.get(name="Temporal")
+        tag_type_N400 = FindingTagType.objects.create(name="N400", family=temporal_family)
+        tag_type_P300 = FindingTagType.objects.create(name="P300", family=temporal_family)
+        first_tag_data = dict(type=tag_type_N400, technique=first_technique, family=temporal_family, onset=100,
+                              offset=150)
+        second_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=120,
+                               offset=150)
+        third_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=200,
+                              offset=250)
+
         israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
                                                                           paradigms=[masking_child_paradigm],
                                                                           is_reporting=ReportingChoices.NO_REPORT,
-                                                                          techniques=[second_technique])
+                                                                          techniques=[second_technique],
+                                                                          finding_tags=[third_tag_data])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
                                                                             finding_description="brave new world",
                                                                             techniques=[second_technique],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
+                                                                            finding_tags=[second_tag_data,
+                                                                                          third_tag_data],
                                                                             paradigms=[different_child_paradigm,
                                                                                        masking_child_paradigm])
         british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study,
                                                                                   techniques=[first_technique,
                                                                                               second_technique],
                                                                                   is_reporting=ReportingChoices.BOTH,
+                                                                                  finding_tags=[first_tag_data,
+                                                                                                third_tag_data],
                                                                                   paradigms=[
                                                                                       masking_child_paradigm,
                                                                                       another_different_child_paradigm])
@@ -83,83 +96,13 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
                                                    measure_type="c_third_measure")
         return another_different_child_paradigm, different_child_paradigm, different_parent_paradigm, first_measure, first_technique, fourth_measure, masking_child_paradigm, masking_parent_paradigm, second_measure, second_technique, third_measure_with_second_type
 
-    def test_parameters_distribution_bar_breakdown_paradigm_family(self):
-        another_different_child_paradigm, \
-        different_child_paradigm, \
-        different_parent_paradigm, \
-        first_measure, first_technique, \
-        fourth_measure, masking_child_paradigm, \
-        masking_parent_paradigm, second_measure, \
-        second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="parameters_distribution_bar",
-                                                    breakdown="paradigm_family", theory=self.gnw_parent_theory.id)
-        res = self.client.get(target_url)
+    def test_configuration_studies_endpoint(self):
+
+        url = self.reverse_with_query_params("configuration-studies-form")
+        res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(len(res.data), 2)  # as gnw child interperation to two paradigms
-        """
-        masking parent paradigm 
-         gnw -pro: 2 against: 1
-         rpt pro:  1 against: 1
-        different parent paradigm - 
-         gnw - pro: 1 against: 1
-         rpt - pro:1  against: """
-        first_series = res.data[0]
-        second_series = res.data[1]
-        self.assertEqual(first_series["series_name"], masking_parent_paradigm.name)  # 3 total
-        self.assertEqual(second_series["series_name"], different_parent_paradigm.name)  # 2
-
-        self.assertEqual(first_series["series"][0]["key"], InterpretationsChoices.PRO)
-        self.assertEqual(first_series["series"][0]["value"], 2)
-
-        self.assertEqual(first_series["series"][1]["key"], InterpretationsChoices.CHALLENGES)
-        self.assertEqual(first_series["series"][1]["value"], 1)
-
-        self.assertEqual(second_series["series"][0]["key"], InterpretationsChoices.PRO)
-        self.assertEqual(second_series["series"][0]["value"], 1)
-
-        self.assertEqual(second_series["series"][1]["key"], InterpretationsChoices.CHALLENGES)
-        self.assertEqual(second_series["series"][1]["value"], 1)
-
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="parameters_distribution_bar",
-                                                    breakdown="paradigm_family", theory=self.rpt_parent_theory.id)
-        res = self.client.get(target_url)
+    def test_configuration_graphs_endpoint(self):
+        url = self.reverse_with_query_params("configuration-graphs")
+        res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-
-        first_series = res.data[0]
-        second_series = res.data[1]
-        self.assertEqual(first_series["series_name"], masking_parent_paradigm.name)  # 2 total
-        self.assertEqual(second_series["series_name"], different_parent_paradigm.name)  # 1
-
-    def test_all_options_sanity_test(self):
-        """
-        This is just a basic sanity test, that nothing throws an exception, later we might add more here
-        """
-        another_different_child_paradigm, \
-        different_child_paradigm, \
-        different_parent_paradigm, \
-        first_measure, first_technique, \
-        fourth_measure, masking_child_paradigm, \
-        masking_parent_paradigm, second_measure, \
-        second_technique, third_measure_with_second_type = self._given_world_setup()
-        for breakdown in {
-            "paradigm_family",
-            "paradigm",
-            "population",
-            "finding_tag",
-            "finding_tag_family",
-            "reporting",
-            "theory_driven",
-            "task",
-            "stimuli_category",
-            "modality",
-            "consciousness_measure_phase",
-            "consciousness_measure_type",
-            "type_of_consciousness",
-            "technique",
-            "measure"
-        }:
-            target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="parameters_distribution_bar",
-                                                        breakdown=breakdown, theory=self.gnw_parent_theory.id)
-            res = self.client.get(target_url)
-            self.assertEqual(res.status_code, status.HTTP_200_OK)

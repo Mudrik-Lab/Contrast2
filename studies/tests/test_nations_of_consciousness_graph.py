@@ -6,17 +6,12 @@ from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.
-class ExperimentsViewSetTestCase(BaseTestCase):
+class NationsOfConsciousnessViewSetTestCase(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
 
     def tearDown(self) -> None:
         super().tearDown()
-
-    def test_experiments_endpoint_is_responding_to_list(self):
-        target_url = reverse("experiments-graphs-list")
-        res = self.client.get(target_url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
 
     def test_nations_of_consciousness_data(self):
         """
@@ -46,7 +41,7 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
                                         theory=gnw_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
 
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="nations_of_consciousness")
+        target_url = self.reverse_with_query_params("experiments-graphs-nations-of-consciousness")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -70,7 +65,3 @@ class ExperimentsViewSetTestCase(BaseTestCase):
         self.assertEqual(third_result["country"], "UK")
         self.assertEqual(third_result["count"], 1)
         self.assertEqual(third_result["theory"], "RPT")
-
-
-
-

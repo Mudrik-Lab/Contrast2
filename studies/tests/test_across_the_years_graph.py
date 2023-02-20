@@ -12,7 +12,6 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
-
     def _given_world_setup(self):
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
                                                 DOI="10.1016/j.cortex.2017.07.011", year=2002)
@@ -67,7 +66,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years",
                                                     breakdown="paradigm_family")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -90,7 +89,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years",
                                                     breakdown="paradigm")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -114,7 +113,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years",
                                                     breakdown="measure")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -140,7 +139,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
 
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years",
                                                     breakdown="technique")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -155,19 +154,6 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
         self.assertDictEqual(second_series["series"][1], dict(year=2004, value=1))
 
-    def test_frequencies_graph(self):
-        pass
-
-    def test_timings_graphs(self):
-        pass
-
-    def test_theory_driven_by_interpretations(self):
-        """
-        is_reporting[]=true, TypeOfConsciousness[]=state
-        hint: use request.query_params.getlist
-        """
-        pass
-
     def test_across_the_years_is_reporting_breakdown(self):
         another_different_child_paradigm, \
         different_child_paradigm, \
@@ -177,7 +163,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
 
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="across_the_years",
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years",
                                                     breakdown="reporting")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

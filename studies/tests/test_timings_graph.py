@@ -107,7 +107,7 @@ class TimingsGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self.given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="timings",
+        target_url = self.reverse_with_query_params("experiments-graphs-timings",
                                                     theory=self.gnw_parent_theory.name,
                                                     techniques=[first_technique.name, second_technique.name],
                                                     tags_types=["N400", "P300"])

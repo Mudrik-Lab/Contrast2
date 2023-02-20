@@ -107,7 +107,7 @@ class FrequenciesGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-list", graph_type="frequencies",
+        target_url = self.reverse_with_query_params("experiments-graphs-frequencies",
                                                     theory=self.gnw_parent_theory.name,
                                                     techniques=[first_technique.name, second_technique.name],
                                                     )

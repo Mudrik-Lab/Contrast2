@@ -1,5 +1,6 @@
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import mixins, status
+from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -16,65 +17,12 @@ from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer
 
-graphs_queryparams = [OpenApiParameter(name='graph_type',
-                                       description='Graph type',
-                                       type=str,
-                                       enum=["nations_of_consciousness",
-                                             "across_the_years",
-                                             "journals",
-                                             "parameters_distribution_bar",
-                                             "frequencies",
-                                             "timings"
-                                             ],
-                                       required=True),
-                      OpenApiParameter(name='theory',
-                                       type=str,
-                                       required=False,  # TODO add supported enum
-                                       description='theory filter needed for certain graphs'),
-                      OpenApiParameter(name='breakdown',
-                                       description='breakdown needed for certain graphs',
-                                       type=str,
-                                       enum=["paradigm_family",
-                                             "paradigm",
-                                             "population",
-                                             "finding_tag",
-                                             "finding_tag_family",
-                                             "reporting",
-                                             "theory_driven",
-                                             "task",
-                                             "stimuli_category",
-                                             "modality",
-                                             "consciousness_measure_phase",
-                                             "consciousness_measure_type",
-                                             "type_of_consciousness",
-                                             "technique",
-                                             "measure"],
-                                       required=False),
-                      OpenApiParameter(name='sort_first',
-                                       description='sort needed for certain graphs',
-                                       type=str,
-                                       required=False),
-                      OpenApiParameter(name='is_theory_driven',
-                                       description='is_theory_driven optional for frequencies/timings graphs',
-                                       type=str,
-                                       required=False),
-                      OpenApiParameter(name='techniques',
-                                       description='techniques optional for frequencies/timings graphs',
-                                       type=str,
-                                       required=False),
-                      OpenApiParameter(name='tags_types',
-                                       description='tags_types optional for timings graphs',
-                                       type=str,
-                                       required=False)
 
-                      ]
-
-
-class ExperimentsGraphsViewSet(mixins.ListModelMixin,
-                               GenericViewSet):
+class ExperimentsGraphsViewSet(
+    GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = FullExperimentSerializer
-    # TODO: handle creation
+    pagination_class = None
     queryset = Experiment.objects \
         .select_related("study", "study__approval_process", "study__submitter") \
         .filter(study__approval_status=ApprovalChoices.APPROVED)
@@ -99,12 +47,110 @@ class ExperimentsGraphsViewSet(mixins.ListModelMixin,
 
     }
 
-    @extend_schema(parameters=graphs_queryparams)
-    def list(self, request, *args, **kwargs):
-        if request.query_params.get("graph_type"):
-            return self.graph(request, graph_type=request.query_params.get("graph_type"), *args, **kwargs)
+    @extend_schema(responses=NationOfConsciousnessGraphSerializer(many=True),
+                   parameters=[])
+    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    def nations_of_consciousness(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
 
-        return super().list(request=request, *args, **kwargs)
+    @extend_schema(responses=BarGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='theory',
+                                                type=str,
+                                                required=False,  # TODO add supported enum
+                                                description='theory filter')])
+    @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
+    def journals(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=AcrossTheYearsGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='breakdown',
+                                                description='breakdown needed for certain graphs',
+                                                type=str,
+                                                enum=["paradigm_family",
+                                                      "paradigm",
+                                                      "population",
+                                                      "finding_tag",
+                                                      "finding_tag_family",
+                                                      "reporting",
+                                                      "theory_driven",
+                                                      "task",
+                                                      "stimuli_category",
+                                                      "modality",
+                                                      "consciousness_measure_phase",
+                                                      "consciousness_measure_type",
+                                                      "type_of_consciousness",
+                                                      "technique",
+                                                      "measure"],
+                                                required=True)])
+    @action(detail=False, methods=["GET"], serializer_class=AcrossTheYearsGraphSerializer)
+    def across_the_years(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=StackedBarGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='theory',
+                                                type=str,
+                                                required=False,  # TODO add supported enum
+                                                description='theory filter'),
+                               OpenApiParameter(name='breakdown',
+                                                description='breakdown needed for certain graphs',
+                                                type=str,
+                                                enum=["paradigm_family",
+                                                      "paradigm",
+                                                      "population",
+                                                      "finding_tag",
+                                                      "finding_tag_family",
+                                                      "reporting",
+                                                      "theory_driven",
+                                                      "task",
+                                                      "stimuli_category",
+                                                      "modality",
+                                                      "consciousness_measure_phase",
+                                                      "consciousness_measure_type",
+                                                      "type_of_consciousness",
+                                                      "technique",
+                                                      "measure"],
+                                                required=True)])
+    @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
+    def parameters_distribution_bar(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=DurationGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='theory',
+                                                type=str,
+                                                required=False,  # TODO add supported enum
+                                                description='theory filter'),
+                               OpenApiParameter(name='techniques',
+                                                description='techniques optional for frequencies/timings graphs',
+                                                type=str,
+                                                required=False),
+
+                               ])
+    @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
+    def frequencies(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=DurationGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='theory',
+                                                type=str,
+                                                required=False,  # TODO add supported enum
+                                                description='theory filter'),
+                               OpenApiParameter(name='sort_first',
+                                                description='sort needed for certain graphs',
+                                                type=str,
+                                                required=False),
+
+                               OpenApiParameter(name='techniques',
+                                                description='techniques optional for frequencies/timings graphs',
+                                                type=str,
+                                                required=False),
+                               OpenApiParameter(name='tags_types',
+                                                description='tags_types optional for timings graphs',
+                                                type=str,
+                                                required=False)
+                               ])
+    @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
+    def timings(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     def get_serializer_by_graph_type(self, graph_type, data, *args, **kwargs):
         """

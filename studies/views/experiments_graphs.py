@@ -6,6 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
+from studies.choices import InterpretationsChoices
 from studies.filters import ExperimentFilter
 from studies.models import Experiment
 from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
@@ -15,7 +16,8 @@ from studies.processors.nations_of_consciousness import NationOfConsciousnessDat
 from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
-    AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer
+    AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
+    NestedPieChartSerializer, ComparisonNestedPieChartSerializer
 
 
 class ExperimentsGraphsViewSet(
@@ -34,7 +36,9 @@ class ExperimentsGraphsViewSet(
         "journals": BarGraphSerializer,
         "parameters_distribution_bar": StackedBarGraphSerializer,
         "timings": DurationGraphSerializer,
-        "frequencies": DurationGraphSerializer
+        "frequencies": DurationGraphSerializer,
+        "parameters_distribution_pie": NestedPieChartSerializer,
+        "parameters_distribution_theories_comparison": ComparisonNestedPieChartSerializer
     }
 
     graph_processors = {
@@ -60,6 +64,60 @@ class ExperimentsGraphsViewSet(
                                                 description='theory filter')])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
     def journals(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=BarGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='breakdown',
+                                                description='breakdown needed for certain graphs',
+                                                type=str,
+                                                enum=["paradigm_family",
+                                                      "paradigm",
+                                                      "population",
+                                                      "finding_tag",
+                                                      "finding_tag_family",
+                                                      "reporting",
+                                                      "theory_driven",
+                                                      "task",
+                                                      "stimuli_category",
+                                                      "modality",
+                                                      "consciousness_measure_phase",
+                                                      "consciousness_measure_type",
+                                                      "type_of_consciousness",
+                                                      "technique",
+                                                      "measure"],
+                                                required=True)])
+    @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
+    def parameters_distribution_pie(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=BarGraphSerializer(many=True),
+                   parameters=[OpenApiParameter(name='breakdown',
+                                                description='breakdown needed for certain graphs',
+                                                type=str,
+                                                enum=["paradigm_family",
+                                                      "paradigm",
+                                                      "population",
+                                                      "finding_tag",
+                                                      "finding_tag_family",
+                                                      "reporting",
+                                                      "theory_driven",
+                                                      "task",
+                                                      "stimuli_category",
+                                                      "modality",
+                                                      "consciousness_measure_phase",
+                                                      "consciousness_measure_type",
+                                                      "type_of_consciousness",
+                                                      "technique",
+                                                      "measure"],
+                                                required=True),
+                               OpenApiParameter(name="Interpretation",
+                                                description="supporting or challenging",
+                                                type=str,
+                                                enum=[InterpretationsChoices.PRO,
+                                                      InterpretationsChoices.CHALLENGES],
+                                                required=True)])
+    @action(detail=False, methods=["GET"], serializer_class=ComparisonNestedPieChartSerializer)
+    def parameters_distribution_theories_comparison(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(responses=AcrossTheYearsGraphSerializer(many=True),

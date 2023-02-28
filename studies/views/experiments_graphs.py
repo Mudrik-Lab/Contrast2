@@ -14,6 +14,7 @@ from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
 from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
+from studies.processors.parameters_distribution_pie import ParametersDistributionPieGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
@@ -46,6 +47,7 @@ class ExperimentsGraphsViewSet(
         "across_the_years": AcrossTheYearsGraphDataProcessor,
         "journals": JournalsGraphDataProcessor,
         "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
+        "parameters_distribution_pie": ParametersDistributionPieGraphDataProcessor,
         "frequencies": FrequenciesGraphDataProcessor,
         "timings": TimingsGraphDataProcessor,
 

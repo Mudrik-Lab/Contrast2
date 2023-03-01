@@ -250,3 +250,18 @@ class DurationBarSerializer(serializers.Serializer):
 
 class DurationGraphSerializer(serializers.Serializer):
     series = DurationBarSerializer(many=True)
+
+
+class NestedPieChartSerializer(serializers.Serializer):
+    series_name = serializers.CharField()
+    value = serializers.IntegerField()
+    series = BarGraphSerializer(many=True)
+
+
+class PieChartSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    series = BarGraphSerializer(many=True)
+
+
+class ComparisonNestedPieChartSerializer(serializers.Serializer):
+    theories = PieChartSerializer(many=True)

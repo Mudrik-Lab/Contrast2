@@ -8,7 +8,7 @@ class Theory(models.Model):
         verbose_name_plural = "theories"
 
     name = models.CharField(null=False, blank=False, max_length=100)
-    parent = models.ForeignKey(null=True, blank=True, to="studies.Theory", on_delete=CASCADE)
+    parent = models.ForeignKey(null=True, blank=True, to="studies.Theory", on_delete=CASCADE, related_name="children")
 
     def __str__(self):
         if self.parent is not None:

@@ -20,10 +20,14 @@ FREQ_BAND_DEF_IDX = 1
 FREQUENCY_HZ = 'Hz'
 
 
+class FindingTagDataError(Exception):
+    pass
+
+
 # a helper function that extracts and fills a 'finding class' with onset and offset information
 def fill_temporal_util(finding, txt):
-    # remove ms
-    clean_temporal_txt = txt.replace(TEMPORAL_MS, '')
+    # remove ms and ~
+    clean_temporal_txt = txt.replace(TEMPORAL_MS, '').replace("~", "")
     # replace ! with - (we use - as a  separator for timing / bands )
     temporal_split = [time.replace(TEMPORAL_NEGATIVE_TIMING_SIGN, '-')
                       for time in clean_temporal_txt.split(ONSET_OFFSET_SEP)]
@@ -39,9 +43,12 @@ def fill_temporal_util(finding, txt):
 class BaseFinding:
     def __init__(self, tag_code, txt):
         # save only positive tags, negative findings will be encoded in  'is_negative'
-        self.tag = tag_code.replace(NEGATIVE_TAG, '')
         self.finding_txt = txt
-        self.is_negative = tag_code[0] == NEGATIVE_TAG
+        if tag_code:
+            self.is_negative = tag_code[0] == NEGATIVE_TAG
+            self.tag = tag_code.replace(NEGATIVE_TAG, '')
+        else:
+            raise FindingTagDataError()
         self.comment = UNINITIALIZED_VAL
         self.technique = UNINITIALIZED_VAL
         # decode finding_txt right after initialization
@@ -132,9 +139,12 @@ class FrequencyFinding(BaseFinding):
 
 
 # set the mapping between tags and decoders
-spatial_to_finding = {tag: SpatialFinding for tag in ['1', '2', '20']}
-temporal_to_finding = {tag: TemporalFinding for tag in ['3', '4']}
-frequency_to_finding = {tag: FrequencyFinding for tag in ['5', '14']}
+spatial_to_finding = {tag: SpatialFinding for tag in ['0', '1', '2', '20', '11', '12', '16', '17', '21', '31', '35', '42',
+                                                      '51', '86', '87']}
+temporal_to_finding = {tag: TemporalFinding for tag in ['3', '4', '15', '22', '24', '25', '26', '27', '30', '32', '33',
+                                                        '36', '37', '39', '46', '49', '53', '55', '56', '57', '62', '63',
+                                                        '69', '70', '71', '72', '74', '75', '76', '77', '78', '84', '85']}
+frequency_to_finding = {tag: FrequencyFinding for tag in ['5', '13', '14', '28', '29']}
 tag_to_findings = spatial_to_finding | temporal_to_finding | frequency_to_finding
 
 
@@ -156,7 +166,7 @@ def parse_findings_per_tag(tag_code: str, finding_text: str) -> List[BaseFinding
 # go over an experiment's findings and return a list of findings (here a list of class instances)
 def parse_findings_per_experiment(txt: str) -> List[BaseFinding]:
     # each experiment findings text includes different tags, first split the text
-    findings_txt = [tag_txt.strip() for tag_txt in txt.split(ITEM_SEP)]
+    findings_txt = [str(tag_txt.strip()) for tag_txt in str(txt).split(ITEM_SEP)]
     # in cases where no information is provided for the tag, create mock start and end signs
     findings_txt_processed = [finding if (START_FINDING_SEP in finding)
                               else (finding + START_FINDING_SEP + END_FINDING_SEP) for finding in findings_txt]

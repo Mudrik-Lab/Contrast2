@@ -1,21 +1,36 @@
+import logging
 import re
 from collections import namedtuple
 from itertools import zip_longest, chain
 
 from configuration.initial_setup import task_types_mapping, findings_measures
 from studies.choices import TheoryDrivenChoices, SampleChoices
-from studies.models import Theory, Paradigm, Stimulus
+from studies.models import Paradigm, Stimulus
+
+logger = logging.getLogger('Contrast2')
 
 
 class ProblemInTheoryDrivenExistingDataException(Exception):
     pass
 
 
-class ProblemInStimuliExistingDataException(Exception):
+class ProblemInSampleExistingDataException(Exception):
     pass
 
 
-class ProblemInSampleExistingDataException(Exception):
+class ProblemInCMExistingDataException(Exception):
+    pass
+
+
+class IncoherentStimuliData(Exception):
+    pass
+
+
+class MissingValueInStimuli(Exception):
+    pass
+
+
+class StimulusDurationError(Exception):
     pass
 
 
@@ -32,76 +47,83 @@ def add_to_notes(prefix, text: str):
 
 
 def get_sample_from_data(item):
-    sample_type_data = item["Sample.Type"].split("+")
-    total_sample_data = item["Sample.Total"]
-    included_sample_data = item["Sample.Included"]
+    sample_type_data = str(item["Sample.Type"]).split("+")
+    total_sample_data = str(item["Sample.Total"])
+    included_sample_data = str(item["Sample.Included"])
     notes = []
 
-    if len(sample_type_data) == 1:
-        sample_type = sample_type_data[0]
-        if "(" in sample_type:
-            sample_type_number = sample_type.split("(")[0].strip()
-            sample_type_notes = sample_type.split("(")[1].split(")")[0]
-            note = add_to_notes("sample type", sample_type_notes)
-            notes.append(note)
-        else:
-            sample_type_number = sample_type.strip()
-
-        if sample_type_number == "0":
-            resolved_sample_type = SampleChoices.HEALTHY_ADULTS
-        elif sample_type_number == "1":
-            resolved_sample_type = SampleChoices.HEALTHY_COLLEGE_STUDENTS
-        elif sample_type_number == "2":
-            resolved_sample_type = SampleChoices.CHILDREN
-        elif sample_type_number == "3":
-            resolved_sample_type = SampleChoices.PATIENTS
-        elif sample_type_number == "5":
-            resolved_sample_type = SampleChoices.NON_HUMAN
-        elif sample_type_number == "6":
-            resolved_sample_type = SampleChoices.COMPUTER
-        else:
-            raise ProblemInSampleExistingDataException
-
-        if "(" in total_sample_data:
-            resolved_total_sample = total_sample_data.split("(")[0].strip()
-            sample_total_notes = total_sample_data.split("(")[1].split(")")[0]
-            note = add_to_notes("sample total", sample_total_notes)
-            notes.append(note)
-        else:
-            resolved_total_sample = total_sample_data.strip()
-
-        if "(" in included_sample_data:
-            resolved_included_sample = included_sample_data.split("(")[0].strip()
-            included_sample_notes = total_sample_data.split("(")[1].split(")")[0]
-            note = add_to_notes("sample included", included_sample_notes)
-            notes.append(note)
-        else:
-            resolved_included_sample = included_sample_data.strip()
-        notes_string = chain.from_iterable(notes)
-        sample = SampleFromData(sample_type=resolved_sample_type, total_size=resolved_total_sample,
-                                included_size=resolved_included_sample, note=notes_string)
-    else:
+    if len(sample_type_data) != 1:
         raise ProblemInSampleExistingDataException()
+
+    # resolve for sample type
+    sample_type = sample_type_data[0]
+    if "(" in sample_type:
+        sample_type_number = sample_type.split("(")[0].strip()
+        sample_type_notes = sample_type.split("(")[1].split(")")[0]
+        note = add_to_notes("sample type", sample_type_notes)
+        notes.append(note)
+    else:
+        sample_type_number = sample_type.strip()
+
+    if sample_type_number == "0":
+        resolved_sample_type = SampleChoices.HEALTHY_ADULTS
+    elif sample_type_number == "1":
+        resolved_sample_type = SampleChoices.HEALTHY_COLLEGE_STUDENTS
+    elif sample_type_number == "2":
+        resolved_sample_type = SampleChoices.CHILDREN
+    elif sample_type_number == "3":
+        resolved_sample_type = SampleChoices.PATIENTS
+    elif sample_type_number == "5":
+        resolved_sample_type = SampleChoices.NON_HUMAN
+    elif sample_type_number == "6":
+        resolved_sample_type = SampleChoices.COMPUTER
+    else:
+        raise ProblemInSampleExistingDataException
+
+    # resolve for total sample size
+    if "(" in total_sample_data:
+        resolved_total_sample = total_sample_data.split("(")[0].strip()
+        sample_total_notes = total_sample_data.split("(")[1].split(")")[0]
+        note = add_to_notes("sample total", sample_total_notes)
+        notes.append(note)
+    else:
+        resolved_total_sample = total_sample_data.strip()
+
+    # resolve for included sample size
+    if "(" in included_sample_data:
+        resolved_included_sample = included_sample_data.split("(")[0].strip()
+        included_sample_notes = included_sample_data.split("(")[1].split(")")[0]
+        note = add_to_notes("sample included", included_sample_notes)
+        notes.append(note)
+    else:
+        resolved_included_sample = included_sample_data.strip()
+
+    notes_string = '; '.join(map(str, notes))
+    sample = SampleFromData(sample_type=resolved_sample_type, total_size=resolved_total_sample,
+                            included_size=resolved_included_sample, note=notes_string)
 
     return sample
 
 
-def find_in_list(lookup_list: list, search_list: list):
-    resolved_list = [[item for item in search_list if lookup_value.split("(")[0].strip().lower() == item.lower()]
-                     if "(" in lookup_value
-                     else [item for item in search_list if lookup_value.strip().lower() == item.lower()]
-                     for lookup_value in lookup_list]
+def find_in_list(items_to_compare: list, compared_items_list: list):
+    clean_items_to_compare = [item.split("(")[0].strip if "(" in item else item.strip() for item in items_to_compare]
+    resolved_list = []
+    for item in compared_items_list:
+        for lookup_item in clean_items_to_compare:
+            if item == lookup_item:
+                resolved_list.append(item)
 
     return resolved_list
 
 
 def get_consciousness_measure_type_and_phase_from_data(item):
-    cm_phase_list = item['Measures of consciousness.Type'].split("+")
-    cm_type_list = item['Measures of consciousness.Measures Taken'].split("+")
+    cm_phase_list = item['Measures of consciousness.Phase'].split("+")
+    cm_type_list = item['Measures of consciousness.Type'].split("+")
     consciousness_measure_phase_lookup = ["None",
                                           "Post Experiment",
                                           "Pre Experiment",
                                           "Separate Experiment",
+                                          "Interminent Questioning",
                                           "Trial By Trial"]
     consciousness_measure_type_lookup = ["None",
                                          "Condition Assessment",
@@ -110,75 +132,69 @@ def get_consciousness_measure_type_and_phase_from_data(item):
                                          "Sleep Monitoring",
                                          "Objective"]
     results = []
-    resolved_phases = [[item for item in consciousness_measure_phase_lookup if
-                        lookup_value.split("(")[0].strip().lower() == item.lower()]
-                       if "(" in lookup_value
-                       else [item for item in consciousness_measure_phase_lookup if
-                             lookup_value.strip().lower() == item.lower()]
-                       for lookup_value in cm_phase_list]
 
-    resolved_types = [[item for item in consciousness_measure_type_lookup if
-                       lookup_value.split("(")[0].strip().lower() == item.lower()]
-                      if "(" in lookup_value
-                      else [item for item in consciousness_measure_type_lookup if
-                            lookup_value.strip().lower() == item.lower()]
-                      for lookup_value in cm_type_list]
+    resolved_phases = find_in_list(cm_phase_list, consciousness_measure_phase_lookup)
+    resolved_types = find_in_list(cm_type_list, consciousness_measure_type_lookup)
 
     phases = chain.from_iterable(resolved_phases)
     types = chain.from_iterable(resolved_types)
-
-    for resolved_phase, resolved_type in zip_longest(phases, types):
-        if resolved_phase and resolved_type:
-            results.append(ConsciousnessMeasureFromData(type=resolved_type, phase=resolved_phase))
-        elif resolved_phase and not resolved_type:
-            results.append(ConsciousnessMeasureFromData(type=resolved_types[0], phase=resolved_phase))
-        elif resolved_type and not resolved_phase:
-            results.append(ConsciousnessMeasureFromData(type=resolved_type, phase=resolved_phases[0]))
-        else:
-            break
-
+    try:
+        for resolved_phase, resolved_type in zip_longest(resolved_phases, resolved_types):
+            if resolved_phase and resolved_type:
+                results.append(ConsciousnessMeasureFromData(type=resolved_type, phase=resolved_phase))
+            elif resolved_phase and not resolved_type:
+                results.append(ConsciousnessMeasureFromData(type=resolved_types[0], phase=resolved_phase))
+            elif resolved_type and not resolved_phase:
+                results.append(ConsciousnessMeasureFromData(type=resolved_type, phase=resolved_phases[0]))
+            else:
+                break
+    except IndexError as error:
+        logger.exception(f'{error} while processing consciousness measure data (either type or phase)')
     return results
 
 
 def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
-    theory_driven = ""
-    theory_driven_theories = []
-    for key, value in item.items():
-        if "Theory Driven" not in key:
-            continue
-        theory_driven_choice = value[0]
+    resolved_theory_driven_theories = []
+    data = str(item["Theory Driven"])
+    if "(" not in data:
+        theory_driven_choice = data.strip()
         if theory_driven_choice == "0":
             theory_driven = TheoryDrivenChoices.POST_HOC
-        elif theory_driven_choice == "1":
-            theory_driven = TheoryDrivenChoices.MENTIONING
-            for theory in theories:
-                if theory not in value:
-                    continue
-                theory = Theory.objects.get(name=theory)
-                theory_driven_theories.append(theory)
-        elif theory_driven_choice == "2":
-            theory_driven = TheoryDrivenChoices.DRIVEN
-            for theory in theories:
-                if theory not in value:
-                    continue
-                theory = Theory.objects.get(name=theory)
-                theory_driven_theories.append(theory)
+            return theory_driven, resolved_theory_driven_theories
         else:
             raise ProblemInTheoryDrivenExistingDataException()
 
-    return theory_driven, theory_driven_theories
+    theory_driven_data = data.split("(")
+    theory_driven_choice = theory_driven_data[0].strip()
+    theory_driven_theories = theory_driven_data[1].split(")")[0].split("&")
+
+    if theory_driven_choice == "1":
+        theory_driven = TheoryDrivenChoices.MENTIONING
+        for theory in theories:
+            for theory_driven_theory in theory_driven_theories:
+                if theory == theory_driven_theory.strip():
+                    resolved_theory_driven_theories.append(theory)
+
+    elif theory_driven_choice == "2":
+        theory_driven = TheoryDrivenChoices.DRIVEN
+        for theory in theories:
+            for theory_driven_theory in theory_driven_theories:
+                if theory == theory_driven_theory.strip():
+                    resolved_theory_driven_theories.append(theory)
+    else:
+        raise ProblemInTheoryDrivenExistingDataException()
+
+    return theory_driven, resolved_theory_driven_theories
 
 
 def parse_task_types(item: dict):
     parsed_task_types = []
-    for key, value in item.items():
-        if "Task.Code" not in key:
-            continue
-        tasks_codes_breakdown = value.split("+")
-        for task_code in tasks_codes_breakdown:
-            parsed_task_code = task_code.split("(")[0].strip()
-            parsed_task = task_types_mapping[parsed_task_code]
-            parsed_task_types.append(parsed_task)
+    task_code_data = str(item["Task.Code"])
+    tasks_codes_breakdown = task_code_data.split("+")
+    for task_code in tasks_codes_breakdown:
+        parsed_task_code = task_code.split("(")[0].strip()
+        parsed_task = task_types_mapping[parsed_task_code]
+        parsed_task_types.append(parsed_task)
 
     return parsed_task_types
 
@@ -316,12 +332,8 @@ def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
 
 
 def get_measures_from_data(item: dict):
-    measures_data = ""
-    for key, value in item.items():
-        if 'Findings.Measures' not in key:
-            continue
-        measures_data = value
-    measures_data_split = measures_data.split("+")
+    measures_data = item['Findings.Measures']
+    measures_data_split = str(measures_data).split("+")
     measures_from_data = []
     for measure in measures_data_split:
         if "(" not in measure:
@@ -348,10 +360,11 @@ def clean_stimulus_text(text):
         main_text = text
 
     multiple_entries = re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
-    verbose = re.search("[a-z]+\s[0-9]+", main_text)
+    verbose = re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
+    special_char = re.search("[:,&\/]+", main_text)
 
-    if multiple_entries or verbose:
-        raise ProblemInStimuliExistingDataException()
+    if multiple_entries or verbose or special_char:
+        raise StimulusDurationError()
     else:
         return main_text
 
@@ -360,16 +373,15 @@ def get_stimuli_from_data(item):
     stimuli_from_data = []
     stimuli_categories = item["Stimuli Features.Categories"].split("+")
     stimuli_modalities = item["Stimuli Features.Modality"].split("+")
-    stimuli_durations = item["Stimuli Features.Duration"].split("+")
-    allowed_categories_by_modality = Stimulus.allowed_categories_by_modality
+    stimuli_durations = str(item["Stimuli Features.Duration"]).split("+")
 
     if not len(stimuli_categories) == len(stimuli_modalities) == len(stimuli_durations):
-        raise ProblemInStimuliExistingDataException()
+        raise IncoherentStimuliData("not the same number of categories to modalities to durations")
 
     for category, modality, duration in zip(stimuli_categories, stimuli_modalities, stimuli_durations):
         # resolve category and sub-category (if existing)
-        resolved_category = ""
-        sub_category = ""
+        if (category == "") or (modality == ""):
+            raise MissingValueInStimuli("missing value for category of modality")
         if "(" not in category:
             resolved_category = category.strip()
             sub_category = None
@@ -388,34 +400,39 @@ def get_stimuli_from_data(item):
             if modality_type == modality_name:
                 resolved_modality = modality_type
 
-        # check for fit between modality and category
-        if resolved_category not in allowed_categories_by_modality[resolved_modality]:
-            raise ProblemInStimuliExistingDataException()
+        # # check for fit between modality and category
+        # allowed_categories_by_modality = Stimulus.allowed_categories_by_modality
+        # if resolved_category not in allowed_categories_by_modality[resolved_modality]:
+        #     # raise ProblemInStimuliExistingDataException()
+        #     pass
 
         # resolve duration
         full_text_stimulus_duration = duration
         stimulus_duration = clean_stimulus_text(full_text_stimulus_duration)
+        resolved_duration = None
+        try:
+            if "minute" in stimulus_duration:
+                raw_duration = stimulus_duration.split("minute")[0].strip
+                duration_ms = int(raw_duration) * 60000
+            elif "ms" in stimulus_duration:
+                raw_duration = stimulus_duration.split("ms")[0]
+                duration_ms = int(raw_duration.strip().split(" ")[-1].strip())
+            elif "micro" in stimulus_duration:
+                raw_duration = stimulus_duration.split("micro")[0].strip
+                duration_ms = int(raw_duration) / 1000
+            elif "sec" in stimulus_duration:
+                raw_duration = stimulus_duration.split("sec")[0].strip
+                duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
+            elif stimulus_duration == "N/A" or stimulus_duration == "NA" or stimulus_duration == "N.A" or \
+                    stimulus_duration == "None" or stimulus_duration == "0":
+                duration_ms = None
+            else:
+                raise StimulusDurationError()
+            resolved_duration = str(duration_ms)
 
-        if "minute" in stimulus_duration:
-            raw_duration = stimulus_duration.split("minute")[0].strip
-            duration_ms = int(raw_duration) * 60000
-        elif "ms" in stimulus_duration:
-            raw_duration = stimulus_duration.split("ms")[0]
-            duration_ms = float(raw_duration.strip().split(" ")[-1].strip())
-        elif "micro" in stimulus_duration:
-            raw_duration = stimulus_duration.split("micro")[0].strip
-            duration_ms = float(raw_duration) / 1000
-        elif "sec" in stimulus_duration:
-            raw_duration = stimulus_duration.split("sec")[0].strip
-            duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
-        elif stimulus_duration == "N/A" or stimulus_duration == "NA" or stimulus_duration == "N.A" or \
-                stimulus_duration == "None" or stimulus_duration == "0":
-            duration_ms = None
-        else:
-            raise ProblemInStimuliExistingDataException()
-
-        duration_micros = int(duration_ms * 1000)
-        resolved_duration = str(duration_ms)  # TODO: change to duration_micros if needed
+        except ValueError as error:
+            logger.exception(f'{error} while processing stimuli duration data')
+            raise StimulusDurationError()
 
         stimuli_from_data.append(StimulusFromData(category=resolved_category, sub_category=sub_category,
                                                   modality=resolved_modality, duration=resolved_duration))

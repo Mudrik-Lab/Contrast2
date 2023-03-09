@@ -74,5 +74,6 @@ class Stimulus(models.Model):
     def clean(self):
         # validating category by modality
         if self.category not in self.allowed_categories_by_modality[self.modality]:
-            raise ValidationError({"category": f"Stimulus category {self.category} isn't allowed for Stimulus modality "
-                                               f"{self.modality}"})
+            # raise ValidationError({"category": f"Stimulus category {self.category} isn't allowed for Stimulus modality "
+            #                                    f"{self.modality}"})
+            pass

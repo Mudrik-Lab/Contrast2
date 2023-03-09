@@ -20,6 +20,7 @@ def bootstrap_type_models(apps, schema_editor):
                           "Post Experiment",
                           "Pre Experiment",
                           "Separate Experiment",
+                          "Interminent Questioning",
                           "Trial By Trial"
                           ]:
         ConsciousnessMeasurePhaseType.objects.get_or_create(name=measure_phase)

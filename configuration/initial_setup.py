@@ -1,3 +1,5 @@
+parent_theories = ['GNW', 'IIT', 'HOT', 'RPT']
+
 paradigms = {
     'parent_paradigms': [
         "Abnormal Contents of Consciousness",

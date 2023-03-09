@@ -19,4 +19,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(bootstrap_type_models, reverse_code=migrations.RunPython.noop)
     ]

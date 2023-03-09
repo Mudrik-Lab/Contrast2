@@ -33,11 +33,11 @@ class StudyParserHelpersTestCase(BaseTestCase):
                                              "State Induction Assessment",
                                              "Sleep Monitoring",
                                              "Objective"]
-        text = "Objective + Subjective (Confidence) + Sleep Monitoring + State Induction Assessment + Condition + Assessment + Objective"
+        text = "Objective + Subjective (Confidence) + Sleep Monitoring + State Induction Assessment + Condition Assessment + Objective"
         lookup_list = text.split("+")
         res = find_in_list(lookup_list, consciousness_measure_type_lookup)
 
-        self.assertEqual(len(res), 7)
+        self.assertEqual(len(res), 6)
         self.assertEqual(res[2], "Sleep Monitoring")
         self.assertEqual(res[1], "Subjective")
 

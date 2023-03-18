@@ -1,5 +1,11 @@
 parent_theories = ['GNW', 'IIT', 'HOT', 'RPT']
 
+modalities = ["Auditory",
+              "None",
+              "Olfactory",
+              "Tactile",
+              "Visual"]
+
 paradigms = {
     'parent_paradigms': [
         "Abnormal Contents of Consciousness",
@@ -296,7 +302,8 @@ stimulus_category = ["Animals",
                      "Faces",
                      "Figure-Ground",
                      "Geometric Shapes",
-                     "Gratings/Kanizsa",
+                     "Gratings",
+                     "Kanizsa",
                      "Landolt",
                      "Letters",
                      "Light Flashes",
@@ -323,16 +330,41 @@ stimulus_category = ["Animals",
                      "Words"]
 
 stimulus_sub_category = {
-    'Geometric_Shapes': ["Arrows",
+    'Geometric Shapes': ["Arrows",
                          "Motion",
                          "Lines",
                          "Disc",
                          "Dots",
                          "Rings",
-                         "Bars Circles",
+                         "Bars",
+                         "Circles",
                          "Rectangles",
                          "Squares",
-                         "Diamonds"]
+                         "Diamonds",
+                         "Color",
+                         "Checkerboard",
+                         "Meaningless Shape",
+                         "Comb of Hexagon"],
+
+    'Objects': ["Houses",
+                "Clocks",
+                "Domino",
+                "Cars",
+                "Coins"],
+
+    'Sounds': ["Tones",
+               "Names",
+               "Emotional",
+               "Clicks",
+               "Syllables",
+               "Rain",
+               "Bubbling Water"],
+
+    'Virtual Reality Objects': ["Houses",
+                                "Road",
+                                "Moon",
+                                "Spheres"]
+
 }
 
 finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300", "4": "VAN", "5": "Gamma",

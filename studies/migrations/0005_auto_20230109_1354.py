@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from configuration.initial_setup import paradigms, task_types, techniques
+from configuration.initial_setup import paradigms, task_types, techniques, modalities
 
 
 def bootstrap_type_models(apps, schema_editor):
@@ -44,11 +44,7 @@ def bootstrap_type_models(apps, schema_editor):
     Theory.objects.get_or_create(name='RPT', parent=first_order_and_predictive_processing)
 
     ModalityType = apps.get_model("studies", "ModalityType")
-    for modality in ["Auditory",
-                     "None",
-                     "Olfactory",
-                     "Tactile",
-                     "Visual"]:
+    for modality in modalities:
         ModalityType.objects.get_or_create(name=modality)
 
     Technique = apps.get_model("studies", "Technique")

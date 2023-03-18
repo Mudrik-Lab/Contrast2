@@ -66,7 +66,7 @@ class Stimulus(models.Model):
     modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=ModalityType)  # TODO validators from config
     description = models.TextField(null=True, blank=True)
-    duration = models.PositiveBigIntegerField(null=True, blank=True)  # ms
+    duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
 
     def __str__(self):
         return f"experiment: {self.experiment_id}  modality {self.modality}"

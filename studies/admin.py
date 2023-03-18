@@ -34,8 +34,8 @@ class ExperimentInline(admin.StackedInline):
 
 class StudyAdmin(ImportExportModelAdmin):
     model = Study
-    fields = ("id", "name")
-    search_fields = ("name",)
+    list_display = ("id", "DOI", "title")
+    search_fields = ("title",)
     inlines = [
         ExperimentInline
     ]

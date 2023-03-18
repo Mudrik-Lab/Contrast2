@@ -23,6 +23,7 @@ from studies.parsers.historic_data_helpers import get_paradigms_from_data, parse
 from studies.models import Study, Author, Experiment, Technique, FindingTag, FindingTagFamily, Sample, FindingTagType, \
     TaskType, Task, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Theory, \
     ConsciousnessMeasure, MeasureType, Measure, ModalityType, Paradigm
+from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, parse_authors_keywords_from_text, \
     resolve_country_from_affiliation_text, validate_year, ProblemInStudyExistingDataException
 
@@ -200,13 +201,15 @@ class Command(BaseCommand):
         stimuli_from_data = get_stimuli_from_data(item)
         stimulus_sub_category = ""
         for stimulus in stimuli_from_data:
-            modality_type = ModalityType.objects.get(name=stimulus.modality)
             if (stimulus.duration is None) or (stimulus.duration == 'None'):
                 duration = None
             else:
-                duration = int(stimulus.duration)
+                duration = float(stimulus.duration)
             stimulus_description = item["Stimuli Features.Description"]
             try:
+                modality_type = ""
+                if stimulus.modality:
+                    modality_type = ModalityType.objects.get(name=stimulus.modality)
                 stimulus_category = StimulusCategory.objects.get(name=stimulus.category)
                 if (stimulus.sub_category == "") or (stimulus.sub_category is None):
                     stimulus_sub_category = None
@@ -218,14 +221,15 @@ class Command(BaseCommand):
                                         modality=modality_type, description=stimulus_description,
                                         duration=duration)
 
-            except ObjectDoesNotExist as error:
+            except ObjectDoesNotExist or ValueError as error:
                 logger.exception(f'{error} while processing stimuli data')
                 raise MissingStimulusCategoryError()
 
         # resolve and create findings
         findings_ncc_tags = item["Findings.NCC Tags"]
         try:
-            findings = parse_findings_per_experiment(findings_ncc_tags)
+            # findings = parse_findings_per_experiment(findings_ncc_tags)
+            findings = parse(findings_ncc_tags)
             for finding in findings:
                 resolved_tag_type = finding_tags_map[finding.tag]
                 comment = finding.comment
@@ -267,7 +271,7 @@ class Command(BaseCommand):
                     tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
                     FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                               notes=comment)
-        except (ValueError, IndexError, FindingTagType.DoesNotExist, IntegrityError) as error:
+        except (ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, IntegrityError) as error:
             logger.exception(f'{error} while processing finding tag data')
             raise FindingTagDataError()
 
@@ -275,12 +279,17 @@ class Command(BaseCommand):
 
         # Read Excel document and convert to dict
         experiments_data_df = pandas.read_excel('studies/data/Contrast2_Data_For_Drorsoft.xlsx', sheet_name='sheet1')
+        problematic_finding_tag_data_df = pandas.read_excel('studies/data/Contrast2_Data_For_Drorsoft.xlsx',
+                                                            sheet_name='FindingTagData')
         studies_data_df = pandas.read_excel('studies/data/Contrast2_Data_For_Drorsoft.xlsx',
                                             sheet_name='Included_Metadata')
         no_nan_studies_data_df = studies_data_df.replace(numpy.nan, "")
         no_nan_experiments_data_df = experiments_data_df.replace(numpy.nan, "")
+        no_nan_finding_tag_data_df = problematic_finding_tag_data_df.replace(numpy.nan, "")
         studies_historic_data_list = no_nan_studies_data_df.to_dict("records")
         historic_data_list = no_nan_experiments_data_df.to_dict("records")
+        finding_tag_data_list = no_nan_finding_tag_data_df.to_dict("records")
+        full_data_list = historic_data_list + finding_tag_data_list
 
         # iterate over studies
         studies_problematic_data_log = []
@@ -303,12 +312,12 @@ class Command(BaseCommand):
         finding_tags_problematic_data_log = []
         items_to_exclude = []
 
-        for item in historic_data_list:
-            index = historic_data_list.index(item)
+        for item in finding_tag_data_list:
+            index = finding_tag_data_list.index(item)
             is_included = bool(item["Should be included?"])
             if not is_included:
                 items_to_exclude.append(item)
-                historic_data_list.remove(item)
+                # historic_data_list.remove(item)
                 logger.info(f'row #{index} removed')
                 continue
 

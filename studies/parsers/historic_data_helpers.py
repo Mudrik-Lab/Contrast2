@@ -3,7 +3,7 @@ import re
 from collections import namedtuple
 from itertools import zip_longest, chain
 
-from configuration.initial_setup import task_types_mapping, findings_measures
+from configuration.initial_setup import task_types_mapping, findings_measures, modalities
 from studies.choices import TheoryDrivenChoices, SampleChoices
 from studies.models import Paradigm, Stimulus
 
@@ -106,10 +106,10 @@ def get_sample_from_data(item):
 
 
 def find_in_list(items_to_compare: list, compared_items_list: list):
-    clean_items_to_compare = [item.split("(")[0].strip if "(" in item else item.strip() for item in items_to_compare]
+    clean_items_to_compare = [item.split("(")[0].strip() if "(" in item else item.strip() for item in items_to_compare]
     resolved_list = []
-    for item in compared_items_list:
-        for lookup_item in clean_items_to_compare:
+    for lookup_item in clean_items_to_compare :
+        for item in compared_items_list:
             if item == lookup_item:
                 resolved_list.append(item)
 
@@ -392,13 +392,11 @@ def get_stimuli_from_data(item):
         # resolve modality
         modality_type = modality.strip()
         resolved_modality = ""
-        for modality_name in ["Auditory",
-                              "None",
-                              "Olfactory",
-                              "Tactile",
-                              "Visual"]:
-            if modality_type == modality_name:
-                resolved_modality = modality_type
+        for modality_name in modalities:
+            if modality_type.lower() == modality_name.lower():
+                resolved_modality = modality_name
+            else:
+                continue
 
         # # check for fit between modality and category
         # allowed_categories_by_modality = Stimulus.allowed_categories_by_modality
@@ -407,24 +405,18 @@ def get_stimuli_from_data(item):
         #     pass
 
         # resolve duration
+        none_values = ["N/A", "NA", "N.A", "None", "0", 0, "none", ""]
         full_text_stimulus_duration = duration
         stimulus_duration = clean_stimulus_text(full_text_stimulus_duration)
         resolved_duration = None
         try:
-            if "minute" in stimulus_duration:
-                raw_duration = stimulus_duration.split("minute")[0].strip
-                duration_ms = int(raw_duration) * 60000
-            elif "ms" in stimulus_duration:
+            if "ms" in stimulus_duration:
                 raw_duration = stimulus_duration.split("ms")[0]
-                duration_ms = int(raw_duration.strip().split(" ")[-1].strip())
-            elif "micro" in stimulus_duration:
-                raw_duration = stimulus_duration.split("micro")[0].strip
-                duration_ms = int(raw_duration) / 1000
+                duration_ms = float(raw_duration.strip().split(" ")[-1].strip())
             elif "sec" in stimulus_duration:
                 raw_duration = stimulus_duration.split("sec")[0].strip
                 duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
-            elif stimulus_duration == "N/A" or stimulus_duration == "NA" or stimulus_duration == "N.A" or \
-                    stimulus_duration == "None" or stimulus_duration == "0":
+            elif stimulus_duration in none_values:
                 duration_ms = None
             else:
                 raise StimulusDurationError()

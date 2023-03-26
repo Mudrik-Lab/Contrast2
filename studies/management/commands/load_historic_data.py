@@ -14,18 +14,13 @@ from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataEx
 logger = logging.getLogger('Contrast2')
 
 
-
 class Command(BaseCommand):
     help = 'Load historic data'
 
     def handle(self, *args, **options):
-
-        # Read Excel document and convert to dict
+        # Read .xlsx file and convert to dict
         historic_data_list = get_list_from_excel('studies/data/Contrast2_Existing_Data.xlsx', sheet_name='sheet1')
         studies_historic_data_list = get_list_from_excel('studies/data/Contrast2_Existing_Data.xlsx', sheet_name='Included_Metadata')
-        finding_tag_data_list = get_list_from_excel('studies/data/Contrast2_Existing_Data.xlsx', sheet_name='FindingTagData')
-
-        full_data_list = historic_data_list + finding_tag_data_list
 
         # iterate over studies
         studies_problematic_data_log = []

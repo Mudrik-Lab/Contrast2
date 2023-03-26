@@ -376,14 +376,14 @@ djangorestframework = ">=3.6.0"
 
 [[package]]
 name = "drf-spectacular"
-version = "0.26.0"
+version = "0.26.1"
 description = "Sane and flexible OpenAPI 3 schema generation for Django REST framework"
 category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
-    {file = "drf-spectacular-0.26.0.tar.gz", hash = "sha256:2b31c347c78ed7ed9f021f9e0fcf4e03e86ca6bfc43cb66401236f38f30fd46d"},
-    {file = "drf_spectacular-0.26.0-py3-none-any.whl", hash = "sha256:3c954a86fbefab93c20f3d39edab1d435f7b16c8291883e40fba5e34265ed461"},
+    {file = "drf-spectacular-0.26.1.tar.gz", hash = "sha256:1599a204bf9cc6be7ef3e509859885a38d4f871fe287a1f191479868afd9e234"},
+    {file = "drf_spectacular-0.26.1-py3-none-any.whl", hash = "sha256:6df86ff6c2dc663792e5ff618643bf41d2ac9dc6fb5d1b0f273e2778bab951e5"},
 ]
 
 [package.dependencies]
@@ -1108,5 +1108,5 @@ files = [
 
 [metadata]
 lock-version = "2.0"
-python-versions = ">3.10,<3.11"
-content-hash = "d8f48c6cc23778312d526a0e8cfb42015612deb70418bd15cd8332e346360de7"
+python-versions = "~3.10"
+content-hash = "6354be0dfa7dbef4aee40b3d065f80ce1eea6055b1d92378058a1103918ff53a"

@@ -12,24 +12,38 @@ def bootstrap_type_models(apps, schema_editor):
 
     StimulusSubCategory = apps.get_model("studies", "StimulusSubCategory")
 
-    for sub_category in stimulus_sub_category["Geometric_Shapes"]:
+    for sub_category in stimulus_sub_category["Geometric Shapes"]:
         geometric_shapes = StimulusCategory.objects.get(name='Geometric Shapes')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=geometric_shapes)
-
-    gratings_kanizsa = StimulusCategory.objects.get(name='Gratings/Kanizsa')
-    StimulusSubCategory.objects.get_or_create(name="Gabor", parent=gratings_kanizsa)
-
-    for sub_category in ["Houses",
-                         "Clocks",
-                         "Domino"]:
+    for sub_category in stimulus_sub_category["Objects"]:
         objects = StimulusCategory.objects.get(name='Objects')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=objects)
-
-    for sub_category in ["Houses",
-                         "Road",
-                         "Moon"]:
+    for sub_category in stimulus_sub_category["Sounds"]:
+        sounds = StimulusCategory.objects.get(name='Sounds')
+        StimulusSubCategory.objects.get_or_create(name=sub_category, parent=sounds)
+    for sub_category in stimulus_sub_category["Virtual Reality Objects"]:
         virtual_reality_objects = StimulusCategory.objects.get(name='Virtual Reality Objects')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=virtual_reality_objects)
+
+    color = StimulusCategory.objects.get(name='Color')
+    StimulusSubCategory.objects.get_or_create(name="Motion", parent=color)
+
+    gratings = StimulusCategory.objects.get(name='Gratings')
+    StimulusSubCategory.objects.get_or_create(name="Gabor", parent=gratings)
+
+    letters = StimulusCategory.objects.get(name='Letters')
+    StimulusSubCategory.objects.get_or_create(name="Oriented Ts", parent=letters)
+
+    nociceptive_stimulation = StimulusCategory.objects.get(name='Nociceptive stimulation')
+    StimulusSubCategory.objects.get_or_create(name="Laser", parent=nociceptive_stimulation)
+
+    noise = StimulusCategory.objects.get(name='Noise')
+    StimulusSubCategory.objects.get_or_create(name="White Noise", parent=noise)
+
+    words = StimulusCategory.objects.get(name='Words')
+    StimulusSubCategory.objects.get_or_create(name="Emotional", parent=words)
+
+
 
 
 class Migration(migrations.Migration):

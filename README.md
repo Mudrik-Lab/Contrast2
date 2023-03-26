@@ -74,12 +74,22 @@ We are currently using postgres. You need to set up a user,
    python manage.py migrate   
    ```   
 
-5. Create a superuser for yourself to start working
+
+5. To load the pre-existing data you need to: 
+* [Download this file](https://docs.google.com/spreadsheets/d/180WivImbqDv6MBabsHIt2dqvHKS-xDZz/edit?usp=sharing&ouid=115553053451052458030&rtpof=true&sd=true)
+in .xlsx format
+* Save the file in
+``` /studies/data``` directory
+* Run this command 
+
+   ```
+    python manage.py load_historic_data 
+   ```   
+6. Create a superuser for yourself to start working
     ```
     python manage.py createsuperuser 
    ```
-
-6. Run the dev server
+7. Run the dev server
     ```
    python manage.py runserver
    ```

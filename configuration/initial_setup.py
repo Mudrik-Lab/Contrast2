@@ -1,3 +1,11 @@
+parent_theories = ['GNW', 'IIT', 'HOT', 'RPT']
+
+modalities = ["Auditory",
+              "None",
+              "Olfactory",
+              "Tactile",
+              "Visual"]
+
 paradigms = {
     'parent_paradigms': [
         "Abnormal Contents of Consciousness",
@@ -203,36 +211,36 @@ techniques = ["Ca2 Imaging",
               "TMS"]
 
 finding_tag_types = {
-    'Temporal': ["M130"
-                 "M280"
-                 "M70"
-                 "N1"
-                 "N140"
-                 "N150"
-                 "N170"
-                 "N2"
-                 "N2pc"
-                 "N400"
-                 "P1"
-                 "P2"
-                 "P300"
-                 "VAN"
-                 "CNV"
-                 "Recurrent Processing"
-                 "MMN"
-                 "ART"
-                 "Early Components"
-                 "Late Components"
-                 "SN"
-                 "Prestimulus Timing"
-                 "SPCN"
-                 "ERN"
-                 "Pe"
-                 "EPN"
-                 "Border Difference"
-                 "Figure Ground difference"
-                 "Change related positivity"
-                 "AAN"
+    'Temporal': ["M130",
+                 "M280",
+                 "M70",
+                 "N1",
+                 "N140",
+                 "N150",
+                 "N170",
+                 "N2",
+                 "N2pc",
+                 "N400",
+                 "P1",
+                 "P2",
+                 "P300",
+                 "VAN",
+                 "CNV",
+                 "Recurrent Processing",
+                 "MMN",
+                 "ART",
+                 "Early Components",
+                 "Late Components",
+                 "SN",
+                 "Prestimulus Timing",
+                 "SPCN",
+                 "ERN",
+                 "Pe",
+                 "EPN",
+                 "Border Difference",
+                 "Figure Ground Difference",
+                 "Change related positivity",
+                 "AAN",
                  "Intermediate Components"],
 
     'Spatial_Areas': ["Frontal",
@@ -251,6 +259,13 @@ finding_tag_types = {
                       "Dorsal Attention Network",
                       "Visual Network"],
 
+    'Frequency': ["Alpha",
+                  "Beta",
+                  "Delta",
+                  "Gamma",
+                  "Theta"
+                  ],
+
     'miscellaneous': ["Acetylcholine",
                       "Anatomic Functional connectivity similarity",
                       "Anterior Posterior Connectivity",
@@ -258,20 +273,31 @@ finding_tag_types = {
                       "CFC",
                       "Complexity",
                       "Cortical Subcortical connectivity",
+                      "Frequency Increase",
+                      "Fronto Parietal connectivity",
+                      "Global Synchronization",
+                      "Hierarchical Structure",
+                      "Hyper Synchronization",
+                      "Ignition Variability",
+                      "inter lobe connectivity",
+                      "Low frequencies <1Hz",
                       "Metacognition",
                       "Motor areas connectivity",
                       "PHI Approximation",
                       "Plasticity",
+                      "Sleep Spindles",
+                      "SCP",
+                      "Prestimulus Components",
                       "Slow Waves Activity",
                       "Small Worldness",
                       "SSVEP",
                       "Temporal Occipital connectivity",
                       "Temporal Parietal Connectivity",
                       "Ultra slow fluctuations",
-                      "Uncinate Fasciculus",
                       "Variability",
                       "Intrinsic Ignition",
-                      "Local Synchronization"]
+                      "Local Synchronization",
+                      "GABA"]
 }
 
 stimulus_category = ["Animals",
@@ -288,7 +314,8 @@ stimulus_category = ["Animals",
                      "Faces",
                      "Figure-Ground",
                      "Geometric Shapes",
-                     "Gratings/Kanizsa",
+                     "Gratings",
+                     "Kanizsa",
                      "Landolt",
                      "Letters",
                      "Light Flashes",
@@ -315,14 +342,128 @@ stimulus_category = ["Animals",
                      "Words"]
 
 stimulus_sub_category = {
-    'Geometric_Shapes': ["Arrows",
+    'Geometric Shapes': ["Arrows",
                          "Motion",
                          "Lines",
                          "Disc",
                          "Dots",
                          "Rings",
-                         "Bars Circles",
+                         "Bars",
+                         "Circles",
                          "Rectangles",
                          "Squares",
-                         "Diamonds"]
+                         "Diamonds",
+                         "Color",
+                         "Checkerboard",
+                         "Meaningless Shape",
+                         "Comb of Hexagon"],
+
+    'Objects': ["Houses",
+                "Clocks",
+                "Domino",
+                "Cars",
+                "Coins"],
+
+    'Sounds': ["Tones",
+               "Names",
+               "Emotional",
+               "Clicks",
+               "Syllables",
+               "Rain",
+               "Bubbling Water"],
+
+    'Virtual Reality Objects': ["Houses",
+                                "Road",
+                                "Moon",
+                                "Spheres"]
+
+}
+
+finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300", "4": "VAN", "5": "Gamma",
+                    "6": "Complexity", "7": "Local Synchronization", "8": "Global Synchronization",
+                    "9": "Fronto Parietal connectivity", "10": "Variability", "11": "A1", "12": "Dorsal Stream",
+                    "13": "Beta", "14": "Alpha", "15": "CNV", "16": "Parietal", "17": "DMN", "18": "Small Worldness",
+                    "19": "PHI Approximation", "20": "Metacognition", "21": "Posterior", "22": "N2pc",
+                    "23": "Recurrent Processing", "24": "GABA", "25": "P2", "26": "MMN", "27": "N2", "28": "Theta",
+                    "29": "Delta", "30": "ART", "31": "V4", "32": "Early Components", "33": "Late Components",
+                    "34": "Temporal Parietal Connectivity", "35": "S1", "36": "N140", "37": "N170", "38": "Centrality",
+                    "39": "N1", "40": "CFC", "41": "Anterior Posterior Connectivity", "42": "Subcortical structures",
+                    "43": "Cortical Subcortical connectivity", "44": "Acetylcholine", "46": "SN",
+                    "47": "Motor areas connectivity", "48": "Temporal Occipital connectivity",
+                    "49": "Prestimulus Components", "50": "Low frequencies <1Hz", "51": "Uncinate Fasciculus",
+                    "53": "SPCN", "55": "Figure Ground Difference", "56": "Border Difference", "57": "P1",
+                    "58": "Frequency Increase", "59": "Sleep Spindles", "60": "Slow Waves Activity", "62": "ERN",
+                    "63": "EPN", "64": "Hyper Synchronization", "65": "Plasticity",
+                    "66": "Anatomic Functional connectivity similarity", "67": "Ultra slow fluctuations", "69": "M70",
+                    "70": "M130", "71": "ARN", '72': "M280", "74": "N400", "75": "Pe",
+                    "76": "Change related positivity",
+                    "77": "N150", "78": "Intermediate Components", "79": "SSVEP", "80": "inter lobe connectivity",
+                    "81": "Intrinsic Ignition", "82": "Ignition Variability", "83": "Hierarchical Structure",
+                    "84": "SCP", "85": "AAN", "86": "Dorsal Attention Network", "87": "Visual Network"
+                    }
+
+task_types_mapping = {"0": "No Task", "1": "Discrimination", "2": "Detection", "3": "Go/No-Go",
+                      "4": "Deviant Detection",
+                      "5": "Stimulus Judgement", "7": "Memory", "8": "Change Detection", "9": "Counting Task",
+                      "10": "Delayed Task", "14": "Task Switching", "17": "NBack", "18": "Dual Task",
+                      "19": "Awareness Report", "21": "Confidence Report", "22": "Binocular Rivalry Task",
+                      "23": "Visual Search", "24": "Identification", "26": "NA", "27": "Driving", "30": "Imagination",
+                      "32": "Task Switching", "33": "Mental Rotation", "35": "Color Matching", "36": "Mood",
+                      "37": "Mathematics"}
+
+findings_measures = {
+    "0": "Decoding",
+    "1": "BOLD",
+    "2": "Frequencies",
+    "3": "ERP",
+    "4": "Mutual Information",
+    "5": "Synchronization",
+    "6": "Behavioral Accuracy",
+    "7": "Behavioral RT",
+    "9": "Connectivity",
+    "10": "PHI",
+    "11": "Graph theoretical measures",
+    "14": "Entropy",
+    "15": "Global Field Power",
+    "16": "PCA",
+    "17": "Lempel Ziv",
+    "18": "H2_15O",
+    "19": "Variability",
+    "20": "Adaptation",
+    "21": "Metacognition",
+    "22": "Visibility",
+    "25": "Dimension of activation",
+    "26": "fALFF",
+    "27": "18F Fluorodeoxyglucose",
+    "28": "CFC",
+    "29": "LRTC",
+    "30": "Calcium Imaging",
+    "31": "K Complex",
+    "32": "TCT",
+    "33": "DISS",
+    "34": "Observation",
+    "35": "Microstates",
+    "36": "Stimulation Reactivity",
+    "37": "Frequency Tagging",
+    "39": "Hopf bifurcation parameter",
+    "41": "Slow Wave Activity",
+    "42": "Auto Information Flow",
+    "43": "Cross Information Flow ciF",
+    "44": "PCI",
+    "47": "Physiological Measure",
+    "49": "Computer Simulations",
+    "50": "Phosphene Threshold",
+    "51": "Frequency Change Index",
+    "52": "Brain Behavior Correlation",
+    "56": "DSI",
+    "58": "Complexity of functional connectivity",
+    "63": "BIS",
+    "64": "Correlation dimension",
+    "65": "Dominance",
+    "66": "Epileptogenicity Index",
+    "67": "Spike Suppression",
+    "68": "Mean Dwell Time",
+    "69": "Network Backbones",
+    "70": "SSVEP",
+    "71": "Fractal Dimension"
 }

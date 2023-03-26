@@ -25,6 +25,9 @@ def bootstrap_type_models(apps, schema_editor):
         virtual_reality_objects = StimulusCategory.objects.get(name='Virtual Reality Objects')
         StimulusSubCategory.objects.get_or_create(name=sub_category, parent=virtual_reality_objects)
 
+    color = StimulusCategory.objects.get(name='Color')
+    StimulusSubCategory.objects.get_or_create(name="Motion", parent=color)
+
     gratings = StimulusCategory.objects.get(name='Gratings')
     StimulusSubCategory.objects.get_or_create(name="Gabor", parent=gratings)
 

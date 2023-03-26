@@ -9,7 +9,7 @@ INNER_ITEM_SEP = '&'
 START_FINDING_SEP = '('
 END_FINDING_SEP = ')'
 COMMENT_CHAR = '#'
-UNINITIALIZED_VAL = 'UNINITIALIZED'
+UNINITIALIZED_VAL = None
 TEMPORAL_MS = 'ms'
 TEMPORAL_NEGATIVE_TIMING_SIGN = '!'
 TEMPORAL_APPROX_SIGN = '~'
@@ -19,6 +19,11 @@ FREQ_CORR_TYPE_DEF_VAL = 'Positive'
 FREQ_CORR_TYPE_NEGATIVE = 'Neg'
 FREQ_BAND_DEF_IDX = 1
 FREQUENCY_HZ = 'Hz'
+
+
+class FindingTagDataError(Exception):
+    pass
+
 
 # a helper function that extracts and fills a 'finding class' with onset and offset information
 def fill_temporal_util(finding, txt):
@@ -34,20 +39,25 @@ def fill_temporal_util(finding, txt):
         finding.offset = temporal_split[1].replace(FINDING_INNER_E_SEP, '').strip()
     else:
         finding.offset = finding.onset
-    if finding.onset is '':
+    if finding.onset == '':
         finding.onset = UNINITIALIZED_VAL
         finding.offset = UNINITIALIZED_VAL
+
 
 # we define a base finding class which performs basic processing, and includes basic data types
 # that should be shared across finding tags
 #           Optional
 # TAG (#COMMENT / COMMENT)
+
 class BaseFinding:
     def __init__(self, tag_code, txt):
         # save only positive tags, negative findings will be encoded in  'is_negative'
-        self.tag = tag_code.replace(NEGATIVE_TAG, '')
         self.finding_txt = txt
-        self.is_negative = tag_code[0] == NEGATIVE_TAG
+        if tag_code:
+            self.tag = tag_code.replace(NEGATIVE_TAG, '')
+            self.is_negative = tag_code[0] == NEGATIVE_TAG
+        else:
+            raise FindingTagDataError()
         self.comment = UNINITIALIZED_VAL
         self.technique = UNINITIALIZED_VAL
         # decode finding_txt right after initialization
@@ -84,7 +94,7 @@ class SpatialFinding(BaseFinding):
     def decode(self):
         super().decode()
         # area is optional
-        if(self.tag in finding_tag_to_area):
+        if self.tag in finding_tag_to_area:
             self.area = finding_tag_to_area[self.tag]
         else:
             self.area = self.finding_txt.strip()
@@ -133,9 +143,9 @@ class FrequencyFinding(BaseFinding):
         # band  is obligatory
         re.split(ONSET_OFFSET_SEP + FINDING_INNER_S_SEP, freq_split[band_idx])
         band_split = freq_split[band_idx].replace(FREQUENCY_HZ, '', ).split(ONSET_OFFSET_SEP)
-        self.band_low = band_split[0]
-        if len(band_split) > 1 :
-            self.band_high = band_split[1]
+        self.band_low = float(band_split[0])
+        if len(band_split) > 1:
+            self.band_high = float(band_split[1])
         else:
             self.band_high = self.band_low
         # extract the temporal information (here it is optional, unlike the temporal tag case)
@@ -145,23 +155,27 @@ class FrequencyFinding(BaseFinding):
 
 
 # set the mapping between tags and decoders
-spatial_to_finding = {tag: SpatialFinding for tag in ['0', '1', '2', '11','12', '16', '17','21','31', '35','42', '51', '86','87']}
-temporal_to_finding = {tag: TemporalFinding for tag in ['3', '4', '15', '22', '23', '25', '26','27', '30', '32','33','36', '37', '39', '46', '49', '53','55','56', '57','62','63', '69','70','71','72','74','75','76','77','78', '84','85']}
-frequency_to_finding = {tag: FrequencyFinding for tag in ['5', '13', '14', '28','29']}
+spatial_to_finding = {tag: SpatialFinding for tag in
+                      ['0', '1', '2', '11', '12', '16', '17', '21', '31', '35', '42', '51', '86', '87']}
+temporal_to_finding = {tag: TemporalFinding for tag in
+                       ['3', '4', '15', '22', '23', '25', '26', '27', '30', '32', '33', '36', '37', '39', '46', '49',
+                        '53', '55', '56', '57', '62', '63', '69', '70', '71', '72', '74', '75', '76', '77', '78', '84',
+                        '85']}
+frequency_to_finding = {tag: FrequencyFinding for tag in ['5', '13', '14', '28', '29']}
 tag_to_findings = spatial_to_finding | temporal_to_finding | frequency_to_finding
 
 # map finding tags that indicate a specific area to this area
-finding_tag_to_area = {'1':'Ventral Stream', '2': 'V1', '11': 'A1','12': 'Dorsal Stream',
-                        '17':'DMN','31': 'V4', '35':'S1','51':'Uncinate Fasciculus',
-                       '86':'Dorsal Attention Network','87':'Visual Network'}
+finding_tag_to_area = {'1': 'Ventral Stream', '2': 'V1', '11': 'A1', '12': 'Dorsal Stream',
+                       '17': 'DMN', '31': 'V4', '35': 'S1', '51': 'Uncinate Fasciculus',
+                       '86': 'Dorsal Attention Network', '87': 'Visual Network'}
 
 
 # parses findings for a given tag
 def parse_findings_per_tag(tag_code, finding_text):
     # each tag text may include different finding, first split the text
-    if finding_text is not '':
+    if finding_text != '':
         inner_findings = [finding.strip() for finding in finding_text.split(INNER_ITEM_SEP) if
-                          finding.strip() is not '']
+                          finding.strip() != '']
     else:
         inner_findings = [finding_text]
     # we map only positive tags to decoders (same decoder regardless of negative/positive finding)
@@ -170,7 +184,6 @@ def parse_findings_per_tag(tag_code, finding_text):
     if clean_tag in tag_to_findings:
         findings = [tag_to_findings[clean_tag](tag_code, finding) for finding in inner_findings]
     else:
-
         findings = [BaseFinding(tag_code, finding) for finding in inner_findings]
 
     return findings
@@ -198,10 +211,9 @@ def parse(txt):
 if __name__ == '__main__':
     # a complex example for one experiment
     finding_txt = '5 (Connectivity Neg 90-120Hz <~300-550ms> <EEG> # a comment & ' \
-                   'Power 10-20Hz <!10-550ms># another comment) +' \
-                   '   -1 (Inferior_Frontal <fMRI> & Superior_Frontal <EEG>) + ' \
-                   '-2 (FFA    <MEG>) + 11 + 2 (FFA  <fMRI>) + 20 (# not indicating an area if OK)+' \
-                   '2 (Posterior    <fMRI>) + 6 (Dimension of activation) + ' \
-                   '14 (Connectivity Neg 7-13Hz <MEG>) + 3 (100-200ms <EEG>) + 4 (!50-!20 <EEG>)'
+                  'Power 10-20Hz <!10-550ms># another comment) +' \
+                  '   -1 (Inferior_Frontal <fMRI> & Superior_Frontal <EEG>) + ' \
+                  '-2 (FFA    <MEG>) + 11 + 2 (FFA  <fMRI>) + 20 (# not indicating an area if OK)+' \
+                  '2 (Posterior    <fMRI>) + 6 (Dimension of activation) + ' \
+                  '14 (Connectivity Neg 7-13Hz <MEG>) + 3 (100-200ms <EEG>) + 4 (!50-!20 <EEG>)'
     parse(finding_txt)
-	

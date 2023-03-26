@@ -2,7 +2,7 @@ import logging
 import re
 from collections import namedtuple
 from itertools import zip_longest, chain
-
+from string import printable
 from configuration.initial_setup import task_types_mapping, findings_measures, modalities
 from studies.choices import TheoryDrivenChoices, SampleChoices
 from studies.models import Paradigm, Stimulus
@@ -14,7 +14,11 @@ class ProblemInTheoryDrivenExistingDataException(Exception):
     pass
 
 
-class ProblemInSampleExistingDataException(Exception):
+class IncoherentSampleDataError(Exception):
+    pass
+
+
+class SampleTypeError(Exception):
     pass
 
 
@@ -44,65 +48,6 @@ SampleFromData = namedtuple("SampleFromData", ["sample_type", "total_size", "inc
 def add_to_notes(prefix, text: str):
     note = f'{prefix} notes: {text}; '
     return note
-
-
-def get_sample_from_data(item):
-    sample_type_data = str(item["Sample.Type"]).split("+")
-    total_sample_data = str(item["Sample.Total"])
-    included_sample_data = str(item["Sample.Included"])
-    notes = []
-
-    if len(sample_type_data) != 1:
-        raise ProblemInSampleExistingDataException()
-
-    # resolve for sample type
-    sample_type = sample_type_data[0]
-    if "(" in sample_type:
-        sample_type_number = sample_type.split("(")[0].strip()
-        sample_type_notes = sample_type.split("(")[1].split(")")[0]
-        note = add_to_notes("sample type", sample_type_notes)
-        notes.append(note)
-    else:
-        sample_type_number = sample_type.strip()
-
-    if sample_type_number == "0":
-        resolved_sample_type = SampleChoices.HEALTHY_ADULTS
-    elif sample_type_number == "1":
-        resolved_sample_type = SampleChoices.HEALTHY_COLLEGE_STUDENTS
-    elif sample_type_number == "2":
-        resolved_sample_type = SampleChoices.CHILDREN
-    elif sample_type_number == "3":
-        resolved_sample_type = SampleChoices.PATIENTS
-    elif sample_type_number == "5":
-        resolved_sample_type = SampleChoices.NON_HUMAN
-    elif sample_type_number == "6":
-        resolved_sample_type = SampleChoices.COMPUTER
-    else:
-        raise ProblemInSampleExistingDataException
-
-    # resolve for total sample size
-    if "(" in total_sample_data:
-        resolved_total_sample = total_sample_data.split("(")[0].strip()
-        sample_total_notes = total_sample_data.split("(")[1].split(")")[0]
-        note = add_to_notes("sample total", sample_total_notes)
-        notes.append(note)
-    else:
-        resolved_total_sample = total_sample_data.strip()
-
-    # resolve for included sample size
-    if "(" in included_sample_data:
-        resolved_included_sample = included_sample_data.split("(")[0].strip()
-        included_sample_notes = included_sample_data.split("(")[1].split(")")[0]
-        note = add_to_notes("sample included", included_sample_notes)
-        notes.append(note)
-    else:
-        resolved_included_sample = included_sample_data.strip()
-
-    notes_string = '; '.join(map(str, notes))
-    sample = SampleFromData(sample_type=resolved_sample_type, total_size=resolved_total_sample,
-                            included_size=resolved_included_sample, note=notes_string)
-
-    return sample
 
 
 def find_in_list(items_to_compare: list, compared_items_list: list):
@@ -353,20 +298,25 @@ def get_measures_from_data(item: dict):
     return measures_from_data
 
 
-def clean_stimulus_text(text):
-    if "(" in text:
-        main_text = text.split("(")[0].strip()
-    else:
-        main_text = text
+def clean_stimulus_text(text, mode):
+    if mode == "duration":
+        if "(" in text:
+            main_text = text.split("(")[0].strip()
+        else:
+            main_text = text
 
-    multiple_entries = re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
-    verbose = re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
-    special_char = re.search("[:,&\/]+", main_text)
+        multiple_entries = re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
+        verbose = re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
+        special_char = re.search("[:,&\/]+", main_text)
 
-    if multiple_entries or verbose or special_char:
-        raise StimulusDurationError()
-    else:
-        return main_text
+        if multiple_entries or verbose or special_char:
+            raise StimulusDurationError()
+        else:
+            return main_text
+
+    if mode == "category":
+        clean_text = ''.join(char for char in text if char.isprintable()).strip()
+        return clean_text
 
 
 def get_stimuli_from_data(item):
@@ -384,10 +334,13 @@ def get_stimuli_from_data(item):
             raise MissingValueInStimuli("missing value for category of modality")
         if "(" not in category:
             resolved_category = category.strip()
-            sub_category = None
+            resolved_sub_category = None
         else:
-            resolved_category = category.split("(")[0].strip
+            resolved_category = category.split("(")[0].strip()
             sub_category = category.split("(")[1].split(")")[0].strip()
+            resolved_sub_category = clean_stimulus_text(sub_category, "category")
+
+        clean_category = clean_stimulus_text(resolved_category, "category")
 
         # resolve modality
         modality_type = modality.strip()
@@ -406,17 +359,16 @@ def get_stimuli_from_data(item):
 
         # resolve duration
         none_values = ["N/A", "NA", "N.A", "None", "0", 0, "none", ""]
-        full_text_stimulus_duration = duration
-        stimulus_duration = clean_stimulus_text(full_text_stimulus_duration)
+        clean_duration_text = clean_stimulus_text(duration, "duration")
         resolved_duration = None
         try:
-            if "ms" in stimulus_duration:
-                raw_duration = stimulus_duration.split("ms")[0]
+            if "ms" in clean_duration_text:
+                raw_duration = clean_duration_text.split("ms")[0]
                 duration_ms = float(raw_duration.strip().split(" ")[-1].strip())
-            elif "sec" in stimulus_duration:
-                raw_duration = stimulus_duration.split("sec")[0].strip
+            elif "sec" in clean_duration_text:
+                raw_duration = clean_duration_text.split("sec")[0].strip()
                 duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
-            elif stimulus_duration in none_values:
+            elif clean_duration_text in none_values:
                 duration_ms = None
             else:
                 raise StimulusDurationError()
@@ -426,6 +378,74 @@ def get_stimuli_from_data(item):
             logger.exception(f'{error} while processing stimuli duration data')
             raise StimulusDurationError()
 
-        stimuli_from_data.append(StimulusFromData(category=resolved_category, sub_category=sub_category,
+        stimuli_from_data.append(StimulusFromData(category=clean_category, sub_category=resolved_sub_category,
                                                   modality=resolved_modality, duration=resolved_duration))
     return stimuli_from_data
+
+
+def get_sample_from_data(item):
+    samples = []
+    sample_type_data = str(item["Sample.Type"]).split("+")
+    total_sample_data = str(item["Sample.Total"]).split("+")
+    included_sample_data = str(item["Sample.Included"]).split("+")
+    notes = []
+
+    if not len(sample_type_data) == len(total_sample_data) == len(included_sample_data):
+        if sample_type_data[0] == "6":
+            pass
+        else:
+            raise IncoherentSampleDataError()
+
+    for sample_type, total_sample, included_sample in zip(sample_type_data, total_sample_data, included_sample_data):
+        # resolve for sample type
+        if "(" in sample_type:
+            sample_type_number = str(sample_type.split("(")[0].strip())
+            sample_type_notes = sample_type.split("(")[1].split(")")[0]
+            note = add_to_notes("sample type", sample_type_notes)
+            notes.append(note)
+        else:
+            sample_type_number = str(sample_type.strip())
+
+        if sample_type_number == "0":
+            resolved_sample_type = SampleChoices.HEALTHY_ADULTS
+        elif sample_type_number == "1":
+            resolved_sample_type = SampleChoices.HEALTHY_COLLEGE_STUDENTS
+        elif sample_type_number == "2":
+            resolved_sample_type = SampleChoices.CHILDREN
+        elif sample_type_number == "3":
+            resolved_sample_type = SampleChoices.PATIENTS
+        elif sample_type_number == "5":
+            resolved_sample_type = SampleChoices.NON_HUMAN
+        elif sample_type_number == "6":
+            resolved_sample_type = SampleChoices.COMPUTER
+        else:
+            raise SampleTypeError()
+
+        # resolve for total sample size
+        if resolved_sample_type == SampleChoices.COMPUTER:
+            resolved_total_sample = 0
+            resolved_included_sample = 0
+        else:
+            if "(" in total_sample:
+                resolved_total_sample = total_sample.split("(")[0].strip()
+                sample_total_notes = total_sample.split("(")[1].split(")")[0]
+                note = add_to_notes("sample total", sample_total_notes)
+                notes.append(note)
+            else:
+                resolved_total_sample = total_sample.strip()
+
+            # resolve for included sample size
+            if "(" in included_sample:
+                resolved_included_sample = included_sample.split("(")[0].strip()
+                included_sample_notes = included_sample.split("(")[1].split(")")[0]
+                note = add_to_notes("sample included", included_sample_notes)
+                notes.append(note)
+            else:
+                resolved_included_sample = included_sample.strip()
+
+        notes_string = '; '.join(map(str, notes))
+        sample = SampleFromData(sample_type=resolved_sample_type, total_size=resolved_total_sample,
+                                included_size=resolved_included_sample, note=notes_string)
+        samples.append(sample)
+
+    return samples

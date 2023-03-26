@@ -238,7 +238,7 @@ finding_tag_types = {
                  "Pe",
                  "EPN",
                  "Border Difference",
-                 "Figure Ground difference",
+                 "Figure Ground Difference",
                  "Change related positivity",
                  "AAN",
                  "Intermediate Components"],
@@ -263,7 +263,8 @@ finding_tag_types = {
                   "Beta",
                   "Delta",
                   "Gamma",
-                  "Theta"],
+                  "Theta"
+                  ],
 
     'miscellaneous': ["Acetylcholine",
                       "Anatomic Functional connectivity similarity",
@@ -272,20 +273,31 @@ finding_tag_types = {
                       "CFC",
                       "Complexity",
                       "Cortical Subcortical connectivity",
+                      "Frequency Increase",
+                      "Fronto Parietal connectivity",
+                      "Global Synchronization",
+                      "Hierarchical Structure",
+                      "Hyper Synchronization",
+                      "Ignition Variability",
+                      "inter lobe connectivity",
+                      "Low frequencies <1Hz",
                       "Metacognition",
                       "Motor areas connectivity",
                       "PHI Approximation",
                       "Plasticity",
+                      "Sleep Spindles",
+                      "SCP",
+                      "Prestimulus Components",
                       "Slow Waves Activity",
                       "Small Worldness",
                       "SSVEP",
                       "Temporal Occipital connectivity",
                       "Temporal Parietal Connectivity",
                       "Ultra slow fluctuations",
-                      "Uncinate Fasciculus",
                       "Variability",
                       "Intrinsic Ignition",
-                      "Local Synchronization"]
+                      "Local Synchronization",
+                      "GABA"]
 }
 
 stimulus_category = ["Animals",
@@ -368,11 +380,11 @@ stimulus_sub_category = {
 }
 
 finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300", "4": "VAN", "5": "Gamma",
-                    "6": "Complexity", "7": "Local" "Synchronization", "8": "Global Synchronization",
+                    "6": "Complexity", "7": "Local Synchronization", "8": "Global Synchronization",
                     "9": "Fronto Parietal connectivity", "10": "Variability", "11": "A1", "12": "Dorsal Stream",
                     "13": "Beta", "14": "Alpha", "15": "CNV", "16": "Parietal", "17": "DMN", "18": "Small Worldness",
                     "19": "PHI Approximation", "20": "Metacognition", "21": "Posterior", "22": "N2pc",
-                    "23": "Recurrent Processing", "24": "GABA/NMDA", "25": "P2", "26": "MMN", "27": "N2", "28": "Theta",
+                    "23": "Recurrent Processing", "24": "GABA", "25": "P2", "26": "MMN", "27": "N2", "28": "Theta",
                     "29": "Delta", "30": "ART", "31": "V4", "32": "Early Components", "33": "Late Components",
                     "34": "Temporal Parietal Connectivity", "35": "S1", "36": "N140", "37": "N170", "38": "Centrality",
                     "39": "N1", "40": "CFC", "41": "Anterior Posterior Connectivity", "42": "Subcortical structures",
@@ -387,7 +399,7 @@ finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300
                     "76": "Change related positivity",
                     "77": "N150", "78": "Intermediate Components", "79": "SSVEP", "80": "inter lobe connectivity",
                     "81": "Intrinsic Ignition", "82": "Ignition Variability", "83": "Hierarchical Structure",
-                    "84": "SCP", "85": "AAN", "86": "Dorsal Attention Network", "87": "Visual network"
+                    "84": "SCP", "85": "AAN", "86": "Dorsal Attention Network", "87": "Visual Network"
                     }
 
 task_types_mapping = {"0": "No Task", "1": "Discrimination", "2": "Detection", "3": "Go/No-Go",

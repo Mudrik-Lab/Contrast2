@@ -110,14 +110,26 @@ or install [whitenoise](https://whitenoise.evans.io/) and add it as a middleware
 e.g when you work on the frontend
 
 ```bash
-docker-compose up
+docker-compose up --build
+
+# or to run in the background
+docker-compose up -d --build
+
+# You might drop --build, in case no changes in the poetry.lock file, but I'd suggest not to 
 ```
 First run would be quite long because of docker building
 
 Postgres has some issues currently with start order, so if you see errors in the logs,
 just restart the compose a few times until it work
 
+For doing the initial data load while running in compose:
 
+After copying the file as above, and after verifying compose up --build as above
+
+```bash
+docker exec -it contrast-api-web-1 python manage.py load_historic_data
+# This runs the load, but inside the already running containers
+```
 ### CI
 Depends on where you run, we support an initial github actions CI out of the box -declared [here](./.github/workflows/ci.yml) and 
 

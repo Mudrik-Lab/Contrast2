@@ -298,7 +298,7 @@ def get_measures_from_data(item: dict):
     return measures_from_data
 
 
-def clean_stimulus_text(text, mode):
+def clean_text(text, mode):
     if mode == "duration":
         if "(" in text:
             main_text = text.split("(")[0].strip()
@@ -309,14 +309,12 @@ def clean_stimulus_text(text, mode):
         verbose = re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
         special_char = re.search("[:,&\/]+", main_text)
 
-        if multiple_entries or verbose or special_char:
-            raise StimulusDurationError()
-        else:
-            return main_text
+        cleaned_text = ''.join(char for char in main_text if char.isprintable()).strip()
 
     if mode == "category":
-        clean_text = ''.join(char for char in text if char.isprintable()).strip()
-        return clean_text
+        cleaned_text = ''.join(char for char in text if char.isprintable()).strip()
+
+    return cleaned_text
 
 
 def get_stimuli_from_data(item):
@@ -338,12 +336,12 @@ def get_stimuli_from_data(item):
         else:
             resolved_category = category.split("(")[0].strip()
             sub_category = category.split("(")[1].split(")")[0].strip()
-            resolved_sub_category = clean_stimulus_text(sub_category, "category")
+            resolved_sub_category = clean_text(sub_category, "category")
 
-        clean_category = clean_stimulus_text(resolved_category, "category")
+        clean_category = clean_text(resolved_category, "category")
 
         # resolve modality
-        modality_type = modality.strip()
+        modality_type = clean_text(modality.strip(), "category")
         resolved_modality = ""
         for modality_name in modalities:
             if modality_type.lower() == modality_name.lower():
@@ -351,15 +349,9 @@ def get_stimuli_from_data(item):
             else:
                 continue
 
-        # # check for fit between modality and category
-        # allowed_categories_by_modality = Stimulus.allowed_categories_by_modality
-        # if resolved_category not in allowed_categories_by_modality[resolved_modality]:
-        #     # raise ProblemInStimuliExistingDataException()
-        #     pass
-
         # resolve duration
         none_values = ["N/A", "NA", "N.A", "None", "0", 0, "none", ""]
-        clean_duration_text = clean_stimulus_text(duration, "duration")
+        clean_duration_text = clean_text(duration, "duration")
         resolved_duration = None
         try:
             if "ms" in clean_duration_text:
@@ -418,6 +410,8 @@ def get_sample_from_data(item):
             resolved_sample_type = SampleChoices.NON_HUMAN
         elif sample_type_number == "6":
             resolved_sample_type = SampleChoices.COMPUTER
+        elif sample_type_number == "7":
+            resolved_sample_type = SampleChoices.YOUNG_PATIENTS
         else:
             raise SampleTypeError()
 

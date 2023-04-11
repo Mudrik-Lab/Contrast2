@@ -143,9 +143,9 @@ class FrequencyFinding(BaseFinding):
         # band  is obligatory
         re.split(ONSET_OFFSET_SEP + FINDING_INNER_S_SEP, freq_split[band_idx])
         band_split = freq_split[band_idx].replace(FREQUENCY_HZ, '', ).split(ONSET_OFFSET_SEP)
-        self.band_low = float(band_split[0])
+        self.band_low = float(band_split[0].replace(",", ""))
         if len(band_split) > 1:
-            self.band_high = float(band_split[1])
+            self.band_high = float(band_split[1].replace(",", ""))
         else:
             self.band_high = self.band_low
         # extract the temporal information (here it is optional, unlike the temporal tag case)
@@ -159,8 +159,7 @@ spatial_to_finding = {tag: SpatialFinding for tag in
                       ['0', '1', '2', '11', '12', '16', '17', '21', '31', '35', '42', '51', '86', '87']}
 temporal_to_finding = {tag: TemporalFinding for tag in
                        ['3', '4', '15', '22', '23', '25', '26', '27', '30', '32', '33', '36', '37', '39', '46', '49',
-                        '53', '55', '56', '57', '62', '63', '69', '70', '71', '72', '74', '75', '76', '77', '78', '84',
-                        '85']}
+                        '53', '55', '56', '57', '62', '63', '69', '70', '71', '72', '74', '75', '76', '77', '78', '85']}
 frequency_to_finding = {tag: FrequencyFinding for tag in ['5', '13', '14', '28', '29']}
 tag_to_findings = spatial_to_finding | temporal_to_finding | frequency_to_finding
 

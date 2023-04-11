@@ -1,3 +1,4 @@
+import json
 from typing import Dict, Any
 from unittest import TestCase
 
@@ -11,7 +12,7 @@ from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.process_row import process_row, create_experiment, create_study, get_list_from_excel
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
     resolve_country_from_affiliation_text
-from studies.tests.base import BaseTestCase
+from contrast_api.tests.base import BaseTestCase
 
 
 class StudyParserHelpersTestCase(BaseTestCase):
@@ -77,65 +78,59 @@ class StudyParserHelpersTestCase(BaseTestCase):
         self.assertEqual(len(res), 2)
 
     def test_process_row(self):
-        test_data_list = get_list_from_excel('studies/data/test_data.xlsx', sheet_name='test_data')
         studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
+        test_data_list = get_list_from_excel('studies/data/test_data.xlsx', sheet_name='test_data')
+
         for item in test_data_list:
-            # experiment, theory_driven_theories = create_experiment(item)
             try:
                 process_row(item=item)
             except:
-                print(item)
+                print(json.dumps(item))
+                raise AssertionError()
 
-    def test_GABA_agonist(self):
-        item = {'Paper.Title': 'GABA A agonist reduces visual awareness A masking-EEG experiment',
-                'Paper.DOI': '10.1162/jocn_a_00197', '# Exp': 1,
-                'Experimental paradigms.Main Paradigm': 'Sedation + Masking + Figure-Ground',
-                'Experimental paradigms.Specific Paradigm': 'Dextromethorphan (Sedation) + Lorazepam (Sedation) + Scopolamine (Sedation) + Backward Masking (Masking)',
-                'Experimental paradigms.Report': 1, 'Sample.Type': 0, 'Sample.Total': 22, 'Sample.Included': 20,
-                'Task.Description': 'The participants were asked to discriminate whether the target stimulus was homogenous / figure ground.\n Drug interventions were manipulated within subjects (1 week between sessions) with the drugs lorazepam (LZP), two control drugs and placebo. (2AFC)',
-                'Task.Code': 1, 'Should be included?': 1, 'Stimuli Features.Categories': 'Textures',
-                'Stimuli Features.Description': "Figure-Ground textures - line elements created the figure ground conditions.\n Masks were also parametrically manipulated to create masking conditions. No mask condition was an isoilluminante gray mask, mask was a texture-defined pattern mask with various strength (changing the gray level from black to light gray to create 11 masking strength).\n The authors defined a 'Subjective Mask' as the masks that was selected based on performance in the task to achieve 75% decrease in visibility according to behavioral measures, out of the intermediate mask conditions.",
-                'Stimuli Features.Modality': 'Visual', 'Stimuli Features.Duration': '17ms',
-                'Stimuli Features.Contrast': "varied to achieve 75% performance on the 'subjective mask' condition",
-                'Measures of consciousness.Phase': 'Trial By Trial',
-                'Measures of consciousness.Type': 'Objective + State Induction Assessment',
-                'Measures of consciousness.Description': 'Before the main experiment in a practice session the subjective mask condition was selected + trial by trial the main task can be considered as an objective measure o consciousness of the figure.\n In addition the state of sedation was measured by a subjective measure (visual analogue scales)',
-                'State - Content': 2, 'Techniques': 'EEG',
-                'Findings.Summary': '(1) both masking and LPZ (and not control/placebo drugs) decreased the amplitude of intermediate (~156-211ms) and late time windows (293-386ms) activity in the relevant electrodes (occipital), while for both, early (94-121ms) activity was relatively intact. this is taken as evidence for recurrent processing as the mechanism being impaired in both masking and LPZ admission and the crucial role of recurrent processing in visual awareness.\n (2) masking strength correlated linearly with the intermediate time window (VAN) eeg activity. (with LPZ the activity was decreased and this effect was not pronounced)\n (3) Late positivity was not modulated by masking strength and was less effected by LPZ. this is taken as evidence against GNW\n (4) Recurrent processing that was impaired due to LPZ was dependent on GABAergic interneurons.',
-                'Findings.NCC Tags': '4 (156-211ms) + 21 (Occipital and parietal electrodes &) + -3 (293-386ms) + 7 + 24',
-                'Findings.Measures': '3 (Cluster)+ 6 + 52 (Awareness, visual analogue scale)', 'Encoding Notes': '',
-                'Interpretation.GNW': 0, 'Interpretation.IIT': 'X', 'Interpretation.RPT': 1, 'Interpretation.HOT': 'X',
-                'Affiliation': 'RPT', 'Theory Driven': '2 (RPT)',
-                'Internal Replication [0 = Not, 1=Internal Replication]': 0, 'Findings.Spatial AAL Mapping': ''}
+
+    def test_Chronometry(self):
         studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
-        process_row(item=item)
+        item = {"Paper.Title": "Chronometry of word and picture identification Common and modality-specific effects", "Paper.DOI": "10.1016/j.neuroimage.2011.11.068", "# Exp": 1, "Experimental paradigms.Main Paradigm": "Masking + Stimulus Degradation", "Experimental paradigms.Specific Paradigm": "Backward Masking (Masking) + Forward Masking (Masking) + Brief Presentation (Stimulus Degradation)", "Experimental paradigms.Report": 1, "Sample.Type": 0, "Sample.Total": 24, "Sample.Included": 19, "Task.Description": "The experiment included two phases:\n 1. In the Encoding phase - The task was to report whether the target represents a real world objects. (2AFC)\n 2. In the Retrieval phase - The participants had to classify the target stimuli as old/new.", "Task.Code": "7 (Old/New) + 1", "Should be included?": 1, "Stimuli Features.Categories": "Objects + Words", "Stimuli Features.Description": "Words and pictures (black and white) of either real word objects or pseudo word/unrecognizable object (made of scrambled real objects) were the targets. Noise pattern were the masks. the stimuli were calibrated for each individual\n Catch trials were also included. Stimulus duration Adjusted for each subject and modality (word/picture) to achieve 50% identification performance.\n  Average per Word - 28ms and per Picture -50ms", "Stimuli Features.Modality": "Visual + Visual", "Stimuli Features.Duration": "None + None", "Stimuli Features.Contrast": 1, "Measures of consciousness.Phase": "Trial By Trial + Pre Experiment", "Measures of consciousness.Type": "Objective", "Measures of consciousness.Description": "The main task can be considered as an objective measure of consciousness.", "State - Content": 1, "Techniques": "EEG", "Findings.Summary": "(1) independent of stimulus category (words/objects), both early (~180ms) and late (330-410ms) ERPs were significant for identified objects compared with non-identified objects. In the late phase the activity also predicts memory retrieval. The early component (around 180 ms was considered to reflect attention)\n (2) around 500ms a modal specific activity which correlated with identification was detected in two frontal electrodes, along with other electrodes at fronto-parietal sites showing the same pattern from 280ms and forward.\n (3) a component at 800-900ms was found to correlate (independent of modality) with memory retrieval in electrode C4/CP4.\n  4) the 300ms component correlated with memory for the stimulus when it was not identified in the encoding phase. this is taken as a proof for unconscious processing and to indicate a dissociation between conscious access and VSTM access.\n (5) relating to an fMRI study performed with similar design, the activity related to amodal conscious identification is correlated with activity between IFG and occipito-temporal areas which showed a negative component at the latency of 300-460ms (suggested as VAN). This is taken to support GNW", "Findings.NCC Tags": "3 (330-410ms) + 0 (Inferior Frontal region \u221242,36,15# - Cz/FCz/FC1 electrodes for P3 component, source localized) + 4 (320-450ms) + 21 (CPz electrode &) + 32 (180-200ms)", "Findings.Measures": "3 (Cluster)", "Encoding Notes": "High rate of false positives in the catch trials (~25%).", "Interpretation.GNW": 1, "Interpretation.IIT": "X", "Interpretation.RPT": "X", "Interpretation.HOT": "X", "Affiliation": "X", "Theory Driven": 0, "Internal Replication [0 = Not, 1=Internal Replication]": 0.0, "Findings.Spatial AAL Mapping": ""}
+
+        try:
+            process_row(item=item)
+        except:
+
+            raise AssertionError()
 
     def test_hidden_characters(self):
-        item = {
-            'Paper.Title': 'Late Positivity Does Not Meet the Criteria to be Considered a Proper Neural Correlate of Perceptual Awareness',
-            'Paper.DOI': '10.3389/fnsys.2020.00036', '# Exp': 1,
-            'Experimental paradigms.Main Paradigm': 'Stimulus Degradation',
-            'Experimental paradigms.Specific Paradigm': 'Intensity Reduction (Stimulus Degradation)',
-            'Experimental paradigms.Report': 1, 'Sample.Type': 0, 'Sample.Total': 59, 'Sample.Included': 24,
-            'Task.Description': "participants were requested to discriminate the orientation of a Gabor, chosing: Verticle, Horizontal. I don't know. Two conditions: 1) conservative session - participants were instructed to report the Gabor orientation only if they clearly perceived it. 2) The liberal session, participants were asked to report the orientation of the stimulus whenever they had a minimal impression.",
-            'Task.Code': 1, 'Should be included?': 1, 'Stimuli Features.Categories': 'Gratings \u200e(Gabor)',
-            'Stimuli Features.Description': 'vertically or horizontally oriented sinusoidal Gabor patches of about 4 degree of visual angle',
-            'Stimuli Features.Modality': 'Visual', 'Stimuli Features.Duration': '36ms', 'Stimuli Features.Contrast': 1,
-            'Measures of consciousness.Phase': 'Trial By Trial',
-            'Measures of consciousness.Type': 'Objective + Subjective',
-            'Measures of consciousness.Description': 'Aware vs. not aware of the Gabors direction (Objective) + confidence level (Subjective_',
-            'State - Content': 1, 'Techniques': 'EEG',
-            'Findings.Summary': 'Contrasting conservative, and liberal, criterion and aware vs not aware: negative deflection (VAN) at posterior temporal electrodes, followed by positive enhancement at centro-parietal sites.\n Criterion effect was found in N1 under conservative criterion. P3 was greater under liberal criterion.\n An interacion was found for LP between awereness and criterion but not for VAN.',
-            'Findings.NCC Tags': '4(204-228ms#, posterior temporal electrodes O1, Oz, O2, PO7, PO8, and P7, aware vs unaware) + 21(VAN# 204-228ms, electrods O1, Oz, O2, PO7, PO8, and P7, aware vs unaware) + 3(328-676ms# all electrodes except for Fp1, Fp2, AF7, AF3, AF8, F7, F5, F3, and FT7, aware vs unaware) + 39(152-180 #central and posterior electrodes Cz, C2, CP5, CP3, CP1, CPz, CP2, CP4, CP6, P3, P1, Pz, P2, P4, P6, PO3, POz, PO4, and Oz, higher in conservative critirion) + 16(N1 centro posterior electrodes Cz, C2, CP5, CP3, CP1, CPz, CP2, CP4, CP6, P3, P1, Pz, P2, P4, P6, PO3, POz, PO4, and Oz, higher in conservative critirion) + 0(N1 centro posterior electrodes Cz, C2, CP5, CP3, CP1, CPz, CP2, CP4, CP6, P3, P1, Pz, P2, P4, P6, PO3, POz, PO4, and Oz, higher in conservative critirion) + 3(332-560ms# greater for liberal criterior, mostly central and parietal electrods, mainly) + 0(P3, 332-560, cetro-parietal electrods, liberal criterior) + 16(P3, 332-560, cetro-parietal electrods, liberal criterior) -3(500-800ms #interaction between awareness and criterion)',
-            'Findings.Measures': 3, 'Encoding Notes': '', 'Interpretation.GNW': 0, 'Interpretation.IIT': 'X',
-            'Interpretation.RPT': 'X', 'Interpretation.HOT': 'X', 'Affiliation': 'X', 'Theory Driven': '1(GNW)',
-            'Internal Replication [0 = Not, 1=Internal Replication]': 0, 'Findings.Spatial AAL Mapping': ''}
+        item: dict[str | Any, str | int | Any] = {
+            'Paper.Title': 'Combined behavioral and electrophysiological evidence for a direct cortical effect of prefrontal tDCS on disorders of consciousness',
+            'Paper.DOI': '10.1038/s41598-020-61180-2', '# Exp': 1,
+            'Experimental paradigms.Main Paradigm': 'Direct Stimulation + Disorders of Consciousness ',
+            'Experimental paradigms.Specific Paradigm': 'tDCS (Direct Stimulation, anodal left DLPFC) + UW (Disorders of Consciousness) + MCS (Disorders of Consciousness) + Emergence from MCS (Disorder of Consciousness)',
+            'Experimental paradigms.Report': 0, 'Sample.Type': '3 (UWS & MCS & EMCS)', 'Sample.Total': 69,
+            'Sample.Included': 60,
+            'Task.Description': 'Auditory regularities during oddball paradigm: Patients were instructed to actively count the occurrence of auditory oddballs (series of 4 identical tones followed by a 5th\n distinct tone; 20% of trials) delivered randomly among series of 5 identical tones (standard trials; 80% of trials).',
+            'Task.Code': 9, 'Should be included?': 1, 'Stimuli Features.Categories': 'Tones',
+            'Stimuli Features.Description': '4 identical tones followed by a 5th distinct tone; (20% of trials) delivered randomly among series of 5 identical tones (standard trials; 80% of trials).',
+            'Stimuli Features.Modality': 'Auditory', 'Stimuli Features.Duration': 'None',
+            'Stimuli Features.Contrast': '', 'Measures of consciousness.Phase': 'Pre Experiment + Post Experiment',
+            'Measures of consciousness.Type': 'Condition Assessment',
+            'Measures of consciousness.Description': 'CRS-R (Pre & post Experiment) + EEG (rest & auditory oddball) (Per & Post Trial)',
+            'State - Content': 0, 'Techniques': 'EEG + tDCS',
+            'Findings.Summary': 'behavioral (CRS-R): 20% of patients responded positivly to tDCS (R+) & 3 patients shwoed change in conscious states. None of the patients showed decrease(R-) the rest of the patients stayed stable (also R-).\n EEG resting state in interation with (CRS-R):\n Power spectral: Post tDCS (and compared to R-) R+ increased normalized theta power over parietal cortices + Increase raw and normalized alpha\n Complexity: (PeEn in theta-alpha band) trends of increase in parietal.\n Functional connectivity: increase in parieto-occipital value in R+ vs. R-\n EEG auditory regularities during oddball:\n  R+ showed positive left lateralized anterior cluster spaning (vs. R-, comparing pre-post ERP from oddball task) from 28-376ms. (posterior cluster from 52-312ms & left-kateralized anterior cluster from 68-392ms) ERP started early but sustained and peaked and 200ms (P3).',
+            'Findings.NCC Tags': '28(Power 4-8Hz) + 14(Power 8-12Hz#parietal) + 6(PeEn #Theta-Alpha parietal) + 41(parieto-occipital, 4-10Hz) + 28(Conectivity 4-8Hz) + 14(Connectivity 8-10Hz) + 3 (52-312ms#P3a peaked at 200ms, posterior) + 3(68-392ms# P3a peaked at 200ms, left-lateralized anterior)',
+            'Findings.Measures': '2 (induced # power) +9(functional, SMI) + 14(PeEn) + 3 (cluster) + 0 (MVPA)',
+            'Encoding Notes': '', 'Interpretation.GNW': 1, 'Interpretation.IIT': 'X', 'Interpretation.RPT': 'X',
+            'Interpretation.HOT': 'X', 'Affiliation': 'X', 'Theory Driven': '2 (GNW)',
+            'Internal Replication [0 = Not, 1=Internal Replication]': 0.0, 'Findings.Spatial AAL Mapping': ''}
 
         studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
-        res = process_row(item=item)
+        try:
+            process_row(item=item)
+        except:
+
+            raise AssertionError()
 
     def test_ncc_finding(self):
         item = {
@@ -159,16 +154,62 @@ class StudyParserHelpersTestCase(BaseTestCase):
             'Findings.Spatial AAL Mapping': ''}
         studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
-        process_row(item=item)
+        try:
+            process_row(item=item)
+        except:
+
+            raise AssertionError()
 
     def test_sample_data(self):
-        item: dict[str | Any, str | int | Any] = {'Paper.Title': 'Correlation between resting state fMRI total neuronal activity and PET metabolism in healthy controls and patients with disorders of consciousness', 'Paper.DOI': '10.1002/brb3.424', '# Exp': 1, 'Experimental paradigms.Main Paradigm': 'Disorders of Consciousness + Resting State + Locked In Syndrome', 'Experimental paradigms.Specific Paradigm': 'Unresponsive Wakefulness Syndrome (Disorders of Consciousness)+ Minimal Consciousness State (Disorders of Consciousness)', 'Experimental paradigms.Report': 0, 'Sample.Type': '3 (UWS Patients & LIS Patients & Healthy Controls)', 'Sample.Total': '31 (16 Healthy Controls + 11 UWS Patients + 4 LIS Patients)', 'Sample.Included': 31, 'Task.Description': 'no task - resting state', 'Task.Code': 0, 'Should be included?': 1, 'Stimuli Features.Categories': 'None', 'Stimuli Features.Description': 'None', 'Stimuli Features.Modality': 'None', 'Stimuli Features.Duration': 'None', 'Stimuli Features.Contrast': 'None', 'Measures of consciousness.Phase': 'Pre Experiment', 'Measures of consciousness.Type': 'Condition Assessment', 'Measures of consciousness.Description': 'Subjects were classified to consciousness states according to neurological evaluations using the CRS-R scale.', 'State - Content': 0, 'Techniques': 'fMRI + PET', 'Findings.Summary': '(1) both scans (rs-fMRI and PET) of patients showed decreased activity in medial and lateral fronto-parietal network (precuneus, mesiofrontal, bilateral\n posterior parietal, superior temporal, and dorsolateral prefrontal cortices). Taken as evidence compatible with GNW\n  (2) LIS patients group was too small for statistical analysis (according to authors N=4) yet also showed similar activity in the fronto-parietal network as in healthy controls.', 'Findings.NCC Tags': '16 (precuneus <fMRI>& precuneus <PET> & temporo-parietal junction <fMRI>& temporo-parietal junction <PET>) + 0 (medial prefrontal cortex <fMRI>& medial prefrontal cortex <PET> & inferior frontal gyrus <fMRI>& inferior frontal gyrus <PET> & medial frontal gyrus <fMRI>& medial frontal gyrus <PET>)', 'Findings.Measures': '27 + 1 + 0 (MVPA, SVM)', 'Encoding Notes': '', 'Interpretation.GNW': 1, 'Interpretation.IIT': 'X', 'Interpretation.RPT': 'X', 'Interpretation.HOT': 'X', 'Affiliation': 'X', 'Theory Driven': 0, 'Internal Replication [0 = Not, 1=Internal Replication]': 0, 'Findings.Spatial AAL Mapping': 'Precuneus_L <precuneus 0,-56,13> + Parietal_Inf_R<temporo-parietal junction 46,-40,46> + Frontal_Inf_Tri_L <medial frontal cortex -48,12,26> + Frontal_Inf_Oper_L<inferior frontal gyrus -54,13,15>'}
+        item: dict[str | Any, str | int | Any] = {
+            'Paper.Title': 'Correlation between resting state fMRI total neuronal activity and PET metabolism in healthy controls and patients with disorders of consciousness',
+            'Paper.DOI': '10.1002/brb3.424', '# Exp': 1,
+            'Experimental paradigms.Main Paradigm': 'Disorders of Consciousness + Resting State + Locked In Syndrome',
+            'Experimental paradigms.Specific Paradigm': 'Unresponsive Wakefulness Syndrome (Disorders of Consciousness)+ Minimal Consciousness State (Disorders of Consciousness)',
+            'Experimental paradigms.Report': 0, 'Sample.Type': '3 (UWS Patients & LIS Patients & Healthy Controls)',
+            'Sample.Total': '31 (16 Healthy Controls + 11 UWS Patients + 4 LIS Patients)', 'Sample.Included': 31,
+            'Task.Description': 'no task - resting state', 'Task.Code': 0, 'Should be included?': 1,
+            'Stimuli Features.Categories': 'None', 'Stimuli Features.Description': 'None',
+            'Stimuli Features.Modality': 'None', 'Stimuli Features.Duration': 'None',
+            'Stimuli Features.Contrast': 'None', 'Measures of consciousness.Phase': 'Pre Experiment',
+            'Measures of consciousness.Type': 'Condition Assessment',
+            'Measures of consciousness.Description': 'Subjects were classified to consciousness states according to neurological evaluations using the CRS-R scale.',
+            'State - Content': 0, 'Techniques': 'fMRI + PET',
+            'Findings.Summary': '(1) both scans (rs-fMRI and PET) of patients showed decreased activity in medial and lateral fronto-parietal network (precuneus, mesiofrontal, bilateral\n posterior parietal, superior temporal, and dorsolateral prefrontal cortices). Taken as evidence compatible with GNW\n  (2) LIS patients group was too small for statistical analysis (according to authors N=4) yet also showed similar activity in the fronto-parietal network as in healthy controls.',
+            'Findings.NCC Tags': '16 (precuneus <fMRI>& precuneus <PET> & temporo-parietal junction <fMRI>& temporo-parietal junction <PET>) + 0 (medial prefrontal cortex <fMRI>& medial prefrontal cortex <PET> & inferior frontal gyrus <fMRI>& inferior frontal gyrus <PET> & medial frontal gyrus <fMRI>& medial frontal gyrus <PET>)',
+            'Findings.Measures': '27 + 1 + 0 (MVPA, SVM)', 'Encoding Notes': '', 'Interpretation.GNW': 1,
+            'Interpretation.IIT': 'X', 'Interpretation.RPT': 'X', 'Interpretation.HOT': 'X', 'Affiliation': 'X',
+            'Theory Driven': 0, 'Internal Replication [0 = Not, 1=Internal Replication]': 0,
+            'Findings.Spatial AAL Mapping': 'Precuneus_L <precuneus 0,-56,13> + Parietal_Inf_R<temporo-parietal junction 46,-40,46> + Frontal_Inf_Tri_L <medial frontal cortex -48,12,26> + Frontal_Inf_Oper_L<inferior frontal gyrus -54,13,15>'}
         studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
-        process_row(item=item)
+        try:
+            process_row(item=item)
+        except:
+
+            raise AssertionError()
 
     def test_Unresponsive_Wakefulness_Syndrome(self):
-        item: dict[str | Any, str | int | Any] = {'Paper.Title': 'Correlation between resting state fMRI total neuronal activity and PET metabolism in healthy controls and patients with disorders of consciousness', 'Paper.DOI': '10.1002/brb3.424', '# Exp': 1, 'Experimental paradigms.Main Paradigm': 'Disorders of Consciousness + Resting State + Locked In Syndrome', 'Experimental paradigms.Specific Paradigm': 'Unresponsive Wakefulness Syndrome (Disorders of Consciousness)+ Minimal Consciousness State (Disorders of Consciousness)', 'Experimental paradigms.Report': 0, 'Sample.Type': '3 (UWS Patients & LIS Patients & Healthy Controls)', 'Sample.Total': '31 (16 Healthy Controls + 11 UWS Patients + 4 LIS Patients)', 'Sample.Included': 31, 'Task.Description': 'no task - resting state', 'Task.Code': 0, 'Should be included?': 1, 'Stimuli Features.Categories': 'None', 'Stimuli Features.Description': 'None', 'Stimuli Features.Modality': 'None', 'Stimuli Features.Duration': 'None', 'Stimuli Features.Contrast': 'None', 'Measures of consciousness.Phase': 'Pre Experiment', 'Measures of consciousness.Type': 'Condition Assessment', 'Measures of consciousness.Description': 'Subjects were classified to consciousness states according to neurological evaluations using the CRS-R scale.', 'State - Content': 0, 'Techniques': 'fMRI + PET', 'Findings.Summary': '(1) both scans (rs-fMRI and PET) of patients showed decreased activity in medial and lateral fronto-parietal network (precuneus, mesiofrontal, bilateral\n posterior parietal, superior temporal, and dorsolateral prefrontal cortices). Taken as evidence compatible with GNW\n  (2) LIS patients group was too small for statistical analysis (according to authors N=4) yet also showed similar activity in the fronto-parietal network as in healthy controls.', 'Findings.NCC Tags': '16 (precuneus <fMRI>& precuneus <PET> & temporo-parietal junction <fMRI>& temporo-parietal junction <PET>) + 0 (medial prefrontal cortex <fMRI>& medial prefrontal cortex <PET> & inferior frontal gyrus <fMRI>& inferior frontal gyrus <PET> & medial frontal gyrus <fMRI>& medial frontal gyrus <PET>)', 'Findings.Measures': '27 + 1 + 0 (MVPA, SVM)', 'Encoding Notes': '', 'Interpretation.GNW': 1, 'Interpretation.IIT': 'X', 'Interpretation.RPT': 'X', 'Interpretation.HOT': 'X', 'Affiliation': 'X', 'Theory Driven': 0, 'Internal Replication [0 = Not, 1=Internal Replication]': 0, 'Findings.Spatial AAL Mapping': 'Precuneus_L <precuneus 0,-56,13> + Parietal_Inf_R<temporo-parietal junction 46,-40,46> + Frontal_Inf_Tri_L <medial frontal cortex -48,12,26> + Frontal_Inf_Oper_L<inferior frontal gyrus -54,13,15>'}
+        item: dict[str | Any, str | int | Any] = {
+            'Paper.Title': 'Correlation between resting state fMRI total neuronal activity and PET metabolism in healthy controls and patients with disorders of consciousness',
+            'Paper.DOI': '10.1002/brb3.424', '# Exp': 1,
+            'Experimental paradigms.Main Paradigm': 'Disorders of Consciousness + Resting State + Locked In Syndrome',
+            'Experimental paradigms.Specific Paradigm': 'Unresponsive Wakefulness Syndrome (Disorders of Consciousness)+ Minimal Consciousness State (Disorders of Consciousness)',
+            'Experimental paradigms.Report': 0, 'Sample.Type': '3 (UWS Patients & LIS Patients & Healthy Controls)',
+            'Sample.Total': '31 (16 Healthy Controls + 11 UWS Patients + 4 LIS Patients)', 'Sample.Included': 31,
+            'Task.Description': 'no task - resting state', 'Task.Code': 0, 'Should be included?': 1,
+            'Stimuli Features.Categories': 'None', 'Stimuli Features.Description': 'None',
+            'Stimuli Features.Modality': 'None', 'Stimuli Features.Duration': 'None',
+            'Stimuli Features.Contrast': 'None', 'Measures of consciousness.Phase': 'Pre Experiment',
+            'Measures of consciousness.Type': 'Condition Assessment',
+            'Measures of consciousness.Description': 'Subjects were classified to consciousness states according to neurological evaluations using the CRS-R scale.',
+            'State - Content': 0, 'Techniques': 'fMRI + PET',
+            'Findings.Summary': '(1) both scans (rs-fMRI and PET) of patients showed decreased activity in medial and lateral fronto-parietal network (precuneus, mesiofrontal, bilateral\n posterior parietal, superior temporal, and dorsolateral prefrontal cortices). Taken as evidence compatible with GNW\n  (2) LIS patients group was too small for statistical analysis (according to authors N=4) yet also showed similar activity in the fronto-parietal network as in healthy controls.',
+            'Findings.NCC Tags': '16 (precuneus <fMRI>& precuneus <PET> & temporo-parietal junction <fMRI>& temporo-parietal junction <PET>) + 0 (medial prefrontal cortex <fMRI>& medial prefrontal cortex <PET> & inferior frontal gyrus <fMRI>& inferior frontal gyrus <PET> & medial frontal gyrus <fMRI>& medial frontal gyrus <PET>)',
+            'Findings.Measures': '27 + 1 + 0 (MVPA, SVM)', 'Encoding Notes': '', 'Interpretation.GNW': 1,
+            'Interpretation.IIT': 'X', 'Interpretation.RPT': 'X', 'Interpretation.HOT': 'X', 'Affiliation': 'X',
+            'Theory Driven': 0, 'Internal Replication [0 = Not, 1=Internal Replication]': 0,
+            'Findings.Spatial AAL Mapping': 'Precuneus_L <precuneus 0,-56,13> + Parietal_Inf_R<temporo-parietal junction 46,-40,46> + Frontal_Inf_Tri_L <medial frontal cortex -48,12,26> + Frontal_Inf_Oper_L<inferior frontal gyrus -54,13,15>'}
         studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
         try:
@@ -177,10 +218,15 @@ class StudyParserHelpersTestCase(BaseTestCase):
             print(item)
             raise AssertionError
 
-
-
     def given_studies_exist(self, path, sheet_name):
         test_studies = get_list_from_excel(path, sheet_name)
-        studies_data = [create_study(item=study_item) for study_item in test_studies]
+        studies_data = []
+        for study_item in test_studies:
+            try:
+                study = create_study(item=study_item)
+                studies_data.append(study)
+            except:
+                print(json.dumps(study_item))
+                raise AssertionError()
 
         return studies_data

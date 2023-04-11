@@ -9,6 +9,8 @@ class SampleChoices(TextChoices):
     PATIENTS = "patients", _("Patients")
     NON_HUMAN = "non_human", _("Non_human")
     COMPUTER = "computer", _("Computer")
+    YOUNG_PATIENTS = "Young_patients_(children)", _("Young_patients_(children)")
+
 
 
 class InterpretationsChoices(TextChoices):

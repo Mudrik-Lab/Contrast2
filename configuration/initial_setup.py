@@ -229,10 +229,11 @@ finding_tag_types = {
                  "Recurrent Processing",
                  "MMN",
                  "ART",
+                 "ARN"
                  "Early Components",
                  "Late Components",
                  "SN",
-                 "Prestimulus Timing",
+                 "Prestimulus Components",
                  "SPCN",
                  "ERN",
                  "Pe",
@@ -243,7 +244,7 @@ finding_tag_types = {
                  "AAN",
                  "Intermediate Components"],
 
-    'Spatial_Areas': ["Frontal",
+    'Spatial Areas': ["Frontal",
                       "Parietal",
                       "Posterior",
                       "Temporal",
@@ -287,7 +288,6 @@ finding_tag_types = {
                       "Plasticity",
                       "Sleep Spindles",
                       "SCP",
-                      "Prestimulus Components",
                       "Slow Waves Activity",
                       "Small Worldness",
                       "SSVEP",
@@ -297,7 +297,8 @@ finding_tag_types = {
                       "Variability",
                       "Intrinsic Ignition",
                       "Local Synchronization",
-                      "GABA"]
+                      "GABA",
+                      "Recurrent Connectivity"]
 }
 
 stimulus_category = ["Animals",
@@ -356,7 +357,8 @@ stimulus_sub_category = {
                          "Color",
                          "Checkerboard",
                          "Meaningless Shape",
-                         "Comb of Hexagon"],
+                         "Comb of Hexagon",
+                         "Octagon"],
 
     'Objects': ["Houses",
                 "Clocks",
@@ -370,7 +372,8 @@ stimulus_sub_category = {
                "Clicks",
                "Syllables",
                "Rain",
-               "Bubbling Water"],
+               "Bubbling Water",
+               "Music"],
 
     'Virtual Reality Objects': ["Houses",
                                 "Road",
@@ -399,7 +402,8 @@ finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300
                     "76": "Change related positivity",
                     "77": "N150", "78": "Intermediate Components", "79": "SSVEP", "80": "inter lobe connectivity",
                     "81": "Intrinsic Ignition", "82": "Ignition Variability", "83": "Hierarchical Structure",
-                    "84": "SCP", "85": "AAN", "86": "Dorsal Attention Network", "87": "Visual Network"
+                    "84": "SCP", "85": "AAN", "86": "Dorsal Attention Network", "87": "Visual Network",
+                    "88": "Recurrent Connectivity"
                     }
 
 task_types_mapping = {"0": "No Task", "1": "Discrimination", "2": "Detection", "3": "Go/No-Go",

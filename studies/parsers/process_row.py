@@ -14,7 +14,7 @@ from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimu
 from studies.parsers.historic_data_helpers import get_paradigms_from_data, \
     get_consciousness_measure_type_and_phase_from_data, ProblemInCMExistingDataException, get_measures_from_data, \
     get_sample_from_data, IncoherentSampleDataError, parse_task_types, get_stimuli_from_data, \
-    parse_theory_driven_from_data
+    parse_theory_driven_from_data, clean_text
 from studies.parsers.parsing_findings_Contrast2 import parse, FrequencyFinding, TemporalFinding, SpatialFinding, \
     FindingTagDataError
 from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataException, \
@@ -85,7 +85,7 @@ def create_study(item: dict):
     else:
         author_keywords = [""]
     countries = list(resolve_country_from_affiliation_text(item["Affiliations"]))
-    year = validate_year(item["Year"])
+    year = int(validate_year(item["Year"]))
     funding = str(item["Funding.Details"])
 
     study, created = Study.objects.get_or_create(DOI=item["DOI"], title=item["Title"], year=year,
@@ -224,7 +224,7 @@ def process_row(item: dict):
                                     modality=modality_type, description=stimulus_description,
                                     duration=duration)
 
-        except ObjectDoesNotExist or ValueError as error:
+        except (ObjectDoesNotExist, ValueError) as error:
             logger.exception(f'{error} while processing stimuli data')
             raise MissingStimulusCategoryError()
 
@@ -272,11 +272,11 @@ def process_row(item: dict):
                                           technique=technique)
 
             else:
-                family_name = 'miscellaneous (no Family)'
+                family_name = 'miscellaneous'
                 family = FindingTagFamily.objects.get(name=family_name)
                 tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                           notes=comment)
     except (ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, Technique.DoesNotExist, IntegrityError) as error:
-        logger.exception(f'{error} while processing finding tag data')
+        logger.exception(f'{error} while processing finding tag data {finding}')
         raise FindingTagDataError()

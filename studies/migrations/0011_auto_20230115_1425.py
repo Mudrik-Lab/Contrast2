@@ -7,32 +7,24 @@ from configuration.initial_setup import finding_tag_types
 
 def bootstrap_type_models(apps, schema_editor):
     FindingTagFamily = apps.get_model("studies", "FindingTagFamily")
-    for finding_tag_family in ["Temporal",
-                               "Spatial Areas",
-                               "Frequency",
-                               "miscellaneous (no Family)"]:
+    for finding_tag_family in finding_tag_types.keys():
         FindingTagFamily.objects.get_or_create(name=finding_tag_family)
 
     FindingTagType = apps.get_model("studies", "FindingTagType")
+
     temporal = FindingTagFamily.objects.get(name='Temporal')
     for finding_tag_type in finding_tag_types['Temporal']:
-
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=temporal)
 
     spatial_areas = FindingTagFamily.objects.get(name='Spatial Areas')
-    for finding_tag_type in finding_tag_types['Spatial_Areas']:
-
+    for finding_tag_type in finding_tag_types['Spatial Areas']:
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=spatial_areas)
 
     frequency = FindingTagFamily.objects.get(name='Frequency')
-    for finding_tag_type in ["Alpha",
-                             "Beta",
-                             "Delta",
-                             "Gamma",
-                             "Theta"]:
+    for finding_tag_type in finding_tag_types['Frequency']:
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=frequency)
 
-    miscellaneous = FindingTagFamily.objects.get(name='miscellaneous (no Family)')
+    miscellaneous = FindingTagFamily.objects.get(name='miscellaneous')
     for finding_tag_type in finding_tag_types['miscellaneous']:
         FindingTagType.objects.get_or_create(name=finding_tag_type, family=miscellaneous)
 

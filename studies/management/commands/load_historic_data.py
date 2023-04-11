@@ -49,13 +49,13 @@ class Command(BaseCommand):
             is_included = bool(item["Should be included?"])
             if not is_included:
                 items_to_exclude.append(item)
-                logger.info(f'row #{index} removed')
+                print(f'row #{index} removed')
                 continue
 
             try:
                 with transaction.atomic():
                     process_row(item)
-                    logger.info(f'row #{index} completed')
+                    print(f'row #{index} completed')
 
             except IncoherentStimuliData:
                 stimuli_incoherent_data_log.append(item)

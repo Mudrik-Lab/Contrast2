@@ -180,7 +180,7 @@ Django = ">=3.2"
 
 [[package]]
 name = "django-import-export"
-version = "3.1.0"
+version = "3.2.0"
 description = "Django application and library for importing and exporting data with included admin integration."
 category = "main"
 optional = false
@@ -189,7 +189,7 @@ python-versions = ">=3.7"
 [package.dependencies]
 diff-match-patch = "*"
 Django = ">=3.2"
-tablib = {version = ">=3.2.1", extras = ["html", "ods", "xls", "xlsx", "yaml"]}
+tablib = {version = ">=3.4.0", extras = ["html", "ods", "xls", "xlsx", "yaml"]}
 
 [[package]]
 name = "django-modeladmin-reorder"
@@ -425,7 +425,7 @@ et-xmlfile = "*"
 
 [[package]]
 name = "packaging"
-version = "23.0"
+version = "23.1"
 description = "Core utilities for Python packages"
 category = "dev"
 optional = false
@@ -696,7 +696,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = ">3.10,<3.11"
-content-hash = "854827ef9d02697d62aa7fc729911d8b8e245d0e36961b7c923baf596cd9a4d6"
+content-hash = "ab7ee86b4535706eea8db64001b106d3ae925e11e004561aaeb46a63426c7abc"
 
 [metadata.files]
 asgiref = [
@@ -756,8 +756,8 @@ django-filter = [
     {file = "django_filter-23.1-py3-none-any.whl", hash = "sha256:e3c52ad83c32fb5882125105efb5fea2a1d6a85e7dc64b04ef52edbf14451b6c"},
 ]
 django-import-export = [
-    {file = "django-import-export-3.1.0.tar.gz", hash = "sha256:0760414c125142f5db02382f661b091f7597dbbebf82c8797c7830cc140a6a1a"},
-    {file = "django_import_export-3.1.0-py3-none-any.whl", hash = "sha256:5f72cb49ad92f4393f0bdb8396f344232445555e77fc501dd294bcd3d1788606"},
+    {file = "django-import-export-3.2.0.tar.gz", hash = "sha256:38fd7b9439b9e3aa1a4747421c1087a5bc194e915a28d795fb8429a5f8028f2d"},
+    {file = "django_import_export-3.2.0-py3-none-any.whl", hash = "sha256:1d3f2cb2ee3cca0386ed60651fa1623be989f130d9fbdf98a67f7dc3a94b8a37"},
 ]
 django-modeladmin-reorder = []
 django-nested-inline = [
@@ -856,8 +856,8 @@ openpyxl = [
     {file = "openpyxl-3.1.2.tar.gz", hash = "sha256:a6f5977418eff3b2d5500d54d9db50c8277a368436f4e4f8ddb1be3422870184"},
 ]
 packaging = [
-    {file = "packaging-23.0-py3-none-any.whl", hash = "sha256:714ac14496c3e68c99c29b00845f7a2b85f3bb6f1078fd9f72fd20f0570002b2"},
-    {file = "packaging-23.0.tar.gz", hash = "sha256:b6ad297f8907de0fa2fe1ccbd26fdaf387f5f47c7275fedf8cce89f99446cf97"},
+    {file = "packaging-23.1-py3-none-any.whl", hash = "sha256:994793af429502c4ea2ebf6bf664629d07c1a9fe974af92966e4b8d2df7edc61"},
+    {file = "packaging-23.1.tar.gz", hash = "sha256:a392980d2b6cffa644431898be54b0045151319d1e7ec34f0cfed48767dd334f"},
 ]
 pandas = [
     {file = "pandas-1.5.3-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:3749077d86e3a2f0ed51367f30bf5b82e131cc0f14260c4d3e499186fccc4406"},

@@ -180,7 +180,7 @@ class Development(Base):
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
 
-class Testing(Base):
+class Testing(Development):
     PASSWORD_HASHERS = [
         'django.contrib.auth.hashers.MD5PasswordHasher',
     ]
@@ -202,7 +202,7 @@ class Production(Base):
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
-        # 'whitenoise.middleware.WhiteNoiseMiddleware', #Uncomment in heroku
+        'whitenoise.middleware.WhiteNoiseMiddleware', #Uncomment in heroku
         'django.contrib.sessions.middleware.SessionMiddleware',
         'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',

@@ -43,3 +43,21 @@ jobs:
         env:
           DJANGO_SETTINGS_MODULE: "contrast_api.settings"
           DATABASE_URL: "postgresql://django_user:django_pass@postgres/django_db"
+
+  deploy:
+    if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
+    needs: [test]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+      - name: Deploying to heroku
+        if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
+        uses: akhileshns/heroku-deploy@v3.12.13
+        with:
+          heroku_email: ${{secrets.HEROKU_USER_EMAIL}}
+          # https://help.heroku.com/PBGP6IDE/how-should-i-generate-an-api-key-that-allows-me-to-use-the-heroku-platform-api
+          # Note this yochai token, if it's revoked follow the link above to generate a new token, update in repo settings and replace the email accordingly
+          heroku_api_key: ${{secrets.HEROKU_API_KEY}}
+          heroku_app_name: "contrast2-api"
+

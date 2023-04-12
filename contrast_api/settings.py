@@ -168,7 +168,7 @@ class Base(Configuration):
     STATIC_ROOT = BASE_DIR / 'static'
     STATIC_URL = '/static/'
 
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
+    STORAGES = 'storages.backends.s3boto3.S3Boto3Storage'
     MEDIA_ROOT = values.Value(BASE_DIR / 'media')
     MEDIA_URL = '/media/'
 
@@ -177,7 +177,7 @@ class Development(Base):
     CORS_ALLOW_ALL_ORIGINS = True
     ALLOWED_HOSTS = values.ListValue(["web", "localhost", "127.0.0.1"])
 
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    STORAGES = 'django.core.files.storage.FileSystemStorage'
 
 
 class Testing(Development):

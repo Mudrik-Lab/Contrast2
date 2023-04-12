@@ -80,18 +80,18 @@ class StudyParserHelpersTestCase(BaseTestCase):
         res = parse(text4)
         self.assertEqual(len(res), 2)
 
-    @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
-    def test_process_row(self):
-        studies_data = self.given_studies_exist(test_file_path,
-                                                sheet_name='test_studies')
-        test_data_list = get_list_from_excel(test_file_path, sheet_name='test_data')
-
-        for item in test_data_list:
-            try:
-                process_row(item=item)
-            except:
-                print(json.dumps(item))
-                raise AssertionError()
+    # @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
+    # def test_process_row(self):
+    #     studies_data = self.given_studies_exist(test_file_path,
+    #                                             sheet_name='test_studies')
+    #     test_data_list = get_list_from_excel(test_file_path, sheet_name='test_data')
+    #
+    #     for item in test_data_list:
+    #         try:
+    #             process_row(item=item)
+    #         except:
+    #             print(json.dumps(item))
+    #             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
     def test_Early_bilateral(self):

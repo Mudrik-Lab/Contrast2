@@ -46,7 +46,7 @@ jobs:
 
   deploy:
     if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
-    needs: [test]
+    needs: [test-job]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code

@@ -69,7 +69,9 @@ class Stimulus(models.Model):
     duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
 
     def __str__(self):
-        return f"experiment: {self.experiment_id}  modality {self.modality}"
+        if self.sub_category is None:
+            return f"experiment: {self.experiment_id}, category: {self.category}, modality: {self.modality}"
+        return f"experiment: {self.experiment_id}, category: {self.category} ({self.sub_category}), modality: {self.modality}"
 
     def clean(self):
         # validating category by modality

@@ -121,9 +121,9 @@ def process_row(item: dict):
         for key, value in item.items():
             if theory not in key:
                 continue
-            if value == "1":
+            if (value == "1") or (value == 1):
                 interpretation = InterpretationsChoices.PRO
-            elif value == "0":
+            elif (value == "0") or (value == 0):
                 interpretation = InterpretationsChoices.CHALLENGES
             elif value == "X":
                 interpretation = InterpretationsChoices.NEUTRAL

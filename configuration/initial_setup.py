@@ -229,7 +229,7 @@ finding_tag_types = {
                  "Recurrent Processing",
                  "MMN",
                  "ART",
-                 "ARN"
+                 "ARN",
                  "Early Components",
                  "Late Components",
                  "SN",
@@ -398,7 +398,7 @@ finding_tags_map = {"0": "Frontal", "1": "Ventral Stream", "2": "V1", "3": "P300
                     "58": "Frequency Increase", "59": "Sleep Spindles", "60": "Slow Waves Activity", "62": "ERN",
                     "63": "EPN", "64": "Hyper Synchronization", "65": "Plasticity",
                     "66": "Anatomic Functional connectivity similarity", "67": "Ultra slow fluctuations", "69": "M70",
-                    "70": "M130", "71": "ARN", '72': "M280", "74": "N400", "75": "Pe",
+                    "70": "M130", "71": "ARN", "72": "M280", "74": "N400", "75": "Pe",
                     "76": "Change related positivity",
                     "77": "N150", "78": "Intermediate Components", "79": "SSVEP", "80": "inter lobe connectivity",
                     "81": "Intrinsic Ignition", "82": "Ignition Variability", "83": "Hierarchical Structure",

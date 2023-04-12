@@ -94,35 +94,14 @@ class StudyParserHelpersTestCase(BaseTestCase):
                 raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
-    def test_chronometry(self):
-        studies_data = self.given_studies_exist(test_file_path,
+    def test_Early_bilateral(self):
+        studies_data = self.given_studies_exist('studies/data/test_data.xlsx',
                                                 sheet_name='test_studies')
-        item = {"Paper.Title": "Chronometry of word and picture identification Common and modality-specific effects",
-                "Paper.DOI": "10.1016/j.neuroimage.2011.11.068", "# Exp": 1,
-                "Experimental paradigms.Main Paradigm": "Masking + Stimulus Degradation",
-                "Experimental paradigms.Specific Paradigm": "Backward Masking (Masking) + Forward Masking (Masking) + Brief Presentation (Stimulus Degradation)",
-                "Experimental paradigms.Report": 1, "Sample.Type": 0, "Sample.Total": 24, "Sample.Included": 19,
-                "Task.Description": "The experiment included two phases:\n 1. In the Encoding phase - The task was to report whether the target represents a real world objects. (2AFC)\n 2. In the Retrieval phase - The participants had to classify the target stimuli as old/new.",
-                "Task.Code": "7 (Old/New) + 1", "Should be included?": 1,
-                "Stimuli Features.Categories": "Objects + Words",
-                "Stimuli Features.Description": "Words and pictures (black and white) of either real word objects or pseudo word/unrecognizable object (made of scrambled real objects) were the targets. Noise pattern were the masks. the stimuli were calibrated for each individual\n Catch trials were also included. Stimulus duration Adjusted for each subject and modality (word/picture) to achieve 50% identification performance.\n  Average per Word - 28ms and per Picture -50ms",
-                "Stimuli Features.Modality": "Visual + Visual", "Stimuli Features.Duration": "None + None",
-                "Stimuli Features.Contrast": 1, "Measures of consciousness.Phase": "Trial By Trial + Pre Experiment",
-                "Measures of consciousness.Type": "Objective",
-                "Measures of consciousness.Description": "The main task can be considered as an objective measure of consciousness.",
-                "State - Content": 1, "Techniques": "EEG",
-                "Findings.Summary": "(1) independent of stimulus category (words/objects), both early (~180ms) and late (330-410ms) ERPs were significant for identified objects compared with non-identified objects. In the late phase the activity also predicts memory retrieval. The early component (around 180 ms was considered to reflect attention)\n (2) around 500ms a modal specific activity which correlated with identification was detected in two frontal electrodes, along with other electrodes at fronto-parietal sites showing the same pattern from 280ms and forward.\n (3) a component at 800-900ms was found to correlate (independent of modality) with memory retrieval in electrode C4/CP4.\n  4) the 300ms component correlated with memory for the stimulus when it was not identified in the encoding phase. this is taken as a proof for unconscious processing and to indicate a dissociation between conscious access and VSTM access.\n (5) relating to an fMRI study performed with similar design, the activity related to amodal conscious identification is correlated with activity between IFG and occipito-temporal areas which showed a negative component at the latency of 300-460ms (suggested as VAN). This is taken to support GNW",
-                "Findings.NCC Tags": "3 (330-410ms) + 0 (Inferior Frontal region \u221242,36,15# - Cz/FCz/FC1 electrodes for P3 component, source localized) + 4 (320-450ms) + 21 (CPz electrode &) + 32 (180-200ms)",
-                "Findings.Measures": "3 (Cluster)",
-                "Encoding Notes": "High rate of false positives in the catch trials (~25%).", "Interpretation.GNW": 1,
-                "Interpretation.IIT": "X", "Interpretation.RPT": "X", "Interpretation.HOT": "X", "Affiliation": "X",
-                "Theory Driven": 0, "Internal Replication [0 = Not, 1=Internal Replication]": 0.0,
-                "Findings.Spatial AAL Mapping": ""}
+        item = {"Paper.Title": "Early bilateral and massive compromise of the frontal lobes", "Paper.DOI": "10.1016/j.nicl.2018.02.026", "# Exp": 1, "Experimental paradigms.Main Paradigm": "Case Study + Cognitive Tasks", "Experimental paradigms.Specific Paradigm": "Bilateral Frontal Affectation (Case Study) + Executive Control (Cognitive Tasks) + Memory (Cognitive Tasks) + Language (Cognitive Tasks)", "Experimental paradigms.Report": 1, "Sample.Type": "3 (Bilateral Frontal Affectation Patients)", "Sample.Total": "1 (1 Bilateral Frontal Affectation Patients)", "Sample.Included": 1, "Task.Description": "The subject underwent neuropsychological examination in which a battery of neuropsychological functions were used to evaluate attention (visual and auditory), memory encoding, language, praxis, and emotional processing.", "Task.Code": "7 (Match to Sample) + 33", "Should be included?": 1, "Stimuli Features.Categories": "Animals + Digits + Letters", "Stimuli Features.Description": "The patient underwent Assessment of visual and auditory cognitive functions using images of rabbits, digits and letters", "Stimuli Features.Modality": "Visual + Visual + Visual", "Stimuli Features.Duration": "None + None + None", "Stimuli Features.Contrast": "", "Measures of consciousness.Phase": "Pre Experiment", "Measures of consciousness.Type": "Condition Assessment", "Measures of consciousness.Description": "The participant underwent cognitive and perceptual tasks aimed at assessing her level of consciousness", "State - Content": 0, "Techniques": "fMRI + MRI", "Findings.Summary": "(1) The findings of preserved consciousness, primary and phenomenal consciousness, is taken to refute theories that assign a significant role for the frontal lobes in consciousness and specifically considered incompatible with HOT.", "Findings.NCC Tags": "-0 (Frontal Lobe <fMRI, MRI># Bilateral Frontal Affectation preserved consciousness)", "Findings.Measures": "9 (structural connectivity, DTI) + 1 + 34", "Encoding Notes": "", "Interpretation.GNW": "X", "Interpretation.IIT": 1, "Interpretation.RPT": "X", "Interpretation.HOT": 0, "Affiliation": "X", "Theory Driven": "1 (HOT)", "Internal Replication [0 = Not, 1=Internal Replication]": 0.0, "Findings.Spatial AAL Mapping": ""}
 
         try:
             process_row(item=item)
         except:
-
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
@@ -154,7 +133,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         try:
             process_row(item=item)
         except:
-
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
@@ -183,7 +161,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         try:
             process_row(item=item)
         except:
-
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
@@ -213,7 +190,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         try:
             process_row(item=item)
         except:
-
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
@@ -243,7 +219,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         try:
             process_row(item=item)
         except:
-            print(item)
             raise AssertionError
 
     def given_studies_exist(self, path, sheet_name):

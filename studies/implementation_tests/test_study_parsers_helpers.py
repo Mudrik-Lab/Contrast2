@@ -1,12 +1,6 @@
 import json
 from typing import Dict, Any
-from unittest import TestCase
 
-import numpy
-import pandas
-from configurations.management import call_command
-
-from studies.models import Study
 from studies.parsers.historic_data_helpers import find_in_list
 from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.process_row import process_row, create_experiment, create_study, get_list_from_excel

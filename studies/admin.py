@@ -68,7 +68,9 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 
 class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
-    list_filter = ("type", "family")
+    list_filter = ("family",
+                   ("type", admin.RelatedOnlyFieldListFilter),
+                   "analysis_type")
 
 
 class InterpretationAdmin(ImportExportModelAdmin):

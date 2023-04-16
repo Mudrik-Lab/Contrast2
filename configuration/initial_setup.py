@@ -1,5 +1,19 @@
 parent_theories = ['GNW', 'IIT', 'HOT', 'RPT']
 
+consciousness_measure_types = ["None",
+                               "Condition Assessment",
+                               "Subjective",
+                               "State Induction Assessment",
+                               "Sleep Monitoring",
+                               "Objective"]
+
+consciousness_measure_phases = ["None",
+                                "Post Experiment",
+                                "Pre Experiment",
+                                "Separate Experiment",
+                                "Interminent Questioning",
+                                "Trial By Trial"]
+
 modalities = ["Auditory",
               "None",
               "Olfactory",

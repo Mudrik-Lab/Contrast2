@@ -2,27 +2,17 @@
 
 from django.db import migrations
 
-from configuration.initial_setup import paradigms, task_types, techniques, modalities
+from configuration.initial_setup import paradigms, task_types, techniques, modalities, consciousness_measure_types, \
+    consciousness_measure_phases
 
 
 def bootstrap_type_models(apps, schema_editor):
     ConsciousnessMeasureType = apps.get_model("studies", "ConsciousnessMeasureType")
-    for measure_type in ["None",
-                         "Condition Assessment",
-                         "Subjective",
-                         "State Induction Assessment",
-                         "Sleep Monitoring",
-                         "Objective"]:
+    for measure_type in consciousness_measure_types:
         ConsciousnessMeasureType.objects.get_or_create(name=measure_type)
 
     ConsciousnessMeasurePhaseType = apps.get_model("studies", "ConsciousnessMeasurePhaseType")
-    for measure_phase in ["None",
-                          "Post Experiment",
-                          "Pre Experiment",
-                          "Separate Experiment",
-                          "Interminent Questioning",
-                          "Trial By Trial"
-                          ]:
+    for measure_phase in consciousness_measure_phases:
         ConsciousnessMeasurePhaseType.objects.get_or_create(name=measure_phase)
 
     Theory = apps.get_model("studies", "Theory")

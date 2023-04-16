@@ -53,9 +53,9 @@ def add_to_notes(prefix, text: str):
 def find_in_list(items_to_compare: list, compared_items_list: list):
     clean_items_to_compare = [item.split("(")[0].strip() if "(" in item else item.strip() for item in items_to_compare]
     resolved_list = []
-    for lookup_item in clean_items_to_compare :
+    for lookup_item in clean_items_to_compare:
         for item in compared_items_list:
-            if item == lookup_item:
+            if item.lower() == lookup_item.lower():
                 resolved_list.append(item)
 
     return resolved_list
@@ -95,6 +95,7 @@ def get_consciousness_measure_type_and_phase_from_data(item):
                 break
     except IndexError as error:
         logger.exception(f'{error} while processing consciousness measure data (either type or phase)')
+        print(f"phases: {resolved_phases}, types: {resolved_types}")
     return results
 
 

@@ -52,20 +52,20 @@ def create_experiment(item: dict):
 
     type_of_consciousness = ""
     type_of_consciousness_choice = item['State - Content']
-    if type_of_consciousness_choice == "0":
+    if type_of_consciousness_choice in ["0", 0]:
         type_of_consciousness = TypeOfConsciousnessChoices.STATE
-    elif type_of_consciousness_choice == "1":
+    elif type_of_consciousness_choice in ["1", 1]:
         type_of_consciousness = TypeOfConsciousnessChoices.CONTENT
-    elif type_of_consciousness_choice == "2":
+    elif type_of_consciousness_choice in ["2", 2]:
         type_of_consciousness = TypeOfConsciousnessChoices.BOTH
 
     is_reporting = ""
     reporting_choice = item['Experimental paradigms.Report']
-    if reporting_choice == "0":
+    if reporting_choice in ["0", 0]:
         is_reporting = ReportingChoices.NO_REPORT
-    elif reporting_choice == "1":
+    elif reporting_choice in ["1", 1]:
         is_reporting = ReportingChoices.REPORT
-    elif reporting_choice == "2":
+    elif reporting_choice in ["2", 2]:
         is_reporting = ReportingChoices.BOTH
 
     experiment = Experiment.objects.create(study=study, type_of_consciousness=type_of_consciousness,
@@ -121,9 +121,9 @@ def process_row(item: dict):
         for key, value in item.items():
             if theory not in key:
                 continue
-            if (value == "1") or (value == 1):
+            if value in ["1", 1]:
                 interpretation = InterpretationsChoices.PRO
-            elif (value == "0") or (value == 0):
+            elif value in ["0", 0]:
                 interpretation = InterpretationsChoices.CHALLENGES
             elif value == "X":
                 interpretation = InterpretationsChoices.NEUTRAL

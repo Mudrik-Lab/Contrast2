@@ -114,16 +114,16 @@ class Command(BaseCommand):
             try:
                 with pandas.ExcelWriter('studies/data/Contrast2_Problematic_Data.xlsx') as writer:
                     df_finding_tag.to_excel(writer, sheet_name='FindingTag', index=False)
-                    # df_studies.to_excel(writer, sheet_name='StudyData', index=False)
+                    df_studies.to_excel(writer, sheet_name='StudyData', index=False)
                     df_incoherent_stimuli.to_excel(writer, sheet_name='IncoherentStimuli', index=False)
-                    # df_missing_value_stimuli.to_excel(writer, sheet_name='MissingValueStimuliData', index=False)
+                    df_missing_value_stimuli.to_excel(writer, sheet_name='MissingValueStimuliData', index=False)
                     df_bad_duration_stimuli.to_excel(writer, sheet_name='StimulusDuration', index=False)
                     df_missing_category_stimuli.to_excel(writer, sheet_name='StimulusCategory', index=False)
-                    # df_theory_driven.to_excel(writer, sheet_name='TheoryDriven', index=False)
+                    df_theory_driven.to_excel(writer, sheet_name='TheoryDriven', index=False)
                     df_incoherent_sample.to_excel(writer, sheet_name='IncoherentSample', index=False)
                     df_sample_type.to_excel(writer, sheet_name='SampleType', index=False)
-                    # df_study_in_experiment.to_excel(writer, sheet_name='ExperimentStudyData', index=False)
-                    # df_consciousness_measure.to_excel(writer, sheet_name='ConsciousnessMeasureData', index=False)
+                    df_study_in_experiment.to_excel(writer, sheet_name='ExperimentStudyData', index=False)
+                    df_consciousness_measure.to_excel(writer, sheet_name='ConsciousnessMeasureData', index=False)
                     df_items_to_exclude.to_excel(writer, sheet_name='ExcludedItems', index=False)
             except AttributeError as error:
                 logger.exception(f'{error.name} occurred while writing to excel')

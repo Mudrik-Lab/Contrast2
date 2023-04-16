@@ -4,7 +4,7 @@ from django.db.models.functions import JSONObject
 
 from studies.choices import InterpretationsChoices
 from studies.models import Experiment, Paradigm, Interpretation, Sample, FindingTagType, FindingTagFamily, TaskType, \
-    ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType
+    ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType, Theory
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
@@ -15,7 +15,12 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
         theory = kwargs.pop("theory")
-        self.theory = theory[0]
+        theory_reference = theory[0]
+        try:
+            theory = Theory.objects.get(name=theory_reference)
+        except Theory.DoesNotExist:
+            theory = Theory.objects.get(id=theory_reference)
+        self.theory = theory
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")

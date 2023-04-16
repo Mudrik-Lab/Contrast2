@@ -10,5 +10,8 @@ class Paradigm(models.Model):
     name = models.CharField(null=False, blank=False, max_length=100)
 
     def __str__(self):
-        return f"{self.name} parent {self.parent and self.parent.name}"
+        if self.parent:
+            return f"{self.name}. parent paradigm: {self.parent.name}"
+        else:
+            return f"{self.name}"
 

@@ -149,7 +149,7 @@ class ExperimentsGraphsViewSet(
     @extend_schema(responses=StackedBarGraphSerializer(many=True),
                    parameters=[OpenApiParameter(name='theory',
                                                 type=str,
-                                                required=False,  # TODO add supported enum
+                                                required=True,
                                                 description='theory filter'),
                                OpenApiParameter(name='breakdown',
                                                 description='breakdown needed for certain graphs',
@@ -172,6 +172,8 @@ class ExperimentsGraphsViewSet(
                                                 required=True)])
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
+        # TODO make theory required in swagger, change to support text and id
+        # TODO , why is no info
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(responses=DurationGraphSerializer(many=True),

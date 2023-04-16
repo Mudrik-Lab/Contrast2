@@ -12,3 +12,6 @@ class Sample(models.Model):
     type = models.CharField(null=False, blank=False, choices=SampleChoices.choices, max_length=30)
     total_size = models.IntegerField(null=False, blank=False)
     size_included = models.IntegerField(null=False, blank=False)
+
+    def __str__(self):
+        return f"{self.type}, total: {self.total_size}, included: {self.size_included}"

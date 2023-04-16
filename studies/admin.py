@@ -1,5 +1,6 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
+from django.utils.translation import gettext_lazy as _
 
 from studies.models import Study, Experiment, Author, ConsciousnessMeasure, ConsciousnessMeasureType, \
     ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
@@ -10,12 +11,18 @@ from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimu
 # Register your models here.
 
 class ExperimentAdmin(ImportExportModelAdmin):
+    # todo add theory to display
+    list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
         return qs.select_related("study")
+
+    @admin.display(empty_value="")
+    def study__title(self, obj):
+        return obj.study.title
 
 
 # TODO: add filters for experiment
@@ -87,9 +94,26 @@ class MeasureAdmin(ImportExportModelAdmin):
     list_filter = ("type",)
 
 
+class IsParentFilter(admin.SimpleListFilter):
+    title = _("is parent paradigm")
+    parameter_name = "is_parent"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("True", _("is a parent paradigm")),
+            ("False", _("isn't a parent paradigm")),
+        ]
+
+    def queryset(self, request, queryset):
+        if self.value() == "True":
+            return queryset.filter(parent__isnull=True)
+        if self.value() == "False":
+            return queryset.filter(parent__isnull=False)
+
+
 class ParadigmAdmin(ImportExportModelAdmin):
     model = Paradigm
-    list_filter = ("parent__name",)
+    list_filter = (IsParentFilter, ("parent", admin.RelatedOnlyFieldListFilter))
 
 
 class SampleAdmin(ImportExportModelAdmin):
@@ -140,7 +164,7 @@ class TheoryAdmin(ImportExportModelAdmin):
             return ""
 
 
-admin.site.disable_action('delete_selected')  # Site wide
+# admin.site.disable_action('delete_selected')  # Site wide
 admin.site.register(Study, StudyAdmin)
 admin.site.register(Experiment, ExperimentAdmin)
 admin.site.register(Author, AuthorAdmin)

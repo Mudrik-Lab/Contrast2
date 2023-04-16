@@ -11,7 +11,7 @@ class BothSupportingChoiceFilter(django_filters.ChoiceFilter):
         self.lookup_expr = "in"
 
     def filter(self, qs, value):
-        if value is None or value == '':
+        if value is None or value == '' or (isinstance(value, str) and value.lower() is "either"):
             return qs
 
         fields_values = [value, self.both_value]

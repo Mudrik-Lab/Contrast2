@@ -104,7 +104,7 @@ def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
     data = str(item["Theory Driven"])
     if "(" not in data:
         theory_driven_choice = data.strip()
-        if theory_driven_choice == "0":
+        if theory_driven_choice in ["0", 0]:
             theory_driven = TheoryDrivenChoices.POST_HOC
             return theory_driven, resolved_theory_driven_theories
         else:
@@ -114,14 +114,14 @@ def parse_theory_driven_from_data(item: dict, theories: list) -> tuple:
     theory_driven_choice = theory_driven_data[0].strip()
     theory_driven_theories = theory_driven_data[1].split(")")[0].split("&")
 
-    if theory_driven_choice == "1":
+    if theory_driven_choice in ["1", 1]:
         theory_driven = TheoryDrivenChoices.MENTIONING
         for theory in theories:
             for theory_driven_theory in theory_driven_theories:
                 if theory == theory_driven_theory.strip():
                     resolved_theory_driven_theories.append(theory)
 
-    elif theory_driven_choice == "2":
+    elif theory_driven_choice in ["2", 2]:
         theory_driven = TheoryDrivenChoices.DRIVEN
         for theory in theories:
             for theory_driven_theory in theory_driven_theories:
@@ -384,7 +384,7 @@ def get_sample_from_data(item):
     notes = []
 
     if not len(sample_type_data) == len(total_sample_data) == len(included_sample_data):
-        if sample_type_data[0] == "6":
+        if sample_type_data[0] in ["6", 6]:
             pass
         else:
             raise IncoherentSampleDataError()
@@ -397,7 +397,7 @@ def get_sample_from_data(item):
             note = add_to_notes("sample type", sample_type_notes)
             notes.append(note)
         else:
-            sample_type_number = str(sample_type.strip())
+            sample_type_number = str(sample_type).strip()
 
         if sample_type_number == "0":
             resolved_sample_type = SampleChoices.HEALTHY_ADULTS

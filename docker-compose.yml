@@ -63,6 +63,8 @@ services:
       - ./data/media:/media
       - .:/srv/app
 
+    restart: on-failure
+
     expose:
       - "8000"
 

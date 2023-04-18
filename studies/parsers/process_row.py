@@ -1,11 +1,9 @@
 import logging
-from typing import List
 
 import numpy
 import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django_countries import countries
 
 from configuration.initial_setup import parent_theories, techniques, paradigms, finding_tags_map
 from studies.choices import InterpretationsChoices, ExperimentTypeChoices, TypeOfConsciousnessChoices, ReportingChoices
@@ -21,7 +19,7 @@ from studies.parsers.parsing_findings_Contrast2 import parse, FrequencyFinding, 
     FindingTagDataError
 from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataException, \
     parse_authors_keywords_from_text, resolve_country_from_affiliation_text, validate_year, \
-    parse_authors_from_authors_text
+    parse_authors_from_authors_text, parse_country_names_to_codes
 
 logger = logging.getLogger('Contrast2')
 
@@ -77,26 +75,6 @@ def create_experiment(item: dict):
     logger.info(f'experiment {experiment.id} for study {study.DOI} created')
 
     return experiment, theory_driven_theories
-
-countries_override = {"United States": "United States of America"}
-
-
-class MissingCountryDetectionException(Exception):
-    pass
-
-
-def parse_country_names_to_codes(country_names: List[str]) -> List[str]:
-    country_codes = []
-    for name in country_names:
-        code = countries.by_name(name)
-        if len(code) == 0:
-            if name in countries_override.keys():
-                code = countries.by_name(countries_override.get(name))
-            else:
-                raise MissingCountryDetectionException(f"Missing country {name}")
-        country_codes.append(code)
-
-    return country_codes
 
 
 def create_study(item: dict):
@@ -301,6 +279,7 @@ def process_row(item: dict):
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                           notes=comment)
     except (
-    ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, Technique.DoesNotExist, IntegrityError) as error:
+            ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, Technique.DoesNotExist,
+            IntegrityError) as error:
         logger.exception(f'{error} while processing finding tag data {finding}')
         raise FindingTagDataError()

@@ -1,4 +1,9 @@
 import re
+from typing import List
+
+from django_countries import countries
+
+
 def parse_authors_from_authors_text(text: str):
     authors_list = text.split(", ")
 
@@ -41,5 +46,22 @@ def validate_year(text):
     return year
 
 
+class MissingCountryDetectionException(Exception):
+    pass
 
 
+countries_override = {"United States": "United States of America"}
+
+
+def parse_country_names_to_codes(country_names: List[str]) -> List[str]:
+    country_codes = []
+    for name in country_names:
+        code = countries.by_name(name)
+        if len(code) == 0:
+            if name in countries_override.keys():
+                code = countries.by_name(countries_override.get(name))
+            else:
+                raise MissingCountryDetectionException(f"Missing country {name}")
+        country_codes.append(code)
+
+    return country_codes

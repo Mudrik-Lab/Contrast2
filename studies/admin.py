@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django.core.exceptions import ValidationError
+from django.db.models import Prefetch
 from import_export.admin import ImportExportModelAdmin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
@@ -15,26 +17,38 @@ class ExperimentAdmin(ImportExportModelAdmin):
     # todo add theory to display
     list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
+    fields = ("type_of_consciousness", "is_reporting", "theory_driven", "techniques", "paradigms")
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
+    filter_horizontal = ("paradigms", "techniques")
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
-        return qs.select_related("study")
+        # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
+        return qs.select_related("study") \
+            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent'))) \
+            .prefetch_related("techniques")
 
     @admin.display(empty_value="")
     def study__title(self, obj):
         return obj.study.title
 
 
-# TODO: add filters for experiment
 # TODO: add relevant inlines for experiment (everything that has foreign key to it)
 
 class ExperimentInline(admin.StackedInline):
     model = Experiment
+    filter_horizontal = ("techniques", "paradigms")
+
     # fields =
     show_change_link = True
     extra = 0
 
+    def get_queryset(self, request):
+        qs = super().get_queryset(request=request)
+        # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
+        return qs.select_related("study") \
+            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent'))) \
+            .prefetch_related("techniques")
     def has_delete_permission(self, request, obj=None):
         # Disable delete
         return False
@@ -47,7 +61,8 @@ class CountryFilter(admin.SimpleListFilter):
     def lookups(self, request, model_admin):
         # Get a list of all distinct countries that exist in the database
         existing_countries = model_admin.get_queryset(request).values_list('countries', flat=True).distinct()
-        flattened_existing_countries = sorted(set(country for the_countries in existing_countries for country in the_countries))
+        flattened_existing_countries = sorted(
+            set(country for the_countries in existing_countries for country in the_countries))
 
         # Create a list of tuples for the filter dropdown
         # Each tuple contains the country code and name
@@ -62,8 +77,9 @@ class CountryFilter(admin.SimpleListFilter):
 
 class StudyAdmin(ImportExportModelAdmin):
     model = Study
+    filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title")
-    search_fields = ("title",)
+    search_fields = ("title", "DOI")
     list_filter = (CountryFilter,)
     inlines = [
         ExperimentInline

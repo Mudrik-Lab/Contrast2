@@ -1,9 +1,11 @@
 import logging
+from typing import List
 
 import numpy
 import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
+from django_countries import countries
 
 from configuration.initial_setup import parent_theories, techniques, paradigms, finding_tags_map
 from studies.choices import InterpretationsChoices, ExperimentTypeChoices, TypeOfConsciousnessChoices, ReportingChoices
@@ -76,6 +78,26 @@ def create_experiment(item: dict):
 
     return experiment, theory_driven_theories
 
+countries_override = {"United States": "United States of America"}
+
+
+class MissingCountryDetectionException(Exception):
+    pass
+
+
+def parse_country_names_to_codes(country_names: List[str]) -> List[str]:
+    country_codes = []
+    for name in country_names:
+        code = countries.by_name(name)
+        if len(code) == 0:
+            if name in countries_override.keys():
+                code = countries.by_name(countries_override.get(name))
+            else:
+                raise MissingCountryDetectionException(f"Missing country {name}")
+        country_codes.append(code)
+
+    return country_codes
+
 
 def create_study(item: dict):
     # parse author keywords and countries from text
@@ -84,7 +106,8 @@ def create_study(item: dict):
         author_keywords = parse_authors_keywords_from_text(text)
     else:
         author_keywords = [""]
-    countries = list(resolve_country_from_affiliation_text(item["Affiliations"]))
+    country_names = list(resolve_country_from_affiliation_text(item["Affiliations"]))
+    country_codes = parse_country_names_to_codes(country_names)
     year = int(validate_year(item["Year"]))
     funding = str(item["Funding.Details"])
 
@@ -93,7 +116,7 @@ def create_study(item: dict):
                                                  approval_status=1, authors_key_words=author_keywords,
                                                  funding=funding, source_title=item["Source.Title"],
                                                  abbreviated_source_title=item["Abbreviated.Source.Title"],
-                                                 countries=countries, affiliations=item["Affiliations"])
+                                                 countries=country_codes, affiliations=item["Affiliations"])
     # parse authors and add to study
     authors = []
     authors_names = parse_authors_from_authors_text(item["Authors"])
@@ -277,6 +300,7 @@ def process_row(item: dict):
                 tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                           notes=comment)
-    except (ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, Technique.DoesNotExist, IntegrityError) as error:
+    except (
+    ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, Technique.DoesNotExist, IntegrityError) as error:
         logger.exception(f'{error} while processing finding tag data {finding}')
         raise FindingTagDataError()

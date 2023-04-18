@@ -1,5 +1,7 @@
 from django_filters import rest_framework as filters
 import django_filters
+
+from studies.choices import ReportingChoices, TypeOfConsciousnessChoices, TheoryDrivenChoices
 from studies.models import Experiment
 
 
@@ -21,10 +23,20 @@ class BothSupportingChoiceFilter(django_filters.ChoiceFilter):
         return qs.distinct() if self.distinct else qs
 
 
+def include_either_choices(choices):
+    return choices + [("either", "Either")]
+
+
 class ExperimentFilter(filters.FilterSet):
-    is_reporting = BothSupportingChoiceFilter(field_name="is_reporting")
-    type_of_consciousness = BothSupportingChoiceFilter(field_name="type_of_consciousness")
-    theory_driven = django_filters.ChoiceFilter(field_name="theory_driven")
+    is_reporting = BothSupportingChoiceFilter(field_name="is_reporting",
+                                              choices=include_either_choices(ReportingChoices.choices),
+                                              empty_label="either")
+    type_of_consciousness = BothSupportingChoiceFilter(field_name="type_of_consciousness",
+                                                       choices=include_either_choices(
+                                                           TypeOfConsciousnessChoices.choices), empty_label="either")
+    theory_driven = django_filters.ChoiceFilter(field_name="theory_driven",
+                                                choices=include_either_choices(TheoryDrivenChoices.choices),
+                                                empty_label="either")
 
     class Meta:
         model = Experiment

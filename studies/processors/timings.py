@@ -4,7 +4,7 @@ from django.db.models.expressions import RawSQL
 from django.db.models.functions import JSONObject
 
 from studies.choices import TheoryDrivenChoices, InterpretationsChoices
-from studies.models import Experiment, FindingTag, Interpretation
+from studies.models import Experiment, FindingTag, Interpretation, Theory
 from studies.processors.base import BaseProcessor
 
 
@@ -13,14 +13,24 @@ class TimingsGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         sort_first = kwargs.pop("sort_first", ["earliest"])
         self.sort_first = sort_first[0]
-        self.theory = kwargs.pop("theory")[0]
+        theory = kwargs.pop("theory")
+        self.theory = None
+        if len(theory):
+            theory_reference = theory[0]
+            try:
+                theory = Theory.objects.get(name=theory_reference)
+            except Theory.DoesNotExist:
+                theory = Theory.objects.get(id=theory_reference)
+            self.theory = theory
         self.is_theory_driven_only = kwargs.pop("is_theory_driven", [False])[0]
         self.tags_types = kwargs.pop("tags_types", [])
         self.techniques = kwargs.pop("techniques", [])
 
     def process(self):
-        experiments_interpretations = Interpretation.objects.filter(theory__parent__name=self.theory,
-                                                                    type=InterpretationsChoices.PRO) \
+        queryset = Interpretation.objects.filter(type=InterpretationsChoices.PRO)
+        if self.theory is not None:
+            queryset = queryset.filter(theory__parent__name=self.theory)
+        experiments_interpretations = queryset \
             .filter(experiment__finding_tags__technique__name__in=self.techniques) \
             .filter(experiment__finding_tags__type__name__in=self.tags_types) \
             .filter(experiment__in=self.experiments)

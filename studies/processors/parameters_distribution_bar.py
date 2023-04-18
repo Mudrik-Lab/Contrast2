@@ -15,12 +15,14 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
         theory = kwargs.pop("theory")
-        theory_reference = theory[0]
-        try:
-            theory = Theory.objects.get(name=theory_reference)
-        except Theory.DoesNotExist:
-            theory = Theory.objects.get(id=theory_reference)
-        self.theory = theory
+        self.theory = None
+        if len(theory):
+            theory_reference = theory[0]
+            try:
+                theory = Theory.objects.get(name=theory_reference)
+            except Theory.DoesNotExist:
+                theory = Theory.objects.get(id=theory_reference)
+            self.theory = theory
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")
@@ -221,7 +223,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
-        by_relation_type_subquery = filtered_subquery.filter(theory__parent=self.theory).filter(
+        if self.theory is not None:
+            filtered_subquery = filtered_subquery.filter(theory__parent=self.theory)
+        by_relation_type_subquery = filtered_subquery.filter(
             relation_type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]).values(
             "relation_type").order_by("-relation_type").annotate(experiment_count=Count("id"))
         subquery = by_relation_type_subquery \

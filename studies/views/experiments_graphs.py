@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.choices import InterpretationsChoices
+from studies.choices import InterpretationsChoices, ReportingChoices, TheoryDrivenChoices, TypeOfConsciousnessChoices
 from studies.filters import ExperimentFilter
 from studies.models import Experiment
 from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
@@ -54,7 +54,15 @@ class ExperimentsGraphsViewSet(
     }
 
     @extend_schema(responses=NationOfConsciousnessGraphSerializer(many=True),
-                   parameters=[])
+                   parameters=[
+                       OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                        enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                       OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                        enum=[option[0] for option in TheoryDrivenChoices.choices] + ["either"]),
+                       OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                        enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                            "either"]),
+                   ])
     @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
@@ -63,7 +71,16 @@ class ExperimentsGraphsViewSet(
                    parameters=[OpenApiParameter(name='theory',
                                                 type=str,
                                                 required=False,  # TODO add supported enum
-                                                description='theory filter')])
+                                                description='theory filter'),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                                enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + [
+                                                    "either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
+                               ])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
     def journals(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
@@ -87,7 +104,16 @@ class ExperimentsGraphsViewSet(
                                                       "type_of_consciousness",
                                                       "technique",
                                                       "measure"],
-                                                required=True)])
+                                                required=True),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                                enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + [
+                                                    "either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
+                               ])
     @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def parameters_distribution_pie(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
@@ -112,6 +138,14 @@ class ExperimentsGraphsViewSet(
                                                       "technique",
                                                       "measure"],
                                                 required=True),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                                enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + [
+                                                    "either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
                                OpenApiParameter(name="Interpretation",
                                                 description="supporting or challenging",
                                                 type=str,
@@ -141,7 +175,16 @@ class ExperimentsGraphsViewSet(
                                                       "type_of_consciousness",
                                                       "technique",
                                                       "measure"],
-                                                required=True)])
+                                                required=True),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter", enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + ["either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
+                               ],
+
+                   )
     @action(detail=False, methods=["GET"], serializer_class=AcrossTheYearsGraphSerializer)
     def across_the_years(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
@@ -169,7 +212,16 @@ class ExperimentsGraphsViewSet(
                                                       "type_of_consciousness",
                                                       "technique",
                                                       "measure"],
-                                                required=True)])
+                                                required=True),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                                enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + [
+                                                    "either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
+                               ])
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
         # TODO make theory required in swagger, change to support text and id
@@ -185,6 +237,14 @@ class ExperimentsGraphsViewSet(
                                                 description='techniques optional for frequencies/timings graphs',
                                                 type=str,
                                                 required=False),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                                enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + [
+                                                    "either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
 
                                ])
     @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
@@ -208,7 +268,15 @@ class ExperimentsGraphsViewSet(
                                OpenApiParameter(name='tags_types',
                                                 description='tags_types optional for timings graphs',
                                                 type=str,
-                                                required=False)
+                                                required=False),
+                               OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
+                                                enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
+                               OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices] + [
+                                                    "either"]),
+                               OpenApiParameter(name="type_of_consciousness", type=str, description="Optional filter",
+                                                enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + [
+                                                    "either"]),
                                ])
     @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
     def timings(self, request, *args, **kwargs):

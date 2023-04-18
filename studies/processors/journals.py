@@ -1,7 +1,7 @@
 from django.db.models import QuerySet, Count, F
 
 from studies.choices import InterpretationsChoices
-from studies.models import Experiment, Interpretation
+from studies.models import Experiment, Interpretation, Theory
 from studies.processors.base import BaseProcessor
 
 
@@ -9,8 +9,17 @@ class JournalsGraphDataProcessor(BaseProcessor):
     """
     This expects as input the ID of the parent theory..
     """
+
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
-        self.theory = kwargs.pop("theory")[0]
+        theory = kwargs.pop("theory")
+        self.theory = None
+        if len(theory):
+            theory_reference = theory[0]
+            try:
+                theory = Theory.objects.get(name=theory_reference)
+            except Theory.DoesNotExist:
+                theory = Theory.objects.get(id=theory_reference)
+            self.theory = theory
 
         super().__init__(experiments=experiments, **kwargs)
 
@@ -22,9 +31,12 @@ class JournalsGraphDataProcessor(BaseProcessor):
         return aggregate
 
     def get_queryset(self):
-        experiments_by_theory = Interpretation.objects \
+        queryset = Interpretation.objects.all()
+        if self.theory is not None:
+            queryset = queryset.filter(
+                theory__parent_id=self.theory)
+        experiments_by_theory = queryset \
             .filter(type=InterpretationsChoices.PRO,
-                    theory__parent_id=self.theory,
                     experiment__in=self.experiments) \
             .select_related("experiment", "experiment__study") \
             .values("experiment", "experiment__study") \
@@ -35,8 +47,6 @@ class JournalsGraphDataProcessor(BaseProcessor):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
         return qs.values("journal").annotate(count=Count("id")) \
             .annotate(value=F("count"),
-                      key=F("journal"))\
-            .values("value", "key")\
+                      key=F("journal")) \
+            .values("value", "key") \
             .order_by("-value", "key")
-
-

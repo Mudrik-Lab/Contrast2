@@ -8,7 +8,7 @@ from studies.processors.base import BaseProcessor
 class NationOfConsciousnessDataProcessor(BaseProcessor):
     def process(self):
         """
-        do a transpose "experiment per country in study" with unset on the array field
+        do a transpose "experiment per country in study" with unnest on the array field
         aggregate on country and theory relation
 
 

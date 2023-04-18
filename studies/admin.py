@@ -1,6 +1,7 @@
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
 from django.utils.translation import gettext_lazy as _
+from django_countries import countries
 
 from studies.models import Study, Experiment, Author, ConsciousnessMeasure, ConsciousnessMeasureType, \
     ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
@@ -39,10 +40,31 @@ class ExperimentInline(admin.StackedInline):
         return False
 
 
+class CountryFilter(admin.SimpleListFilter):
+    title = 'Country'
+    parameter_name = 'country'
+
+    def lookups(self, request, model_admin):
+        # Get a list of all distinct countries that exist in the database
+        existing_countries = model_admin.get_queryset(request).values_list('countries', flat=True).distinct()
+        flattened_existing_countries = sorted(set(country for the_countries in existing_countries for country in the_countries))
+
+        # Create a list of tuples for the filter dropdown
+        # Each tuple contains the country code and name
+        return [(country, countries.name(country)) for country in flattened_existing_countries]
+
+    def queryset(self, request, queryset):
+        # If a country code is selected in the filter,
+        # return only the studies that have that country
+        if self.value():
+            return queryset.filter(countries__contains=[self.value()])
+
+
 class StudyAdmin(ImportExportModelAdmin):
     model = Study
     list_display = ("id", "DOI", "title")
     search_fields = ("title",)
+    list_filter = (CountryFilter,)
     inlines = [
         ExperimentInline
     ]

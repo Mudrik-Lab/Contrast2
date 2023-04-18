@@ -1,6 +1,7 @@
 import json
 from typing import Any
 
+from configuration.initial_setup import consciousness_measure_types
 from studies.parsers.historic_data_helpers import find_in_list
 from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.process_row import process_row, create_study
@@ -23,12 +24,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
         self.assertEqual(res, {"United States", "Israel", "Germany"})
 
     def test_getting_resolved_list_from_data(self):
-        consciousness_measure_type_lookup = ["None",
-                                             "Condition Assessment",
-                                             "Subjective",
-                                             "State Induction Assessment",
-                                             "Sleep Monitoring",
-                                             "Objective"]
+        consciousness_measure_type_lookup = consciousness_measure_types
         text1 = "Objective + Subjective (Confidence)"
         text2 = "Sleep Monitoring + State Induction Assessment"
         text3 = "Subjective + Objective"

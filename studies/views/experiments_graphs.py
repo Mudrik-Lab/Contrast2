@@ -55,6 +55,11 @@ class ExperimentsGraphsViewSet(
 
     @extend_schema(responses=NationOfConsciousnessGraphSerializer(many=True),
                    parameters=[
+                       OpenApiParameter(name='theory',
+                                        type=str,
+                                        required=True,
+                                        many=True,
+                                        description='theory filter - supports multiple'),
                        OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
                                         enum=[option[0] for option in ReportingChoices.choices] + ["either"]),
                        OpenApiParameter(name="theory_driven", type=str, description="Optional filter",
@@ -231,11 +236,12 @@ class ExperimentsGraphsViewSet(
     @extend_schema(responses=DurationGraphSerializer(many=True),
                    parameters=[OpenApiParameter(name='theory',
                                                 type=str,
-                                                required=False,  # TODO add supported enum
+                                                required=False,
                                                 description='theory filter'),
                                OpenApiParameter(name='techniques',
                                                 description='techniques optional for frequencies/timings graphs',
                                                 type=str,
+                                                many=True,
                                                 required=False),
                                OpenApiParameter(name="is_reporting", type=str, description="Optional filter",
                                                 enum=[option[0] for option in ReportingChoices.choices] + ["either"]),

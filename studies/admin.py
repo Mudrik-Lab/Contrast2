@@ -114,6 +114,7 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 
 class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
+    list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound","experiment_id")
     list_filter = (("family", admin.RelatedOnlyFieldListFilter),
                    ("type", admin.RelatedOnlyFieldListFilter),
                    "analysis_type")

@@ -49,6 +49,7 @@ class ExperimentInline(admin.StackedInline):
         return qs.select_related("study") \
             .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent'))) \
             .prefetch_related("techniques")
+
     def has_delete_permission(self, request, obj=None):
         # Disable delete
         return False
@@ -113,7 +114,7 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 
 class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
-    list_filter = ("family",
+    list_filter = (("family", admin.RelatedOnlyFieldListFilter),
                    ("type", admin.RelatedOnlyFieldListFilter),
                    "analysis_type")
 
@@ -129,7 +130,7 @@ class MeasureTypeAdmin(ImportExportModelAdmin):
 
 class MeasureAdmin(ImportExportModelAdmin):
     model = Measure
-    list_filter = ("type",)
+    list_filter = (("type", admin.RelatedOnlyFieldListFilter),)
 
 
 class IsParentFilter(admin.SimpleListFilter):
@@ -174,7 +175,10 @@ class StimulusSubCategoryAdmin(ImportExportModelAdmin):
 
 class StimulusAdmin(ImportExportModelAdmin):
     model = Stimulus
-    list_filter = ("category", "sub_category", "modality")
+    list_filter = (
+    ("category", admin.RelatedOnlyFieldListFilter),
+    ("sub_category", admin.RelatedOnlyFieldListFilter),
+    ("modality", admin.RelatedOnlyFieldListFilter))
 
 
 class TaskTypeAdmin(ImportExportModelAdmin):
@@ -183,7 +187,7 @@ class TaskTypeAdmin(ImportExportModelAdmin):
 
 class TaskAdmin(ImportExportModelAdmin):
     model = Task
-    list_filter = ("type",)
+    list_filter = (("type", admin.RelatedOnlyFieldListFilter),)
 
 
 class TechniqueAdmin(ImportExportModelAdmin):

@@ -43,12 +43,13 @@ class TimingsGraphDataProcessor(BaseProcessor):
 
         relevant_finding_tags = FindingTag.objects.select_related("experiment") \
             .prefetch_related("type", "technique") \
+            .filter(family__name="Temporal")\
             .filter(type__name__in=self.tags_types) \
             .filter(technique__name__in=self.techniques)
 
         finding_tags_subquery_series = relevant_finding_tags \
             .filter(experiment__in=OuterRef("experiment_id")) \
-            .order_by("onset") \
+            .order_by("onset", "type__name") \
             .annotate(data=JSONObject(start=F("onset"), end=F("offset"), name=F("type__name"))) \
             .values_list("data")
 

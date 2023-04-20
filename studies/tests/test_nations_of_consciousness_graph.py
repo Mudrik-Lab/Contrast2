@@ -41,7 +41,8 @@ class NationsOfConsciousnessViewSetTestCase(BaseTestCase):
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
                                         theory=gnw_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
 
-        target_url = self.reverse_with_query_params("experiments-graphs-nations-of-consciousness")
+        target_url = self.reverse_with_query_params("experiments-graphs-nations-of-consciousness", theory=[gnw_parent_theory.name,
+                                                                                                           rpt_parent_theory.name ])
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

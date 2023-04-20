@@ -40,11 +40,12 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
 
         relevant_finding_tags = FindingTag.objects.select_related("experiment") \
             .prefetch_related("type", "technique") \
+            .filter(family__name="Frequency")\
             .filter(technique__name__in=self.techniques)
 
         finding_tags_subquery_series = relevant_finding_tags \
             .filter(experiment__in=OuterRef("experiment_id")) \
-            .order_by("band_lower_bound") \
+            .order_by("band_lower_bound", "type__name") \
             .annotate(data=JSONObject(start=F("band_lower_bound"), end=F("band_higher_bound"), name=F("type__name"))) \
             .values_list("data")
 

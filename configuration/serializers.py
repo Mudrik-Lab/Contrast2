@@ -55,4 +55,6 @@ class GraphImagesSerializer(serializers.ModelSerializer):
 class GraphsConfigurationSerializer(serializers.Serializer):
     available_parent_theories = serializers.ListSerializer(child=serializers.CharField())
     available_finding_tags_types_for_timings = serializers.ListSerializer(child=serializers.CharField())
+    available_techniques_for_timings = serializers.ListSerializer(child=serializers.CharField())
+    available_techniques_for_frequencies = serializers.ListSerializer(child=serializers.CharField())
     images = GraphImagesSerializer(many=True)

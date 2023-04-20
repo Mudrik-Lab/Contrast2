@@ -37,7 +37,8 @@ class ConfigurationView(GenericViewSet):
         available_paradigms = Paradigm.objects.all()
         available_consciousness_measure_phase_type = list(ConsciousnessMeasurePhaseType.objects.all()
                                                           .values_list("name", flat=True))
-        available_consciousness_measure_type = list(ConsciousnessMeasureType.objects.all().values_list("name", flat=True))
+        available_consciousness_measure_type = list(
+            ConsciousnessMeasureType.objects.all().values_list("name", flat=True))
         available_tasks_types = list(TaskType.objects.all().values_list("name", flat=True))
         available_authors = list(Author.objects.all().values_list("name", flat=True))
         configuration_data = dict(available_techniques=techniques,
@@ -61,11 +62,17 @@ class ConfigurationView(GenericViewSet):
         available_parent_theories = Theory.objects.filter(parent__isnull=True).values_list("name", flat=True)
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True)
+        available_techniques_for_frequencies = Technique.objects.filter(
+            findings_tags__family__name="Frequency").values_list("name", flat=True)
+        available_techniques_for_timings = Technique.objects.filter(findings_tags__family__name="Temporal").values_list(
+            "name", flat=True)
 
         configuration_data = dict(
             images=images,
             available_parent_theories=available_parent_theories,
-            available_finding_tags_types_for_timings=available_finding_tags_types_for_timings
+            available_finding_tags_types_for_timings=available_finding_tags_types_for_timings,
+            available_techniques_for_frequencies=available_techniques_for_frequencies,
+            available_techniques_for_timings=available_techniques_for_timings,
 
         )
         serializer = self.get_serializer(instance=configuration_data)

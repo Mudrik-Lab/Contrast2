@@ -31,6 +31,7 @@ services:
       timeout: 5s
       retries: 5
   web:
+    container_name: web_contrast_api
     build:
       context: .
       dockerfile: deploy/Dockerfile

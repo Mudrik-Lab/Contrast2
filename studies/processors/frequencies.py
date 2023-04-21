@@ -11,8 +11,9 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
         experiments = experiments.filter(finding_tags__family__name="Frequency")
         super().__init__(experiments=experiments, **kwargs)
-        theory = kwargs.pop("theory")
         self.theory = None
+
+        theory = kwargs.pop("theory", [])
         if len(theory):
             theory_reference = theory[0]
             try:
@@ -45,18 +46,22 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
 
         finding_tags_subquery_series = relevant_finding_tags \
             .filter(experiment__in=OuterRef("experiment_id")) \
-            .order_by("band_lower_bound", "type__name") \
+            .order_by("band_lower_bound", "band_higher_bound", "type__name") \
             .annotate(data=JSONObject(start=F("band_lower_bound"), end=F("band_higher_bound"), name=F("type__name"))) \
             .values_list("data")
 
-        order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id")).order_by("onset")
+        order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id"))\
+            .order_by("band_lower_bound")
+        max_order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id"))\
+            .order_by("band_higher_bound")
 
         qs = experiments \
             .annotate(min_band_lower=Subquery(order_query.values("band_lower_bound")[:1])) \
+            .annotate(max_band_higher=Subquery(max_order_query.values("band_higher_bound")[:1])) \
             .values("experiment_id").annotate(series=ArraySubquery(finding_tags_subquery_series)) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
             .filter(field_len__gt=0) \
-            .order_by("min_band_lower") \
+            .order_by("min_band_lower", "max_band_higher") \
             .distinct() \
             .values("series")
 

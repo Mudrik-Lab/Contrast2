@@ -13,7 +13,7 @@ class TimingsGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         sort_first = kwargs.pop("sort_first", ["earliest"])
         self.sort_first = sort_first[0]
-        theory = kwargs.pop("theory")
+        theory = kwargs.pop("theory", [])
         self.theory = None
         if len(theory):
             theory_reference = theory[0]

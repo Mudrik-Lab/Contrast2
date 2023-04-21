@@ -163,7 +163,7 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         qs = queryset \
             .values("series_name").annotate(series=ArraySubquery(subquery)) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY'))\
-            .filter(field_len__gt=0)\
+            .filter(field_len__gt=self.min_number_of_experiments)\
             .values("series_name", "series") \
             .order_by("series_name")
         # Note we're filtering out empty timeseries with the cardinality option

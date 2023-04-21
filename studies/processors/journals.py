@@ -45,7 +45,9 @@ class JournalsGraphDataProcessor(BaseProcessor):
 
     def aggregate(self, qs):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-        return qs.values("journal").annotate(count=Count("id")) \
+        return qs.values("journal") \
+            .annotate(count=Count("id")) \
+            .filter(count__gt=self.min_number_of_experiments) \
             .annotate(value=F("count"),
                       key=F("journal")) \
             .values("value", "key") \

@@ -9,6 +9,7 @@ from studies.models import Study, Experiment, Author, ConsciousnessMeasure, Cons
     ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
     Paradigm, Sample, ModalityType, TaskType, Task, Technique, Theory
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
+from rangefilter.filters import NumericRangeFilterBuilder, NumericRangeFilter
 
 
 # Register your models here.
@@ -117,6 +118,11 @@ class FindingTagAdmin(ImportExportModelAdmin):
     list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound","experiment_id")
     list_filter = (("family", admin.RelatedOnlyFieldListFilter),
                    ("type", admin.RelatedOnlyFieldListFilter),
+                   ("onset", NumericRangeFilter),
+                   ("offset", NumericRangeFilter),
+                   ("band_lower_bound", NumericRangeFilter),
+                   ("band_higher_bound", NumericRangeFilter),
+                   ("technique", admin.RelatedOnlyFieldListFilter),
                    "analysis_type")
 
 

@@ -41,7 +41,8 @@ class Base(Configuration):
         'nested_inline',
         'admin_reorder',
         'django_countries',
-        'django_filters'
+        'django_filters',
+        'rangefilter'
     ]
     DJANGO_APPS = [
         'django.contrib.admin',

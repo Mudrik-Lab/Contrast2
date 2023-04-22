@@ -79,7 +79,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
         # While different_child_paradigm is on both studies, so one in 2002 and one in 2004
         self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
-        self.assertDictEqual(first_series["series"][1], dict(year=2004, value=1))
+        self.assertDictEqual(first_series["series"][1], dict(year=2004, value=2))  # accumulated
 
     def test_across_the_years_breakdown_paradigm(self):
         another_different_child_paradigm, \
@@ -152,7 +152,7 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         # second measure type happened twice
         self.assertDictEqual(first_series["series"][0], dict(year=2004, value=1))
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
-        self.assertDictEqual(second_series["series"][1], dict(year=2004, value=1))
+        self.assertDictEqual(second_series["series"][1], dict(year=2004, value=3))  # accumulated
 
     def test_across_the_years_is_reporting_breakdown(self):
         another_different_child_paradigm, \

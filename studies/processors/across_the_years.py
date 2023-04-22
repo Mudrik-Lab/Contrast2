@@ -1,11 +1,21 @@
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Count, Func
+from django.db.models import QuerySet, OuterRef, F, Count, Func, Window, Sum
 from django.db.models.functions import JSONObject
 
 from studies.models import Experiment, Paradigm, Sample, FindingTagType, FindingTagFamily, TaskType, ModalityType, \
     ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
+
+
+def accumulate_series(data):
+    accumulated_data = []
+    accumulated = 0
+    for yearly_data in data:
+        accumulated = accumulated + yearly_data["value"]
+        accumulated_data.append(dict(year=yearly_data["year"], value=accumulated))
+
+    return accumulated_data
 
 
 class AcrossTheYearsGraphDataProcessor(BaseProcessor):
@@ -167,5 +177,8 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
             .values("series_name", "series") \
             .order_by("series_name")
         # Note we're filtering out empty timeseries with the cardinality option
-        return qs
-
+        retval = []
+        for series_data in list(qs):
+            series = accumulate_series(series_data["series"])
+            retval.append(dict(series_name=series_data["series_name"], series = series))
+        return retval

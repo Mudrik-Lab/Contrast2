@@ -104,7 +104,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
-                               OpenApiParameter(name="Interpretation",
+                               OpenApiParameter(name="interpretation",
                                                 description="supporting or challenging",
                                                 type=str,
                                                 enum=[InterpretationsChoices.PRO,

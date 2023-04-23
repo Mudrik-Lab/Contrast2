@@ -63,9 +63,9 @@ class ConfigurationView(GenericViewSet):
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True)
         available_techniques_for_frequencies = Technique.objects.filter(
-            findings_tags__family__name="Frequency").values_list("name", flat=True)
-        available_techniques_for_timings = Technique.objects.filter(findings_tags__family__name="Temporal").values_list(
-            "name", flat=True)
+            findings_tags__family__name="Frequency").distinct().values_list("name", flat=True)
+        available_techniques_for_timings = Technique.objects.filter(findings_tags__family__name="Temporal").distinct()\
+            .values_list("name", flat=True)
 
         configuration_data = dict(
             images=images,

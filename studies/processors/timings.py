@@ -59,7 +59,7 @@ class TimingsGraphDataProcessor(BaseProcessor):
             .annotate(min_onset=Subquery(order_query.values("onset")[:1])) \
             .values("experiment_id").annotate(series=ArraySubquery(finding_tags_subquery_series)) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
-            .filter(field_len__gt=self.min_number_of_experiments) \
+            .filter(field_len__gt=0) \
             .order_by("min_onset") \
             .distinct() \
             .values("series")

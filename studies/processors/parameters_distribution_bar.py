@@ -241,7 +241,8 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             .annotate(ids_list=ArraySubquery(ids_subquery)) \
             .annotate(totals=Func(F('ids_list'), function='CARDINALITY')) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
-            .filter(field_len__gt=self.min_number_of_experiments) \
+            .filter(field_len__gt=0) \
+            .filter(totals__gt=self.min_number_of_experiments)\
             .values("series_name", "series", "totals") \
             .order_by("-totals", "series_name")
         # Note we're filtering out empty timeseries with the cardinality option

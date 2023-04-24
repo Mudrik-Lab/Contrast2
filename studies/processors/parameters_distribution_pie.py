@@ -218,7 +218,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .values("series_name").annotate(series=ArraySubquery(subquery)) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
             .annotate(value=SubqueryCount(ids_subquery)) \
-            .filter(field_len__gt=self.min_number_of_experiments) \
+            .filter(field_len__gt=0) \
+            .filter(value__gt=self.min_number_of_experiments)\
             .values("series_name", "series", "value") \
             .order_by("-value", "series_name")
         # Note we're filtering out empty timeseries with the cardinality option

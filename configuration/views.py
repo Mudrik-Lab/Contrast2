@@ -8,7 +8,8 @@ from rest_framework.viewsets import GenericViewSet
 from configuration.models import GraphImages
 from configuration.serializers import StudiesConfigurationSerializer, GraphsConfigurationSerializer
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
-    ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author
+    ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType
+from studies.models.stimulus import StimulusCategory, StimulusSubCategory
 
 
 # Create your views here.
@@ -41,6 +42,9 @@ class ConfigurationView(GenericViewSet):
             ConsciousnessMeasureType.objects.all().values_list("name", flat=True))
         available_tasks_types = list(TaskType.objects.all().values_list("name", flat=True))
         available_authors = list(Author.objects.all().values_list("name", flat=True))
+        available_stimulus_modality_type = list(ModalityType.objects.all().values_list("name", flat=True))
+        available_stimulus_category_type = list(StimulusCategory.objects.all().values_list("name", flat=True))
+        available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
         configuration_data = dict(available_techniques=techniques,
                                   available_finding_tags_types=available_finding_tags_types,
                                   available_finding_tags_families=available_finding_tags_families,
@@ -50,6 +54,9 @@ class ConfigurationView(GenericViewSet):
                                   available_consciousness_measure_phase_type=available_consciousness_measure_phase_type,
                                   available_consciousness_measure_type=available_consciousness_measure_type,
                                   available_authors=available_authors,
+                                  available_stimulus_modality_type=available_stimulus_modality_type,
+                                  available_stimulus_category_type=available_stimulus_category_type,
+                                  available_stimulus_sub_category_type=available_stimulus_sub_category_type,
                                   available_tasks_types=available_tasks_types)
 
         serializer = self.get_serializer(instance=configuration_data)

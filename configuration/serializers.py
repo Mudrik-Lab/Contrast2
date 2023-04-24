@@ -4,6 +4,7 @@ from rest_framework import serializers
 
 from configuration.models import GraphImages
 from studies.models import Theory, FindingTagType, Paradigm
+from studies.models.stimulus import StimulusSubCategory
 
 
 class TheoryConfigurationSerializer(serializers.ModelSerializer):
@@ -20,6 +21,12 @@ class FindingTagTypeSerializer(serializers.ModelSerializer):
         fields = ('name', 'family')
 
 
+class StimulusSubCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StimulusSubCategory
+        fields = ('name', 'parent')
+
+
 class ParadigmSerializer(serializers.ModelSerializer):
     parent = serializers.SerializerMethodField()
 
@@ -27,7 +34,7 @@ class ParadigmSerializer(serializers.ModelSerializer):
         model = Paradigm
         fields = ('name', 'parent')
 
-    def get_parent(self, obj)-> Optional[str]:
+    def get_parent(self, obj) -> Optional[str]:
         if obj.parent is None:
             return None
         return obj.parent.name
@@ -43,6 +50,9 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_consciousness_measure_phase_type = serializers.ListSerializer(child=serializers.CharField())
     available_consciousness_measure_type = serializers.ListSerializer(child=serializers.CharField())
     available_tasks_types = serializers.ListSerializer(child=serializers.CharField())
+    available_stimulus_modality_type = serializers.ListSerializer(child=serializers.CharField())
+    available_stimulus_category_type = serializers.ListSerializer(child=serializers.CharField())
+    available_stimulus_sub_category_type = StimulusSubCategorySerializer(many=True)
     available_authors = serializers.ListSerializer(child=serializers.CharField())
 
 

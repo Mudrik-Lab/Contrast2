@@ -26,10 +26,13 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         self.interpretation = interpretation[0]
 
     def process(self):
-        process_func = getattr(self, f"process_{self.breakdown}")
-        return process_func()
+        return self.aggregate_query_by_breakdown()
 
-    def process_paradigm_family(self):
+    def get_query(self, theory_interpretations_experiments):
+        process_func = getattr(self, f"process_{self.breakdown}")
+        return process_func(theory_interpretations_experiments)
+
+    def aggregate_query_by_breakdown(self):
         parent_theories = Theory.objects.filter(parent__isnull=True)
 
         results = []
@@ -40,18 +43,11 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                 .distinct() \
                 .values_list("experiment", flat=True)
             # Children_experiments is referring from theory to child theory and from their to "experiments"
-            subquery = Paradigm.objects.filter(parent__isnull=True) \
-                .filter(child_paradigm__experiments__in=theory_interpretations_experiments) \
-                .distinct() \
-                .values("name") \
-                .annotate(experiment_count=Count("child_paradigm__experiments", distinct=True)) \
-                .annotate(key=F("name"))
+            subquery = self.get_query(theory_interpretations_experiments)
 
             subquery_by_breakdown = subquery.order_by("-experiment_count") \
                 .annotate(data=JSONObject(key=F("key"), value=F("experiment_count"))) \
                 .values_list("data", flat=True)
-
-            # ids_subquery = subquery.values_list("id")
 
             if len(subquery_by_breakdown) > 0:
                 series = list(subquery_by_breakdown)
@@ -65,193 +61,154 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
         return results
 
-    def _aggregate_query_by_breakdown(self, filtered_subquery: QuerySet):
-        parent_theories = Theory.objects.filter(parent__isnull=True)
+    def process_paradigm_family(self, theory_interpretations_experiments):
 
-        subquery = filtered_subquery
-        subquery = subquery \
-            .order_by() \
-            .annotate(data=JSONObject(key=F("key"), value=F("experiment_count"))) \
-            .values_list("data")
-
-        ids_subquery = subquery
-        # .values_list("experiment_id")
-
-        annotated_queryset = parent_theories \
-            .annotate(series_name=F("name")) \
-            .annotate(series=ArraySubquery(subquery)) \
-            .annotate(value=Value(0)) \
-            .order_by("series_name") \
-            .values("series_name", "series", "value")
-
-        qs = [annotated_queryset.filter(name=theory.name).get() for theory in parent_theories.all()]
-        return qs
-
-    def process_paradigm(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__paradigms=OuterRef("pk"))
-
-        breakdown_query = Paradigm.objects.filter(parent__isnull=False).values("name") \
+        # Children_experiments is referring from theory to child theory and from their to "experiments"
+        subquery = Paradigm.objects.filter(parent__isnull=True) \
+            .filter(child_paradigm__experiments__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("name") \
+            .annotate(experiment_count=Count("child_paradigm__experiments", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_population(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__samples=OuterRef("pk"))
-
-        breakdown_query = Sample.objects.values("type") \
-            .distinct(). \
-            annotate(series_name=F("type"))
-
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
-
-    def process_finding_tag(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__finding_tags__type=OuterRef("pk"))
-
-        breakdown_query = FindingTagType.objects.values("name") \
+    def process_paradigm(self, theory_interpretations_experiments):
+        subquery = Paradigm.objects.filter(parent__isnull=False) \
+            .filter(experiments__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("name") \
+            .annotate(experiment_count=Count("experiments", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_finding_tag_family(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__finding_tags__family=OuterRef("pk"))
-
-        breakdown_query = FindingTagFamily.objects.values("name") \
+    def process_population(self, theory_interpretations_experiments):
+        subquery = Sample.objects \
+            .filter(experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("type") \
+            .annotate(experiment_count=Count("experiment", distinct=True)) \
+            .annotate(key=F("type"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_reporting(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__is_reporting=OuterRef("series_name"))
-
-        breakdown_query = Experiment.objects.values("is_reporting") \
+    def process_finding_tag(self, theory_interpretations_experiments):
+        subquery = FindingTagType.objects \
+            .filter(findingtag__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("is_reporting"))
+            .values("name") \
+            .annotate(experiment_count=Count("findingtag__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_theory_driven(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__theory_driven=OuterRef("series_name"))
-
-        breakdown_query = Experiment.objects.values("theory_driven") \
+    def process_finding_tag_family(self, theory_interpretations_experiments):
+        subquery = FindingTagFamily.objects \
+            .filter(findingtag__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("theory_driven"))
+            .values("name") \
+            .annotate(experiment_count=Count("findingtag__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_task(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__tasks__type=OuterRef("pk"))
-
-        breakdown_query = TaskType.objects.values("name") \
-            .distinct(). \
-            annotate(series_name=F("name"))
-
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
-
-    def process_stimuli_category(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__stimuli__category=OuterRef("pk"))
-
-        breakdown_query = StimulusCategory.objects.values("name") \
+    def process_reporting(self, theory_interpretations_experiments):
+        subquery = Experiment.objects \
+            .filter(id__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("is_reporting") \
+            .annotate(experiment_count=Count("id", distinct=True)) \
+            .annotate(key=F("is_reporting"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_modality(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__stimuli__modality=OuterRef("pk"))
-
-        breakdown_query = ModalityType.objects.values("name") \
+    def process_theory_driven(self, theory_interpretations_experiments):
+        subquery = Experiment.objects \
+            .filter(id__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("theory_driven") \
+            .annotate(experiment_count=Count("id", distinct=True)) \
+            .annotate(key=F("theory_driven"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_consciousness_measure_phase(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__consciousness_measures__phase=OuterRef("pk"))
-
-        breakdown_query = ConsciousnessMeasurePhaseType.objects.values("name") \
+    def process_task(self, theory_interpretations_experiments):
+        subquery = TaskType.objects \
+            .filter(task__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("name") \
+            .annotate(experiment_count=Count("task__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_consciousness_measure_type(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__consciousness_measures__type=OuterRef("pk"))
-
-        breakdown_query = ConsciousnessMeasureType.objects.values("name") \
+    def process_stimuli_category(self, theory_interpretations_experiments):
+        subquery = StimulusCategory.objects \
+            .filter(stimuli__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("name") \
+            .annotate(experiment_count=Count("stimuli__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_type_of_consciousness(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
-            .filter(experiment__in=self.experiments) \
-            .filter(experiment__type_of_consciousness=OuterRef("series_name"))
-
-        breakdown_query = Experiment.objects.values("type_of_consciousness") \
+    def process_modality(self, theory_interpretations_experiments):
+        subquery = ModalityType.objects \
+            .filter(stimuli__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("type_of_consciousness"))
+            .values("name") \
+            .annotate(experiment_count=Count("stimuli__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_technique(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.experiments) \
-            .filter(experiment__techniques=OuterRef("pk")) \
-            .annotate(relation_type=F("type")) \
-            .values("experiment", "relation_type")
-        breakdown_query = Technique.objects.values("name") \
+    def process_consciousness_measure_phase(self, theory_interpretations_experiments):
+        subquery = ConsciousnessMeasurePhaseType.objects \
+            .filter(consciousness_measures__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("name") \
+            .annotate(experiment_count=Count("consciousness_measures__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
 
-    def process_measure(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.experiments) \
-            .filter(experiment__measures__type=OuterRef("pk")) \
-            .annotate(relation_type=F("type")) \
-            .values("experiment", "relation_type")
-
-        breakdown_query = MeasureType.objects.values("name") \
+    def process_consciousness_measure_type(self, theory_interpretations_experiments):
+        subquery = ConsciousnessMeasureType.objects \
+            .filter(consciousness_measures__experiment__in=theory_interpretations_experiments) \
             .distinct() \
-            .annotate(series_name=F("name"))
+            .values("name") \
+            .annotate(experiment_count=Count("consciousness_measures__experiment", distinct=True)) \
+            .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
+        return subquery
+
+    def process_type_of_consciousness(self, theory_interpretations_experiments):
+        subquery = Experiment.objects \
+            .filter(id__in=theory_interpretations_experiments) \
+            .distinct() \
+            .values("type_of_consciousness") \
+            .annotate(experiment_count=Count("id", distinct=True)) \
+            .annotate(key=F("type_of_consciousness"))
+
+        return subquery
+
+    def process_technique(self, theory_interpretations_experiments):
+        subquery = Technique.objects \
+            .filter(experiments__in=theory_interpretations_experiments) \
+            .distinct() \
+            .values("name") \
+            .annotate(experiment_count=Count("experiments", distinct=True)) \
+            .annotate(key=F("name"))
+
+        return subquery
+
+    def process_measure(self, theory_interpretations_experiments):
+        subquery = MeasureType.objects \
+            .filter(measures__experiment__in=theory_interpretations_experiments) \
+            .distinct() \
+            .values("name") \
+            .annotate(experiment_count=Count("measures__experiment", distinct=True)) \
+            .annotate(key=F("name"))
+
+        return subquery

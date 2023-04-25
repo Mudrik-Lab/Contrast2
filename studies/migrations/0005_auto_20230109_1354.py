@@ -138,8 +138,8 @@ def bootstrap_type_models(apps, schema_editor):
     imagination = Paradigm.objects.get(name='Imagination')
     Paradigm.objects.get_or_create(name="Motoric", parent=imagination)
 
-    lifespan = Paradigm.objects.get(name='lifespan')
-    Paradigm.objects.get_or_create(name="lifespan", parent=lifespan)
+    lifespan = Paradigm.objects.get(name='Lifespan')
+    Paradigm.objects.get_or_create(name="Lifespan", parent=lifespan)
 
     locked_in_syndrome = Paradigm.objects.get(name='Locked In Syndrome')
     Paradigm.objects.get_or_create(name="Locked In Syndrome", parent=locked_in_syndrome)

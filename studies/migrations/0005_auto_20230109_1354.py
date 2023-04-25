@@ -53,6 +53,9 @@ def bootstrap_type_models(apps, schema_editor):
         abnormal_contents_of_consciousness = Paradigm.objects.get(name='Abnormal Contents of Consciousness')
         Paradigm.objects.get_or_create(name=paradigm, parent=abnormal_contents_of_consciousness)
 
+    alcohol_consumption = Paradigm.objects.get(name='Alcohol Consumption')
+    Paradigm.objects.get_or_create(name="Alcohol Consumption", parent=alcohol_consumption)
+
     for paradigm in paradigms["Anesthesia"]:
         anesthesia = Paradigm.objects.get(name='Anesthesia')
         Paradigm.objects.get_or_create(name=paradigm, parent=anesthesia)
@@ -61,9 +64,15 @@ def bootstrap_type_models(apps, schema_editor):
         attentional_manipulation = Paradigm.objects.get(name='Attentional Manipulation')
         Paradigm.objects.get_or_create(name=paradigm, parent=attentional_manipulation)
 
+    caffeine_consumption = Paradigm.objects.get(name='Caffeine Consumption')
+    Paradigm.objects.get_or_create(name="Caffeine Consumption", parent=caffeine_consumption)
+
     for paradigm in paradigms["Case_Study"]:
         case_study = Paradigm.objects.get(name='Case Study')
         Paradigm.objects.get_or_create(name=paradigm, parent=case_study)
+
+    change_blindness = Paradigm.objects.get(name='Change Blindness')
+    Paradigm.objects.get_or_create(name="Change Blindness", parent=change_blindness)
 
     for paradigm in paradigms["Cognitive_Tasks"]:
         cognitive_tasks = Paradigm.objects.get(name='Cognitive Tasks')
@@ -73,6 +82,18 @@ def bootstrap_type_models(apps, schema_editor):
         competition_binocular = Paradigm.objects.get(name='Competition (Binocular)')
         Paradigm.objects.get_or_create(name=paradigm, parent=competition_binocular)
 
+    competition_monocular = Paradigm.objects.get(name='Competition (Monocular)')
+    Paradigm.objects.get_or_create(name="Bistable percepts (Competition)", parent=competition_monocular)
+
+    computational_modelling = Paradigm.objects.get(name='Computational Modelling')
+    Paradigm.objects.get_or_create(name="Computational Modelling", parent=computational_modelling)
+
+    contour_integration = Paradigm.objects.get(name='Contour Integration')
+    Paradigm.objects.get_or_create(name="Contour Integration", parent=contour_integration)
+
+    dichoptic_masking = Paradigm.objects.get(name='Dichoptic Masking')
+    Paradigm.objects.get_or_create(name="Dichoptic Masking", parent=dichoptic_masking)
+
     for paradigm in paradigms["Direct_Stimulation"]:
         direct_stimulation = Paradigm.objects.get(name='Direct Stimulation')
         Paradigm.objects.get_or_create(name=paradigm, parent=direct_stimulation)
@@ -81,17 +102,34 @@ def bootstrap_type_models(apps, schema_editor):
         disorders_of_consciousness = Paradigm.objects.get(name='Disorders of Consciousness')
         Paradigm.objects.get_or_create(name=paradigm, parent=disorders_of_consciousness)
 
-    for paradigm in ["Emotional",
-                     "Oddball",
-                     "Prior Exposure"]:
+    drowsiness = Paradigm.objects.get(name='Drowsiness')
+    Paradigm.objects.get_or_create(name="Drowsiness", parent=drowsiness)
+
+    emotion = Paradigm.objects.get(name='Emotion')
+    Paradigm.objects.get_or_create(name="Emotion", parent=emotion)
+
+    for paradigm in paradigms['Expectation']:
         expectation = Paradigm.objects.get(name='Expectation')
         Paradigm.objects.get_or_create(name=paradigm, parent=expectation)
 
-    for paradigm in ["Own Name",
-                     "Prior Exposure (Familiarity)",
-                     "Self-Face"]:
+    for paradigm in paradigms["Familiarity"]:
         familiarity = Paradigm.objects.get(name='Familiarity')
         Paradigm.objects.get_or_create(name=paradigm, parent=familiarity)
+
+    family_nurture_intervention = Paradigm.objects.get(name='Family Nurture Intervention')
+    Paradigm.objects.get_or_create(name="Family Nurture Intervention", parent=family_nurture_intervention)
+
+    figure_ground = Paradigm.objects.get(name='Figure-Ground')
+    Paradigm.objects.get_or_create(name="Figure-Ground", parent=figure_ground)
+
+    filling_in = Paradigm.objects.get(name='Filling In')
+    Paradigm.objects.get_or_create(name="Filling In", parent=filling_in)
+
+    genetics = Paradigm.objects.get(name='Genetics')
+    Paradigm.objects.get_or_create(name="Genetics", parent=genetics)
+
+    fusion = Paradigm.objects.get(name='Fusion (Color)')
+    Paradigm.objects.get_or_create(name="Fusion (Color)", parent=fusion)
 
     for paradigm in paradigms["Illusions"]:
         illusions = Paradigm.objects.get(name='Illusions')
@@ -100,25 +138,78 @@ def bootstrap_type_models(apps, schema_editor):
     imagination = Paradigm.objects.get(name='Imagination')
     Paradigm.objects.get_or_create(name="Motoric", parent=imagination)
 
+    lifespan = Paradigm.objects.get(name='lifespan')
+    Paradigm.objects.get_or_create(name="lifespan", parent=lifespan)
+
+    locked_in_syndrome = Paradigm.objects.get(name='Locked In Syndrome')
+    Paradigm.objects.get_or_create(name="Locked In Syndrome", parent=locked_in_syndrome)
+
     for paradigm in paradigms["Masking"]:
         masking = Paradigm.objects.get(name='Masking')
         Paradigm.objects.get_or_create(name=paradigm, parent=masking)
 
-    for paradigm in ["Ketamine (Psychedelic Drugs)",
-                     "Psilocybin"]:
+    mirror_masking = Paradigm.objects.get(name='Mirror Masking')
+    Paradigm.objects.get_or_create(name="Mirror Masking", parent=mirror_masking)
+
+    motion_detection = Paradigm.objects.get(name='Motion Detection')
+    Paradigm.objects.get_or_create(name="Motion Detection", parent=motion_detection)
+
+    motion_induced_blindness = Paradigm.objects.get(name='Motion induced Blindness')
+    Paradigm.objects.get_or_create(name="Motion induced Blindness", parent=motion_induced_blindness)
+
+    n_back = Paradigm.objects.get(name='N-Back')
+    Paradigm.objects.get_or_create(name="N-Back", parent=n_back)
+
+    pain = Paradigm.objects.get(name='Pain')
+    Paradigm.objects.get_or_create(name="Pain", parent=pain)
+
+    passive_exposure = Paradigm.objects.get(name='Passive Exposure')
+    Paradigm.objects.get_or_create(name="Passive Exposure", parent=passive_exposure)
+
+    pop_out = Paradigm.objects.get(name='Pop out')
+    Paradigm.objects.get_or_create(name="Mooney Images", parent=pop_out)
+
+    for paradigm in paradigms["Psychedelic Drugs"]:
         psychedelic_drugs = Paradigm.objects.get(name='Psychedelic Drugs')
         Paradigm.objects.get_or_create(name=paradigm, parent=psychedelic_drugs)
+
+    repetition_suppression = Paradigm.objects.get(name='Repetition Suppression')
+    Paradigm.objects.get_or_create(name="Repetition Suppression", parent=repetition_suppression)
+
+    resting_state = Paradigm.objects.get(name='Resting State')
+    Paradigm.objects.get_or_create(name="Resting State", parent=resting_state)
+
+    reward = Paradigm.objects.get(name='Reward')
+    Paradigm.objects.get_or_create(name="Reward", parent=reward)
 
     for paradigm in paradigms["Sedation"]:
         sedation = Paradigm.objects.get(name='Sedation')
         Paradigm.objects.get_or_create(name=paradigm, parent=sedation)
 
-    for paradigm in ["Brief Presentation",
-                     "Coherence Reduction",
-                     "Intensity Reduction",
-                     "Noise Induction"]:
+    size_constancy = Paradigm.objects.get(name='Size Constancy')
+    Paradigm.objects.get_or_create(name="Size Constancy", parent=size_constancy)
+
+    sleep = Paradigm.objects.get(name='Sleep')
+    Paradigm.objects.get_or_create(name="Sleep", parent=sleep)
+
+    sperling_like = Paradigm.objects.get(name='Sperling Like')
+    Paradigm.objects.get_or_create(name="Sperling Like", parent=sperling_like)
+
+    for paradigm in paradigms["Stimulus Degredation"]:
         stimulus_degradation = Paradigm.objects.get(name='Stimulus Degradation')
         Paradigm.objects.get_or_create(name=paradigm, parent=stimulus_degradation)
+
+    swift = Paradigm.objects.get(name='SWIFT')
+    Paradigm.objects.get_or_create(name="SWIFT", parent=swift)
+
+    task_relevance = Paradigm.objects.get(name='Task Relevance')
+    Paradigm.objects.get_or_create(name="Task Relevance", parent=task_relevance)
+
+    visual_persistence = Paradigm.objects.get(name='Visual Persistence')
+    Paradigm.objects.get_or_create(name="Visual Persistence", parent=visual_persistence)
+
+    visual_search = Paradigm.objects.get(name='Visual Search')
+    Paradigm.objects.get_or_create(name="Visual Search", parent=visual_search)
 
 
 class Migration(migrations.Migration):

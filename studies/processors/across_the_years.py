@@ -166,7 +166,7 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         subquery = filtered_subquery.annotate(year=F("study__year")) \
             .values("year") \
             .order_by("year") \
-            .annotate(experiment_count=Count("id")) \
+            .annotate(experiment_count=Count("id", distinct=True)) \
             .annotate(data=JSONObject(year=F("year"), value=F("experiment_count"))) \
             .values_list("data")
 

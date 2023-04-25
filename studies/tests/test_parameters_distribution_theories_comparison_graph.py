@@ -5,7 +5,7 @@ from contrast_api.tests.base import BaseTestCase
 
 
 # Create your tests here.
-class ParameterDistributionPieGraphTestCase(BaseTestCase):
+class ParameterDistributionTheoriesComparisonPieGraphTestCase(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
 
@@ -62,10 +62,12 @@ class ParameterDistributionPieGraphTestCase(BaseTestCase):
 
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
                                         # masking_child_paradigm, different
-                                        theory=self.gnw_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
+                                        theory=self.gnw_child_theory,
+                                        interpretation_type=InterpretationsChoices.CHALLENGES)
 
         self.given_interpretation_exist(experiment=israeli_study_experiment,  # masking_child_paradigm
-                                        theory=self.rpt_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
+                                        theory=self.rpt_child_theory,
+                                        interpretation_type=InterpretationsChoices.CHALLENGES)
 
         self.given_interpretation_exist(experiment=israeli_study_experiment_2,  # masking_child_paradigm, different
                                         theory=self.gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
@@ -83,7 +85,7 @@ class ParameterDistributionPieGraphTestCase(BaseTestCase):
                                                    measure_type="c_third_measure")
         return another_different_child_paradigm, different_child_paradigm, different_parent_paradigm, first_measure, first_technique, fourth_measure, masking_child_paradigm, masking_parent_paradigm, second_measure, second_technique, third_measure_with_second_type
 
-    def test_parameters_distribution_pie_breakdown_paradigm_family(self):
+    def test_parameters_distribution_comparison_by_theory_pie_breakdown_paradigm_family(self):
         another_different_child_paradigm, \
         different_child_paradigm, \
         different_parent_paradigm, \
@@ -91,8 +93,9 @@ class ParameterDistributionPieGraphTestCase(BaseTestCase):
         fourth_measure, masking_child_paradigm, \
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
-        target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-pie",
-                                                    breakdown="paradigm_family")
+        target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-theories-comparison",
+                                                    breakdown="paradigm_family",
+                                                    interpretation=InterpretationsChoices.PRO)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
@@ -107,15 +110,16 @@ class ParameterDistributionPieGraphTestCase(BaseTestCase):
         first_series = res.data[0]
         second_series = res.data[1]
 
-        self.assertEqual(first_series["series_name"], masking_parent_paradigm.name)  # 3 total prod
-        self.assertEqual(second_series["series_name"], different_parent_paradigm.name)  # 2 pro
+        self.assertEqual(first_series["series_name"], self.gnw_parent_theory.name)  # 3 total prod
+        self.assertEqual(first_series["value"], 3)  # 3 total prod
+        self.assertEqual(second_series["series_name"], self.rpt_parent_theory.name)  # 2 pro
+        self.assertEqual(second_series["value"], 2)  # 2 pro
 
-        self.assertEqual(first_series["series"][0]["key"], self.gnw_parent_theory.name)
+        self.assertEqual(first_series["series"][0]["key"], masking_parent_paradigm.name)
         self.assertEqual(first_series["series"][0]["value"], 2)
 
-        self.assertEqual(first_series["series"][1]["key"], self.rpt_parent_theory.name)
+        self.assertEqual(first_series["series"][1]["key"], different_parent_paradigm.name)
         self.assertEqual(first_series["series"][1]["value"], 1)
-
 
     def test_all_options_sanity_test(self):
         """
@@ -145,7 +149,9 @@ class ParameterDistributionPieGraphTestCase(BaseTestCase):
             "technique",
             "measure"
         }:
-            target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-pie",
-                                                        breakdown=breakdown, theory=self.gnw_parent_theory.id)
+            target_url = self.reverse_with_query_params(
+                "experiments-graphs-parameters-distribution-theories-comparison",
+                breakdown=breakdown,
+                interpretation=InterpretationsChoices.PRO)
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)

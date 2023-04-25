@@ -60,11 +60,11 @@ class Stimulus(models.Model):
                                    related_name="stimuli")
 
     category = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
-                                 to=StimulusCategory)
+                                 to=StimulusCategory, related_name='stimuli')
     sub_category = models.ForeignKey(null=True, blank=True, on_delete=CASCADE,
-                                     to=StimulusSubCategory)  # TODO validators from config
+                                     to=StimulusSubCategory, related_name='stimuli')  # TODO validators from config
     modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
-                                 to=ModalityType)  # TODO validators from config
+                                 to=ModalityType, related_name='stimuli')  # TODO validators from config
     description = models.TextField(null=True, blank=True)
     duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
 

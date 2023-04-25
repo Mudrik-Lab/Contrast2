@@ -259,7 +259,8 @@ class NestedPieChartSerializer(serializers.Serializer):
 
 
 class PieChartSerializer(serializers.Serializer):
-    name = serializers.CharField()
+    series_name = serializers.CharField()
+    value = serializers.IntegerField()
     series = BarGraphSerializer(many=True)
 
 

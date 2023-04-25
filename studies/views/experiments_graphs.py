@@ -19,10 +19,12 @@ from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
 from studies.processors.parameters_distribution_bar import ParametersDistributionBarGraphDataProcessor
 from studies.processors.parameters_distribution_pie import ParametersDistributionPieGraphDataProcessor
+from studies.processors.parameters_distribution_theory_comparison_pie import \
+    ComparisonParametersDistributionPieGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
-    NestedPieChartSerializer, ComparisonNestedPieChartSerializer
+    NestedPieChartSerializer, ComparisonNestedPieChartSerializer, PieChartSerializer
 
 
 class ExperimentsGraphsViewSet(GenericViewSet):
@@ -42,7 +44,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "timings": DurationGraphSerializer,
         "frequencies": DurationGraphSerializer,
         "parameters_distribution_pie": NestedPieChartSerializer,
-        "parameters_distribution_theories_comparison": ComparisonNestedPieChartSerializer
+        "parameters_distribution_theories_comparison": PieChartSerializer
     }
 
     graph_processors = {
@@ -51,6 +53,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "journals": JournalsGraphDataProcessor,
         "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
         "parameters_distribution_pie": ParametersDistributionPieGraphDataProcessor,
+        "parameters_distribution_theories_comparison": ComparisonParametersDistributionPieGraphDataProcessor,
         "frequencies": FrequenciesGraphDataProcessor,
         "timings": TimingsGraphDataProcessor,
 
@@ -101,13 +104,13 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
-                               OpenApiParameter(name="Interpretation",
+                               OpenApiParameter(name="interpretation",
                                                 description="supporting or challenging",
                                                 type=str,
                                                 enum=[InterpretationsChoices.PRO,
                                                       InterpretationsChoices.CHALLENGES],
                                                 required=True)])
-    @action(detail=False, methods=["GET"], serializer_class=ComparisonNestedPieChartSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
     def parameters_distribution_theories_comparison(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 

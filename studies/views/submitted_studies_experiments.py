@@ -21,6 +21,7 @@ class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
                                 mixins.DestroyModelMixin,
                                 mixins.UpdateModelMixin,
                                 GenericViewSet):
+    # TODO handle permissions, so delete/patch can't be done for non draft studies, or none mine
     permission_classes = [IsAuthenticated]
     serializer_class = FullExperimentSerializer
     queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter") \

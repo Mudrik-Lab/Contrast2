@@ -14,8 +14,10 @@ def accumulate_series_and_filter(data, min_count:int):
     for yearly_data in data:
         accumulated = accumulated + yearly_data["value"]
         accumulated_data.append(dict(year=yearly_data["year"], value=accumulated))
-
-    return accumulated_data
+    if accumulated > min_count:
+        return accumulated_data
+    else:
+        return []
 
 
 class AcrossTheYearsGraphDataProcessor(BaseProcessor):
@@ -180,5 +182,6 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         retval = []
         for series_data in list(qs):
             series = accumulate_series_and_filter(series_data["series"], self.min_number_of_experiments)
-            retval.append(dict(series_name=series_data["series_name"], series = series))
+            if len(series):
+                retval.append(dict(series_name=series_data["series_name"], series = series))
         return retval

@@ -10,6 +10,13 @@ from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
 
+def accumlate_value_from_series(series) -> int:
+    total = 0
+    for result in series:
+        total = total + result["value"]
+    return total
+
+
 class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
@@ -23,26 +30,40 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return process_func()
 
     def process_paradigm_family(self):
-        interpretations_experiments = Interpretation.objects.filter(type=self.interpretation).filter(
-            experiment__in=self.experiments).distinct().values_list("experiment", flat=True)
-        #     .filter(experiment__in=self.experiments) \
-        #     .distinct()\
-        #     .values("experiment", "theory__parent__name")
-        # experiments = Experiment.objects.filter(interpretations__theory__n)
+        parent_theories = Theory.objects.filter(parent__isnull=True)
 
-        # interpretations_experiments=self.experiments.filter(__in=theories)
-        # experiments = self.experiments.filter(id__in=interpretations_experiments)
-        # Children_experiments is referring from theory to child theory and from their to "experiments"
-        subquery_by_breakdown = Paradigm.objects.filter(parent__isnull=True)\
-            .filter(child_paradigm__experiments__interpretations__parent=OuterRef("pk")) \
-            .filter(child_paradigm__experiments__in=interpretations_experiments) \
-            .distinct()\
-            .values("name") \
-            .annotate(experiment_count=Count("child_paradigm__experiments", distinct=True)) \
-            .annotate(key=F("name"))
+        results = []
+        for theory in parent_theories:
+            theory_interpretations_experiments = Interpretation.objects.filter(type=self.interpretation,
+                                                                               theory__parent=theory) \
+                .filter(experiment__in=self.experiments) \
+                .distinct() \
+                .values_list("experiment", flat=True)
+            # Children_experiments is referring from theory to child theory and from their to "experiments"
+            subquery = Paradigm.objects.filter(parent__isnull=True) \
+                .filter(child_paradigm__experiments__in=theory_interpretations_experiments) \
+                .distinct() \
+                .values("name") \
+                .annotate(experiment_count=Count("child_paradigm__experiments", distinct=True)) \
+                .annotate(key=F("name"))
 
-        qs = self._aggregate_query_by_breakdown(subquery_by_breakdown)
-        return qs
+            subquery_by_breakdown = subquery.order_by("-experiment_count") \
+                .annotate(data=JSONObject(key=F("key"), value=F("experiment_count"))) \
+                .values_list("data", flat=True)
+
+            # ids_subquery = subquery.values_list("id")
+
+            if len(subquery_by_breakdown) > 0:
+                series = list(subquery_by_breakdown)
+                total_value = accumlate_value_from_series(series)
+                result = dict(
+                    series=series,
+                    series_name=theory.name,
+                    value=total_value
+                )
+                results.append(result)
+
+        return results
 
     def _aggregate_query_by_breakdown(self, filtered_subquery: QuerySet):
         parent_theories = Theory.objects.filter(parent__isnull=True)
@@ -54,13 +75,13 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .values_list("data")
 
         ids_subquery = subquery
-            # .values_list("experiment_id")
+        # .values_list("experiment_id")
 
-        annotated_queryset = parent_theories\
-            .annotate(series_name=F("name"))\
-            .annotate(series=ArraySubquery(subquery))\
-            .annotate(value=Value(0))\
-            .order_by("series_name")\
+        annotated_queryset = parent_theories \
+            .annotate(series_name=F("name")) \
+            .annotate(series=ArraySubquery(subquery)) \
+            .annotate(value=Value(0)) \
+            .order_by("series_name") \
             .values("series_name", "series", "value")
 
         qs = [annotated_queryset.filter(name=theory.name).get() for theory in parent_theories.all()]

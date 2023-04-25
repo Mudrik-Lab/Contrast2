@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('studies', '0019_alter_experiment_options'),
+        ('studies', '0025_alter_findingtag_offset_alter_findingtag_onset'),
     ]
 
     operations = [

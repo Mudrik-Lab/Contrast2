@@ -1,5 +1,5 @@
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField
+from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField, Q
 from django.db.models.functions import JSONObject
 
 from contrast_api.orm_helpers import SubqueryCount
@@ -203,7 +203,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         theory_subquery = filtered_subquery.values("theory__parent__name") \
-            .annotate(experiment_count=Count("id"))
+            .annotate(experiment_count=Count("id", distinct=True))
 
         subquery = theory_subquery \
             .order_by("-experiment_count") \

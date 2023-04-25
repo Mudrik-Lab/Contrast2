@@ -47,6 +47,6 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
     def aggregate(self, qs):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
         return qs.values("country", "theory__parent__name")\
-            .annotate(count=Count("id"))\
+            .annotate(count=Count("id", distinct=True))\
             .filter(count__gt=self.min_number_of_experiments)\
             .order_by("-count", "country")

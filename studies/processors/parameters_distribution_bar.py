@@ -227,7 +227,7 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             filtered_subquery = filtered_subquery.filter(theory__parent=self.theory)
         by_relation_type_subquery = filtered_subquery.filter(
             relation_type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]).values(
-            "relation_type").order_by("-relation_type").annotate(experiment_count=Count("id"))
+            "relation_type").order_by("-relation_type").annotate(experiment_count=Count("id", distinct=True))
         subquery = by_relation_type_subquery \
             .annotate(data=JSONObject(key=F("relation_type"), value=F("experiment_count"))) \
             .values_list("data")

@@ -15,7 +15,10 @@ from studies.open_api_parameters import number_of_experiments_parameter, \
     techniques_multiple_optional_parameter, paradigms_multiple_optional_parameter, \
     paradigms__families_multiple_optional_parameter, stimuli_categories_multiple_optional_parameter, \
     populations_multiple_optional_parameter, stimuli_modalities_multiple_optional_parameter, \
-    finding_tags_types_multiple_optional_parameter, finding_tags_families_multiple_optional_parameter
+    finding_tags_types_multiple_optional_parameter, finding_tags_families_multiple_optional_parameter, \
+    consciousness_measure_phases_multiple_optional_parameter, consciousness_measure_types_multiple_optional_parameter, \
+    measures_multiple_optional_parameter, tasks_multiple_optional_parameter, types_multiple_optional_parameter, \
+    reporting_multiple_optional_parameter, theory_driven_multiple_optional_parameter
 from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
@@ -183,6 +186,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
     @extend_schema(responses=BarGraphSerializer(many=True),
                    parameters=[
+                       breakdown_parameter,
                        techniques_multiple_optional_parameter,
                        paradigms_multiple_optional_parameter,
                        paradigms__families_multiple_optional_parameter,
@@ -191,7 +195,15 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        populations_multiple_optional_parameter,
                        finding_tags_types_multiple_optional_parameter,
                        finding_tags_families_multiple_optional_parameter,
+                       consciousness_measure_phases_multiple_optional_parameter,
+                       consciousness_measure_types_multiple_optional_parameter,
+                       measures_multiple_optional_parameter,
+                       tasks_multiple_optional_parameter,
+                       types_multiple_optional_parameter,
+                       reporting_multiple_optional_parameter,
+                       theory_driven_multiple_optional_parameter,
                        number_of_experiments_parameter,
+
                    ])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
     def parameters_distribution_free_queries(self, request, *args, **kwargs):

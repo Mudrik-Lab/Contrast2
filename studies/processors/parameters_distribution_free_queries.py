@@ -22,6 +22,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.stimuli_categories = kwargs.pop("stimuli_categories", [])
         self.stimuli_modalities = kwargs.pop("stimuli_modalities", [])
         self.populations = kwargs.pop("populations", [])
+        self.measures = kwargs.pop("measures", [])
         self.consciousness_measure_phases = kwargs.pop("consciousness_measure_phases", [])
         self.consciousness_measure_types = kwargs.pop("consciousness_measure_types", [])
         self.finding_tags_families = kwargs.pop("finding_tags_families", [])
@@ -50,10 +51,10 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         if len(self.interpretations):
             pass
             # TODO add filtering by interpretations if chosen
-        if self.theories:
-            # Find out about the connection between this and theories
-            pass
-            # TODO add filtering by theories if chosen
+        # if self.theories:
+        #     # Find out about the connection between this and theories
+        #     pass
+        #     # TODO add filtering by theories if chosen
 
         if len(self.techniques):
             queryset = queryset.filter(techniques__name__in=self.techniques)
@@ -69,7 +70,10 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             queryset = queryset.filter(stimuli__modality__name__in=self.stimuli_modalities)
 
         if len(self.populations):
-            queryset = queryset.filter(samples__type__name__in=self.populations)
+            queryset = queryset.filter(samples__type__in=self.populations)
+
+        if len(self.measures):
+            queryset = queryset.filter(measures__type__name__in=self.measures)
 
         if len(self.consciousness_measure_phases):
             queryset = queryset.filter(consciousness_measures__phase__name__in=self.consciousness_measure_phases)
@@ -292,8 +296,9 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         qs = queryset \
             .values("series_name") \
             .annotate(ids_list=ArraySubquery(ids_subquery)) \
-            .annotate(totals=Func(F('ids_list'), function='CARDINALITY')) \
-            .filter(totals__gt=self.min_number_of_experiments) \
-            .values("series_name", "series", "totals") \
-            .order_by("-totals", "series_name")
+            .annotate(value=Func(F('ids_list'), function='CARDINALITY')) \
+            .filter(value__gt=self.min_number_of_experiments) \
+            .annotate(key=F("series_name"))\
+            .values("key", "value") \
+            .order_by("-value", "series_name")
         return qs

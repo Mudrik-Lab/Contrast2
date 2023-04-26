@@ -43,3 +43,31 @@ theory_single_optional_parameter = OpenApiParameter(name='theory', type=str, req
 techniques_multiple_optional_parameter = OpenApiParameter(name='techniques',
                                                           description='techniques optional for frequencies/timings graphs',
                                                           type=str, many=True, required=False)
+
+paradigms_multiple_optional_parameter = OpenApiParameter(name='paradigms',
+                                                         description='paradigms optional for frequencies/timings graphs',
+                                                         type=str, many=True, required=False)
+
+paradigms__families_multiple_optional_parameter = OpenApiParameter(name='paradigm_families',
+                                                                   description='paradigms families optional for frequencies/timings graphs',
+                                                                   type=str, many=True, required=False)
+
+stimuli_categories_multiple_optional_parameter = OpenApiParameter(name='stimuli_categories',
+                                                                  description='stimuli categories families optional for frequencies/timings graphs',
+                                                                  type=str, many=True, required=False)
+
+stimuli_modalities_multiple_optional_parameter = OpenApiParameter(name='stimuli_modalities',
+                                                                  description='stimuli modalities optional for frequencies/timings graphs',
+                                                                  type=str, many=True, required=False)
+
+populations_multiple_optional_parameter = OpenApiParameter(name='populations',
+                                                           description='populations optional for frequencies/timings graphs',
+                                                           type=str, many=True, required=False)
+
+finding_tags_types_multiple_optional_parameter = OpenApiParameter(name='finding_tags_types',
+                                                           description='finding tags types optional for frequencies/timings graphs',
+                                                           type=str, many=True, required=False)
+
+finding_tags_families_multiple_optional_parameter = OpenApiParameter(name='populatifinding_tags_familiesons',
+                                                           description='finding tags families optional for frequencies/timings graphs',
+                                                           type=str, many=True, required=False)

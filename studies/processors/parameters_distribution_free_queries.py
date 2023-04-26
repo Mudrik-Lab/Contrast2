@@ -300,5 +300,5 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             .filter(value__gt=self.min_number_of_experiments) \
             .annotate(key=F("series_name"))\
             .values("key", "value") \
-            .order_by("-value", "series_name")
+            .order_by("-value", "key")
         return qs

@@ -52,8 +52,7 @@ jobs:
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
-        with:
-          submodules: 'true'
+
       - name: Install Poetry
         run: |
           curl -fsS -o get-poetry.py https://install.python-poetry.org
@@ -62,11 +61,18 @@ jobs:
       - name: export to requirements.txt
         run: poetry export --without-hashes -f requirements.txt --output requirements.txt
 
+      - name: Check out repository frontend repository
+        uses: actions/checkout@v3
+        with:
+          repository: "Mudrik-Lab/ContrastFront"
+          ssh-key: ${{ secrets.CONTRAST_DEPLOY_KEY }}
+          path: ContrastFront
+
       - name: build front app
         uses: actions/setup-node@v3
         with:
           node-version: 16
-        
+
       - run: npm ci
         working-directory: ./ContrastFront
       - run: npm run build

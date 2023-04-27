@@ -47,7 +47,7 @@ def bootstrap_type_models(apps, schema_editor):
 
     Paradigm = apps.get_model("studies", "Paradigm")
     for paradigm in paradigms["parent_paradigms"]:
-        Paradigm.objects.get_or_create(name=paradigm)
+        Paradigm.objects.get_or_create(name=paradigm, parent=None)
 
     for paradigm in paradigms["Abnormal_Contents_of_Consciousness"]:
         abnormal_contents_of_consciousness = Paradigm.objects.get(name='Abnormal Contents of Consciousness')
@@ -83,7 +83,13 @@ def bootstrap_type_models(apps, schema_editor):
         Paradigm.objects.get_or_create(name=paradigm, parent=competition_binocular)
 
     competition_monocular = Paradigm.objects.get(name='Competition (Monocular)')
-    Paradigm.objects.get_or_create(name="Bistable percepts (Competition)", parent=competition_monocular)
+    Paradigm.objects.get_or_create(name="Bistable percepts", parent=competition_monocular)
+
+    competition_monoaural = Paradigm.objects.get(name='Competition (Monoaural)')
+    Paradigm.objects.get_or_create(name="Bistable percepts", parent=competition_monoaural)
+
+    competition_binaural = Paradigm.objects.get(name='Competition (Binaural)')
+    Paradigm.objects.get_or_create(name="Bistable percepts", parent=competition_binaural)
 
     computational_modelling = Paradigm.objects.get(name='Computational Modelling')
     Paradigm.objects.get_or_create(name="Computational Modelling", parent=computational_modelling)

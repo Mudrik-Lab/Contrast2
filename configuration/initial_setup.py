@@ -32,6 +32,8 @@ paradigms = {
         "Cognitive Tasks",
         "Competition (Binocular)",
         "Competition (Monocular)",
+        "Competition (Monoaural)",
+        "Competition (Binaural)",
         "Computational Modelling",
         "Contour Integration",
         "Dichoptic Masking",
@@ -126,7 +128,6 @@ paradigms = {
 
     'Competition_Binocular': ["b-CFS",
                               "Binocular Rivalry",
-                              "Bistable percepts",
                               "CFS",
                               "Flash Supression"],
 
@@ -145,12 +146,12 @@ paradigms = {
                                    "Unresponsive Wakefulness Syndrome"],
 
     'Expectation': ["Emotional",
-                     "Oddball",
-                     "Prior Exposure"],
+                    "Oddball",
+                    "Prior Exposure"],
 
     'Familiarity': ["Own Name",
-                     "Prior Exposure (Familiarity)",
-                     "Self-Face"],
+                    "Prior Exposure (Familiarity)",
+                    "Self-Face"],
 
     'Illusions': ["Apparent Motion",
                   "Benham's top Illusion",

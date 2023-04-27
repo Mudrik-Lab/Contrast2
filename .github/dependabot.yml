@@ -6,5 +6,7 @@ updates:
       interval: "weekly"
     ignore:
     - dependency-name: "whitenoise"
+    - dependency-name: "pandas"
+      versions: [">=2.0"]
     - dependency-name: "boto3"
       update-types: [ "version-update:semver-patch" ]

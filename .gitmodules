@@ -1,0 +1,3 @@
+[submodule "ContrastFront"]
+	path = ContrastFront
+	url = git@github.com:Mudrik-Lab/ContrastFront.git

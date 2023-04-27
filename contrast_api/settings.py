@@ -220,28 +220,19 @@ class Testing(Development):
 
 
 class Staging(Base):
-    DEBUG = False
+    DEBUG = values.BooleanValue(default=False, environ_prefix="")
     CORS_ALLOW_ALL_ORIGINS = False
     AWS_STORAGE_BUCKET_NAME = values.Value(environ_name="S3_STORAGE")
 
 
 class Production(Base):
-    DEBUG = False
+    DEBUG = values.BooleanValue(default=False, environ_prefix="")
     CORS_ALLOW_ALL_ORIGINS = False
-    AWS_STORAGE_BUCKET_NAME = values.Value(environ_name="S3_STORAGE")
+    AWS_STORAGE_BUCKET_NAME = values.Value(environ_prefix="BUCKETEER", environ_name="BUCKET_NAME")
+    AWS_ACCESS_KEY_ID = values.Value(environ_prefix="BUCKETEER")
+    AWS_REGION = values.Value(environ_prefix="BUCKETEER")
+    AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix="BUCKETEER")
+    SENTRY_DSN = values.Value(environ_prefix='')
     # Add buckateer for s3 intergration
 
-    MIDDLEWARE = [
-        'django.middleware.security.SecurityMiddleware',
-        'whitenoise.middleware.WhiteNoiseMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'corsheaders.middleware.CorsMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
-        "contrast_api.middleware.TimezoneMiddleware",
-        'querycount.middleware.QueryCountMiddleware'
 
-    ]

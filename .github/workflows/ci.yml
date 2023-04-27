@@ -79,7 +79,7 @@ jobs:
         working-directory: ./ContrastFront
 
       - name: adding front code to django
-        run: cp -r ./ContrastFront/dist/* static
+        run: cp -r ./ContrastFront/dist/* frontapp
 
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 import datetime
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from configurations import Configuration, values
@@ -27,11 +28,13 @@ class Base(Configuration):
 
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
+    # WHITENOISE_INDEX_FILE = True
 
     ALLOWED_HOSTS = values.ListValue([])  # Would be passed from above in the deploy task
     CORS_ALLOWED_ORIGINS = values.ListValue([])
     # Application definition
     THIRD_PARTY_APPS = [
+        'whitenoise.runserver_nostatic',
         'corsheaders',
         'rest_framework_simplejwt',
         'rest_framework',
@@ -57,6 +60,8 @@ class Base(Configuration):
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
+        'whitenoise.middleware.WhiteNoiseMiddleware',
+        'spa.middleware.SPAMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',
@@ -87,7 +92,7 @@ class Base(Configuration):
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [],
+            "DIRS": [],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
@@ -107,7 +112,8 @@ class Base(Configuration):
     # Database
     # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-    DATABASES = values.DatabaseURLValue("postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5432/contrast_api_db")
+    DATABASES = values.DatabaseURLValue(
+        "postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5432/contrast_api_db")
 
     # Password validation
     # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
@@ -173,7 +179,7 @@ class Base(Configuration):
         "default":
             {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
         "staticfiles":
-            {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'}
+                {"BACKEND": 'spa.storage.SPAStaticFilesStorage'}
     }
 
     MEDIA_ROOT = values.Value(BASE_DIR / 'media')
@@ -208,11 +214,11 @@ class Testing(Development):
 
     }
 
+
 class Staging(Base):
     DEBUG = False
     CORS_ALLOW_ALL_ORIGINS = False
     AWS_STORAGE_BUCKET_NAME = values.Value(environ_name="S3_STORAGE")
-
 
 
 class Production(Base):
@@ -223,7 +229,7 @@ class Production(Base):
 
     MIDDLEWARE = [
         'django.middleware.security.SecurityMiddleware',
-        'whitenoise.middleware.WhiteNoiseMiddleware', #Uncomment in heroku
+        'whitenoise.middleware.WhiteNoiseMiddleware',
         'django.contrib.sessions.middleware.SessionMiddleware',
         'corsheaders.middleware.CorsMiddleware',
         'django.middleware.common.CommonMiddleware',

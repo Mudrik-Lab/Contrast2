@@ -185,6 +185,10 @@ class Base(Configuration):
     MEDIA_ROOT = values.Value(BASE_DIR / 'media')
     MEDIA_URL = '/media/'
 
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, "frontapp")
+    ]
+
 
 class Development(Base):
     CORS_ALLOW_ALL_ORIGINS = True

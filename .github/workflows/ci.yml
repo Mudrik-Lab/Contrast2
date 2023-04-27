@@ -59,6 +59,22 @@ jobs:
           echo "$HOME/.local/bin" >> $GITHUB_PATH
       - name: export to requirements.txt
         run: poetry export --without-hashes -f requirements.txt --output requirements.txt
+
+      - name: Checkout frontend repo
+        uses: actions/checkout@v3
+        with:
+          repository: Mudrik-Lab/ContrastFront
+          path: frontapp
+      - name: build front app
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+      - run: npm ci
+      - run: VITE_API_URL="api/" npm run build
+
+      - name: adding front code to django
+        run: cp -r ./frontapp/dist/* static
+
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
         uses: akhileshns/heroku-deploy@v3.12.13

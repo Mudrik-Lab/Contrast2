@@ -4,3 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+    - dependency-name: "whitenoise"
+    - dependency-name: "boto3"
+      update-types: [ "version-update:semver-patch" ]

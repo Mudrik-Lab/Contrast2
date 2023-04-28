@@ -1,3 +1,5 @@
+from typing import List
+
 from django.contrib import admin
 from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
@@ -5,6 +7,7 @@ from import_export.admin import ImportExportModelAdmin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 
+from studies.choices import InterpretationsChoices
 from studies.models import Study, Experiment, Author, ConsciousnessMeasure, ConsciousnessMeasureType, \
     ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
     Paradigm, Sample, ModalityType, TaskType, Task, Technique, Theory
@@ -13,6 +16,60 @@ from rangefilter.filters import NumericRangeFilterBuilder, NumericRangeFilter
 
 
 # Register your models here.
+class ExperimentRelatedInline:
+    show_change_link = True
+    extra = 0
+    fk_name = "experiment"
+
+    def has_delete_permission(self, request, obj=None):
+        # Disable delete
+        return False
+
+
+class TheoryInterpretationFilter(admin.SimpleListFilter):
+    title = 'Theory Interpretations'
+    parameter_name = 'theory_interpretation'
+
+    def lookups(self, request, model_admin):
+        lookups = []
+        theories: List[str] = Theory.objects.filter(parent__isnull=True).values_list("name", flat=True)
+        for interpretation_value, interpretation_label in InterpretationsChoices.choices:
+            for theory_name in theories:
+                value = f"{theory_name}_{interpretation_value}"
+                label = f"{theory_name.capitalize()} {interpretation_value.capitalize()}"
+                lookups.append((value, label))
+        return lookups
+
+    def queryset(self, request, queryset):
+        if self.value():
+            theory_name, relation_type = self.value().split("_")
+            interpretations = Interpretation.objects.filter(type=relation_type, theory__parent__name=theory_name)
+            return queryset.filter(experiment__in=interpretations.values("experiment"))
+
+
+class SampleInline(ExperimentRelatedInline, admin.StackedInline):
+    model = Sample
+
+
+class StimulusInline(ExperimentRelatedInline, admin.StackedInline):
+    model = Stimulus
+
+
+class FindingTagInline(ExperimentRelatedInline, admin.TabularInline):
+    model = FindingTag
+
+
+class MeasureInline(ExperimentRelatedInline, admin.StackedInline):
+    model = Measure
+
+
+class InterpretationInline(ExperimentRelatedInline, admin.TabularInline):
+    model = Interpretation
+
+
+class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
+    model = ConsciousnessMeasure
+
 
 class ExperimentAdmin(ImportExportModelAdmin):
     # todo add theory to display
@@ -21,6 +78,13 @@ class ExperimentAdmin(ImportExportModelAdmin):
     fields = ("type_of_consciousness", "is_reporting", "theory_driven", "techniques", "paradigms")
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
     filter_horizontal = ("paradigms", "techniques")
+    inlines = (
+        InterpretationInline,
+        SampleInline,
+        FindingTagInline,
+        MeasureInline,
+        ConsciousnessMeasureInline,
+        StimulusInline)
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
@@ -33,8 +97,6 @@ class ExperimentAdmin(ImportExportModelAdmin):
     def study__title(self, obj):
         return obj.study.title
 
-
-# TODO: add relevant inlines for experiment (everything that has foreign key to it)
 
 class ExperimentInline(admin.StackedInline):
     model = Experiment
@@ -94,7 +156,7 @@ class AuthorAdmin(ImportExportModelAdmin):
 
 class ConsciousnessMeasureAdmin(ImportExportModelAdmin):
     model = ConsciousnessMeasure
-    list_filter = ("phase", "type")
+    list_filter = ("phase", "type", TheoryInterpretationFilter)
 
 
 class ConsciousnessMeasureTypeAdmin(ImportExportModelAdmin):
@@ -115,7 +177,7 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 
 class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
-    list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound","experiment_id")
+    list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound", "experiment_id")
     list_filter = (("family", admin.RelatedOnlyFieldListFilter),
                    ("type", admin.RelatedOnlyFieldListFilter),
                    ("onset", NumericRangeFilter),
@@ -123,7 +185,8 @@ class FindingTagAdmin(ImportExportModelAdmin):
                    ("band_lower_bound", NumericRangeFilter),
                    ("band_higher_bound", NumericRangeFilter),
                    ("technique", admin.RelatedOnlyFieldListFilter),
-                   "analysis_type")
+                   "analysis_type",
+                   TheoryInterpretationFilter)
 
 
 class InterpretationAdmin(ImportExportModelAdmin):
@@ -137,7 +200,7 @@ class MeasureTypeAdmin(ImportExportModelAdmin):
 
 class MeasureAdmin(ImportExportModelAdmin):
     model = Measure
-    list_filter = (("type", admin.RelatedOnlyFieldListFilter),)
+    list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
 
 class IsParentFilter(admin.SimpleListFilter):
@@ -164,7 +227,7 @@ class ParadigmAdmin(ImportExportModelAdmin):
 
 class SampleAdmin(ImportExportModelAdmin):
     model = Sample
-    list_filter = ("type",)
+    list_filter = ("type", TheoryInterpretationFilter)
     list_display = ("type", "total_size", "size_included", "experiment")
 
 
@@ -183,9 +246,10 @@ class StimulusSubCategoryAdmin(ImportExportModelAdmin):
 class StimulusAdmin(ImportExportModelAdmin):
     model = Stimulus
     list_filter = (
-    ("category", admin.RelatedOnlyFieldListFilter),
-    ("sub_category", admin.RelatedOnlyFieldListFilter),
-    ("modality", admin.RelatedOnlyFieldListFilter))
+        ("category", admin.RelatedOnlyFieldListFilter),
+        ("sub_category", admin.RelatedOnlyFieldListFilter),
+        ("modality", admin.RelatedOnlyFieldListFilter),
+        TheoryInterpretationFilter)
 
 
 class TaskTypeAdmin(ImportExportModelAdmin):
@@ -194,7 +258,7 @@ class TaskTypeAdmin(ImportExportModelAdmin):
 
 class TaskAdmin(ImportExportModelAdmin):
     model = Task
-    list_filter = (("type", admin.RelatedOnlyFieldListFilter),)
+    list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
 
 class TechniqueAdmin(ImportExportModelAdmin):

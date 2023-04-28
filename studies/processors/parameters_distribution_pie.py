@@ -47,11 +47,12 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_population(self):
         experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO) \
             .filter(experiment__in=self.experiments) \
-            .filter(experiment__samples=OuterRef("pk"))
+            .filter(experiment__samples__type=OuterRef("type"))
 
         breakdown_query = Sample.objects.values("type") \
-            .distinct(). \
-            annotate(series_name=F("type"))
+            .order_by("type")\
+            .distinct() \
+            .annotate(series_name=F("type"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

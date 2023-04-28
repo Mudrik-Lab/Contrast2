@@ -48,10 +48,10 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_population(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(samples=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(samples__type=OuterRef("type"))
 
         breakdown_query = Sample.objects.values("type").distinct(
-            "type").annotate(series_name=F("type"))
+            ).annotate(series_name=F("type"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

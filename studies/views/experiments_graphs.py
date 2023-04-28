@@ -28,6 +28,7 @@ from studies.processors.parameters_distribution_free_queries import ParametersDi
 from studies.processors.parameters_distribution_pie import ParametersDistributionPieGraphDataProcessor
 from studies.processors.parameters_distribution_theory_comparison_pie import \
     ComparisonParametersDistributionPieGraphDataProcessor
+from studies.processors.theory_driven_distribution_pie import TheoryDrivenDistributionPieGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
@@ -52,7 +53,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "frequencies": DurationGraphSerializer,
         "parameters_distribution_pie": NestedPieChartSerializer,
         "parameters_distribution_theories_comparison": PieChartSerializer,
-        "parameters_distribution_free_queries": BarGraphSerializer
+        "parameters_distribution_free_queries": BarGraphSerializer,
+        "theory_driven_distribution_pie": NestedPieChartSerializer
     }
 
     graph_processors = {
@@ -65,8 +67,26 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_free_queries": ParametersDistributionFreeQueriesDataProcessor,
         "frequencies": FrequenciesGraphDataProcessor,
         "timings": TimingsGraphDataProcessor,
+        "theory_driven_distribution_pie": TheoryDrivenDistributionPieGraphDataProcessor,
 
     }
+
+    @extend_schema(responses=NestedPieChartSerializer,
+                   parameters=[
+                       OpenApiParameter(name="interpretation",
+                                        description="supporting or challenging",
+                                        type=str,
+                                        enum=[InterpretationsChoices.PRO,
+                                              InterpretationsChoices.CHALLENGES],
+                                        required=True),
+                       number_of_experiments_parameter,
+                       is_reporting_filter_parameter,
+                       theory_driven_filter_parameter,
+                       type_of_consciousness_filter_parameter,
+                   ])
+    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    def theory_driven_distribution_pie(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(responses=NationOfConsciousnessGraphSerializer(many=True),
                    parameters=[

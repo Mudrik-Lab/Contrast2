@@ -83,13 +83,13 @@ def bootstrap_type_models(apps, schema_editor):
         Paradigm.objects.get_or_create(name=paradigm, parent=competition_binocular)
 
     competition_monocular = Paradigm.objects.get(name='Competition (Monocular)', parent=None)
-    Paradigm.objects.get_or_create(name="Bistable percepts", parent=competition_monocular)
+    Paradigm.objects.get_or_create(name="Bistable percepts (Monocular", parent=competition_monocular)
 
     competition_monoaural = Paradigm.objects.get(name='Competition (Monoaural)', parent=None)
-    Paradigm.objects.get_or_create(name="Bistable percepts", parent=competition_monoaural)
+    Paradigm.objects.get_or_create(name="Bistable percepts (Monoaural)", parent=competition_monoaural)
 
     competition_binaural = Paradigm.objects.get(name='Competition (Binaural)', parent=None)
-    Paradigm.objects.get_or_create(name="Bistable percepts", parent=competition_binaural)
+    Paradigm.objects.get_or_create(name="Bistable percepts (Binaural)", parent=competition_binaural)
 
     computational_modelling = Paradigm.objects.get(name='Computational Modelling', parent=None)
     Paradigm.objects.get_or_create(name="Computational Modelling", parent=computational_modelling)

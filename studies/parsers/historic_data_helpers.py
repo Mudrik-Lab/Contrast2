@@ -4,7 +4,7 @@ from collections import namedtuple
 from itertools import zip_longest, chain
 from string import printable
 from configuration.initial_setup import task_types_mapping, findings_measures, modalities, consciousness_measure_phases, \
-    consciousness_measure_types
+    consciousness_measure_types, paradigms
 from studies.choices import TheoryDrivenChoices, SampleChoices
 from studies.models import Paradigm, Stimulus
 
@@ -36,6 +36,10 @@ class MissingValueInStimuli(Exception):
 
 
 class StimulusDurationError(Exception):
+    pass
+
+
+class ParadigmError(Exception):
     pass
 
 
@@ -136,134 +140,92 @@ def parse_task_types(item: dict):
     return parsed_task_types
 
 
-def get_paradigms_from_data(paradigms: dict, item: dict) -> list:
+def get_paradigms_from_data(item: dict) -> list:
     paradigms_in_data = []
-    parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split(" + ")
-    parsed_paradigms = item["Experimental paradigms.Specific Paradigm"].split(" + ")
-    specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in parsed_paradigms]
+    main_paradigms = paradigms["parent_paradigms"]
+    only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigm not in paradigms.keys()]
 
-    for paradigm in paradigms["parent_paradigms"]:
-        if paradigm not in parsed_main_paradigms:
-            continue
-        parent = ParadigmFromData(name=paradigm, parent=None)
+    parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")
+    parsed_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
+
+    # check for missing values and assign only-child paradigms correct values
+    if not parsed_paradigms:
+        for item in parsed_main_paradigms:
+            clean_item = item.strip()
+            if clean_item in only_child_paradigms:
+                only_child_paradigm = ParadigmFromData(name=clean_item, parent=clean_item)
+                paradigms_in_data.append(only_child_paradigm)
+            else:
+                raise ParadigmError()
+
+    # check for parent paradigms
+    for paradigm in parsed_main_paradigms:
+        clean_paradigm = paradigm.strip()
+        if clean_paradigm not in main_paradigms:
+            raise ParadigmError()
+
+        parent = ParadigmFromData(name=clean_paradigm, parent=None)
         paradigms_in_data.append(parent)
+        if clean_paradigm in only_child_paradigms:
+            only_child_paradigm = ParadigmFromData(name=clean_paradigm, parent=clean_paradigm)
+            paradigms_in_data.append(only_child_paradigm)
 
-    if "Motoric" in specific_paradigms:
-        imagination = Paradigm.objects.get(name='Imagination')
-        parsed_paradigm = ParadigmFromData(name="Motoric", parent=imagination)
-        paradigms_in_data.append(parsed_paradigm)
+    # check for specific paradigms that have more than 1 optional parent
+    for item in parsed_paradigms:
+        clean_item = item.strip()
+        if ("(Sedation)" in clean_item) and (clean_item in paradigms['Sedation']):
+            sedation_paradigm = ParadigmFromData(name=clean_item, parent='Sedation')
+            paradigms_in_data.append(sedation_paradigm)
+        elif ("(Anesthesia)" in clean_item) and (clean_item in paradigms['Anesthesia']):
+            anesthesia_paradigm = ParadigmFromData(name=clean_item, parent='Anesthesia')
+            paradigms_in_data.append(anesthesia_paradigm)
+        elif ("(Case Study)" in clean_item) and (clean_item in paradigms['Case_Study']):
+            case_study_paradigm = ParadigmFromData(name=clean_item, parent='Case Study')
+            paradigms_in_data.append(case_study_paradigm)
+        elif ("(Psychedelic Drugs)" in clean_item) and (clean_item in paradigms['Psychedelic Drugs']):
+            psychedelic_drugs_paradigm = ParadigmFromData(name=clean_item, parent='Psychedelic Drugs')
+            paradigms_in_data.append(psychedelic_drugs_paradigm)
+        elif ("Familiarity)" in clean_item) and (clean_item in paradigms['Familiarity']):
+            familiarity_paradigm = ParadigmFromData(name=clean_item, parent='Familiarity')
+            paradigms_in_data.append(familiarity_paradigm)
+        elif ("(Abnormal Contents of Consciousness)" in clean_item) and (
+                clean_item in paradigms['Abnormal_Contents_of_Consciousness']):
+            abnormal_contents_of_consciousness_paradigm = ParadigmFromData(name=clean_item,
+                                                                           parent='Abnormal Contents of Consciousness')
+            paradigms_in_data.append(abnormal_contents_of_consciousness_paradigm)
+        elif ("(Disorders of Consciousness)" in clean_item) and (clean_item in paradigms['Disorders_of_Consciousness']):
+            disorders_of_consciousness_paradigm = ParadigmFromData(name=clean_item, parent='Disorders of Consciousness')
+            paradigms_in_data.append(disorders_of_consciousness_paradigm)
+        elif ("Expectation)" in clean_item) and (clean_item in paradigms['Expectation']):
+            expectation_paradigm = ParadigmFromData(name=clean_item, parent='Expectation')
+            paradigms_in_data.append(expectation_paradigm)
+        elif "(Monocular)" in clean_item:
+            monocular_bistable_percepts_paradigm = ParadigmFromData(name=clean_item, parent='Competition (Monocular)')
+            paradigms_in_data.append(monocular_bistable_percepts_paradigm)
+        elif "(Binaural)" in clean_item:
+            binaural_bistable_percepts_paradigm = ParadigmFromData(name=clean_item, parent='Competition (Binaural)')
+            paradigms_in_data.append(binaural_bistable_percepts_paradigm)
+        else:
+            specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in parsed_paradigms]
 
-    for paradigm in paradigms["Abnormal_Contents_of_Consciousness"]:
-        if paradigm not in specific_paradigms:
-            continue
-        abnormal_contents_of_consciousness = Paradigm.objects.get(name='Abnormal Contents of Consciousness')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=abnormal_contents_of_consciousness)
-        paradigms_in_data.append(parsed_paradigm)
+            # assign specific paradigms to main paradigms
+            for specific_paradigm in specific_paradigms:
+                for (main_paradigm, paradigms_family) in paradigms.items():
+                    if specific_paradigm in paradigms_family:
+                        parent = str(main_paradigm).replace("_", " ")
+                        paradigm = ParadigmFromData(name=specific_paradigm, parent=parent)
+                        paradigms_in_data.append(paradigm)
 
-    for paradigm in paradigms["Anesthesia"]:
-        if paradigm not in specific_paradigms:
-            continue
-        anesthesia = Paradigm.objects.get(name='Anesthesia')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=anesthesia)
-        paradigms_in_data.append(parsed_paradigm)
+                    elif "Motoric" in specific_paradigm:
+                        parsed_paradigm = ParadigmFromData(name="Motoric", parent="Imagination")
+                        paradigms_in_data.append(parsed_paradigm)
 
-    for paradigm in paradigms["Attentional_Manipulation"]:
-        if paradigm not in specific_paradigms:
-            continue
-        attentional_manipulation = Paradigm.objects.get(name='Attentional Manipulation')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=attentional_manipulation)
-        paradigms_in_data.append(parsed_paradigm)
+                    elif "Mooney Images" in specific_paradigm:
+                        parsed_paradigm = ParadigmFromData(name="Mooney Images", parent="Pop out")
+                        paradigms_in_data.append(parsed_paradigm)
 
-    for paradigm in paradigms["Case_Study"]:
-        if paradigm not in specific_paradigms:
-            continue
-        case_study = Paradigm.objects.get(name='Case Study')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=case_study)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Cognitive_Tasks"]:
-        if paradigm not in specific_paradigms:
-            continue
-        cognitive_tasks = Paradigm.objects.get(name='Cognitive Tasks')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=cognitive_tasks)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Competition_Binocular"]:
-        if paradigm not in specific_paradigms:
-            continue
-        competition_binocular = Paradigm.objects.get(name='Competition (Binocular)')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=competition_binocular)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Direct_Stimulation"]:
-        if paradigm not in specific_paradigms:
-            continue
-        direct_stimulation = Paradigm.objects.get(name='Direct Stimulation')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=direct_stimulation)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Disorders_of_Consciousness"]:
-        if paradigm not in specific_paradigms:
-            continue
-        disorders_of_consciousness = Paradigm.objects.get(name='Disorders of Consciousness')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=disorders_of_consciousness)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in ["Emotional",
-                     "Oddball",
-                     "Prior Exposure"]:
-        if paradigm not in specific_paradigms:
-            continue
-        expectation = Paradigm.objects.get(name='Expectation')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=expectation)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in ["Own Name",
-                     "Prior Exposure (Familiarity)",
-                     "Self-Face"]:
-        if paradigm not in specific_paradigms:
-            continue
-        familiarity = Paradigm.objects.get(name='Familiarity')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=familiarity)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Illusions"]:
-        if paradigm not in specific_paradigms:
-            continue
-        illusions = Paradigm.objects.get(name='Illusions')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=illusions)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Masking"]:
-        if paradigm not in specific_paradigms:
-            continue
-        masking = Paradigm.objects.get(name='Masking')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=masking)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in ["Ketamine (Psychedelic Drugs)",
-                     "Psilocybin"]:
-        if paradigm not in specific_paradigms:
-            continue
-        psychedelic_drugs = Paradigm.objects.get(name='Psychedelic Drugs')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=psychedelic_drugs)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in paradigms["Sedation"]:
-        if paradigm not in specific_paradigms:
-            continue
-        sedation = Paradigm.objects.get(name='Sedation')
-        parsed_paradigm = ParadigmFromData(name=paradigm, parent=sedation)
-        paradigms_in_data.append(parsed_paradigm)
-
-    for paradigm in ["Brief Presentation",
-                     "Coherence Reduction",
-                     "Intensity Reduction",
-                     "Noise Induction"]:
-        if paradigm in specific_paradigms:
-            stimulus_degradation = Paradigm.objects.get(name='Stimulus Degradation')
-            parsed_paradigm = ParadigmFromData(name=paradigm, parent=stimulus_degradation)
-            paradigms_in_data.append(parsed_paradigm)
+                    else:
+                        raise ParadigmError()
 
     return paradigms_in_data
 

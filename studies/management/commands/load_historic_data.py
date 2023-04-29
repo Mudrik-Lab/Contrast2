@@ -8,7 +8,8 @@ from studies.parsers.historic_data_helpers import ProblemInTheoryDrivenExistingD
     IncoherentSampleDataError, ProblemInCMExistingDataException, IncoherentStimuliData, \
     MissingValueInStimuli, StimulusDurationError, SampleTypeError
 from studies.parsers.parsing_findings_Contrast2 import FindingTagDataError
-from studies.parsers.process_row import process_row, create_study, MissingStimulusCategoryError, get_list_from_excel
+from studies.parsers.process_row import process_row, create_study, MissingStimulusCategoryError, get_list_from_excel, \
+    ParadigmDataException
 from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataException
 
 logger = logging.getLogger('Contrast2')
@@ -36,6 +37,7 @@ class Command(BaseCommand):
         stimuli_duration_data_log = []
         stimuli_missing_value_data_log = []
         stimuli_missing_object_data_log = []
+        paradigms_log = []
         theory_driven_problematic_data_log = []
         sample_incoherent_data_log = []
         sample_type_errors_log = []
@@ -60,6 +62,10 @@ class Command(BaseCommand):
             except IncoherentStimuliData:
                 stimuli_incoherent_data_log.append(item)
                 logger.exception(f'row #{index} has incoherent stimuli data')
+
+            except ParadigmDataException:
+                paradigms_log.append(item)
+                logger.exception(f'row #{index} has bad paradigm data')
 
             except MissingValueInStimuli:
                 stimuli_missing_value_data_log.append(item)
@@ -99,6 +105,7 @@ class Command(BaseCommand):
 
             # iterate over problematic data and add them to .xlsx file in respective sheets
             df_studies = pandas.DataFrame.from_records(studies_problematic_data_log)
+            df_paradigms = pandas.DataFrame.from_records(paradigms_log)
             df_incoherent_stimuli = pandas.DataFrame.from_records(stimuli_incoherent_data_log)
             df_missing_value_stimuli = pandas.DataFrame.from_records(stimuli_missing_value_data_log)
             df_bad_duration_stimuli = pandas.DataFrame.from_records(stimuli_duration_data_log)
@@ -115,6 +122,7 @@ class Command(BaseCommand):
                 with pandas.ExcelWriter('studies/data/Contrast2_Problematic_Data.xlsx') as writer:
                     df_finding_tag.to_excel(writer, sheet_name='FindingTag', index=False)
                     df_studies.to_excel(writer, sheet_name='StudyData', index=False)
+                    df_paradigms.to_excel(writer, sheet_name='ParadigmData', index=False)
                     df_incoherent_stimuli.to_excel(writer, sheet_name='IncoherentStimuli', index=False)
                     df_missing_value_stimuli.to_excel(writer, sheet_name='MissingValueStimuliData', index=False)
                     df_bad_duration_stimuli.to_excel(writer, sheet_name='StimulusDuration', index=False)

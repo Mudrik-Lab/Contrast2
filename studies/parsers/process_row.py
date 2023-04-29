@@ -5,7 +5,7 @@ import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
-from configuration.initial_setup import parent_theories, techniques, paradigms, finding_tags_map
+from configuration.initial_setup import parent_theories, techniques, finding_tags_map
 from studies.choices import InterpretationsChoices, ExperimentTypeChoices, TypeOfConsciousnessChoices, ReportingChoices
 from studies.models import Theory, Technique, Paradigm, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, \
     ConsciousnessMeasure, MeasureType, Measure, Sample, TaskType, Task, ModalityType, FindingTagFamily, FindingTagType, \
@@ -14,7 +14,7 @@ from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimu
 from studies.parsers.historic_data_helpers import get_paradigms_from_data, \
     get_consciousness_measure_type_and_phase_from_data, ProblemInCMExistingDataException, get_measures_from_data, \
     get_sample_from_data, IncoherentSampleDataError, parse_task_types, get_stimuli_from_data, \
-    parse_theory_driven_from_data, clean_text
+    parse_theory_driven_from_data, ParadigmError
 from studies.parsers.parsing_findings_Contrast2 import parse, FrequencyFinding, TemporalFinding, SpatialFinding, \
     FindingTagDataError
 from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataException, \
@@ -25,6 +25,10 @@ logger = logging.getLogger('Contrast2')
 
 
 class MissingStimulusCategoryError(Exception):
+    pass
+
+
+class ParadigmDataException(Exception):
     pass
 
 
@@ -142,12 +146,27 @@ def process_row(item: dict):
     for technique in techniques_in_historic_data:
         experiment.techniques.add(technique)
 
-    paradigms_in_data = get_paradigms_from_data(paradigms, item)
-    for parsed_paradigm in paradigms_in_data:
-        name = parsed_paradigm.name
-        parent = parsed_paradigm.parent
-        paradigm = Paradigm.objects.get(name=name, parent=parent)
-        experiment.paradigms.add(paradigm)
+    paradigms_in_data = get_paradigms_from_data(item)
+    main_paradigms = []
+    specific_paradigms = []
+
+    try:
+        for parsed_paradigm in paradigms_in_data:
+            name = parsed_paradigm.name
+            if parsed_paradigm.parent is None:
+                parent = Paradigm.objects.get(name=name, parent=None)
+                main_paradigms.append(parent)
+            parent = Paradigm.objects.get(name=parsed_paradigm.parent, parent=None)
+            paradigm = Paradigm.objects.get(name=name, parent=parent)
+            specific_paradigms.append(paradigm)
+
+        for paradigm in specific_paradigms:
+            if paradigm.parent not in main_paradigms:
+                raise ParadigmError()
+            experiment.paradigms.add(paradigm)
+
+    except ParadigmError:
+        raise ParadigmDataException()
 
     # resolve and create consciousness measures
     consciousness_measures_from_data = get_consciousness_measure_type_and_phase_from_data(item)

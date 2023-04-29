@@ -18,6 +18,11 @@ class InterpretationsChoices(TextChoices):
     NEUTRAL = "neutral", _("Neutral")
 
 
+class AggregatedInterpretationsChoices(TextChoices):
+    PRO = "pro", _("Pro")
+    CHALLENGES = "challenges", _("Challenges")
+
+
 class TypeOfConsciousnessChoices(TextChoices):
     CONTENT = "content", _("Content")
     STATE = "state", _("State")

@@ -206,8 +206,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         theory_subquery = filtered_subquery.values("theory__parent__name") \
-            .annotate(experiment_count=Count("id")) # Not distinct count! as some theories should be counted multiple times
-
+            .annotate(experiment_count=Count("id", distinct=True))
         subquery = theory_subquery \
             .order_by("-experiment_count") \
             .annotate(data=JSONObject(key=F("theory__parent__name"), value=F("experiment_count"))) \

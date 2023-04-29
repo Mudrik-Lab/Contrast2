@@ -178,7 +178,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_technique(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.experiments) \
+        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO)\
+            .filter(experiment__in=self.experiments) \
             .filter(experiment__techniques=OuterRef("pk")) \
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
@@ -190,7 +191,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_measure(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.experiments) \
+        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=InterpretationsChoices.PRO)\
+            .filter(experiment__in=self.experiments) \
             .filter(experiment__measures__type=OuterRef("pk")) \
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")

@@ -12,7 +12,6 @@ class SampleChoices(TextChoices):
     YOUNG_PATIENTS = "Young_patients_(children)", _("Young_patients_(children)")
 
 
-
 class InterpretationsChoices(TextChoices):
     PRO = "pro", _("Pro")
     CHALLENGES = "challenges", _("Challenges")

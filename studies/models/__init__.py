@@ -12,6 +12,7 @@ from studies.models.consciousness_measure import ConsciousnessMeasure, Conscious
 from studies.models.sample import Sample
 from studies.models.paradigm import Paradigm
 from studies.models.measure import Measure, MeasureType
+from studies.models.aggregated_interpretation import AggregatedInterpretation
 
 __all__ = [Experiment,
            Paradigm,
@@ -31,4 +32,5 @@ __all__ = [Experiment,
            ConsciousnessMeasure,
            ConsciousnessMeasureType,
            ConsciousnessMeasurePhaseType,
+           AggregatedInterpretation,
            Sample]

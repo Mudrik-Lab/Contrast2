@@ -60,7 +60,7 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
             .annotate(max_band_higher=Subquery(max_order_query.values("band_higher_bound")[:1])) \
             .values("experiment_id").annotate(series=ArraySubquery(finding_tags_subquery_series)) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
-            .filter(field_len__gt=self.min_number_of_experiments) \
+            .filter(field_len__gt=0) \
             .order_by("min_band_lower", "max_band_higher") \
             .distinct() \
             .values("series")

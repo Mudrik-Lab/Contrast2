@@ -10,7 +10,7 @@ from django_countries import countries
 from studies.choices import InterpretationsChoices
 from studies.models import Study, Experiment, Author, ConsciousnessMeasure, ConsciousnessMeasureType, \
     ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
-    Paradigm, Sample, ModalityType, TaskType, Task, Technique, Theory
+    Paradigm, Sample, ModalityType, TaskType, Task, Technique, Theory, AggregatedInterpretation
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from rangefilter.filters import NumericRangeFilterBuilder, NumericRangeFilter
 
@@ -194,6 +194,11 @@ class InterpretationAdmin(ImportExportModelAdmin):
     list_filter = ("type", "theory")
 
 
+class AggregatedInterpretationAdmin(ImportExportModelAdmin):
+    model = AggregatedInterpretation
+    list_filter = ("type", "parent_theory_names")
+
+
 class MeasureTypeAdmin(ImportExportModelAdmin):
     model = MeasureType
 
@@ -288,6 +293,7 @@ admin.site.register(FindingTagFamily, FindingTagFamilyAdmin)
 admin.site.register(FindingTagType, FindingTagTypeAdmin)
 admin.site.register(FindingTag, FindingTagAdmin)
 admin.site.register(Interpretation, InterpretationAdmin)
+admin.site.register(AggregatedInterpretation, AggregatedInterpretationAdmin)
 admin.site.register(MeasureType, MeasureTypeAdmin)
 admin.site.register(Measure, MeasureAdmin)
 admin.site.register(Paradigm, ParadigmAdmin)

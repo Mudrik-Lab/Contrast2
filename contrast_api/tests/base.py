@@ -22,7 +22,7 @@ class BaseTestCase(APITestCase):
         default_experiment = dict(study=study,
                                   finding_description="look what we found",
                                   is_reporting=ReportingChoices.NO_REPORT,
-                                  theory_driven=TheoryDrivenChoices.POST_HOC,
+                                  theory_driven=kwargs.get("theory_driven", TheoryDrivenChoices.POST_HOC),
                                   type=ExperimentTypeChoices.NEUROSCIENTIFIC,
                                   type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
         paradigms = None

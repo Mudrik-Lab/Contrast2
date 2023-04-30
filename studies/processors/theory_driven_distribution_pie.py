@@ -5,7 +5,8 @@ from django.db.models.functions import JSONObject
 from contrast_api.orm_helpers import SubqueryCount
 from studies.choices import InterpretationsChoices
 from studies.models import Experiment, Paradigm, Interpretation, Sample, FindingTagType, FindingTagFamily, TaskType, \
-    ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType
+    ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType, \
+    AggregatedInterpretation
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
@@ -21,7 +22,7 @@ class TheoryDrivenDistributionPieGraphDataProcessor(BaseProcessor):
         return process_func()
 
     def process_theory_driven(self):
-        experiments_subquery_by_breakdown = Interpretation.objects.filter(type=self.interpretation) \
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=self.interpretation) \
             .filter(experiment__in=self.experiments) \
             .filter(experiment__theory_driven=OuterRef("series_name"))
 
@@ -36,12 +37,12 @@ class TheoryDrivenDistributionPieGraphDataProcessor(BaseProcessor):
         """
         filtered_subquery -> Interpretations filtered
         """
-        theory_subquery = filtered_subquery.values("theory__parent__name") \
+        theory_subquery = filtered_subquery.values("parent_theory_names") \
             .annotate(experiment_count=Count("id", distinct=True))
 
         subquery = theory_subquery \
             .order_by("-experiment_count") \
-            .annotate(data=JSONObject(key=F("theory__parent__name"), value=F("experiment_count"))) \
+            .annotate(data=JSONObject(key=F("parent_theory_names"), value=F("experiment_count"))) \
             .values_list("data")
 
         ids_subquery = theory_subquery \

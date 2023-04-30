@@ -21,7 +21,7 @@ class AggregatedInterpretation(models.Model):
         serialized_interpretations = [AggregatedInterpretationDTO(parent_theory_names=item.theory.parent.name, type=item.type) for item in current_interpretations]
         service = AggregatedInterpretationService(serialized_interpretations)
         updated_aggregated_interpretations = service.resolve()
-        # remove current ones
+        # remove current ones. any way, because there might not be new ones and it's ok
         AggregatedInterpretation.objects.filter(experiment_id=experiment_id).delete()
         for aggregated_interpretation in updated_aggregated_interpretations:
             AggregatedInterpretation.objects.create(experiment_id=experiment_id,

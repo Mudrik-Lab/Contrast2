@@ -192,9 +192,8 @@ def get_paradigms_from_data(item: dict) -> list:
                     if specific_paradigm in group_of_specific_paradigms:
                         paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm)
                         paradigms_in_data.append(paradigm)
-
                     else:
-                        raise ParadigmError(f"incorrect paradigm: {main_paradigm} or {specific_paradigm}")
+                        continue
 
     return paradigms_in_data
 

@@ -146,26 +146,28 @@ def process_row(item: dict):
     for technique in techniques_in_historic_data:
         experiment.techniques.add(technique)
 
-    paradigms_in_data = get_paradigms_from_data(item)
-    main_paradigms = []
-    specific_paradigms = []
-
     try:
+        paradigms_in_data = get_paradigms_from_data(item)
+        main_paradigms = []
+        specific_paradigms = []
+
         for parsed_paradigm in paradigms_in_data:
             name = parsed_paradigm.name
             if parsed_paradigm.parent is None:
                 parent = Paradigm.objects.get(name=name, parent=None)
                 main_paradigms.append(parent)
-            parent = Paradigm.objects.get(name=parsed_paradigm.parent, parent=None)
-            paradigm = Paradigm.objects.get(name=name, parent=parent)
-            specific_paradigms.append(paradigm)
+            else:
+                parent = Paradigm.objects.get(name=parsed_paradigm.parent, parent=None)
+                paradigm = Paradigm.objects.get(name=name, parent=parent)
+                specific_paradigms.append(paradigm)
 
         for paradigm in specific_paradigms:
             if paradigm.parent not in main_paradigms:
-                raise ParadigmError()
+                raise ParadigmError(f"main paradigm {paradigm.parent} doesn't exist")
+
             experiment.paradigms.add(paradigm)
 
-    except ParadigmError:
+    except (ParadigmError, ObjectDoesNotExist):
         raise ParadigmDataException()
 
     # resolve and create consciousness measures

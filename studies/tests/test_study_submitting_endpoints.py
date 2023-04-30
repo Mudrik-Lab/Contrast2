@@ -80,7 +80,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
             consciousness_measures=[],
             type=ExperimentTypeChoices.NEUROSCIENTIFIC,
             techniques=["EEG"],
-            paradigms=["Blindsight"],
+            paradigms=["Blindsight (Abnormal Contents of Consciousness)"],
             theory_driven_theories=["GNW"],
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
         experiment_params = {**default_experiment, **kwargs}

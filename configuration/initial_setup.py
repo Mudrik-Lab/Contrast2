@@ -20,8 +20,7 @@ modalities = ["Auditory",
               "Tactile",
               "Visual"]
 
-paradigms = {
-    'parent_paradigms': [
+main_paradigms = [
         "Abnormal Contents of Consciousness",
         "Alcohol Consumption",
         "Anesthesia",
@@ -30,6 +29,7 @@ paradigms = {
         "Case Study",
         "Change Blindness",
         "Cognitive Tasks",
+
         "Competition (Binocular)",
         "Competition (Monocular)",
         "Competition (Monoaural)",
@@ -72,7 +72,9 @@ paradigms = {
         "SWIFT",
         "Task Relevance",
         "Visual Persistence",
-        "Visual Search"],
+        "Visual Search"]
+
+paradigms = {
 
     'Abnormal Contents of Consciousness': ["Amusia",
                                            "Blindsight (Abnormal Contents of Consciousness)",
@@ -85,7 +87,7 @@ paradigms = {
                                            "Tinnitus (Abnormal Contents of Consciousness)",
                                            "Visual Extinction (Abnormal Contents of Consciousness)"],
 
-    'Alcohol Consumption': 'Alcohol Consumption',
+    'Alcohol Consumption': ['Alcohol Consumption'],
 
     'Anesthesia': ["Dexmedetomidine (Anesthesia)",
                    "Dextromethorphan (Anesthesia)",
@@ -112,7 +114,7 @@ paradigms = {
                                  "Selective Attention",
                                  "Spatial Cueing"],
 
-    'Caffeine Consumption': "Caffeine Consumption",
+    'Caffeine Consumption': ["Caffeine Consumption"],
 
     'Case Study': ["Bilateral Frontal Affectation",
                    "Blindsight (Case Study)",
@@ -123,7 +125,7 @@ paradigms = {
                    "Unresponsive Wakefulness Syndrome (Case Study)",
                    "Visual Extinction (Case Study)"],
 
-    'Change Blindness': "Change Blindness",
+    'Change Blindness': ["Change Blindness"],
 
     'Cognitive Tasks': ["Executive Control",
                         "Flankers Task",
@@ -132,17 +134,17 @@ paradigms = {
                         "Task Switching",
                         "Working Memory"],
 
-    'Competition Binocular': ["b-CFS",
+    'Competition (Binocular)': ["b-CFS",
                               "Binocular Rivalry",
                               "CFS",
                               "Flash Supression"],
 
-    'Competition (Monocular)': "Bistable percepts",
-    'Competition (Monoaural)': "Bistable percepts",
-    'Competition (Binaural)': "Bistable percepts",
-    'Computational Modelling': "Computational Modelling",
-    'Contour Integration': "Contour Integration",
-    'Dichoptic Masking': "Dichoptic Masking",
+    'Competition (Monocular)': ["Bistable percepts"],
+    'Competition (Monoaural)': ["Bistable percepts"],
+    'Competition (Binaural)': ["Bistable percepts"],
+    'Computational Modelling': ["Computational Modelling"],
+    'Contour Integration': ["Contour Integration"],
+    'Dichoptic Masking': ["Dichoptic Masking"],
 
     'Direct Stimulation': ["Intracranial Stimulation",
                            "Olfactory Epithelium Stimulation",
@@ -158,8 +160,8 @@ paradigms = {
                                    "Seizures / Unclassified DOC",
                                    "Unresponsive Wakefulness Syndrome (Disorders of Consciousness)"],
 
-    'Drowsiness': "Drowsiness",
-    'Emotion': "Emotion",
+    'Drowsiness': ["Drowsiness"],
+    'Emotion': ["Emotion"],
 
     'Expectation': ["Emotional",
                     "Oddball",
@@ -169,11 +171,11 @@ paradigms = {
                     "Prior Exposure (Familiarity)",
                     "Self-Face"],
 
-    'Family Nurture Intervention': "Family Nurture Intervention",
-    'Figure-Ground': "Figure-Ground",
-    'Filling In': "Filling In",
-    'Fusion (Color)': "Fusion (Color)",
-    'Genetics': "Genetics",
+    'Family Nurture Intervention': ["Family Nurture Intervention"],
+    'Figure-Ground': ["Figure-Ground"],
+    'Filling In': ["Filling In"],
+    'Fusion (Color)': ["Fusion (Color)"],
+    'Genetics': ["Genetics"],
 
     'Illusions': ["Apparent Motion",
                   "Benham's top Illusion",
@@ -192,9 +194,9 @@ paradigms = {
                   "Verbal Transformation",
                   "Zwicker Tone"],
 
-    'Imagination': "Motoric",
-    'Lifespan': "Lifespan",
-    'Locked In Syndrome': "Locked In Syndrome",
+    'Imagination': ["Motoric"],
+    'Lifespan': ["Lifespan"],
+    'Locked In Syndrome': ["Locked In Syndrome"],
 
     'Masking': ["Backward Masking",
                 "Dynamic Masking",
@@ -204,20 +206,20 @@ paradigms = {
                 "Paracontrast Masking",
                 "Target Masking"],
 
-    'Mirror Masking': "Mirror Masking",
-    'Motion Detection': "Motion Detection",
-    'Motion induced Blindness': "Motion induced Blindness",
-    'N-Back': "N-Back",
-    'Pain': "Pain",
-    'Passive Exposure': "Passive Exposure",
-    'Pop out': "Mooney Images",
+    'Mirror Masking': ["Mirror Masking"],
+    'Motion Detection': ["Motion Detection"],
+    'Motion induced Blindness': ["Motion induced Blindness"],
+    'N-Back': ["N-Back"],
+    'Pain': ["Pain"],
+    'Passive Exposure': ["Passive Exposure"],
+    'Pop out': ["Mooney Images"],
 
     'Psychedelic Drugs': ["Ketamine (Psychedelic Drugs)",
                           "Psilocybin"],
 
-    'Repetition Suppression': "Repetition Suppression",
-    'Resting State': "Resting State",
-    'Reward': "Reward",
+    'Repetition Suppression': ["Repetition Suppression"],
+    'Resting State': ["Resting State"],
+    'Reward': ["Reward"],
 
     'Sedation': ["Chloral Hydrate",
                  "Dexmedetomidine (Sedation)",
@@ -233,19 +235,19 @@ paradigms = {
                  "Scopolamine",
                  "Urethane (Sedation)"],
 
-    'Size Constancy': "Size Constancy",
-    'Sleep': "Sleep",
-    'Sperling Like': "Sperling Like",
+    'Size Constancy': ["Size Constancy"],
+    'Sleep': ["Sleep"],
+    'Sperling Like': ["Sperling Like"],
 
-    'Stimulus Degredation': ["Brief Presentation",
+    'Stimulus Degradation': ["Brief Presentation",
                              "Coherence Reduction",
                              "Intensity Reduction",
                              "Noise Induction"],
 
-    'SWIFT': "SWIFT",
-    'Task Relevance': "Task Relevance",
-    'Visual Persistence': "Visual Persistence",
-    'Visual Search': "Visual Search"
+    'SWIFT': ["SWIFT"],
+    'Task Relevance': ["Task Relevance"],
+    'Visual Persistence': ["Visual Persistence"],
+    'Visual Search': ["Visual Search"]
 }
 
 ambiguous_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Psychedelic Drugs', 'Familiarity',
@@ -424,8 +426,8 @@ stimulus_category = ["Animals",
                      "Words"]
 
 stimulus_sub_category = {
-    'Artificial Scenes': "Driving Scene",
-    'Color': "Motion",
+    'Artificial Scenes': ["Driving Scene"],
+    'Color': ["Motion"],
     'Geometric Shapes': ["Arrows",
                          "Motion",
                          "Lines",
@@ -443,10 +445,10 @@ stimulus_sub_category = {
                          "Comb of Hexagon",
                          "Octagon"],
 
-    'Gratings': "Gabor",
-    'Letters': "Oriented Ts",
-    'Nociceptive stimulation': "Laser",
-    'Noise': "White Noise",
+    'Gratings': ["Gabor"],
+    'Letters': ["Oriented Ts"],
+    'Nociceptive stimulation': ["Laser"],
+    'Noise': ["White Noise"],
 
     'Objects': ["Houses",
                 "Clocks",
@@ -468,7 +470,7 @@ stimulus_sub_category = {
                                 "Moon",
                                 "Spheres"],
 
-    'Words': "Emotional"
+    'Words': ["Emotional"]
 
 }
 

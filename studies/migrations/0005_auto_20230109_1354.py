@@ -3,7 +3,7 @@
 from django.db import migrations
 
 from configuration.initial_setup import paradigms, task_types, techniques, modalities, consciousness_measure_types, \
-    consciousness_measure_phases
+    consciousness_measure_phases, main_paradigms
 
 
 def bootstrap_type_models(apps, schema_editor):
@@ -48,7 +48,7 @@ def bootstrap_type_models(apps, schema_editor):
     Theory.objects.get_or_create(name='RPT', parent=first_order_and_predictive_processing)
 
     Paradigm = apps.get_model("studies", "Paradigm")
-    for paradigm in paradigms["parent_paradigms"]:
+    for paradigm in main_paradigms:
         Paradigm.objects.get_or_create(name=paradigm, parent=None)
 
     for main_paradigm, group_of_specific_paradigms in paradigms.items():

@@ -4,7 +4,7 @@ from collections import namedtuple
 from itertools import zip_longest, chain
 from string import printable
 from configuration.initial_setup import task_types_mapping, findings_measures, modalities, consciousness_measure_phases, \
-    consciousness_measure_types, paradigms, ambiguous_paradigms
+    consciousness_measure_types, paradigms, ambiguous_paradigms, main_paradigms
 from studies.choices import TheoryDrivenChoices, SampleChoices
 from studies.models import Paradigm, Stimulus
 
@@ -142,7 +142,6 @@ def parse_task_types(item: dict):
 
 def get_paradigms_from_data(item: dict) -> list:
     paradigms_in_data = []
-    main_paradigms = paradigms["parent_paradigms"]
     only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigm not in paradigms.keys()]
 
     parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")

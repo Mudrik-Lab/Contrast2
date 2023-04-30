@@ -51,7 +51,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .filter(experiment__samples__type=OuterRef("type"))
 
         breakdown_query = Sample.objects.values("type") \
-            .order_by("type")\
+            .order_by("type") \
             .distinct() \
             .annotate(series_name=F("type"))
 
@@ -179,7 +179,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_technique(self):
-        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)\
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO) \
             .filter(experiment__in=self.experiments) \
             .filter(experiment__techniques=OuterRef("pk")) \
             .annotate(relation_type=F("type")) \
@@ -192,7 +192,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_measure(self):
-        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)\
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO) \
             .filter(experiment__in=self.experiments) \
             .filter(experiment__measures__type=OuterRef("pk")) \
             .annotate(relation_type=F("type")) \
@@ -210,6 +210,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .annotate(experiment_count=Count("id", distinct=True))
         subquery = theory_subquery \
             .order_by("-experiment_count") \
+            .filter(experiment_count__gt=self.min_number_of_experiments) \
             .annotate(data=JSONObject(key=F("parent_theory_names"), value=F("experiment_count"))) \
             .values_list("data")
 
@@ -222,7 +223,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
             .annotate(value=SubqueryCount(ids_subquery)) \
             .filter(field_len__gt=0) \
-            .filter(value__gt=self.min_number_of_experiments)\
+            .filter(value__gt=0) \
             .values("series_name", "series", "value") \
             .order_by("-value", "series_name")
         # Note we're filtering out empty timeseries with the cardinality option

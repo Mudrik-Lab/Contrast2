@@ -4,7 +4,7 @@ from collections import namedtuple
 from itertools import zip_longest, chain
 from string import printable
 from configuration.initial_setup import task_types_mapping, findings_measures, modalities, consciousness_measure_phases, \
-    consciousness_measure_types, paradigms
+    consciousness_measure_types, paradigms, ambiguous_paradigms
 from studies.choices import TheoryDrivenChoices, SampleChoices
 from studies.models import Paradigm, Stimulus
 
@@ -156,13 +156,13 @@ def get_paradigms_from_data(item: dict) -> list:
                 only_child_paradigm = ParadigmFromData(name=clean_item, parent=clean_item)
                 paradigms_in_data.append(only_child_paradigm)
             else:
-                raise ParadigmError()
+                raise ParadigmError(f"missing specific paradigm for: {clean_item}")
 
     # check for parent paradigms
     for paradigm in parsed_main_paradigms:
         clean_paradigm = paradigm.strip()
         if clean_paradigm not in main_paradigms:
-            raise ParadigmError()
+            raise ParadigmError(f"missing paradigm:{clean_paradigm}")
 
         parent = ParadigmFromData(name=clean_paradigm, parent=None)
         paradigms_in_data.append(parent)
@@ -170,62 +170,32 @@ def get_paradigms_from_data(item: dict) -> list:
             only_child_paradigm = ParadigmFromData(name=clean_paradigm, parent=clean_paradigm)
             paradigms_in_data.append(only_child_paradigm)
 
-    # check for specific paradigms that have more than 1 optional parent
+    # check for specific paradigms that have ambiguous parent paradigm and remove ambiguity
     for item in parsed_paradigms:
-        clean_item = item.strip()
-        if ("(Sedation)" in clean_item) and (clean_item in paradigms['Sedation']):
-            sedation_paradigm = ParadigmFromData(name=clean_item, parent='Sedation')
-            paradigms_in_data.append(sedation_paradigm)
-        elif ("(Anesthesia)" in clean_item) and (clean_item in paradigms['Anesthesia']):
-            anesthesia_paradigm = ParadigmFromData(name=clean_item, parent='Anesthesia')
-            paradigms_in_data.append(anesthesia_paradigm)
-        elif ("(Case Study)" in clean_item) and (clean_item in paradigms['Case_Study']):
-            case_study_paradigm = ParadigmFromData(name=clean_item, parent='Case Study')
-            paradigms_in_data.append(case_study_paradigm)
-        elif ("(Psychedelic Drugs)" in clean_item) and (clean_item in paradigms['Psychedelic Drugs']):
-            psychedelic_drugs_paradigm = ParadigmFromData(name=clean_item, parent='Psychedelic Drugs')
-            paradigms_in_data.append(psychedelic_drugs_paradigm)
-        elif ("Familiarity)" in clean_item) and (clean_item in paradigms['Familiarity']):
-            familiarity_paradigm = ParadigmFromData(name=clean_item, parent='Familiarity')
-            paradigms_in_data.append(familiarity_paradigm)
-        elif ("(Abnormal Contents of Consciousness)" in clean_item) and (
-                clean_item in paradigms['Abnormal_Contents_of_Consciousness']):
-            abnormal_contents_of_consciousness_paradigm = ParadigmFromData(name=clean_item,
-                                                                           parent='Abnormal Contents of Consciousness')
-            paradigms_in_data.append(abnormal_contents_of_consciousness_paradigm)
-        elif ("(Disorders of Consciousness)" in clean_item) and (clean_item in paradigms['Disorders_of_Consciousness']):
-            disorders_of_consciousness_paradigm = ParadigmFromData(name=clean_item, parent='Disorders of Consciousness')
-            paradigms_in_data.append(disorders_of_consciousness_paradigm)
-        elif ("Expectation)" in clean_item) and (clean_item in paradigms['Expectation']):
-            expectation_paradigm = ParadigmFromData(name=clean_item, parent='Expectation')
-            paradigms_in_data.append(expectation_paradigm)
-        elif "(Monocular)" in clean_item:
-            monocular_bistable_percepts_paradigm = ParadigmFromData(name=clean_item, parent='Competition (Monocular)')
+        stripped_item = item.strip()
+        for main_paradigm in ambiguous_paradigms:
+            if (f'({main_paradigm})' in stripped_item) and (stripped_item in paradigms[main_paradigm]):
+                specific_paradigm = ParadigmFromData(name=stripped_item, parent=main_paradigm)
+                paradigms_in_data.append(specific_paradigm)
+        if "(Monocular)" in stripped_item:
+            monocular_bistable_percepts_paradigm = ParadigmFromData(name=stripped_item,
+                                                                    parent='Competition (Monocular)')
             paradigms_in_data.append(monocular_bistable_percepts_paradigm)
-        elif "(Binaural)" in clean_item:
-            binaural_bistable_percepts_paradigm = ParadigmFromData(name=clean_item, parent='Competition (Binaural)')
+        elif "(Binaural)" in stripped_item:
+            binaural_bistable_percepts_paradigm = ParadigmFromData(name=stripped_item, parent='Competition (Binaural)')
             paradigms_in_data.append(binaural_bistable_percepts_paradigm)
         else:
             specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in parsed_paradigms]
 
             # assign specific paradigms to main paradigms
             for specific_paradigm in specific_paradigms:
-                for (main_paradigm, paradigms_family) in paradigms.items():
-                    if specific_paradigm in paradigms_family:
-                        parent = str(main_paradigm).replace("_", " ")
-                        paradigm = ParadigmFromData(name=specific_paradigm, parent=parent)
+                for main_paradigm, group_of_specific_paradigms in paradigms.items():
+                    if specific_paradigm in group_of_specific_paradigms:
+                        paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm)
                         paradigms_in_data.append(paradigm)
 
-                    elif "Motoric" in specific_paradigm:
-                        parsed_paradigm = ParadigmFromData(name="Motoric", parent="Imagination")
-                        paradigms_in_data.append(parsed_paradigm)
-
-                    elif "Mooney Images" in specific_paradigm:
-                        parsed_paradigm = ParadigmFromData(name="Mooney Images", parent="Pop out")
-                        paradigms_in_data.append(parsed_paradigm)
-
                     else:
-                        raise ParadigmError()
+                        raise ParadigmError(f"incorrect paradigm: {main_paradigm} or {specific_paradigm}")
 
     return paradigms_in_data
 

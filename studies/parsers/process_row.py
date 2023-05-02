@@ -151,21 +151,21 @@ def process_row(item: dict):
         main_paradigms = []
         specific_paradigms = []
 
-        for parsed_paradigm in paradigms_in_data:
-            name = parsed_paradigm.name
-            if parsed_paradigm.parent is None:
-                parent = Paradigm.objects.get(name=name, parent=None)
-                main_paradigms.append(parent)
+        for paradigm in paradigms_in_data:
+            name = paradigm.name
+            if paradigm.parent is None:
+                main_paradigm = Paradigm.objects.get(name=name, parent=None)
+                main_paradigms.append(main_paradigm)
             else:
-                parent = Paradigm.objects.get(name=parsed_paradigm.parent, parent=None)
-                paradigm = Paradigm.objects.get(name=name, parent=parent)
-                specific_paradigms.append(paradigm)
+                main_paradigm = Paradigm.objects.get(name=paradigm.parent, parent=None)
+                specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm)
+                specific_paradigms.append(specific_paradigm)
 
-        for paradigm in specific_paradigms:
-            if paradigm.parent not in main_paradigms:
-                raise ParadigmError(f"main paradigm {paradigm.parent} doesn't exist")
+        for specific_paradigm in specific_paradigms:
+            if specific_paradigm.parent not in main_paradigms:
+                raise ParadigmError(f"main paradigm {specific_paradigm.parent} doesn't exist")
 
-            experiment.paradigms.add(paradigm)
+            experiment.paradigms.add(specific_paradigm)
 
     except (ParadigmError, ObjectDoesNotExist):
         raise ParadigmDataException()

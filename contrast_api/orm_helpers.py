@@ -6,13 +6,7 @@ class SubqueryCount(Subquery):
     template = "(SELECT count(*) FROM (%(subquery)s) _count)"
     output_field = PositiveIntegerField()
 
-class SubquerySumValue(Subquery):
-    template = """(SELECT sum((elem ->> 'value')::int)
-                    FROM (
-                      SELECT json_array_elements(%(subquery)s) AS elem
-                    ) sub)
-                """
-    output_field = PositiveIntegerField()
+
 
 
 class JSONSum(Func):

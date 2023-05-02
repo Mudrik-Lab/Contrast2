@@ -92,7 +92,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                    parameters=[
                        OpenApiParameter(name='theory',
                                         type=str,
-                                        required=True,
+                                        required=False,
                                         many=True,
                                         description='theory filter - supports multiple'),
                        number_of_experiments_parameter,

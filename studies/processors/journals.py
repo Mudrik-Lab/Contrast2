@@ -11,6 +11,8 @@ class JournalsGraphDataProcessor(BaseProcessor):
     """
 
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
+        super().__init__(experiments=experiments, **kwargs)
+
         theory = kwargs.pop("theory")
         self.theory = None
         if len(theory):

@@ -8,16 +8,7 @@ from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
 
-def accumulate_series_and_filter(data, min_count:int):
-    accumulated_data = []
-    accumulated = 0
-    for yearly_data in data:
-        accumulated = accumulated + yearly_data["value"]
-        accumulated_data.append(dict(year=yearly_data["year"], value=accumulated))
-    if accumulated > min_count:
-        return accumulated_data
-    else:
-        return []
+
 
 
 class AcrossTheYearsGraphDataProcessor(BaseProcessor):
@@ -181,7 +172,7 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         # Note we're filtering out empty timeseries with the cardinality option
         retval = []
         for series_data in list(qs):
-            series = accumulate_series_and_filter(series_data["series"], self.min_number_of_experiments)
+            series = self.accumulate_inner_series_values_and_filter(series_data["series"], self.min_number_of_experiments)
             if len(series):
                 retval.append(dict(series_name=series_data["series_name"], series = series))
         return retval

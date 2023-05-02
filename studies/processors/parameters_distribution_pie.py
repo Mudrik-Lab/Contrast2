@@ -1,10 +1,9 @@
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField, Q
+from django.db.models import QuerySet, OuterRef, F, Func, Count
 from django.db.models.functions import JSONObject
 
-from contrast_api.orm_helpers import SubqueryCount
 from studies.choices import InterpretationsChoices
-from studies.models import Experiment, Paradigm, Interpretation, Sample, FindingTagType, FindingTagFamily, TaskType, \
+from studies.models import Experiment, Paradigm, Sample, FindingTagType, FindingTagFamily, TaskType, \
     ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType, \
     AggregatedInterpretation
 from studies.models.stimulus import StimulusCategory
@@ -214,18 +213,15 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .annotate(data=JSONObject(key=F("parent_theory_names"), value=F("experiment_count"))) \
             .values_list("data")
 
-        ids_subquery = theory_subquery \
-            .order_by("experiment") \
-            .values_list("experiment_id")
-
         qs = queryset \
             .values("series_name").annotate(series=ArraySubquery(subquery)) \
             .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
-            .annotate(value=SubqueryCount(ids_subquery)) \
             .filter(field_len__gt=0) \
-            .filter(value__gt=0) \
-            .values("series_name", "series", "value") \
-            .order_by("-value", "series_name")
+            .values("series_name", "series") \
+            .order_by("series_name")
         # Note we're filtering out empty timeseries with the cardinality option
-        # TODO order by total of inner values
-        return qs
+        retval = []
+        for dataset in list(qs):
+            dataset["value"] = self.accumulate_total_from_series(dataset["series"])
+            retval.append(dataset)
+        return sorted(retval, key=lambda x:x["value"], reverse=True)

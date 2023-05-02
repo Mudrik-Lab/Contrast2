@@ -11,7 +11,7 @@ from studies.processors.base import BaseProcessor
 class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
-        super(ParametersDistributionFreeQueriesDataProcessor, self).__init__(experiments)
+        super().__init__(experiments=experiments, **kwargs)
 
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]

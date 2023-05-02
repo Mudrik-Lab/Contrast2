@@ -1,3 +1,5 @@
+from typing import List
+
 from django.db.models import QuerySet
 
 from studies.models import Experiment
@@ -14,3 +16,19 @@ class BaseProcessor:
 
     def process(self):
         raise NotImplementedError()
+
+    def accumulate_inner_series_values_and_filter(self, data, min_count: int) -> List:
+        accumulated_data = []
+        accumulated = 0
+        for dataset in data:
+            accumulated = accumulated + dataset["value"]
+            new_dataset = dict(**dataset)
+            new_dataset.update({"value": accumulated})
+            accumulated_data.append(new_dataset)
+        if accumulated > min_count:
+            return accumulated_data
+        else:
+            return []
+
+    def accumulate_total_from_series(self, data) -> int:
+        return sum([series["value"] for series in data])

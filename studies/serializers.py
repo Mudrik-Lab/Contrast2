@@ -218,7 +218,7 @@ class ExcludedStudySerializer(StudySerializer):
 
 class NationOfConsciousnessGraphSerializer(serializers.Serializer):
     country = serializers.CharField()
-    count = serializers.IntegerField()
+    value = serializers.IntegerField()
     theory = serializers.CharField(source="theory__parent__name")
 
 

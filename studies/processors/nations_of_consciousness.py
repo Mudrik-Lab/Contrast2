@@ -8,7 +8,7 @@ from studies.processors.base import BaseProcessor
 class NationOfConsciousnessDataProcessor(BaseProcessor):
 
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
-        super(NationOfConsciousnessDataProcessor, self).__init__(experiments)
+        super().__init__(experiments=experiments, **kwargs)
         theories_reference = kwargs.pop("theory")
         self.theories = None
         if len(theories_reference):
@@ -34,10 +34,11 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
         return aggregate
 
     def get_queryset(self):
-        experiments_by_countries_and_theories = Interpretation.objects \
-            .filter(type=InterpretationsChoices.PRO,
-                    theory__parent__in=self.theories,
-                    experiment__in=self.experiments) \
+        filtered_qs = Interpretation.objects.filter(type=InterpretationsChoices.PRO,
+                                                    experiment__in=self.experiments)
+        if len(self.theories):
+            filtered_qs = filtered_qs.filter(theory__parent__in=self.theories)
+        experiments_by_countries_and_theories = filtered_qs \
             .select_related("experiment", "experiment__study") \
             .values("experiment", "experiment__study", "theory__parent__name") \
             .annotate(country=Func(F("experiment__study__countries"),
@@ -46,7 +47,7 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
 
     def aggregate(self, qs):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-        return qs.values("country", "theory__parent__name")\
-            .annotate(count=Count("id", distinct=True))\
-            .filter(count__gt=self.min_number_of_experiments)\
-            .order_by("-count", "country")
+        return qs.values("country", "theory__parent__name") \
+            .annotate(value=Count("id")) \
+            .filter(value__gt=self.min_number_of_experiments) \
+            .order_by("-value", "country")

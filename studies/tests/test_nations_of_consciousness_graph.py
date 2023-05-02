@@ -58,11 +58,11 @@ class NationsOfConsciousnessViewSetTestCase(BaseTestCase):
         second_result = res.data[1]
         third_result = res.data[2]
         self.assertEqual(first_result["country"], "IL")
-        self.assertEqual(first_result["count"], 1)
+        self.assertEqual(first_result["value"], 1)
         self.assertEqual(first_result["theory"], "GNW")
         self.assertEqual(second_result["country"], "IL")
-        self.assertEqual(second_result["count"], 1)
+        self.assertEqual(second_result["value"], 1)
         self.assertEqual(second_result["theory"], "RPT")
         self.assertEqual(third_result["country"], "UK")
-        self.assertEqual(third_result["count"], 1)
+        self.assertEqual(third_result["value"], 1)
         self.assertEqual(third_result["theory"], "RPT")

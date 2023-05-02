@@ -10,12 +10,6 @@ from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
 
-def accumlate_value_from_series(series) -> int:
-    total = 0
-    for result in series:
-        total = total + result["value"]
-    return total
-
 
 class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
@@ -52,7 +46,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
             if len(subquery_by_breakdown) > 0:
                 series = list(subquery_by_breakdown)
-                total_value = accumlate_value_from_series(series)
+                total_value = self.accumulate_total_from_series(series)
                 result = dict(
                     series=series,
                     series_name=theory.name,

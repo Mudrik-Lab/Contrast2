@@ -1,3 +1,4 @@
+from django_countries import countries
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
@@ -217,11 +218,17 @@ class ExcludedStudySerializer(StudySerializer):
 
 
 class NationOfConsciousnessGraphSerializer(serializers.Serializer):
-    country = serializers.CharField()
+    country = serializers.SerializerMethodField()
+    country_name = serializers.SerializerMethodField()
     value = serializers.IntegerField()
     total = serializers.IntegerField()
     theory = serializers.CharField(source="theory__parent__name")
 
+    def get_country(self, obj):
+        return countries.alpha3(obj["country"])
+
+    def get_country_name(self, obj):
+        return countries.name(obj["country"])
 
 class YearlySeriesSerializer(serializers.Serializer):
     year = serializers.IntegerField()

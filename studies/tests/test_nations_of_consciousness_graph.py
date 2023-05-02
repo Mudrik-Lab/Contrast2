@@ -20,7 +20,7 @@ class NationsOfConsciousnessViewSetTestCase(BaseTestCase):
         """
         israeli_study = self.given_study_exists(title="Israeli study", countries=["IL"],
                                                 DOI="10.1016/j.cortex.2017.07.011", year=2002)
-        british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
+        british_israeli_study = self.given_study_exists(title="british", countries=["GB", "IL"],
                                                         DOI="10.1016/j.cortex.2017.07.012", year=2004)
 
         gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
@@ -57,12 +57,15 @@ class NationsOfConsciousnessViewSetTestCase(BaseTestCase):
         first_result = res.data[0]
         second_result = res.data[1]
         third_result = res.data[2]
-        self.assertEqual(first_result["country"], "IL")
-        self.assertEqual(first_result["value"], 1)
-        self.assertEqual(first_result["theory"], "GNW")
-        self.assertEqual(second_result["country"], "IL")
+        #verify alphebetical order by counry and theory name
+        self.assertEqual(second_result["country"], "ISR")
+        self.assertEqual(second_result["theory"], "GNW")
+        self.assertEqual(second_result["total"], 2) #total for Israel
         self.assertEqual(second_result["value"], 1)
-        self.assertEqual(second_result["theory"], "RPT")
-        self.assertEqual(third_result["country"], "UK")
+        self.assertEqual(third_result["country"], "ISR")
         self.assertEqual(third_result["value"], 1)
         self.assertEqual(third_result["theory"], "RPT")
+
+        self.assertEqual(first_result["country"], "GBR")
+        self.assertEqual(first_result["value"], 1)
+        self.assertEqual(first_result["theory"], "RPT")

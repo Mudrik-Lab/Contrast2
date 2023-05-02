@@ -142,58 +142,50 @@ def parse_task_types(item: dict):
 
 def get_paradigms_from_data(item: dict) -> list:
     paradigms_in_data = []
-    only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigm not in paradigms.keys()]
+    only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
 
     parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")
-    parsed_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
+    clean_main_paradigms = [item.strip() for item in parsed_main_paradigms]
+    parsed_specific_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
+    clean_specific_paradigms = [item.strip() for item in parsed_specific_paradigms]
 
     # check for missing values and assign only-child paradigms correct values
-    if not parsed_paradigms:
-        for item in parsed_main_paradigms:
-            clean_item = item.strip()
-            if clean_item in only_child_paradigms:
-                only_child_paradigm = ParadigmFromData(name=clean_item, parent=clean_item)
+    if not clean_specific_paradigms:
+        for item in clean_main_paradigms:
+            if item in only_child_paradigms:
+                only_child_paradigm = ParadigmFromData(name=item, parent=item)
                 paradigms_in_data.append(only_child_paradigm)
             else:
-                raise ParadigmError(f"missing specific paradigm for: {clean_item}")
+                raise ParadigmError(f"missing specific paradigm for: {item}")
 
     # check for parent paradigms
-    for paradigm in parsed_main_paradigms:
-        clean_paradigm = paradigm.strip()
-        if clean_paradigm not in main_paradigms:
-            raise ParadigmError(f"missing paradigm:{clean_paradigm}")
+    for paradigm in clean_main_paradigms:
+        if paradigm not in main_paradigms:
+            raise ParadigmError(f"missing paradigm: {paradigm}.")
 
-        parent = ParadigmFromData(name=clean_paradigm, parent=None)
+        parent = ParadigmFromData(name=paradigm, parent=None)
         paradigms_in_data.append(parent)
-        if clean_paradigm in only_child_paradigms:
-            only_child_paradigm = ParadigmFromData(name=clean_paradigm, parent=clean_paradigm)
+        if paradigm in only_child_paradigms:
+            only_child_paradigm = ParadigmFromData(name=paradigm, parent=paradigm)
             paradigms_in_data.append(only_child_paradigm)
 
     # check for specific paradigms that have ambiguous parent paradigm and remove ambiguity
-    for item in parsed_paradigms:
-        stripped_item = item.strip()
+    for item in clean_specific_paradigms:
         for main_paradigm in ambiguous_paradigms:
-            if (f'({main_paradigm})' in stripped_item) and (stripped_item in paradigms[main_paradigm]):
-                specific_paradigm = ParadigmFromData(name=stripped_item, parent=main_paradigm)
+            if (f'({main_paradigm})' in item) and (item in paradigms[main_paradigm]):
+                specific_paradigm = ParadigmFromData(name=item, parent=main_paradigm)
                 paradigms_in_data.append(specific_paradigm)
-        if "(Monocular)" in stripped_item:
-            monocular_bistable_percepts_paradigm = ParadigmFromData(name=stripped_item,
-                                                                    parent='Competition (Monocular)')
-            paradigms_in_data.append(monocular_bistable_percepts_paradigm)
-        elif "(Binaural)" in stripped_item:
-            binaural_bistable_percepts_paradigm = ParadigmFromData(name=stripped_item, parent='Competition (Binaural)')
-            paradigms_in_data.append(binaural_bistable_percepts_paradigm)
-        else:
-            specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in parsed_paradigms]
+                clean_specific_paradigms.remove(item)
 
-            # assign specific paradigms to main paradigms
-            for specific_paradigm in specific_paradigms:
-                for main_paradigm, group_of_specific_paradigms in paradigms.items():
-                    if specific_paradigm in group_of_specific_paradigms:
-                        paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm)
-                        paradigms_in_data.append(paradigm)
-                    else:
-                        continue
+    # assign specific paradigms to main paradigms
+    no_parenthesis_specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in clean_specific_paradigms]
+    for specific_paradigm in no_parenthesis_specific_paradigms:
+        for main_paradigm, group_of_specific_paradigms in paradigms.items():
+            if specific_paradigm in group_of_specific_paradigms:
+                paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm)
+                paradigms_in_data.append(paradigm)
+            else:
+                continue
 
     return paradigms_in_data
 

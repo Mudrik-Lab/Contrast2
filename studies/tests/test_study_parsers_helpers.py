@@ -1,8 +1,7 @@
 import json
-from typing import Any
 
 from configuration.initial_setup import consciousness_measure_types
-from studies.parsers.historic_data_helpers import find_in_list
+from studies.parsers.historic_data_helpers import find_in_list, get_paradigms_from_data
 from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.process_row import process_row, create_study
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
@@ -72,3 +71,37 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
         return studies_data
 
+    def test_paradigm_parser(self):
+        item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Monocular)",
+                          "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))"}
+        res = get_paradigms_from_data(item_monocular)
+        self.assertEqual(len(res), 2)
+
+        item_sedation = {"Experimental paradigms.Main Paradigm": "Sedation + Resting State",
+                         "Experimental paradigms.Specific Paradigm": "Medetomidine (Sedation)"}
+
+        res = get_paradigms_from_data(item_sedation)
+        self.assertEqual(len(res), 4)
+
+        item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing",
+                       "Experimental paradigms.Specific Paradigm": ""}
+
+        res = get_paradigms_from_data(item_cueing)
+        self.assertEqual(len(res), 2)
+
+        item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
+                            "Experimental paradigms.Specific Paradigm": "Spinal Cord Stimulation (Direct Stimulation, "
+                                                                        "Spinal Cord) + Unresponsive Wakefulness Syndrome "
+                                                                        "(Disorders of Consciousness) + Minimal Consciousness"
+                                                                        " State (Disorders of Consciousness)"}
+
+        res = get_paradigms_from_data(item_spinal_cord)
+        print(res)
+        self.assertEqual(len(res), 5)
+
+        item_TMS = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Masking",
+                    "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, early visual cortex)"
+                                                                " + Backward Masking (Masking)"}
+
+        res = get_paradigms_from_data(item_TMS)
+        self.assertEqual(len(res), 4)

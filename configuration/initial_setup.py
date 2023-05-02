@@ -29,13 +29,13 @@ main_paradigms = [
         "Case Study",
         "Change Blindness",
         "Cognitive Tasks",
-
         "Competition (Binocular)",
         "Competition (Monocular)",
         "Competition (Monoaural)",
         "Competition (Binaural)",
         "Computational Modelling",
         "Contour Integration",
+        "Contextual Cueing",
         "Dichoptic Masking",
         "Direct Stimulation",
         "Disorders of Consciousness",
@@ -112,7 +112,8 @@ paradigms = {
                                  "Dual Task",
                                  "Inattentional Blindness",
                                  "Selective Attention",
-                                 "Spatial Cueing"],
+                                 "Spatial Cueing",
+                                 "Inattentional Deafness"],
 
     'Caffeine Consumption': ["Caffeine Consumption"],
 
@@ -139,11 +140,12 @@ paradigms = {
                               "CFS",
                               "Flash Supression"],
 
-    'Competition (Monocular)': ["Bistable percepts"],
-    'Competition (Monoaural)': ["Bistable percepts"],
-    'Competition (Binaural)': ["Bistable percepts"],
+    'Competition (Monocular)': ["Bistable percepts (Competition (Monocular))"],
+    'Competition (Monoaural)': ["Bistable percepts (Competition (Monoaural))"],
+    'Competition (Binaural)': ["Bistable percepts (Competition (Binaural))"],
     'Computational Modelling': ["Computational Modelling"],
     'Contour Integration': ["Contour Integration"],
+    'Contextual Cueing': ["Contextual Cueing"],
     'Dichoptic Masking': ["Dichoptic Masking"],
 
     'Direct Stimulation': ["Intracranial Stimulation",
@@ -151,7 +153,8 @@ paradigms = {
                            "tACS",
                            "tDCS",
                            "TMS",
-                           "Deep Brain Stimulation"],
+                           "Deep Brain Stimulation",
+                           "Spinal Cord Stimulation"],
 
     'Disorders of Consciousness': ["Coma",
                                    "Emergence from MCS",
@@ -242,7 +245,8 @@ paradigms = {
     'Stimulus Degradation': ["Brief Presentation",
                              "Coherence Reduction",
                              "Intensity Reduction",
-                             "Noise Induction"],
+                             "Noise Induction",
+                             "Contrast Reduction"],
 
     'SWIFT': ["SWIFT"],
     'Task Relevance': ["Task Relevance"],
@@ -250,7 +254,8 @@ paradigms = {
     'Visual Search': ["Visual Search"]
 }
 
-ambiguous_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Psychedelic Drugs', 'Familiarity',
+ambiguous_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)', 'Competition (Monoaural)',
+                       'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
                        'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
 
 task_types = ["No Task",

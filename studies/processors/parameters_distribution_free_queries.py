@@ -27,8 +27,8 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.consciousness_measure_types = kwargs.pop("consciousness_measure_types", [])
         self.finding_tags_families = kwargs.pop("finding_tags_families", [])
         self.finding_tags_types = kwargs.pop("finding_tags_types", [])
-        self.types_of_consciousness = kwargs.pop("types_of_consciousness", [])
-        self.reporting = kwargs.pop("reporting", [])
+        # self.types_of_consciousness = kwargs.pop("types_of_consciousness", [])
+        # self.reporting = kwargs.pop("reporting", [])
         self.theory_driven = kwargs.pop("theory_driven", [])
         self.types = kwargs.pop("types", [])
         self.tasks = kwargs.pop("tasks", [])
@@ -86,12 +86,6 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
         if len(self.finding_tags_types):
             queryset = queryset.filter(finding_tags__type__name__in=self.finding_tags_types)
-
-        if len(self.types_of_consciousness):
-            queryset = queryset.filter(types_of_consciousness__in=self.types_of_consciousness)
-
-        if len(self.reporting):
-            queryset = queryset.filter(is_reporting__in=self.reporting)
 
         if len(self.theory_driven):
             # Note how this works by theory

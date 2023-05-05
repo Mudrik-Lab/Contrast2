@@ -48,7 +48,7 @@ paradigms_multiple_optional_parameter = OpenApiParameter(name='paradigms',
                                                          description='paradigms optional',
                                                          type=str, many=True, required=False)
 
-paradigms__families_multiple_optional_parameter = OpenApiParameter(name='paradigm_families',
+paradigms_families_multiple_optional_parameter = OpenApiParameter(name='paradigm_families',
                                                                    description='paradigms families optional',
                                                                    type=str, many=True, required=False)
 

@@ -7,10 +7,11 @@ from rest_framework.viewsets import GenericViewSet
 
 from configuration.models import GraphImages
 from configuration.serializers import StudiesConfigurationSerializer, GraphsConfigurationSerializer
+from studies.choices import SampleChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
     ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
-
+from django.db import connection
 
 # Create your views here.
 
@@ -31,11 +32,14 @@ class ConfigurationView(GenericViewSet):
             permission_classes=[AllowAny])
     def studies_form(self, request, **kwargs):
         techniques = Technique.objects.all().values_list("name", flat=True)
-        available_finding_tags_types = FindingTagType.objects.all()
+        available_finding_tags_types = FindingTagType.objects.all().select_related()
         available_finding_tags_families = FindingTagFamily.objects.all().values_list("name", flat=True)
         available_measure_types = list(MeasureType.objects.all().values_list("name", flat=True))
-        available_theories = Theory.objects.filter(parent__isnull=False)
-        available_paradigms = Paradigm.objects.all()
+        available_theories = Theory.objects.filter(parent__isnull=False).select_related("parent")
+        available_paradigms = Paradigm.objects.filter(parent__isnull=False).select_related("parent", "parent__parent")
+        available_paradigms_families = Paradigm.objects.filter(parent__isnull=True)
+        available_populations_types = SampleChoices.values
+        available_theory_driven_types = TheoryDrivenChoices.values
         available_consciousness_measure_phase_type = list(ConsciousnessMeasurePhaseType.objects.all()
                                                           .values_list("name", flat=True))
         available_consciousness_measure_type = list(
@@ -45,7 +49,12 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_modality_type = list(ModalityType.objects.all().values_list("name", flat=True))
         available_stimulus_category_type = list(StimulusCategory.objects.all().values_list("name", flat=True))
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
+        available_experiment_types = ExperimentTypeChoices.values
         configuration_data = dict(available_techniques=techniques,
+                                  available_paradigms_families=available_paradigms_families,
+                                  available_populations_types=available_populations_types,
+                                  available_theory_driven_types=available_theory_driven_types,
+                                  available_experiment_types=available_experiment_types,
                                   available_finding_tags_types=available_finding_tags_types,
                                   available_finding_tags_families=available_finding_tags_families,
                                   available_measure_types=available_measure_types,
@@ -60,13 +69,14 @@ class ConfigurationView(GenericViewSet):
                                   available_tasks_types=available_tasks_types)
 
         serializer = self.get_serializer(instance=configuration_data)
+        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["GET"], serializer_class=GraphsConfigurationSerializer,
             permission_classes=[AllowAny])
     def graphs(self, request, **kwargs):
         images = GraphImages.objects.all()
-        available_parent_theories = Theory.objects.filter(parent__isnull=True).values_list("name", flat=True)
+        available_parent_theories = Theory.objects.select_related().filter(parent__isnull=True).values_list("name", flat=True)
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True)
         available_techniques_for_frequencies = Technique.objects.filter(

@@ -1,13 +1,7 @@
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField, Q
+from django.db.models import QuerySet, OuterRef, F, Func, Count
 from django.db.models.functions import JSONObject
-
-from contrast_api.orm_helpers import SubqueryCount
-from studies.choices import InterpretationsChoices
-from studies.models import Experiment, Paradigm, Interpretation, Sample, FindingTagType, FindingTagFamily, TaskType, \
-    ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType, \
-    AggregatedInterpretation
-from studies.models.stimulus import StimulusCategory
+from studies.models import Experiment,  AggregatedInterpretation
 from studies.processors.base import BaseProcessor
 
 

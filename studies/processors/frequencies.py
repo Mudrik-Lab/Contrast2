@@ -17,7 +17,7 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
         if len(theory):
             theory_reference = theory[0]
             try:
-                theory = Theory.objects.get(name=theory_reference)
+                theory = Theory.objects.get(name__iexact=theory_reference)
             except Theory.DoesNotExist:
                 theory = Theory.objects.get(id=theory_reference)
             self.theory = theory

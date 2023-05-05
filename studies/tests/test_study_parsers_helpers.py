@@ -1,4 +1,6 @@
 import json
+import unittest
+from typing import Any
 
 from configuration.initial_setup import consciousness_measure_types
 from studies.parsers.historic_data_helpers import find_in_list, get_paradigms_from_data
@@ -7,6 +9,7 @@ from studies.parsers.process_row import process_row, create_study
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
     resolve_country_from_affiliation_text
 from contrast_api.tests.base import BaseTestCase
+from studies.tests.implementation_tests.test_study_parsers_helpers import test_data_doesnt_exist
 
 
 class StudyParserHelpersTestCase(BaseTestCase):
@@ -105,3 +108,4 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
         res = get_paradigms_from_data(item_TMS)
         self.assertEqual(len(res), 4)
+

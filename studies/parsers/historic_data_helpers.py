@@ -145,7 +145,7 @@ def get_paradigms_from_data(item: dict) -> list:
     only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
 
     parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")
-    clean_main_paradigms = [item.strip() for item in parsed_main_paradigms]
+    clean_main_paradigms = [clean_text(item.strip(), "category") for item in parsed_main_paradigms]
     parsed_specific_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
     clean_specific_paradigms = [item.strip() for item in parsed_specific_paradigms]
 

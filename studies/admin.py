@@ -155,7 +155,8 @@ class AuthorAdmin(ImportExportModelAdmin):
 
 
 class ConsciousnessMeasureAdmin(ImportExportModelAdmin):
-    list_display =  ("phase", "type", "description", "experiment_id")
+    list_display = ("phase", "type", "description", "experiment_id")
+    search_fields = ('description',)
     model = ConsciousnessMeasure
     list_filter = ("phase", "type", TheoryInterpretationFilter)
 
@@ -181,7 +182,9 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 
 class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
-    list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound", "experiment_id")
+    search_fields = ('notes',)
+    list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound",
+                    'correlation_sign', 'AAL_atlas_tag', 'notes', "experiment_id")
     list_filter = (("family", admin.RelatedOnlyFieldListFilter),
                    ("type", admin.RelatedOnlyFieldListFilter),
                    ("onset", NumericRangeFilter),
@@ -189,6 +192,7 @@ class FindingTagAdmin(ImportExportModelAdmin):
                    ("band_lower_bound", NumericRangeFilter),
                    ("band_higher_bound", NumericRangeFilter),
                    ("technique", admin.RelatedOnlyFieldListFilter),
+                   'correlation_sign',
                    "analysis_type",
                    TheoryInterpretationFilter)
 
@@ -214,11 +218,12 @@ class MeasureTypeAdmin(ImportExportModelAdmin):
 
 class MeasureAdmin(ImportExportModelAdmin):
     model = Measure
+    search_fields = ('notes',)
+    list_display = ('id', 'type', 'notes', 'experiment_id')
     list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related()
-
 
 
 class IsParentFilter(admin.SimpleListFilter):
@@ -268,6 +273,7 @@ class StimulusSubCategoryAdmin(ImportExportModelAdmin):
 class StimulusAdmin(ImportExportModelAdmin):
     list_display = ("id", "category", "sub_category", "modality", "duration", "description", "experiment_id")
     model = Stimulus
+    search_fields = ('description',)
     list_filter = (
         ("category", admin.RelatedOnlyFieldListFilter),
         ("sub_category", admin.RelatedOnlyFieldListFilter),
@@ -275,7 +281,8 @@ class StimulusAdmin(ImportExportModelAdmin):
         TheoryInterpretationFilter)
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related("category", "sub_category", "modality", "sub_category__parent")
+        return super().get_queryset(request).select_related("category", "sub_category", "modality",
+                                                            "sub_category__parent")
 
 
 class TaskTypeAdmin(ImportExportModelAdmin):
@@ -283,11 +290,14 @@ class TaskTypeAdmin(ImportExportModelAdmin):
 
 
 class TaskAdmin(ImportExportModelAdmin):
+    list_display = ('id', 'type', 'description', 'experiment_id')
+    search_fields = ('description',)
     model = Task
     list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
 
 class TechniqueAdmin(ImportExportModelAdmin):
+    list_display = ('id', 'name')
     model = Technique
 
 

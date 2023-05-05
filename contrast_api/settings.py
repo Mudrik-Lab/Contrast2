@@ -87,6 +87,32 @@ class Base(Configuration):
         'RESPONSE_HEADER': None
     }
 
+    ADMIN_REORDER = (
+        {'app': 'studies', 'label': "studies", 'models': (
+            'studies.Study', 'studies.Author'
+        )},
+        {'app': 'studies', 'label': "experiments data", 'models': (
+            'studies.Experiment','studies.Stimulus', 'studies.FindingTag', 'studies.Interpretation','studies.Task',
+            'studies.Measure', 'studies.ConsciousnessMeasure', 'studies.Sample'
+
+        )},
+        {'app': 'studies', 'label': 'parameters configuration', 'models': (
+            'studies.StimulusCategory', 'studies.StimulusSubCategory', 'studies.ModalityType',
+            'studies.Technique', 'studies.Paradigm', 'studies.FindingTagFamily', 'studies.FindingTagType',
+            'studies.Theory', 'studies.TaskType', 'studies.MeasureType', 'studies.ConsciousnessMeasureType',
+            'studies.ConsciousnessMeasurePhaseType'
+        )},
+        {'app': 'configuration', 'label': 'general graphs and forms related configuration'},
+
+        {'app':'auth','label': 'user management and authorization', 'models':(
+            'auth.Group', 'auth.User', 'users.Profile'
+        )},
+        {'app': 'studies', 'label': 'aggregates', 'models': (
+            'studies.AggregatedInterpretation',
+        )},
+        {'app': 'approval_process'},
+    )
+
     ROOT_URLCONF = "contrast_api.urls"
 
     TEMPLATES = [
@@ -105,7 +131,6 @@ class Base(Configuration):
         },
     ]
 
-    ADMIN_REORDER = ("auth", "users", "studies", "approval_process", "configuration")
 
     WSGI_APPLICATION = "contrast_api.wsgi.application"
 
@@ -179,7 +204,7 @@ class Base(Configuration):
         "default":
             {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
         "staticfiles":
-                {"BACKEND": 'spa.storage.SPAStaticFilesStorage'}
+            {"BACKEND": 'spa.storage.SPAStaticFilesStorage'}
     }
 
     MEDIA_ROOT = values.Value(BASE_DIR / 'media')
@@ -234,5 +259,3 @@ class Production(Base):
     AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix="BUCKETEER")
     SENTRY_DSN = values.Value(environ_prefix='')
     # Add buckateer for s3 intergration
-
-

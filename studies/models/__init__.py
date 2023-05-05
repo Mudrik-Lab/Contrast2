@@ -1,5 +1,5 @@
 from studies.models.author import Author
-from studies.models.stimulus import Stimulus, ModalityType
+from studies.models.stimulus import Stimulus, ModalityType, StimulusCategory, StimulusSubCategory
 from studies.models.study import Study
 from studies.models.experiment import Experiment
 from studies.models.technique import Technique
@@ -18,6 +18,9 @@ __all__ = [Experiment,
            Paradigm,
            Study,
            Stimulus,
+           StimulusSubCategory,
+           StimulusCategory,
+           ModalityType,
            Author,
            Technique,
            FindingTag,

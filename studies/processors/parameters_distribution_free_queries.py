@@ -60,10 +60,10 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             queryset = queryset.filter(techniques__name__in=self.techniques)
 
         if len(self.paradigms):
-            queryset = queryset.filter(paradigms__name__in=self.techniques)
+            queryset = queryset.filter(paradigms__name__in=self.paradigms)
 
         if len(self.paradigm_families):
-            queryset = queryset.filter(paradigms__parent__name__in=self.techniques)
+            queryset = queryset.filter(paradigms__parent__name__in=self.paradigm_families)
         if len(self.stimuli_categories):
             queryset = queryset.filter(stimuli__category__name__in=self.stimuli_categories)
         if len(self.stimuli_modalities):

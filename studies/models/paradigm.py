@@ -11,7 +11,7 @@ class Paradigm(models.Model):
 
     def __str__(self):
         if self.parent_id:
-            return f"{self.name}. parent paradigm: {self.parent_id}"
+            return f"{self.name}. parent paradigm: {self.parent.name}"
         else:
             return f"{self.name}"
 

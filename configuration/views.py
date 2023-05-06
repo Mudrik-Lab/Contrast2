@@ -31,23 +31,21 @@ class ConfigurationView(GenericViewSet):
     @action(detail=False, methods=["GET"], serializer_class=StudiesConfigurationSerializer,
             permission_classes=[AllowAny])
     def studies_form(self, request, **kwargs):
-        techniques = Technique.objects.all().values_list("name", flat=True)
+        techniques = Technique.objects.all()
         available_finding_tags_types = FindingTagType.objects.all().select_related()
-        available_finding_tags_families = FindingTagFamily.objects.all().values_list("name", flat=True)
-        available_measure_types = list(MeasureType.objects.all().values_list("name", flat=True))
+        available_finding_tags_families = FindingTagFamily.objects.all()
+        available_measure_types = MeasureType.objects.all()
         available_theories = Theory.objects.filter(parent__isnull=False).select_related("parent")
         available_paradigms = Paradigm.objects.filter(parent__isnull=False).select_related("parent", "parent__parent")
         available_paradigms_families = Paradigm.objects.filter(parent__isnull=True)
         available_populations_types = SampleChoices.values
         available_theory_driven_types = TheoryDrivenChoices.values
-        available_consciousness_measure_phase_type = list(ConsciousnessMeasurePhaseType.objects.all()
-                                                          .values_list("name", flat=True))
-        available_consciousness_measure_type = list(
-            ConsciousnessMeasureType.objects.all().values_list("name", flat=True))
-        available_tasks_types = list(TaskType.objects.all().values_list("name", flat=True))
-        available_authors = list(Author.objects.all().values_list("name", flat=True))
-        available_stimulus_modality_type = list(ModalityType.objects.all().values_list("name", flat=True))
-        available_stimulus_category_type = list(StimulusCategory.objects.all().values_list("name", flat=True))
+        available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseType.objects.all()
+        available_consciousness_measure_type = ConsciousnessMeasureType.objects.all()
+        available_tasks_types = TaskType.objects.all()
+        available_authors = Author.objects.all()
+        available_stimulus_modality_type = ModalityType.objects.all()
+        available_stimulus_category_type = StimulusCategory.objects.all()
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
         available_experiment_types = ExperimentTypeChoices.values
         configuration_data = dict(available_techniques=techniques,

@@ -3,8 +3,9 @@ from typing import Optional
 from rest_framework import serializers
 
 from configuration.models import GraphImages
-from studies.models import Theory, FindingTagType, Paradigm
-from studies.models.stimulus import StimulusSubCategory
+from studies.models import Theory, FindingTagType, Paradigm, Technique, FindingTagFamily, MeasureType, \
+    ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, TaskType, Author
+from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusCategory
 
 
 class TheoryConfigurationSerializer(serializers.ModelSerializer):
@@ -15,16 +16,70 @@ class TheoryConfigurationSerializer(serializers.ModelSerializer):
         fields = ('name', 'parent')
 
 
+class TechniqueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Technique
+        fields = ('name', 'id')
+
+
 class FindingTagTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = FindingTagType
-        fields = ('name', 'family')
+        fields = ('name', 'family', 'id')
+
+
+class FindingTagFamilySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FindingTagFamily
+        fields = ('name', 'id')
+
+
+class MeasureTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MeasureType
+        fields = ('name', 'id')
+
+
+class ConsciousnessMeasurePhaseTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConsciousnessMeasurePhaseType
+        fields = ('name', 'id')
+
+
+class ConsciousnessMeasureTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ConsciousnessMeasureType
+        fields = ('name', 'id')
 
 
 class StimulusSubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = StimulusSubCategory
-        fields = ('name', 'parent')
+        fields = ('name', 'parent', 'id')
+
+
+class AuthorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Author
+        fields = ('name', 'id')
+
+
+class TaskTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TaskType
+        fields = ('name', 'id')
+
+
+class ModalityTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ModalityType
+        fields = ('name', 'id')
+
+
+class StimulusCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StimulusCategory
+        fields = ('name', 'id')
 
 
 class ParadigmSerializer(serializers.ModelSerializer):
@@ -32,7 +87,7 @@ class ParadigmSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Paradigm
-        fields = ('name', 'parent')
+        fields = ('name', 'parent', 'id')
 
     def get_parent(self, obj) -> Optional[str]:
         if obj.parent is None:
@@ -41,23 +96,23 @@ class ParadigmSerializer(serializers.ModelSerializer):
 
 
 class StudiesConfigurationSerializer(serializers.Serializer):
-    available_techniques = serializers.ListSerializer(child=serializers.CharField())
+    available_techniques = TechniqueSerializer(many=True)
     available_finding_tags_types = FindingTagTypeSerializer(many=True)
-    available_finding_tags_families = serializers.ListSerializer(child=serializers.CharField())
-    available_measure_types = serializers.ListSerializer(child=serializers.CharField())
+    available_finding_tags_families = FindingTagFamilySerializer(many=True)
+    available_measure_types = MeasureTypeSerializer(many=True)
     available_theories = TheoryConfigurationSerializer(many=True)
     available_paradigms = ParadigmSerializer(many=True)
     available_paradigms_families = ParadigmSerializer(many=True)
-    available_consciousness_measure_phase_type = serializers.ListSerializer(child=serializers.CharField())
+    available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseTypeSerializer(many=True)
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_theory_driven_types = serializers.ListSerializer(child=serializers.CharField())
     available_experiment_types = serializers.ListSerializer(child=serializers.CharField())
-    available_consciousness_measure_type = serializers.ListSerializer(child=serializers.CharField())
-    available_tasks_types = serializers.ListSerializer(child=serializers.CharField())
-    available_stimulus_modality_type = serializers.ListSerializer(child=serializers.CharField())
-    available_stimulus_category_type = serializers.ListSerializer(child=serializers.CharField())
+    available_consciousness_measure_type = ConsciousnessMeasureTypeSerializer(many=True)
+    available_tasks_types = TaskTypeSerializer(many=True)
+    available_stimulus_modality_type = ModalityTypeSerializer(many=True)
+    available_stimulus_category_type = StimulusCategorySerializer(many=True)
     available_stimulus_sub_category_type = StimulusSubCategorySerializer(many=True)
-    available_authors = serializers.ListSerializer(child=serializers.CharField())
+    available_authors = AuthorSerializer(many=True)
 
 
 class GraphImagesSerializer(serializers.ModelSerializer):

@@ -113,7 +113,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         self.assertEqual(first_series["value"], 3)
 
         target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-free-queries",
-                                                    breakdown="paradigm_family", techniques=[first_technique.name])
+                                                    breakdown="paradigm_family", techniques=[first_technique.id])
         # now should be filtered only the third experimeint
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -138,7 +138,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         masking_parent_paradigm, second_measure, \
         second_technique, third_measure_with_second_type = self._given_world_setup()
         for breakdown in BREAKDOWN_OPTIONS:
-            target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-bar",
-                                                        breakdown=breakdown, theory=self.gnw_parent_theory.id)
+            target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-free-queries",
+                                                        breakdown=breakdown)
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)

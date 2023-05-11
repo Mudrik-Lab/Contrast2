@@ -52,11 +52,11 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
 
     def aggregate(self, qs):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-        countries = list(qs.values_list("country", flat=True))
+
 
         countries_total = qs\
             .values("country") \
-            .annotate(value=Count("experiment_id", distinct=True)) \
+            .annotate(value=Count("experiment_id", distinct=False)) \
             .filter(value__gt=self.min_number_of_experiments) \
             .order_by("country")
         countries_total_dict = {item["country"]:item["value"] for item in list(countries_total)}

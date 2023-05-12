@@ -14,6 +14,8 @@ from studies.models import Study, Experiment, Author, ConsciousnessMeasure, Cons
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from rangefilter.filters import NumericRangeFilterBuilder, NumericRangeFilter
 
+from studies.resources.full_experiment import FullExperimentResource
+
 
 # Register your models here.
 class ExperimentRelatedInline:
@@ -78,6 +80,7 @@ class ExperimentAdmin(ImportExportModelAdmin):
     fields = ("type_of_consciousness", "is_reporting", "theory_driven", "techniques", "paradigms")
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
     filter_horizontal = ("paradigms", "techniques")
+    resource_class = FullExperimentResource
     inlines = (
         InterpretationInline,
         SampleInline,

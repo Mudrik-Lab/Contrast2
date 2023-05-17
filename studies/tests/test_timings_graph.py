@@ -18,8 +18,8 @@ class TimingsGraphTestCase(BaseTestCase):
                                                 DOI="10.1016/j.cortex.2017.07.011", year=2002)
         british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
                                                         DOI="10.1016/j.cortex.2017.07.012", year=2004)
-        self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW", acronym="GNW")
-        self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT", acronym="RPT")
+        self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW_parent", acronym="GNW")
+        self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT_parent", acronym="RPT")
         gnw_child_theory = self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
         rpt_child_theory = self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
         masking_parent_paradigm = self.given_paradigm_exists(name="masking_parent_paradigm")

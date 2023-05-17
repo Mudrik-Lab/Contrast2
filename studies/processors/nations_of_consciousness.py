@@ -24,7 +24,6 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
             # case is ALL
             self.theories = self.all_theories
 
-
     def process(self):
         """
         do a transpose "experiment per country in study" with unnest on the array field
@@ -53,21 +52,20 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
     def aggregate(self, qs):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
 
-
-        countries_total = qs\
+        countries_total = qs \
             .values("country") \
             .annotate(value=Count("experiment_id", distinct=False)) \
             .filter(value__gt=self.min_number_of_experiments) \
             .order_by("country")
-        countries_total_dict = {item["country"]:item["value"] for item in list(countries_total)}
+        countries_total_dict = {item["country"]: item["value"] for item in list(countries_total)}
 
-        aggregated_qs = qs.filter(theory__parent__in=self.theories)\
+        aggregated_qs = qs.filter(theory__parent__in=self.theories) \
             .values("country", "theory__parent__name") \
             .annotate(value=Count("id")) \
             .filter(value__gt=self.min_number_of_experiments) \
             .order_by("-value", "country")
         retval = []
         for series in aggregated_qs:
-            series["total"] =  countries_total_dict[series["country"]]
+            series["total"] = countries_total_dict[series["country"]]
             retval.append(series)
         return retval

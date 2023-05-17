@@ -11,7 +11,6 @@ from studies.choices import SampleChoices, TheoryDrivenChoices, ExperimentTypeCh
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
     ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
-from django.db import connection
 
 # Create your views here.
 
@@ -67,7 +66,6 @@ class ConfigurationView(GenericViewSet):
                                   available_tasks_types=available_tasks_types)
 
         serializer = self.get_serializer(instance=configuration_data)
-        print(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(detail=False, methods=["GET"], serializer_class=GraphsConfigurationSerializer,

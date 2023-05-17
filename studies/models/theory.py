@@ -9,10 +9,10 @@ class Theory(models.Model):
 
     name = models.CharField(null=False, blank=False, max_length=100)
     parent = models.ForeignKey(null=True, blank=True, to="studies.Theory", on_delete=CASCADE, related_name="children")
+    acronym = models.CharField(null=True, blank=True, max_length=10)
 
     def __str__(self):
         if self.parent is not None:
-            return f"{self.name} child of {self.parent.name}"
+            return f"{self.name} - {self.acronym} child of {self.parent.name}"
         else:
-            return f"{self.name}"
-# TODO: data migration to create existing theories
+            return f"{self.name} - {self.acronym}"

@@ -10,10 +10,17 @@ from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusC
 
 class TheoryConfigurationSerializer(serializers.ModelSerializer):
     parent = serializers.CharField(source="parent.name")
+    full_name = serializers.SerializerMethodField(read_only=True)
 
     class Meta:
         model = Theory
-        fields = ('name', 'parent')
+        fields = ('name', 'parent', 'acronym', 'full_name')
+
+    def get_full_name(self, obj):
+        if obj.acronym:
+            return f"{obj.name} ({obj.acronym})"
+        else:
+            return f"{obj.name}"
 
 
 class TechniqueSerializer(serializers.ModelSerializer):

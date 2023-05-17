@@ -23,26 +23,26 @@ class NationsOfConsciousnessViewSetTestCase(BaseTestCase):
         british_israeli_study = self.given_study_exists(title="british", countries=["GB", "IL"],
                                                         DOI="10.1016/j.cortex.2017.07.012", year=2004)
 
-        gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
-        rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
-        gnw_child_theory = self.given_theory_exists(parent=gnw_parent_theory, name="GNW_child")
-        rpt_child_theory = self.given_theory_exists(parent=rpt_parent_theory, name="RPT_child")
+        self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW", acronym="GNW")
+        self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT", acronym="RPT")
+        self.gnw_child_theory = self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
+        self.rpt_child_theory = self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
 
         israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study)
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study)
         british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study)
 
         self.given_interpretation_exist(experiment=israeli_study_experiment,
-                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
+                                        theory=self.gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
         self.given_interpretation_exist(experiment=israeli_study_experiment_2,
-                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
+                                        theory=self.gnw_child_theory, interpretation_type=InterpretationsChoices.PRO)
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=rpt_child_theory, interpretation_type=InterpretationsChoices.PRO)
+                                        theory=self.rpt_child_theory, interpretation_type=InterpretationsChoices.PRO)
         self.given_interpretation_exist(experiment=british_israeli_study_experiment,
-                                        theory=gnw_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
+                                        theory=self.gnw_child_theory, interpretation_type=InterpretationsChoices.CHALLENGES)
 
-        target_url = self.reverse_with_query_params("experiments-graphs-nations-of-consciousness", theory=[gnw_parent_theory.name,
-                                                                                                           rpt_parent_theory.name ])
+        target_url = self.reverse_with_query_params("experiments-graphs-nations-of-consciousness", theory=[self.gnw_parent_theory.name,
+                                                                                                           self.rpt_parent_theory.name ])
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 

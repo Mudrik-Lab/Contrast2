@@ -28,7 +28,7 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
     def process(self):
         queryset = Interpretation.objects.filter(type=InterpretationsChoices.PRO)
         if self.theory is not None:
-            queryset = queryset.filter(theory__parent__name=self.theory)
+            queryset = queryset.filter(theory__parent=self.theory)
         experiments_interpretations = queryset\
             .filter(experiment__finding_tags__technique__name__in=self.techniques) \
             .filter(experiment__in=self.experiments)

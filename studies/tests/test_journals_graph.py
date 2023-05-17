@@ -19,8 +19,8 @@ class JournalsGraphTestCase(BaseTestCase):
         self.british_israeli_study = self.given_study_exists(title="british", countries=["UK", "IL"],
                                                              abbreviated_source_title="the second journal",
                                                         DOI="10.1016/j.cortex.2017.07.012", year=2004)
-        self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
-        self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
+        self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW", acronym="GNW")
+        self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT", acronym="RPT")
         gnw_child_theory = self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
         rpt_child_theory = self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
 

@@ -31,13 +31,13 @@ class TheoryDrivenDistributionPieGraphDataProcessor(BaseProcessor):
         """
         filtered_subquery -> Interpretations filtered
         """
-        theory_subquery = filtered_subquery.values("parent_theory_names") \
+        theory_subquery = filtered_subquery.values("parent_theory_acronyms") \
             .annotate(experiment_count=Count("id", distinct=True))
 
         subquery = theory_subquery \
             .order_by("-experiment_count") \
             .filter(experiment_count__gt=self.min_number_of_experiments) \
-            .annotate(data=JSONObject(key=F("parent_theory_names"), value=F("experiment_count"))) \
+            .annotate(data=JSONObject(key=F("parent_theory_acronyms"), value=F("experiment_count"))) \
             .values_list("data")
 
         qs = queryset \

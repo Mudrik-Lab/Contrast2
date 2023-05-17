@@ -74,12 +74,13 @@ class BaseTestCase(APITestCase):
         url = f'{url}?{params}'
         return url
 
-    def given_theory_exists(self, name: str, parent: Theory = None):
-        theory, created = Theory.objects.get_or_create(parent=parent, name=name)
+    def given_theory_exists(self, name: str, parent: Theory = None, acronym: str = None):
+        theory, created = Theory.objects.get_or_create(parent=parent, name=name, acronym=acronym)
         return theory
 
     def given_interpretation_exist(self, experiment: Experiment, theory: Theory, interpretation_type: str):
-        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory, type=interpretation_type)
+        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory,
+                                                                       type=interpretation_type)
         return interpretation
 
     def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):

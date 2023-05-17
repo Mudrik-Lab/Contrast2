@@ -14,10 +14,10 @@ class TheoryConfigurationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Theory
-        fields = ('name', 'parent', 'acronym')
+        fields = ('name', 'parent', 'acronym', 'full_name')
 
     def get_full_name(self, obj):
-        if obj.acrony:
+        if obj.acronym:
             return f"{obj.name} ({obj.acronym})"
         else:
             return f"{obj.name}"

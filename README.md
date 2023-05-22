@@ -127,7 +127,7 @@ For doing the initial data load while running in compose:
 After copying the file as above, and after verifying compose up --build as above
 
 ```bash
-docker exec -it contrast-api-web-1 python manage.py load_historic_data
+docker exec -it web_contrast_api python manage.py load_historic_data
 # This runs the load, but inside the already running containers
 ```
 ### CI

@@ -8,10 +8,7 @@ from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
 
-
-
-
-class AcrossTheYearsGraphDataProcessor(BaseProcessor):
+class TrendsOverYearsGraphDataProcessor(BaseProcessor):
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("breakdown")
@@ -42,7 +39,7 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
         experiments_subquery_by_breakdown = self.experiments.filter(samples__type=OuterRef("type"))
 
         breakdown_query = Sample.objects.values("type").distinct(
-            ).annotate(series_name=F("type"))
+        ).annotate(series_name=F("type"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -165,14 +162,25 @@ class AcrossTheYearsGraphDataProcessor(BaseProcessor):
 
         qs = queryset \
             .values("series_name").annotate(series=ArraySubquery(subquery)) \
-            .annotate(field_len=Func(F('series'), function='CARDINALITY'))\
-            .filter(field_len__gt=0)\
+            .annotate(field_len=Func(F('series'), function='CARDINALITY')) \
+            .filter(field_len__gt=0) \
             .values("series_name", "series") \
             .order_by("series_name")
         # Note we're filtering out empty timeseries with the cardinality option
         retval = []
+        earliest_year = None
         for series_data in list(qs):
-            series = self.accumulate_inner_series_values_and_filter(series_data["series"], self.min_number_of_experiments)
+
+            series = self.accumulate_inner_series_values_and_filter(series_data["series"],
+                                                                    self.min_number_of_experiments)
             if len(series):
-                retval.append(dict(series_name=series_data["series_name"], series = series))
+                earliest_year_in_series = series_data["series"][0]["year"]
+                if earliest_year is None or earliest_year_in_series < earliest_year:
+                    earliest_year = earliest_year_in_series
+                retval.append(dict(series_name=series_data["series_name"], series=series))
+        if earliest_year is not None:
+            for line in retval:
+                if line["series"][0]["year"] > earliest_year:
+                    # todo check if I can really insert like that
+                    line["series"].insert(0, dict(year=earliest_year, value=0))
         return retval

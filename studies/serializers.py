@@ -235,7 +235,7 @@ class YearlySeriesSerializer(serializers.Serializer):
     value = serializers.IntegerField()
 
 
-class AcrossTheYearsGraphSerializer(serializers.Serializer):
+class TrendsOverYearsGraphSerializer(serializers.Serializer):
     series_name = serializers.CharField()
     series = YearlySeriesSerializer(many=True)
 

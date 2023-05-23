@@ -20,7 +20,7 @@ from studies.open_api_parameters import number_of_experiments_parameter, \
     measures_multiple_optional_parameter, tasks_multiple_optional_parameter, types_multiple_optional_parameter, \
     theory_driven_multiple_optional_parameter, \
     paradigms_families_multiple_optional_parameter, techniques_multiple_optional_parameter_id_based
-from studies.processors.across_the_years import AcrossTheYearsGraphDataProcessor
+from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
 from studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
@@ -32,7 +32,7 @@ from studies.processors.parameters_distribution_theory_comparison_pie import \
 from studies.processors.theory_driven_distribution_pie import TheoryDrivenDistributionPieGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
-    AcrossTheYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
+    TrendsOverYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
     NestedPieChartSerializer, ComparisonNestedPieChartSerializer, PieChartSerializer
 
 
@@ -47,7 +47,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     filterset_class = ExperimentFilter
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
-        "across_the_years": AcrossTheYearsGraphSerializer,
+        "across_the_years": TrendsOverYearsGraphSerializer,
+        "trends_over_years": TrendsOverYearsGraphSerializer,
         "journals": BarGraphSerializer,
         "parameters_distribution_bar": StackedBarGraphSerializer,
         "timings": DurationGraphSerializer,
@@ -60,7 +61,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
     graph_processors = {
         "nations_of_consciousness": NationOfConsciousnessDataProcessor,
-        "across_the_years": AcrossTheYearsGraphDataProcessor,
+        "across_the_years": TrendsOverYearsGraphDataProcessor,
+        "trends_over_years": TrendsOverYearsGraphDataProcessor,
         "journals": JournalsGraphDataProcessor,
         "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
         "parameters_distribution_pie": ParametersDistributionPieGraphDataProcessor,
@@ -144,7 +146,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     def parameters_distribution_theories_comparison(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
-    @extend_schema(responses=AcrossTheYearsGraphSerializer(many=True),
+    @extend_schema(responses=TrendsOverYearsGraphSerializer(many=True),
                    parameters=[breakdown_parameter,
                                number_of_experiments_parameter,
                                is_reporting_filter_parameter,
@@ -153,8 +155,21 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                ],
 
                    )
-    @action(detail=False, methods=["GET"], serializer_class=AcrossTheYearsGraphSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)
     def across_the_years(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(responses=TrendsOverYearsGraphSerializer(many=True),
+                   parameters=[breakdown_parameter,
+                               number_of_experiments_parameter,
+                               is_reporting_filter_parameter,
+                               theory_driven_filter_parameter,
+                               type_of_consciousness_filter_parameter,
+                               ],
+
+                   )
+    @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)
+    def trends_over_years(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(responses=StackedBarGraphSerializer(many=True),

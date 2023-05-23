@@ -19,7 +19,8 @@ from studies.open_api_parameters import number_of_experiments_parameter, \
     consciousness_measure_phases_multiple_optional_parameter, consciousness_measure_types_multiple_optional_parameter, \
     measures_multiple_optional_parameter, tasks_multiple_optional_parameter, types_multiple_optional_parameter, \
     theory_driven_multiple_optional_parameter, \
-    paradigms_families_multiple_optional_parameter, techniques_multiple_optional_parameter_id_based
+    paradigms_families_multiple_optional_parameter, techniques_multiple_optional_parameter_id_based, \
+    interpretation_theories, interpretations
 from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
@@ -234,6 +235,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        consciousness_measure_phases_multiple_optional_parameter,
                        consciousness_measure_types_multiple_optional_parameter,
                        measures_multiple_optional_parameter,
+                       interpretations,
+                       interpretation_theories,
                        tasks_multiple_optional_parameter,
                        types_multiple_optional_parameter,
                        is_reporting_filter_parameter,

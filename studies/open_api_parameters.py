@@ -1,6 +1,6 @@
 from drf_spectacular.utils import OpenApiParameter
 
-from studies.choices import TheoryDrivenChoices, ReportingChoices, TypeOfConsciousnessChoices
+from studies.choices import TheoryDrivenChoices, ReportingChoices, TypeOfConsciousnessChoices, InterpretationsChoices
 
 BREAKDOWN_OPTIONS = ["paradigm_family",
                      "paradigm",
@@ -44,10 +44,9 @@ techniques_multiple_optional_parameter = OpenApiParameter(name='techniques',
                                                           description='techniques optional for frequencies/timings graphs',
                                                           type=str, many=True, required=False)
 
-
 techniques_multiple_optional_parameter_id_based = OpenApiParameter(name='techniques',
-                                                          description='techniques optional for free queries',
-                                                          type=int, many=True, required=False)
+                                                                   description='techniques optional for free queries',
+                                                                   type=int, many=True, required=False)
 
 paradigms_multiple_optional_parameter = OpenApiParameter(name='paradigms',
                                                          description='paradigms optional',
@@ -101,3 +100,10 @@ reporting_multiple_optional_parameter = OpenApiParameter(name='reporting',
 theory_driven_multiple_optional_parameter = OpenApiParameter(name='theory_driven',
                                                              description='theory driven optional',
                                                              type=str, many=True, required=False)
+interpretations = OpenApiParameter(name='interpretations_types',
+                                   description='interpretations types optional',
+                                   enum=[option[0] for option in InterpretationsChoices.choices],
+                                   type=str, many=True, required=False)
+interpretation_theories = OpenApiParameter(name='interpretation_theories',
+                                           description='theories for interpretation optional - note must come with interpretations',
+                                           type=int, many=True, required=False)

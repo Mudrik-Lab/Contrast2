@@ -103,7 +103,8 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         # masking_child_paradigm exists only on the isreali study from 2002 on two different experiments
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
         self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
-        self.assertDictEqual(third_series["series"][0], dict(year=2004, value=1))
+        self.assertDictEqual(third_series["series"][0], dict(year=2002, value=0))
+        self.assertDictEqual(third_series["series"][1], dict(year=2004, value=1))
 
     def test_across_the_years_breakdown_measures(self):
         another_different_child_paradigm, \
@@ -128,7 +129,8 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         # second measure type happened twice
         self.assertDictEqual(first_series["series"][0], dict(year=2002, value=1))
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
-        self.assertDictEqual(third_series["series"][0], dict(year=2004, value=1))
+        self.assertDictEqual(third_series["series"][0], dict(year=2002, value=0)) # filler for start year
+        self.assertDictEqual(third_series["series"][1], dict(year=2004, value=1))
 
     def test_across_the_years_techniques_breakdown(self):
         another_different_child_paradigm, \
@@ -150,7 +152,8 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         self.assertEqual(first_series["series_name"], first_technique.name)
         self.assertEqual(second_series["series_name"], second_technique.name)
         # second measure type happened twice
-        self.assertDictEqual(first_series["series"][0], dict(year=2004, value=1))
+        self.assertDictEqual(first_series["series"][0], dict(year=2002, value=0)) #filler for missing year
+        self.assertDictEqual(first_series["series"][1], dict(year=2004, value=1))
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
         self.assertDictEqual(second_series["series"][1], dict(year=2004, value=3))  # accumulated
 
@@ -175,5 +178,6 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         self.assertEqual(second_series["series_name"], ReportingChoices.NO_REPORT)
 
         # second measure type happened twice
-        self.assertDictEqual(first_series["series"][0], dict(year=2004, value=1))
+        self.assertDictEqual(first_series["series"][0], dict(year=2002, value=0))
+        self.assertDictEqual(first_series["series"][1], dict(year=2004, value=1))
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))

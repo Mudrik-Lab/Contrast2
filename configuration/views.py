@@ -5,7 +5,7 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
-from configuration.models import GraphImages
+from configuration.models import GraphImage
 from configuration.serializers import StudiesConfigurationSerializer, GraphsConfigurationSerializer
 from studies.choices import SampleChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
@@ -71,7 +71,7 @@ class ConfigurationView(GenericViewSet):
     @action(detail=False, methods=["GET"], serializer_class=GraphsConfigurationSerializer,
             permission_classes=[AllowAny])
     def graphs(self, request, **kwargs):
-        images = GraphImages.objects.all()
+        images = GraphImage.objects.all()
         available_parent_theories = Theory.objects.select_related().filter(parent__isnull=True).values_list("name", flat=True)
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True)

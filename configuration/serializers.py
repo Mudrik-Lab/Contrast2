@@ -2,7 +2,7 @@ from typing import Optional
 
 from rest_framework import serializers
 
-from configuration.models import GraphImages
+from configuration.models import GraphImage
 from studies.models import Theory, FindingTagType, Paradigm, Technique, FindingTagFamily, MeasureType, \
     ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, TaskType, Author
 from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusCategory
@@ -122,9 +122,9 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_authors = AuthorSerializer(many=True)
 
 
-class GraphImagesSerializer(serializers.ModelSerializer):
+class GraphImageSerializer(serializers.ModelSerializer):
     class Meta:
-        model = GraphImages
+        model = GraphImage
         fields = ("key", "image")
 
 
@@ -133,4 +133,4 @@ class GraphsConfigurationSerializer(serializers.Serializer):
     available_finding_tags_types_for_timings = serializers.ListSerializer(child=serializers.CharField())
     available_techniques_for_timings = serializers.ListSerializer(child=serializers.CharField())
     available_techniques_for_frequencies = serializers.ListSerializer(child=serializers.CharField())
-    images = GraphImagesSerializer(many=True)
+    images = GraphImageSerializer(many=True)

@@ -95,7 +95,17 @@ class ExperimentAdmin(ImportExportModelAdmin):
         return qs.select_related("study") \
             .prefetch_related("study__authors")\
             .prefetch_related("theory_driven_theories")\
-            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent', 'parent__parent'))) \
+            .prefetch_related("aggregated_theories")\
+            .prefetch_related(Prefetch('measures', queryset=Measure.objects.select_related("type")))\
+            .prefetch_related(Prefetch('tasks', queryset=Task.objects.select_related("type")))\
+            .prefetch_related(Prefetch('finding_tags', queryset=Task.objects.select_related("type")))\
+            .prefetch_related(Prefetch('consciousness_measures',
+                                       queryset=ConsciousnessMeasure.objects.select_related("type", "phase"))) \
+            .prefetch_related(Prefetch('stimuli',
+                                       queryset=Stimulus.objects.select_related("category", "sub_category", "modality"))) \
+            .prefetch_related('samples')\
+            .prefetch_related(Prefetch('paradigms',
+                                       queryset=Paradigm.objects.select_related('parent', 'parent__parent'))) \
             .prefetch_related("techniques")
 
     @admin.display(empty_value="")

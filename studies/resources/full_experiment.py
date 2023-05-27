@@ -13,7 +13,7 @@ class FullExperimentResource(resources.ModelResource):
     class Meta:
         model = Experiment
         fields = ('study__title',
-                  'authors',  # 500 queries
+                  # 'authors',  # 500 queries
                   'study__year',
                   'study__funding',
                   'study__source_title',
@@ -41,12 +41,12 @@ class FullExperimentResource(resources.ModelResource):
     def dehydrate_authors(self, experiment):
         return "|".join(author.name for author in experiment.study.authors.all())
 
-    def dehydrate_interpretations(self, experiment):
-        interpretations = Interpretation.objects.filter(experiment__id=experiment.id).select_related(
-            "experiment",
-            "theory__parent",
-            'theory__parent__parent')
-        return "|".join([f"{interpretation.theory.name} - {interpretation.type}" for interpretation in interpretations])
+    # def dehydrate_interpretations(self, experiment):
+    #     interpretations = Interpretation.objects.filter(experiment__id=experiment.id).select_related(
+    #         "experiment",
+    #         "theory__parent",
+    #         'theory__parent__parent')
+    #     return "|".join([f"{interpretation.theory.name} - {interpretation.type}" for interpretation in interpretations])
 
 
 """

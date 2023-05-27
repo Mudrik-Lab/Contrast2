@@ -93,6 +93,8 @@ class ExperimentAdmin(ImportExportModelAdmin):
         qs = super().get_queryset(request=request)
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
         return qs.select_related("study") \
+            .prefetch_related("study__authors")\
+            .prefetch_related("theory_driven_theories")\
             .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent', 'parent__parent'))) \
             .prefetch_related("techniques")
 

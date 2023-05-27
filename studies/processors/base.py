@@ -10,9 +10,11 @@ class BaseProcessor:
         self.experiments: QuerySet[Experiment] = experiments
         min_number_of_experiments = int(kwargs.pop("min_number_of_experiments", ["0"])[0])
         if min_number_of_experiments > 0:
-            # so everything that explicitly sets a minimum it would be supported
+            # so everything that explicitly sets a minimum it would be supported, with a gt query
             min_number_of_experiments = min_number_of_experiments - 1
         self.min_number_of_experiments = min_number_of_experiments
+
+        self.is_csv = bool(kwargs.pop("is_csv", [False])[0])
 
     def process(self):
         raise NotImplementedError()

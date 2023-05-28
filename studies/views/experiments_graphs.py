@@ -199,8 +199,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                # number_of_experiments_parameter,
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
+                               is_csv,
                                type_of_consciousness_filter_parameter,
-
                                ])
     @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
     def frequencies(self, request, *args, **kwargs):
@@ -221,6 +221,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                # number_of_experiments_parameter,
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
+                               is_csv,
                                type_of_consciousness_filter_parameter,
                                ])
     @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)

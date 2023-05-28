@@ -10,7 +10,6 @@ from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
 
 
-
 class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
@@ -26,38 +25,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func(theory_interpretations_experiments)
 
-    def aggregate_query_by_breakdown(self):
-        parent_theories = Theory.objects.filter(parent__isnull=True)
-
-        results = []
-        for theory in parent_theories:
-            theory_interpretations_experiments = Interpretation.objects.filter(type=self.interpretation,
-                                                                               theory__parent=theory) \
-                .filter(experiment__in=self.experiments) \
-                .distinct() \
-                .values_list("experiment", flat=True)
-            # Children_experiments is referring from theory to child theory and from their to "experiments"
-            subquery = self.get_query(theory_interpretations_experiments)
-
-            subquery_by_breakdown = subquery.order_by("-experiment_count") \
-                .filter(experiment_count__gt=self.min_number_of_experiments)\
-                .annotate(data=JSONObject(key=F("key"), value=F("experiment_count"))) \
-                .values_list("data", flat=True)
-
-            if len(subquery_by_breakdown) > 0:
-                series = list(subquery_by_breakdown)
-                total_value = self.accumulate_total_from_series(series)
-                result = dict(
-                    series=series,
-                    series_name=theory.name,
-                    value=total_value
-                )
-                results.append(result)
-
-        return results
-
     def process_paradigm_family(self, theory_interpretations_experiments):
-
         # Children_experiments is referring from theory to child theory and from their to "experiments"
         subquery = Paradigm.objects.filter(parent__isnull=True) \
             .filter(child_paradigm__experiments__in=theory_interpretations_experiments) \
@@ -207,3 +175,41 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .annotate(key=F("name"))
 
         return subquery
+
+    def aggregate_query_by_breakdown(self):
+        parent_theories = Theory.objects.filter(parent__isnull=True)
+
+        results = []
+        experiment_ids = []
+        for theory in parent_theories:
+            theory_interpretations_experiments = Interpretation.objects.filter(type=self.interpretation,
+                                                                               theory__parent=theory) \
+                .filter(experiment__in=self.experiments) \
+                .distinct() \
+                .values_list("experiment", flat=True)
+            # Children_experiments is referring from theory to child theory and from their to "experiments"
+            if self.is_csv:
+                theory_experiment_ids = theory_interpretations_experiments.values_list("experiment_id", flat=True)
+
+                experiment_ids += theory_experiment_ids
+            else:
+                subquery = self.get_query(theory_interpretations_experiments)
+
+                subquery_by_breakdown = subquery.order_by("-experiment_count") \
+                    .filter(experiment_count__gt=self.min_number_of_experiments) \
+                    .annotate(data=JSONObject(key=F("key"), value=F("experiment_count"))) \
+                    .values_list("data", flat=True)
+
+                if len(subquery_by_breakdown) > 0:
+                    series = list(subquery_by_breakdown)
+                    total_value = self.accumulate_total_from_series(series)
+                    result = dict(
+                        series=series,
+                        series_name=theory.name,
+                        value=total_value
+                    )
+                    results.append(result)
+        if self.is_csv:
+            return set(experiment_ids)
+
+        return results

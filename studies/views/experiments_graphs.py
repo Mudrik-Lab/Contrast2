@@ -90,6 +90,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        number_of_experiments_parameter,
                        is_reporting_filter_parameter,
                        theory_driven_filter_parameter,
+                       is_csv,
                        type_of_consciousness_filter_parameter,
                    ])
     @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
@@ -107,6 +108,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        is_reporting_filter_parameter,
                        theory_driven_filter_parameter,
                        type_of_consciousness_filter_parameter,
+                       is_csv
                    ])
     @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):
@@ -118,7 +120,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
-
+                               is_csv
                                ])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
     def journals(self, request, *args, **kwargs):
@@ -142,6 +144,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
+                               is_csv,
                                OpenApiParameter(name="interpretation",
                                                 description="supporting or challenging",
                                                 type=str,

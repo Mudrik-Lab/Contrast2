@@ -93,7 +93,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        is_csv,
                        type_of_consciousness_filter_parameter,
                    ])
-    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def theory_driven_distribution_pie(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 

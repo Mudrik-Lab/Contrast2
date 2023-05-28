@@ -101,7 +101,7 @@ theory_driven_multiple_optional_parameter = OpenApiParameter(name='theory_driven
                                                              description='theory driven optional',
                                                              type=str, many=True, required=False)
 interpretations = OpenApiParameter(name='interpretations_types',
-                                   description='interpretations types optional',
+                                   description='interpretations types optional - note must come with interpretation_theories',
                                    enum=[option[0] for option in InterpretationsChoices.choices],
                                    type=str, many=True, required=False)
 interpretation_theories = OpenApiParameter(name='interpretation_theories',

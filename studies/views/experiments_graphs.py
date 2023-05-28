@@ -130,6 +130,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
+                               is_csv,
                                ])
     @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def parameters_distribution_pie(self, request, *args, **kwargs):
@@ -186,6 +187,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
+                               is_csv,
                                ])
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
@@ -250,6 +252,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        type_of_consciousness_filter_parameter,
                        theory_driven_multiple_optional_parameter,
                        number_of_experiments_parameter,
+                       is_csv,
 
                    ])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)

@@ -108,4 +108,4 @@ interpretation_theories = OpenApiParameter(name='interpretation_theories',
                                            description='theories for interpretation optional - note must come with interpretations',
                                            type=int, many=True, required=False)
 
-is_csv = OpenApiParameter(name='is_csv', description="get a return of relevant studies as csv file", type=bool, default=False)
+is_csv = OpenApiParameter(name='is_csv', description="get a list of relevant experiments/studies as csv file", type=bool, default=False)

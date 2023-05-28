@@ -277,10 +277,13 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
-
-            flattened_ids = set(list(itertools.chain.from_iterable(graph_data)))
-            # TODO add specific manager selects to experiment
-            dataset = FullExperimentResource().export(queryset=Experiment.objects.filter(id__in=flattened_ids))
+            """
+            we manipulate the data for csv inside the processor to return a flattened list, 
+            Here we select from Experiment with all relevant prefetching and select_related for relations
+            And pass it through the import-export custom resource we've defined
+            """
+            flattened_ids = graph_data
+            dataset = FullExperimentResource().export(queryset=Experiment.objects.related().filter(id__in=flattened_ids))
             response = HttpResponse(dataset.csv, content_type="text/csv",
                                     headers={"Content-Disposition": 'attachment; filename="export.csv"'})
 

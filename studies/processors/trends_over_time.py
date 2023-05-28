@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Count, Func, Window, Sum, Subquery
 from django.db.models.functions import JSONObject
@@ -154,7 +156,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
         if self.is_csv:
-            return queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("id"))).values_list("experiments", flat=True)
+            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("id"))).values_list(
+                "experiments", flat=True)
+            return set(list(itertools.chain.from_iterable(ids)))
         subquery = filtered_subquery.annotate(year=F("study__year")) \
             .values("year") \
             .order_by("year") \

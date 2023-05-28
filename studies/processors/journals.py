@@ -1,3 +1,5 @@
+import itertools
+
 from django.db.models import QuerySet, Count, F
 
 from studies.choices import InterpretationsChoices
@@ -45,10 +47,15 @@ class JournalsGraphDataProcessor(BaseProcessor):
             .annotate(journal=F("experiment__study__abbreviated_source_title"))
         return experiments_by_theory
 
-    def aggregate(self, qs):
+    def aggregate(self, queryset):
+        if self.is_csv:
+            ids = queryset.values_list(
+                "experiment_id", flat=True)
+            return set(ids)
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-        return qs.values("journal") \
-            .annotate(count=Count("id", distinct=True)) \
+
+        return queryset.values("journal") \
+            .annotate(count=Count("experiment_id", distinct=True)) \
             .filter(count__gt=self.min_number_of_experiments) \
             .annotate(value=F("count"),
                       key=F("journal")) \

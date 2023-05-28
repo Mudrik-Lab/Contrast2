@@ -14,6 +14,8 @@ from studies.models import Study, Experiment, Author, ConsciousnessMeasure, Cons
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from rangefilter.filters import NumericRangeFilterBuilder, NumericRangeFilter
 
+from studies.resources.full_experiment import FullExperimentResource
+
 
 # Register your models here.
 class ExperimentRelatedInline:
@@ -72,12 +74,14 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
 
 
 class ExperimentAdmin(ImportExportModelAdmin):
+
     # todo add theory to display
     list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
     fields = ("type_of_consciousness", "is_reporting", "theory_driven", "techniques", "paradigms")
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
     filter_horizontal = ("paradigms", "techniques")
+    resource_class = FullExperimentResource
     inlines = (
         InterpretationInline,
         SampleInline,
@@ -87,11 +91,14 @@ class ExperimentAdmin(ImportExportModelAdmin):
         StimulusInline)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request=request)
+        qs = self.model._default_manager.related()
+        # TODO: this should be handled by some parameter to the ChangeList.
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        return qs
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
-        return qs.select_related("study") \
-            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent'))) \
-            .prefetch_related("techniques")
+        
 
     @admin.display(empty_value="")
     def study__title(self, obj):

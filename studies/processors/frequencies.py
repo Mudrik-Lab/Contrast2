@@ -29,7 +29,7 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
         queryset = Interpretation.objects.filter(type=InterpretationsChoices.PRO)
         if self.theory is not None:
             queryset = queryset.filter(theory__parent=self.theory)
-        experiments_interpretations = queryset\
+        experiments_interpretations = queryset \
             .filter(experiment__finding_tags__technique__name__in=self.techniques) \
             .filter(experiment__in=self.experiments)
 
@@ -41,8 +41,14 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
 
         relevant_finding_tags = FindingTag.objects.select_related("experiment") \
             .prefetch_related("type", "technique") \
-            .filter(family__name="Frequency")\
+            .filter(family__name="Frequency") \
             .filter(technique__name__in=self.techniques)
+
+        if self.is_csv:
+            ids = relevant_finding_tags.filter(experiment__in=experiments_interpretations
+                                               .values_list("experiment_id", flat=True)) \
+                .values_list("experiment_id", flat=True)
+            return set(ids)
 
         finding_tags_subquery_series = relevant_finding_tags \
             .filter(experiment__in=OuterRef("experiment_id")) \
@@ -50,9 +56,9 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
             .annotate(data=JSONObject(start=F("band_lower_bound"), end=F("band_higher_bound"), name=F("type__name"))) \
             .values_list("data")
 
-        order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id"))\
+        order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id")) \
             .order_by("band_lower_bound")
-        max_order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id"))\
+        max_order_query = relevant_finding_tags.filter(experiment=OuterRef("experiment_id")) \
             .order_by("band_higher_bound")
 
         qs = experiments \

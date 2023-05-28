@@ -1,3 +1,6 @@
+import itertools
+
+from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.decorators import action
@@ -20,7 +23,7 @@ from studies.open_api_parameters import number_of_experiments_parameter, \
     measures_multiple_optional_parameter, tasks_multiple_optional_parameter, types_multiple_optional_parameter, \
     theory_driven_multiple_optional_parameter, \
     paradigms_families_multiple_optional_parameter, techniques_multiple_optional_parameter_id_based, \
-    interpretation_theories, interpretations
+    interpretation_theories, interpretations, is_csv
 from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
@@ -32,6 +35,7 @@ from studies.processors.parameters_distribution_theory_comparison_pie import \
     ComparisonParametersDistributionPieGraphDataProcessor
 from studies.processors.theory_driven_distribution_pie import TheoryDrivenDistributionPieGraphDataProcessor
 from studies.processors.timings import TimingsGraphDataProcessor
+from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     TrendsOverYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
     NestedPieChartSerializer, ComparisonNestedPieChartSerializer, PieChartSerializer
@@ -86,9 +90,10 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        number_of_experiments_parameter,
                        is_reporting_filter_parameter,
                        theory_driven_filter_parameter,
+                       is_csv,
                        type_of_consciousness_filter_parameter,
                    ])
-    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def theory_driven_distribution_pie(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
@@ -103,6 +108,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        is_reporting_filter_parameter,
                        theory_driven_filter_parameter,
                        type_of_consciousness_filter_parameter,
+                       is_csv
                    ])
     @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):
@@ -114,7 +120,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
-
+                               is_csv
                                ])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
     def journals(self, request, *args, **kwargs):
@@ -126,6 +132,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
+                               is_csv,
                                ])
     @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def parameters_distribution_pie(self, request, *args, **kwargs):
@@ -137,6 +144,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
+                               is_csv,
                                OpenApiParameter(name="interpretation",
                                                 description="supporting or challenging",
                                                 type=str,
@@ -149,6 +157,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
     @extend_schema(responses=TrendsOverYearsGraphSerializer(many=True),
                    parameters=[breakdown_parameter,
+                               is_csv,
                                number_of_experiments_parameter,
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
@@ -162,6 +171,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
     @extend_schema(responses=TrendsOverYearsGraphSerializer(many=True),
                    parameters=[breakdown_parameter,
+                               is_csv,
                                number_of_experiments_parameter,
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
@@ -180,6 +190,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
                                type_of_consciousness_filter_parameter,
+                               is_csv,
                                ])
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
@@ -193,8 +204,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                # number_of_experiments_parameter,
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
+                               is_csv,
                                type_of_consciousness_filter_parameter,
-
                                ])
     @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
     def frequencies(self, request, *args, **kwargs):
@@ -215,6 +226,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                                # number_of_experiments_parameter,
                                is_reporting_filter_parameter,
                                theory_driven_filter_parameter,
+                               is_csv,
                                type_of_consciousness_filter_parameter,
                                ])
     @action(detail=False, methods=["GET"], serializer_class=DurationGraphSerializer)
@@ -243,6 +255,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
                        type_of_consciousness_filter_parameter,
                        theory_driven_multiple_optional_parameter,
                        number_of_experiments_parameter,
+                       is_csv,
 
                    ])
     @action(detail=False, methods=["GET"], serializer_class=BarGraphSerializer)
@@ -264,10 +277,24 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         if graph_data_processor is None:
             raise GraphProcessNotRegisteredException(graph_type)
 
-        graph_data = graph_data_processor(queryset, **request.query_params).process()
-        serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
+        graph_processor = graph_data_processor(queryset, **request.query_params)
+        graph_data = graph_processor.process()
+        if not graph_processor.is_csv:
+            serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
 
-        return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            """
+            we manipulate the data for csv inside the processor to return a flattened list, 
+            Here we select from Experiment with all relevant prefetching and select_related for relations
+            And pass it through the import-export custom resource we've defined
+            """
+            flattened_ids = graph_data
+            dataset = FullExperimentResource().export(queryset=Experiment.objects.related().filter(id__in=flattened_ids))
+            response = HttpResponse(dataset.csv, content_type="text/csv",
+                                    headers={"Content-Disposition": 'attachment; filename="export.csv"'})
+
+            return response
 
 
 class GraphProcessNotRegisteredException(Exception):

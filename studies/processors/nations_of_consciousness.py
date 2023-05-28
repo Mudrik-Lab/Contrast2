@@ -49,17 +49,21 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
                                    function='unnest'))
         return experiments_by_countries_and_theories
 
-    def aggregate(self, qs):
+    def aggregate(self, queryset):
         # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
+        if self.is_csv:
+            ids = queryset.values_list(
+                "experiment_id", flat=True)
+            return set(ids)
 
-        countries_total = qs \
+        countries_total = queryset \
             .values("country") \
             .annotate(value=Count("experiment_id", distinct=False)) \
             .filter(value__gt=self.min_number_of_experiments) \
             .order_by("country")
         countries_total_dict = {item["country"]: item["value"] for item in list(countries_total)}
 
-        aggregated_qs = qs.filter(theory__parent__in=self.theories) \
+        aggregated_qs = queryset.filter(theory__parent__in=self.theories) \
             .values("country", "theory__parent__name") \
             .annotate(value=Count("id")) \
             .filter(value__gt=self.min_number_of_experiments) \

@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, Subquery, OuterRef, Count, F, Func, IntegerField
 from django.db.models.expressions import RawSQL
@@ -41,11 +43,16 @@ class TimingsGraphDataProcessor(BaseProcessor):
 
         experiments = experiments_interpretations  # .values("experiment")
 
-        relevant_finding_tags = FindingTag.objects.select_related("experiment") \
-            .prefetch_related("type", "technique") \
+        relevant_finding_tags = FindingTag.objects.select_related("experiment", "type", "family", "technique") \
             .filter(family__name="Temporal")\
             .filter(type__name__in=self.tags_types) \
             .filter(technique__name__in=self.techniques)
+
+        if self.is_csv:
+            ids = relevant_finding_tags.filter(experiment__in=experiments_interpretations
+                                               .values_list("experiment_id", flat=True))\
+                .values_list("experiment_id", flat=True)
+            return set(ids)
 
         finding_tags_subquery_series = relevant_finding_tags \
             .filter(experiment__in=OuterRef("experiment_id")) \

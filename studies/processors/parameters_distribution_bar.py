@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField
 from django.db.models.functions import JSONObject
@@ -236,6 +238,11 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         ids_subquery = by_relation_type_subquery \
             .order_by("experiment") \
             .values_list("experiment")
+
+        if self.is_csv:
+            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("experiment_id"))).values_list(
+                "experiments", flat=True)
+            return set(list(itertools.chain.from_iterable(ids)))
 
         qs = queryset \
             .values("series_name").annotate(series=ArraySubquery(subquery)) \

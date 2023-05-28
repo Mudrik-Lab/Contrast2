@@ -65,7 +65,7 @@ class StimulusSubCategorySerializer(serializers.ModelSerializer):
         fields = ('name', 'parent', 'id')
 
 
-class AuthorSerializer(serializers.ModelSerializer):
+class ConfigurationAuthorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Author
         fields = ('name', 'id')
@@ -119,7 +119,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_stimulus_modality_type = ModalityTypeSerializer(many=True)
     available_stimulus_category_type = StimulusCategorySerializer(many=True)
     available_stimulus_sub_category_type = StimulusSubCategorySerializer(many=True)
-    available_authors = AuthorSerializer(many=True)
+    available_authors = ConfigurationAuthorSerializer(many=True)
 
 
 class GraphImageSerializer(serializers.ModelSerializer):

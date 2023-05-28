@@ -1,3 +1,5 @@
+import itertools
+
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Func, Count
 from django.db.models.functions import JSONObject
@@ -33,6 +35,11 @@ class TheoryDrivenDistributionPieGraphDataProcessor(BaseProcessor):
         """
         theory_subquery = filtered_subquery.values("parent_theory_acronyms") \
             .annotate(experiment_count=Count("id", distinct=True))
+
+        if self.is_csv:
+            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("experiment_id"))).values_list(
+                "experiments", flat=True)
+            return set(list(itertools.chain.from_iterable(ids)))
 
         subquery = theory_subquery \
             .order_by("-experiment_count") \

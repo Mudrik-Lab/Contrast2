@@ -74,6 +74,7 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
 
 
 class ExperimentAdmin(ImportExportModelAdmin):
+
     # todo add theory to display
     list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
@@ -90,23 +91,14 @@ class ExperimentAdmin(ImportExportModelAdmin):
         StimulusInline)
 
     def get_queryset(self, request):
-        qs = super().get_queryset(request=request)
+        qs = self.model._default_manager.related()
+        # TODO: this should be handled by some parameter to the ChangeList.
+        ordering = self.get_ordering(request)
+        if ordering:
+            qs = qs.order_by(*ordering)
+        return qs
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
-        return qs.select_related("study") \
-            .prefetch_related("study__authors")\
-            .prefetch_related("theory_driven_theories")\
-            .prefetch_related("aggregated_theories")\
-            .prefetch_related(Prefetch('measures', queryset=Measure.objects.select_related("type")))\
-            .prefetch_related(Prefetch('tasks', queryset=Task.objects.select_related("type")))\
-            .prefetch_related(Prefetch('finding_tags', queryset=Task.objects.select_related("type")))\
-            .prefetch_related(Prefetch('consciousness_measures',
-                                       queryset=ConsciousnessMeasure.objects.select_related("type", "phase"))) \
-            .prefetch_related(Prefetch('stimuli',
-                                       queryset=Stimulus.objects.select_related("category", "sub_category", "modality"))) \
-            .prefetch_related('samples')\
-            .prefetch_related(Prefetch('paradigms',
-                                       queryset=Paradigm.objects.select_related('parent', 'parent__parent'))) \
-            .prefetch_related("techniques")
+        
 
     @admin.display(empty_value="")
     def study__title(self, obj):

@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import CASCADE, Q
 
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
+from studies.managers import ExperimentManager
 
 
 class Experiment(models.Model):
@@ -31,6 +32,8 @@ class Experiment(models.Model):
                                                     )
     type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices)
     notes = models.TextField(null=True, blank=True)
+
+    objects = ExperimentManager()
 
     # TODO add all relevant Interpretations on creations
 

@@ -2,6 +2,7 @@ from typing import List
 
 from django.db.models import QuerySet
 
+from contrast_api.utils import cast_as_boolean
 from studies.models import Experiment
 
 
@@ -14,7 +15,7 @@ class BaseProcessor:
             min_number_of_experiments = min_number_of_experiments - 1
         self.min_number_of_experiments = min_number_of_experiments
 
-        self.is_csv = bool(kwargs.pop("is_csv", [False])[0])
+        self.is_csv = cast_as_boolean(kwargs.pop("is_csv", [False])[0])
 
     def process(self):
         raise NotImplementedError()

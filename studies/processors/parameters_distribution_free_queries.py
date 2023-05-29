@@ -51,11 +51,12 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         queryset = self.experiments
         if len(self.interpretations):
             if len(self.interpretation_theories):
-                queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations)
-                                           .values_list("experiment_id", flat=True))
-            else:
                 queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations,
                                                                                 theory__parent_id__in=self.interpretation_theories)
+                                           .values_list("experiment_id", flat=True))
+            else:
+                queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations
+                                                                                )
                                            .values_list("experiment_id", flat=True))
         if len(self.techniques):
             queryset = queryset.filter(techniques__id__in=self.techniques)
@@ -285,7 +286,8 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         # Hopefully this is generic enough to be reused
 
         if self.is_csv:
-            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("experiment_id"))).values_list(
+            ids = queryset.annotate(
+                experiments=ArraySubquery(filtered_subquery.values_list("experiment_id"))).values_list(
                 "experiments", flat=True)
             return set(list(itertools.chain.from_iterable(ids)))
 

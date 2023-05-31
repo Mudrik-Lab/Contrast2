@@ -1,5 +1,5 @@
 # What is this
-Contrast2 api repo
+Contrast api repo
 
 ## About this project
 Relevant docs:
@@ -7,13 +7,19 @@ Relevant docs:
 * [parameters list](https://docs.google.com/spreadsheets/d/1ZrSEdJrwjikTdF_IJ3A6S6rGjU3UV7vx/edit#gid=1895565395)
 * [structure](https://docs.google.com/document/d/11E_O41yWsau9-m7zqWexPv16NjtAX3u1/edit)
 
-## Contributing
+## Licensing
 
+We believe in open-science!
+The data is licensed under  CC-BY-SA-4.0 creative commons open license
+and the [code here under the GNU GPLv3 open source license](./LICENSE)
+
+## Contributing
+see [CONTRIBUTING](./CONTRIBUTING.md)
 
 # Technology and setup
 python 3.10
 Django + drf + django-filter
-DB in postgresql
+DB is postgresql
 Django configurations for settings file
 Common practice middlewares (timezones, querycount)
 
@@ -101,10 +107,8 @@ poetry run python manage.py test
 ```
 ## Production
 
-Ready to run as container (see dockerfile). Environment is determined by DJANGO_CONFIGURATION env variable
-which maps to class in settings.py. Note that in non local dev environments DEBUG=False so django won't magically serve statics
-You can use Nginx for that (before the django service, see, the [nginx.conf](deploy/nginx.conf) for a reference)
-or install [whitenoise](https://whitenoise.evans.io/) and add it as a middleware. This is a common pattern for PAAS deployments
+Currently this project is deployed to Heroku, via [github actions ci](./.github/workflows/ci.yml) 
+
 
 ## Setup for use in local environment as a "black box"
 e.g when you work on the frontend
@@ -131,9 +135,6 @@ docker exec -it web_contrast_api python manage.py load_historic_data
 # This runs the load, but inside the already running containers
 ```
 ### CI
-Depends on where you run, we support an initial github actions CI out of the box -declared [here](./.github/workflows/ci.yml) and 
 
-## Not included libraries you might consider adding
-* [Django nested inlines](https://github.com/s-block/django-nested-inline) for "nesting inlines" in the admin
-* [Celery](https://docs.celeryq.dev/en/stable/) for async, scheduled or "out of request/response cycle" behavior
-* [django admin reorder](https://pypi.org/project/django-modeladmin-reorder/) to customize the admin further
+As part of deploying this app we also deploy a [separately build react app](https://github.com/Mudrik-Lab/ContrastFront), and serve it from the django project
+with django-spa. 

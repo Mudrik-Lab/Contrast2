@@ -17,7 +17,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
-        self.interpretations = kwargs.pop("interpretations", [])
+        self.interpretations_types = kwargs.pop("interpretations_types", [])
         self.interpretation_theories = kwargs.pop("interpretation_theories", [])
         self.techniques = kwargs.pop("techniques", [])
         self.paradigms = kwargs.pop("paradigms", [])
@@ -49,13 +49,13 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def get_queryset(self):
         queryset = self.experiments
-        if len(self.interpretations):
+        if len(self.interpretations_types):
             if len(self.interpretation_theories):
-                queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations,
+                queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations_types,
                                                                                 theory__parent_id__in=self.interpretation_theories)
                                            .values_list("experiment_id", flat=True))
             else:
-                queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations
+                queryset = queryset.filter(id__in=Interpretation.objects.filter(type__in=self.interpretations_types
                                                                                 )
                                            .values_list("experiment_id", flat=True))
         if len(self.techniques):

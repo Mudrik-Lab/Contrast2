@@ -1,9 +1,6 @@
-from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField, Value
+from django.db.models import QuerySet, F, Count
 from django.db.models.functions import JSONObject
 
-from contrast_api.orm_helpers import SubqueryCount
-from studies.choices import InterpretationsChoices
 from studies.models import Experiment, Paradigm, Interpretation, Sample, FindingTagType, FindingTagFamily, TaskType, \
     ModalityType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, Technique, MeasureType, Theory
 from studies.models.stimulus import StimulusCategory
@@ -205,7 +202,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                     total_value = self.accumulate_total_from_series(series)
                     result = dict(
                         series=series,
-                        series_name=theory.name,
+                        series_name=theory.acronym,
                         value=total_value
                     )
                     results.append(result)

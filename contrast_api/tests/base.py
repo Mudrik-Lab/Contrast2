@@ -5,7 +5,7 @@ from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, \
     ExperimentTypeChoices
 from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, \
-    Technique, Study, FindingTag
+    Technique, Study, FindingTag, Sample
 
 
 class BaseTestCase(APITestCase):
@@ -29,6 +29,7 @@ class BaseTestCase(APITestCase):
         techniques = None
         theory_driven_theories = None
         finding_tags = None
+        samples = None
         if "paradigms" in kwargs:
             paradigms = kwargs.pop("paradigms")
 
@@ -40,6 +41,9 @@ class BaseTestCase(APITestCase):
 
         if "theory_driven_theories" in kwargs:
             theory_driven_theories = kwargs.pop("theory_driven_theories")
+
+        if "samples" in kwargs:
+            samples = kwargs.pop("samples")
 
         experiment_params = {**default_experiment, **kwargs}
         experiment, created = Experiment.objects.get_or_create(**experiment_params)
@@ -58,6 +62,11 @@ class BaseTestCase(APITestCase):
             for item in finding_tags:
                 tag = FindingTag.objects.create(**dict(experiment=experiment, **item))
                 experiment.finding_tags.add(tag)
+
+        if samples:
+            for sample in samples:
+                sample = Sample.objects.create(**dict(experiment=experiment, **sample))
+                experiment.samples.add(sample)
 
         return experiment
 

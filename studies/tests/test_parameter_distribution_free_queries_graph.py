@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from studies.choices import ReportingChoices, InterpretationsChoices
+from studies.choices import ReportingChoices, InterpretationsChoices, SampleChoices
 from contrast_api.tests.base import BaseTestCase
 from studies.open_api_parameters import BREAKDOWN_OPTIONS
 
@@ -32,13 +32,18 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
                                                                       parent=different_parent_paradigm)
         first_technique = self.given_technique_exists("a_first_technique")
         second_technique = self.given_technique_exists("b_second_technique")
+        sample_data_1 = dict(type=SampleChoices.CHILDREN, total_size=10, size_included=8)
+        sample_data_2 = dict(type=SampleChoices.HEALTHY_ADULTS, total_size=15, size_included=13)
+
         israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
                                                                           paradigms=[masking_child_paradigm],
                                                                           is_reporting=ReportingChoices.NO_REPORT,
+                                                                          samples=[sample_data_1],
                                                                           techniques=[second_technique])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
                                                                             finding_description="brave new world",
                                                                             techniques=[second_technique],
+                                                                            samples=[sample_data_2],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
                                                                             paradigms=[different_child_paradigm,
                                                                                        masking_child_paradigm])
@@ -46,6 +51,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
                                                                                   techniques=[first_technique,
                                                                                               second_technique],
                                                                                   is_reporting=ReportingChoices.BOTH,
+                                                                                  samples=[sample_data_1],
                                                                                   paradigms=[
                                                                                       masking_child_paradigm,
                                                                                       another_different_child_paradigm])
@@ -111,6 +117,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         self.assertEqual(second_series["key"], different_parent_paradigm.name)  # 2
 
         self.assertEqual(first_series["value"], 3)
+        self.assertEqual(second_series["value"], 2)
 
         target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-free-queries",
                                                     breakdown="paradigm_family", techniques=[first_technique.id])
@@ -124,6 +131,27 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         self.assertEqual(second_series["key"], masking_parent_paradigm.name)
 
         self.assertEqual(first_series["value"], 1)
+        self.assertEqual(second_series["value"], 1)
+
+    def test_sample_breakdown(self):
+        another_different_child_paradigm, \
+        different_child_paradigm, \
+        different_parent_paradigm, \
+        first_measure, first_technique, \
+        fourth_measure, masking_child_paradigm, \
+        masking_parent_paradigm, second_measure, \
+        second_technique, third_measure_with_second_type = self._given_world_setup()
+
+        target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-free-queries",
+                                                    breakdown="population")
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data), 2)  # as gnw child interperation to two paradigms
+        first_series = res.data[0]
+        second_series = res.data[1]
+        self.assertEqual(first_series["key"], SampleChoices.CHILDREN)
+        self.assertEqual(second_series["key"], SampleChoices.HEALTHY_ADULTS)
+        self.assertEqual(first_series["value"], 2)
         self.assertEqual(second_series["value"], 1)
 
     def test_all_breakdown_sanity_test(self):

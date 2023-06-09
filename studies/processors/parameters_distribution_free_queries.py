@@ -128,7 +128,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_population(self):
         experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.filtered_experiments) \
-            .filter(experiment__samples=OuterRef("pk")) \
+            .filter(experiment__samples__type=OuterRef("series_name")) \
             .values("experiment")
 
         breakdown_query = Sample.objects.values("type") \

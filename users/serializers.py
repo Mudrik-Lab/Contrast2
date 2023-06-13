@@ -10,14 +10,16 @@ from users.models import Profile
 class UsernameOnlySerializer(serializers.Serializer):
     username = serializers.CharField()
 
+
 class UserResponseSerializer(serializers.Serializer):
     exists = serializers.BooleanField()
 
-class ProfileSerializer(serializers.ModelSerializer):
+
+class ProfileUpdateSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     country_of_residence = CountryField(required=False)
     username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField(source='user.email', read_only=True)
+    email = serializers.EmailField()
 
     class Meta:
         model = Profile
@@ -26,7 +28,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)
-        user_properties = ["username"]
+        user_properties = ["email"]
         # Simply set each attribute on the instance, and then save it.
         # Note that unlike `.create()` we don't need to treat many-to-many
         # relationships as being a special case. During updates we already
@@ -57,6 +59,18 @@ class ProfileSerializer(serializers.ModelSerializer):
             field.set(value)
 
         return instance
+
+
+class ProfileSerializer(serializers.ModelSerializer):
+    user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    country_of_residence = CountryField(required=False)
+    username = serializers.CharField(source='user.username', read_only=True)
+    email = serializers.EmailField(source='user.email', read_only=True)
+
+    class Meta:
+        model = Profile
+        fields = ("user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
+                  "academic_stage", "has_ASSC_membership", "username", "email")
 
 
 class RegistrationSerializer(ProfileSerializer):

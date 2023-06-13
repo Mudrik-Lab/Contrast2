@@ -11,7 +11,8 @@ from rest_framework.viewsets import mixins
 
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
-from users.serializers import ProfileSerializer, RegistrationSerializer, UsernameOnlySerializer, UserResponseSerializer
+from users.serializers import ProfileSerializer, RegistrationSerializer, UsernameOnlySerializer, UserResponseSerializer, \
+    ProfileUpdateSerializer
 
 
 # Create your views here.
@@ -20,6 +21,12 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
     queryset = Profile.objects.all()
     permission_classes = (SelfOnlyProfilePermission,)
     serializer_class = ProfileSerializer
+
+    def get_serializer_class(self):
+        if self.action in ['update', 'partial_update']:
+            return ProfileUpdateSerializer
+        else:
+            return super().get_serializer_class()
 
     @extend_schema(request=UsernameOnlySerializer)
     @action(detail=False, methods=["POST"],

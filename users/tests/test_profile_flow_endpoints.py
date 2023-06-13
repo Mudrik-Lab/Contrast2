@@ -81,12 +81,14 @@ class UserRegistrationTestCase(BaseTestCase):
 
         # Now update the academic stage
 
-        res = self.when_user_updates_data(user_id=home_res.data["user"], academic_stage=AcademicStageChoices.POSTDOC)
+        res = self.when_user_updates_data(user_id=home_res.data["user"], academic_stage=AcademicStageChoices.POSTDOC,
+                                          email="my_new_email@test.com")
 
         # verify the change
         home_res = self.when_user_access_home()
         self.assertEqual(home_res.status_code, status.HTTP_200_OK)
         self.assertEqual(home_res.data.get("academic_stage"), AcademicStageChoices.POSTDOC)
+        self.assertEqual("my_new_email@test.com", home_res.data.get("email"))
 
     def when_user_is_registered(self, username, password, **kwargs):
         data = dict(username=username, password=password, **kwargs)

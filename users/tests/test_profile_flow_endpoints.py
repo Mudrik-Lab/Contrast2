@@ -53,10 +53,51 @@ class UserRegistrationTestCase(BaseTestCase):
         self.assertEqual(home_res.status_code, status.HTTP_200_OK)
         self.assertEqual(home_res.data.get("academic_stage"), AcademicStageChoices.UNDERGRADUATE)
 
+    def test_user_update_case(self):
+        user_birthdate = (timezone.now() - datetime.timedelta(days=365 * 30)).strftime("%Y-%m-%d")
+        username = "user1"
+        password = "12345"
+        email = "user1@test.com"
+
+        res = self.when_user_is_registered(
+            username=username,
+            password=password,
+            email=email,
+            date_of_birth=user_birthdate,
+            academic_stage=AcademicStageChoices.UNDERGRADUATE,
+            self_identified_gender=GenderChoices.NOT_REPORTING)
+
+        # Should now show the username does exists
+
+        # Should allow logging in
+        login_res = self.when_user_logs_in(username, password)
+        self.assertEqual(login_res.status_code, status.HTTP_200_OK)
+        self.given_user_authenticated(login_res)
+
+        # Supports home endpoint
+        home_res = self.when_user_access_home()
+        self.assertEqual(home_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(home_res.data.get("academic_stage"), AcademicStageChoices.UNDERGRADUATE)
+
+        # Now update the academic stage
+
+        res = self.when_user_updates_data(user_id=home_res.data["user"], academic_stage=AcademicStageChoices.POSTDOC)
+
+        # verify the change
+        home_res = self.when_user_access_home()
+        self.assertEqual(home_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(home_res.data.get("academic_stage"), AcademicStageChoices.POSTDOC)
+
     def when_user_is_registered(self, username, password, **kwargs):
         data = dict(username=username, password=password, **kwargs)
         res = self.client.post(reverse("profiles-register"), data=json.dumps(data), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        return res.data
+
+    def when_user_updates_data(self, user_id, **kwargs):
+        res = self.client.patch(reverse("profiles-detail", args=[user_id]), data=json.dumps(dict(**kwargs)),
+                                content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
     def given_user_authenticated(self, res):

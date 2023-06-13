@@ -7,6 +7,12 @@ from rest_framework.utils import model_meta
 from users.models import Profile
 
 
+class UsernameOnlySerializer(serializers.Serializer):
+    username = serializers.CharField()
+
+class UserResponseSerializer(serializers.Serializer):
+    exists = serializers.BooleanField()
+
 class ProfileSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     country_of_residence = CountryField(required=False)

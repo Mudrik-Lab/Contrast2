@@ -11,7 +11,7 @@ from rest_framework.viewsets import mixins
 
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
-from users.serializers import ProfileSerializer, RegistrationSerializer
+from users.serializers import ProfileSerializer, RegistrationSerializer, UsernameOnlySerializer, UserResponseSerializer
 
 
 # Create your views here.
@@ -20,6 +20,24 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
     queryset = Profile.objects.all()
     permission_classes = (SelfOnlyProfilePermission,)
     serializer_class = ProfileSerializer
+
+    @extend_schema(request=UsernameOnlySerializer)
+    @action(detail=False, methods=["POST"],
+            permission_classes=[AllowAny], serializer_class=UserResponseSerializer)
+    def check_username(self, request, **kwargs):
+        """
+        Part of the login/register flow
+        """
+        serializer = UsernameOnlySerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        username = serializer.validated_data.get("username")
+        UserModel = get_user_model()
+        already_exists = UserModel.objects.filter(username=username).exists()
+
+        res = dict(exists=already_exists)
+        serializer = self.get_serializer(data=res)
+        serializer.is_valid(raise_exception=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(request=RegistrationSerializer)
     @action(detail=False, methods=["POST"],
@@ -48,3 +66,5 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         user = request.user
         serializer = self.get_serializer(instance=user.profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+

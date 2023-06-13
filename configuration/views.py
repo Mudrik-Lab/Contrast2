@@ -6,11 +6,14 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from configuration.models import GraphImage
-from configuration.serializers import StudiesConfigurationSerializer, GraphsConfigurationSerializer
+from configuration.serializers import StudiesConfigurationSerializer, GraphsConfigurationSerializer, \
+    RegistrationConfigurationSerializer
 from studies.choices import SampleChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
     ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
+from users.choices import GenderChoices, AcademicStageChoices
+
 
 # Create your views here.
 
@@ -72,12 +75,13 @@ class ConfigurationView(GenericViewSet):
             permission_classes=[AllowAny])
     def graphs(self, request, **kwargs):
         images = GraphImage.objects.all()
-        available_parent_theories = Theory.objects.select_related().filter(parent__isnull=True).values_list("name", flat=True)
+        available_parent_theories = Theory.objects.select_related().filter(parent__isnull=True).values_list("name",
+                                                                                                            flat=True)
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True)
         available_techniques_for_frequencies = Technique.objects.filter(
             findings_tags__family__name="Frequency").distinct().values_list("name", flat=True)
-        available_techniques_for_timings = Technique.objects.filter(findings_tags__family__name="Temporal").distinct()\
+        available_techniques_for_timings = Technique.objects.filter(findings_tags__family__name="Temporal").distinct() \
             .values_list("name", flat=True)
 
         configuration_data = dict(
@@ -86,6 +90,19 @@ class ConfigurationView(GenericViewSet):
             available_finding_tags_types_for_timings=available_finding_tags_types_for_timings,
             available_techniques_for_frequencies=available_techniques_for_frequencies,
             available_techniques_for_timings=available_techniques_for_timings,
+
+        )
+        serializer = self.get_serializer(instance=configuration_data)
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=["GET"], serializer_class=RegistrationConfigurationSerializer,
+            permission_classes=[AllowAny])
+    def registration_form(self, request, **kwargs):
+
+        configuration_data = dict(
+            gender_options=GenderChoices.values,
+            academic_stage_options=AcademicStageChoices.values
 
         )
         serializer = self.get_serializer(instance=configuration_data)

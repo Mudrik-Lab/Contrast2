@@ -81,7 +81,7 @@ class UserRegistrationTestCase(BaseTestCase):
 
         # Now update the academic stage
 
-        res = self.when_user_updates_data(user_id=home_res.data["user"], academic_stage=AcademicStageChoices.POSTDOC,
+        res = self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
                                           email="my_new_email@test.com")
 
         # verify the change
@@ -96,8 +96,8 @@ class UserRegistrationTestCase(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
-    def when_user_updates_data(self, user_id, **kwargs):
-        res = self.client.patch(reverse("profiles-detail", args=[user_id]), data=json.dumps(dict(**kwargs)),
+    def when_user_updates_data(self, profile_id, **kwargs):
+        res = self.client.patch(reverse("profiles-detail", args=[profile_id]), data=json.dumps(dict(**kwargs)),
                                 content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data

@@ -23,7 +23,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
+        fields = ("id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
                   "academic_stage", "has_ASSC_membership", "username", "email")
 
     def update(self, instance, validated_data):
@@ -69,7 +69,7 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
+        fields = ("id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
                   "academic_stage", "has_ASSC_membership", "username", "email")
 
 
@@ -80,5 +80,5 @@ class RegistrationSerializer(ProfileSerializer):
 
     class Meta:
         model = Profile
-        fields = ("date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
+        fields = ("id", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
                   "academic_stage", "has_ASSC_membership", "username", "password", "email")

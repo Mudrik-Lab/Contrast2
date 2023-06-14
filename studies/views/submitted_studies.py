@@ -1,6 +1,6 @@
 import copy
 
-from rest_framework import mixins, status
+from rest_framework import mixins, status, filters
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
@@ -13,6 +13,7 @@ from studies.serializers import StudyWithExperimentsSerializer
 class SubmitStudiesViewSet(mixins.CreateModelMixin,
                            mixins.ListModelMixin,
                            mixins.RetrieveModelMixin,
+                           mixins.UpdateModelMixin,
                            GenericViewSet):
     """
     Getting/creating studies I'm submitting, adding experiments, editing, etc
@@ -35,13 +36,19 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
                           "experiments__finding_tags__type",
                           "experiments__finding_tags__technique"
                           ) \
-        .filter(approval_status=ApprovalChoices.PENDING)
+        .order_by("-id", "approval_status")
     permission_classes = [IsAuthenticated]
     serializer_class = StudyWithExperimentsSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['title', "DOI"]
 
     def get_queryset(self):
-        return super().get_queryset() \
+        qs = super().get_queryset() \
             .filter(submitter=self.request.user)
+        if self.action in ["update", "partial_update"]:
+            # we can update only items still in pending status
+            qs = qs.filter(approval_status=ApprovalChoices.PENDING)
+        return qs
 
     def create(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
@@ -49,7 +56,10 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
         data["approval_status"] = ApprovalChoices.PENDING
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
+        authors = serializer.validated_data.get("authors")
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+

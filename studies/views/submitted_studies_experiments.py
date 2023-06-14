@@ -4,7 +4,6 @@ from typing import List, Dict
 
 from django.shortcuts import get_object_or_404
 from rest_framework import mixins, status
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import GenericViewSet
@@ -25,8 +24,7 @@ class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
     # TODO handle permissions, so delete/patch can't be done for non draft studies, or none mine
     permission_classes = [SubmitterOnlyPermission]
     serializer_class = FullExperimentSerializer
-    queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter") \
-        .filter(study__approval_status=ApprovalChoices.PENDING)
+    queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
 
     def initial(self, request, *args, **kwargs):
         self.parent_object = get_object_or_404(Study.objects.filter(approval_status=ApprovalChoices.PENDING),
@@ -34,14 +32,17 @@ class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
         return super().initial(request, args, kwargs)
 
     def check_permissions(self, request):
+        # we need to verify it has permissions on the parent object, the study
         super().check_permissions(request)
         super().check_object_permissions(request, self.parent_object)
 
     def get_queryset(self):
-        return super().get_queryset() \
-            .filter(study__approval_status=ApprovalChoices.PENDING) \
+        qs = super().get_queryset() \
             .filter(study=self.kwargs.get("study_pk")) \
             .filter(study__submitter=self.request.user)
+        if self.action in ["create", "update", "partial_update", "delete"]:
+            qs = qs.filter(study__approval_status=ApprovalChoices.PENDING)
+        return qs
 
     def create_nested_objects(self, experiment_id: int, items_data: List[Dict],
                               serializer_cls: ModelSerializer.__class__):

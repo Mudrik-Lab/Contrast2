@@ -134,3 +134,8 @@ class GraphsConfigurationSerializer(serializers.Serializer):
     available_techniques_for_timings = serializers.ListSerializer(child=serializers.CharField())
     available_techniques_for_frequencies = serializers.ListSerializer(child=serializers.CharField())
     images = GraphImageSerializer(many=True)
+
+
+class RegistrationConfigurationSerializer(serializers.Serializer):
+    gender_options = serializers.ListSerializer(child=serializers.CharField())
+    academic_stage_options = serializers.ListSerializer(child=serializers.CharField())

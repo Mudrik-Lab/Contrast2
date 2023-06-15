@@ -29,7 +29,8 @@ urlpatterns = [
     path('api-token-auth/', TokenObtainPairView.as_view(), name='api-token-obtain-pair'),
     path('api-token-refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
     path('api/studies/', include('studies.urls')),
-    path('api/configuration/', include('configuration.urls'))
+    path('api/configuration/', include('configuration.urls')),
+    path('api/profiles/', include('users.urls'))
 ]
 
 configuration_name = settings.CONFIGURATION.split(".")[-1]

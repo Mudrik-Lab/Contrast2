@@ -151,10 +151,14 @@ class StudyAdmin(ImportExportModelAdmin):
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title")
     search_fields = ("title", "DOI")
-    list_filter = (CountryFilter,)
+    list_filter = (CountryFilter,
+                   ("year", NumericRangeFilter),
+                   )
     inlines = [
         ExperimentInline
     ]
+
+
 
 
 class AuthorAdmin(ImportExportModelAdmin):

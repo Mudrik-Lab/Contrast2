@@ -23,8 +23,9 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
-                  "academic_stage", "has_ASSC_membership", "username", "email")
+        fields = (
+            "id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
+            "academic_stage", "has_ASSC_membership", "username", "email")
 
     def update(self, instance, validated_data):
         info = model_meta.get_field_info(instance)
@@ -69,16 +70,18 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Profile
-        fields = ("id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
-                  "academic_stage", "has_ASSC_membership", "username", "email")
+        fields = (
+            "id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
+            "academic_stage", "has_ASSC_membership", "username", "email")
 
 
-class RegistrationSerializer(ProfileSerializer):
-    password = serializers.CharField()
-    email = serializers.EmailField()
-    username = serializers.CharField()
-
+class UserRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile
-        fields = ("id", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
-                  "academic_stage", "has_ASSC_membership", "username", "password", "email")
+        model = get_user_model()
+        fields = ("username", "password", "email")
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = get_user_model()
+        fields = ("id", "email", "username")

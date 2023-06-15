@@ -11,8 +11,8 @@ from rest_framework.viewsets import mixins
 
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
-from users.serializers import ProfileSerializer, RegistrationSerializer, UsernameOnlySerializer, UserResponseSerializer, \
-    ProfileUpdateSerializer
+from users.serializers import ProfileSerializer, UsernameOnlySerializer, UserResponseSerializer, \
+    ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer
 
 
 # Create your views here.
@@ -46,22 +46,28 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         serializer.is_valid(raise_exception=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @extend_schema(request=RegistrationSerializer)
+    @extend_schema(request=UserRegistrationSerializer)
     @action(detail=False, methods=["POST"],
-            permission_classes=[AllowAny])
-    def register(self, request, **kwargs):
+            permission_classes=[AllowAny], serializer_class=UserSerializer)
+    def register_user(self, request, **kwargs):
         UserModel = get_user_model()
 
-        serializer = RegistrationSerializer(data=request.data, context=self.get_serializer_context())
+        serializer = UserRegistrationSerializer(data=request.data, context=self.get_serializer_context())
         serializer.is_valid(raise_exception=True)
-
         if UserModel.objects.filter(username=serializer.validated_data.get("username")).exists():
             raise BadRequest()
-
         user = UserModel.objects.create_user(username=serializer.validated_data.get("username"),
                                              password=serializer.validated_data.get("password"),
                                              email=serializer.validated_data.get("email"))
-        profile_data = dict(user=user.id, **request.data)
+        user_serializer = self.get_serializer(instance=user)
+        return Response(user_serializer.data, status=status.HTTP_201_CREATED)
+
+    @action(detail=False, methods=["POST"],
+            permission_classes=[permissions.IsAuthenticated])
+    def register(self, request, **kwargs):
+        if Profile.objects.filter(user=request.user).exists():
+            raise BadRequest()
+        profile_data = dict(user=request.user.id, **request.data)
         profile_serializer = self.get_serializer(data=profile_data)
         profile_serializer.is_valid(raise_exception=True)
         profile_serializer.save()

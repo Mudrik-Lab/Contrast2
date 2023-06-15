@@ -30,10 +30,14 @@ class UserRegistrationTestCase(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertFalse(res.data["exists"])
 
-        res = self.when_user_is_registered(
-            username=username,
-            password=password,
-            email=email,
+        res = self.when_user_is_registered(username=username, password=password, email=email)
+
+        # Should allow logging in
+        login_res = self.when_user_logs_in(username, password)
+        self.assertEqual(login_res.status_code, status.HTTP_200_OK)
+        self.given_user_authenticated(login_res)
+
+        res = self.when_user_profile_is_registered(
             date_of_birth=user_birthdate,
             academic_stage=AcademicStageChoices.UNDERGRADUATE,
             self_identified_gender=GenderChoices.NOT_REPORTING)
@@ -42,11 +46,6 @@ class UserRegistrationTestCase(BaseTestCase):
         res = self.when_user_does_username_check(username)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertTrue(res.data["exists"])
-
-        # Should allow logging in
-        login_res = self.when_user_logs_in(username, password)
-        self.assertEqual(login_res.status_code, status.HTTP_200_OK)
-        self.given_user_authenticated(login_res)
 
         # Supports home endpoint
         home_res = self.when_user_access_home()
@@ -59,20 +58,17 @@ class UserRegistrationTestCase(BaseTestCase):
         password = "12345"
         email = "user1@test.com"
 
-        res = self.when_user_is_registered(
-            username=username,
-            password=password,
-            email=email,
-            date_of_birth=user_birthdate,
-            academic_stage=AcademicStageChoices.UNDERGRADUATE,
-            self_identified_gender=GenderChoices.NOT_REPORTING)
-
-        # Should now show the username does exists
+        res = self.when_user_is_registered(username=username, password=password, email=email)
 
         # Should allow logging in
         login_res = self.when_user_logs_in(username, password)
         self.assertEqual(login_res.status_code, status.HTTP_200_OK)
         self.given_user_authenticated(login_res)
+
+        res = self.when_user_profile_is_registered(
+            date_of_birth=user_birthdate,
+            academic_stage=AcademicStageChoices.UNDERGRADUATE,
+            self_identified_gender=GenderChoices.NOT_REPORTING)
 
         # Supports home endpoint
         home_res = self.when_user_access_home()
@@ -90,9 +86,15 @@ class UserRegistrationTestCase(BaseTestCase):
         self.assertEqual(home_res.data.get("academic_stage"), AcademicStageChoices.POSTDOC)
         self.assertEqual("my_new_email@test.com", home_res.data.get("email"))
 
-    def when_user_is_registered(self, username, password, **kwargs):
-        data = dict(username=username, password=password, **kwargs)
+    def when_user_profile_is_registered(self, **kwargs):
+        data = dict(**kwargs)
         res = self.client.post(reverse("profiles-register"), data=json.dumps(data), content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        return res.data
+
+    def when_user_is_registered(self, **kwargs):
+        data = dict(**kwargs)
+        res = self.client.post(reverse("profiles-register-user"), data=json.dumps(data), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 

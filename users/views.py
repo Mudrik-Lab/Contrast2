@@ -12,7 +12,7 @@ from rest_framework.viewsets import mixins
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
 from users.serializers import ProfileSerializer, UsernameOnlySerializer, UserResponseSerializer, \
-    ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer
+    ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer, ProfileCreateSerializer
 
 
 # Create your views here.
@@ -25,6 +25,8 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
     def get_serializer_class(self):
         if self.action in ['update', 'partial_update']:
             return ProfileUpdateSerializer
+        elif self.action in ['register']:
+            return ProfileCreateSerializer
         else:
             return super().get_serializer_class()
 
@@ -55,7 +57,7 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         serializer = UserRegistrationSerializer(data=request.data, context=self.get_serializer_context())
         serializer.is_valid(raise_exception=True)
         if UserModel.objects.filter(username=serializer.validated_data.get("username")).exists():
-            raise BadRequest()
+            raise BadRequest("Attempting to register an existing user")
         user = UserModel.objects.create_user(username=serializer.validated_data.get("username"),
                                              password=serializer.validated_data.get("password"),
                                              email=serializer.validated_data.get("email"))
@@ -66,7 +68,7 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
             permission_classes=[permissions.IsAuthenticated])
     def register(self, request, **kwargs):
         if Profile.objects.filter(user=request.user).exists():
-            raise BadRequest()
+            raise BadRequest(f"Attempting to create a profile for existing profile for user {request.user.username}")
         profile_data = dict(user=request.user.id, **request.data)
         profile_serializer = self.get_serializer(data=profile_data)
         profile_serializer.is_valid(raise_exception=True)

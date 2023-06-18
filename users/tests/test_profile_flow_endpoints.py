@@ -35,7 +35,7 @@ class UserRegistrationTestCase(BaseTestCase):
         # Should allow logging in
         login_res = self.when_user_logs_in(username, password)
         self.assertEqual(login_res.status_code, status.HTTP_200_OK)
-        self.given_user_authenticated(login_res)
+        self.given_user_authenticated_with_access_token(login_res)
 
         res = self.when_user_profile_is_registered(
             date_of_birth=user_birthdate,
@@ -63,7 +63,7 @@ class UserRegistrationTestCase(BaseTestCase):
         # Should allow logging in
         login_res = self.when_user_logs_in(username, password)
         self.assertEqual(login_res.status_code, status.HTTP_200_OK)
-        self.given_user_authenticated(login_res)
+        self.given_user_authenticated_with_access_token(login_res)
 
         res = self.when_user_profile_is_registered(
             date_of_birth=user_birthdate,
@@ -104,7 +104,7 @@ class UserRegistrationTestCase(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
-    def given_user_authenticated(self, res):
+    def given_user_authenticated_with_access_token(self, res):
         access_token = res.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
 

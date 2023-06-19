@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from typing import Optional
@@ -17,6 +18,12 @@ class BaseTestCase(APITestCase):
         study_params = {**default_study, **kwargs}
         study, created = Study.objects.get_or_create(**study_params)
         return study
+
+    def given_user_authenticated(self, username, password):
+        auth_url = reverse("api-token-obtain-pair")
+        res = self.client.post(auth_url, data=dict(username=username, password=password))
+        access_token = res.data["access"]
+        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
 
     def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
         default_experiment = dict(study=study,
@@ -115,3 +122,9 @@ class BaseTestCase(APITestCase):
 
         task, created = Task.objects.get_or_create(**params)
         return task
+
+    def given_user_exists(self, username, password="12345", is_staff=False, is_superuser=False):
+        obj = get_user_model().objects.create_user(username=username, password=password, is_staff=is_staff,
+                                                   is_superuser=is_superuser)
+
+        return obj

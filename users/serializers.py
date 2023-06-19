@@ -63,7 +63,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
 
 
 class ProfileSerializer(serializers.ModelSerializer):
-    user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
+    user = PrimaryKeyRelatedField(read_only=True)
     country_of_residence = CountryField(required=False)
     username = serializers.CharField(source='user.username', read_only=True)
     email = serializers.EmailField(source='user.email', read_only=True)
@@ -73,6 +73,10 @@ class ProfileSerializer(serializers.ModelSerializer):
         fields = (
             "id", "user", "date_of_birth", "self_identified_gender", "academic_affiliation", "country_of_residence",
             "academic_stage", "has_ASSC_membership", "username", "email")
+
+
+class ProfileCreateSerializer(ProfileSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
 
 
 class UserRegistrationSerializer(serializers.ModelSerializer):

@@ -88,18 +88,6 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 201)
         return res.data
 
-    def given_user_exists(self, username, password="12345", is_staff=False, is_superuser=False):
-        obj = get_user_model().objects.create_user(username=username, password=password, is_staff=is_staff,
-                                                   is_superuser=is_superuser)
-
-        return obj
-
-    def given_user_authenticated(self, username, password):
-        auth_url = reverse("api-token-obtain-pair")
-        res = self.client.post(auth_url, data=dict(username=username, password=password))
-        access_token = res.data["access"]
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
-
     def get_pending_studies(self):
         target_url = reverse("studies-submitted-list")
         res = self.client.get(target_url)

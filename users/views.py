@@ -61,18 +61,28 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         user = UserModel.objects.create_user(username=serializer.validated_data.get("username"),
                                              password=serializer.validated_data.get("password"),
                                              email=serializer.validated_data.get("email"))
+        Profile.create_profile(user=user)
         user_serializer = self.get_serializer(instance=user)
         return Response(user_serializer.data, status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["POST"],
             permission_classes=[permissions.IsAuthenticated])
     def register(self, request, **kwargs):
-        if Profile.objects.filter(user=request.user).exists():
-            raise BadRequest(f"Attempting to create a profile for existing profile for user {request.user.username}")
-        profile_data = dict(user=request.user.id, **request.data)
-        profile_serializer = self.get_serializer(data=profile_data)
-        profile_serializer.is_valid(raise_exception=True)
-        profile_serializer.save()
+        if not Profile.objects.filter(user=request.user).exists():
+            profile_data = dict(user=request.user.id, **request.data)
+            profile_serializer = self.get_serializer(data=profile_data)
+            profile_serializer.is_valid(raise_exception=True)
+            profile_serializer.save()
+        else:
+            instance = request.user.profile
+            profile_serializer = ProfileUpdateSerializer(instance, data=request.data, partial=True)
+            profile_serializer.is_valid(raise_exception=True)
+            self.perform_update(profile_serializer)
+
+            if getattr(instance, '_prefetched_objects_cache', None):
+                # If 'prefetch_related' has been applied to a queryset, we need to
+                # forcibly invalidate the prefetch cache on the instance.
+                instance._prefetched_objects_cache = {}
 
         return Response(profile_serializer.data, status=status.HTTP_201_CREATED)
 

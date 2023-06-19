@@ -21,3 +21,8 @@ class Profile(models.Model):
     country_of_residence = CountryField(null=True, blank=True)
     academic_stage = models.CharField(max_length=50, null=True, blank=True, choices=AcademicStageChoices.choices)
     has_ASSC_membership = models.BooleanField(null=True, blank=True)
+
+    @staticmethod
+    def create_profile(user, **kwargs):
+        data = dict(user=user, **kwargs)
+        return Profile.objects.create(**data)

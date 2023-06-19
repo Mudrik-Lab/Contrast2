@@ -16,6 +16,34 @@ class UserRegistrationTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
+    def test_user_registration_without_actually_creating_a_profile_first(self):
+        user_birthdate = (timezone.now() - datetime.timedelta(days=365 * 30)).strftime("%Y-%m-%d")
+        username = "user1"
+        password = "12345"
+        email = "user1@test.com"
+
+        res = self.when_user_is_registered(username=username, password=password, email=email)
+
+        # Should allow logging in
+        login_res = self.when_user_logs_in(username, password)
+        self.assertEqual(login_res.status_code, status.HTTP_200_OK)
+        self.given_user_authenticated_with_access_token(login_res)
+
+        # Expected not to fail and exist
+        home_res = self.when_user_access_home()
+        self.assertEqual(home_res.status_code, status.HTTP_200_OK)
+        self.assertIsNone(home_res.data.get("academic_stage"))
+
+        # Now update the academic stage
+
+        res = self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
+                                          email="my_new_email@test.com")
+
+        # verify the change
+        home_res = self.when_user_access_home()
+        self.assertEqual(home_res.status_code, status.HTTP_200_OK)
+        self.assertEqual(home_res.data.get("academic_stage"), AcademicStageChoices.POSTDOC)
+        self.assertEqual("my_new_email@test.com", home_res.data.get("email"))
     def test_user_registration_case(self):
         user_birthdate = (timezone.now() - datetime.timedelta(days=365 * 30)).strftime("%Y-%m-%d")
         username = "user1"

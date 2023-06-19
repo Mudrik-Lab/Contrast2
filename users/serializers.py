@@ -19,7 +19,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     country_of_residence = CountryField(required=False)
     username = serializers.CharField(source='user.username', read_only=True)
-    email = serializers.EmailField()
+    email = serializers.EmailField(required=False)
 
     class Meta:
         model = Profile

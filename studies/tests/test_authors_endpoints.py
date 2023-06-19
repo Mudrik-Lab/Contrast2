@@ -34,7 +34,7 @@ class AuthorsTestCase(BaseTestCase):
 
         self.when_a_user_creates_an_auther("mr researcher")
 
-        res = self.when_a_user_searches_for_author("res")
+        res = self.when_a_user_searches_for_author("cher")
         self.assertEqual(len(res.data["results"]), 1)
         self.assertEqual(res.data["results"][0]["name"], "mr researcher")
 

@@ -92,7 +92,7 @@ class Base(Configuration):
             'studies.Study', 'studies.Author'
         )},
         {'app': 'studies', 'label': "experiments data", 'models': (
-            'studies.Experiment','studies.Stimulus', 'studies.FindingTag', 'studies.Interpretation','studies.Task',
+            'studies.Experiment', 'studies.Stimulus', 'studies.FindingTag', 'studies.Interpretation', 'studies.Task',
             'studies.Measure', 'studies.ConsciousnessMeasure', 'studies.Sample'
 
         )},
@@ -104,7 +104,7 @@ class Base(Configuration):
         )},
         {'app': 'configuration', 'label': 'general graphs and forms related configuration'},
 
-        {'app':'auth','label': 'user management and authorization', 'models':(
+        {'app': 'auth', 'label': 'user management and authorization', 'models': (
             'auth.Group', 'auth.User', 'users.Profile'
         )},
         {'app': 'studies', 'label': 'aggregates', 'models': (
@@ -114,11 +114,11 @@ class Base(Configuration):
     )
 
     ROOT_URLCONF = "contrast_api.urls"
-
+    EMAIL_SERVICE = "contrast_api.technical_services.email.EmailService"
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            "DIRS": [],
+            'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
@@ -130,7 +130,6 @@ class Base(Configuration):
             },
         },
     ]
-
 
     WSGI_APPLICATION = "contrast_api.wsgi.application"
 

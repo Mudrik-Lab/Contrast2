@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*
 import os
+from typing import TypeVar
+
 from django.utils.module_loading import import_string
 from django.conf import settings
 
@@ -35,14 +37,16 @@ class ServiceLocator(object):
     def get_service(cls, service_name):
         try:
             class_type = cls.get_class_from_settings(service_name)
-            return cls._get_instance(class_type)
+            return cls._get_instance(class_type, service_name)
 
         except Exception:
             raise ServiceNotRegisteredError(service_name=service_name)
 
+    U = TypeVar('U')
+
     @classmethod
-    def _get_instance(cls, instance_type):
-        key = instance_type.service_name
+    def _get_instance(cls, instance_type: U, service_name: str):
+        key = service_name
 
         if cls.singletons.get(key) is None:
             cls.singletons[key] = instance_type()

@@ -15,6 +15,13 @@ class UserResponseSerializer(serializers.Serializer):
     exists = serializers.BooleanField()
 
 
+class RequestPasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+
+
+class RequestPasswordResetResponseSerializer(serializers.Serializer):
+    reset_requested = serializers.BooleanField()
+
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())
     country_of_residence = CountryField(required=False)

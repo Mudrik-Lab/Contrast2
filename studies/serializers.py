@@ -93,7 +93,8 @@ class TaskSerializer(serializers.ModelSerializer):
 
 
 class FullExperimentSerializer(serializers.ModelSerializer):
-    interpretations = InterpretationSerializer(many=True, read_only=True)
+    study = serializers.PrimaryKeyRelatedField(queryset=Study.objects.all())
+    interpretations = serializers.SerializerMethodField()
     finding_tags = FindingTagSerializer(many=True, read_only=True)
     measures = MeasureSerializer(many=True, read_only=True)
     samples = SampleSerializer(many=True, read_only=True)
@@ -126,6 +127,10 @@ class FullExperimentSerializer(serializers.ModelSerializer):
                   "tasks"
                   )
 
+    def get_interpretations(self, obj: Experiment):
+        interpretations = Interpretation.objects.filter(experiment=obj)
+        return InterpretationSerializer(many=True, instance=interpretations).data
+
 
 class ExperimentSerializer(FullExperimentSerializer):
     techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
@@ -142,6 +147,20 @@ class ExperimentSerializer(FullExperimentSerializer):
                   "is_reporting",
                   "theory_driven",
                   "theory_driven_theories",
+                  "type",
+
+                  )
+
+
+class ThinExperimentSerializer(ExperimentSerializer):
+    class Meta:
+        model = Experiment
+        fields = ("id",
+                  "study",
+                  "finding_description",
+
+                  "is_reporting",
+                  "theory_driven",
                   "type",
 
                   )
@@ -207,6 +226,10 @@ class StudyWithExperimentsSerializer(serializers.ModelSerializer):
         return instance
 
 
+class ThinStudyWithExperimentsSerializer(StudyWithExperimentsSerializer):
+    experiments = ThinExperimentSerializer(many=True, required=False)
+
+
 class ExcludedStudySerializer(StudySerializer):
     sub_research_area = serializers.CharField(source="approval_process.sub_research_area")
     research_area = serializers.CharField(source="approval_process.research_area")
@@ -229,6 +252,7 @@ class NationOfConsciousnessGraphSerializer(serializers.Serializer):
 
     def get_country_name(self, obj):
         return countries.name(obj["country"])
+
 
 class YearlySeriesSerializer(serializers.Serializer):
     year = serializers.IntegerField()

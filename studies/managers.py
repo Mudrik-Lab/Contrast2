@@ -6,14 +6,14 @@ from django.db.models import Prefetch
 
 class ExperimentManager(models.Manager):
     def related(self):
-        from studies.models import Measure, Task, ConsciousnessMeasure, Stimulus, Paradigm
+        from studies.models import Measure, Task, ConsciousnessMeasure, Stimulus, Paradigm, FindingTag
         return self.get_queryset().select_related("study") \
             .prefetch_related("study__authors") \
             .prefetch_related("theory_driven_theories") \
             .prefetch_related("aggregated_theories") \
             .prefetch_related(Prefetch('measures', queryset=Measure.objects.select_related("type"))) \
             .prefetch_related(Prefetch('tasks', queryset=Task.objects.select_related("type"))) \
-            .prefetch_related(Prefetch('finding_tags', queryset=Task.objects.select_related("type"))) \
+            .prefetch_related(Prefetch('finding_tags', queryset=FindingTag.objects.select_related("type"))) \
             .prefetch_related(Prefetch('consciousness_measures',
                                        queryset=ConsciousnessMeasure.objects.select_related("type", "phase"))) \
             .prefetch_related(Prefetch('stimuli',

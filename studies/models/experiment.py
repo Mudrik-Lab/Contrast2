@@ -38,9 +38,9 @@ class Experiment(models.Model):
     # TODO add all relevant Interpretations on creations
 
     def clean(self):
-        if len(self.paradigms) == 0 or self.paradigms is None:
+        if self.paradigms.count() == 0 or self.paradigms is None:
             raise ValidationError({"paradigms": "There should be at least one"})
-        if len(self.techniques) == 0 or self.techniques is None:
+        if self.techniques.count() == 0 or self.techniques is None:
             raise ValidationError({"techniques": "There should be at least one"})
 
     def __str__(self):

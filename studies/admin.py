@@ -74,7 +74,6 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
 
 
 class ExperimentAdmin(ImportExportModelAdmin):
-
     # todo add theory to display
     list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
@@ -98,7 +97,6 @@ class ExperimentAdmin(ImportExportModelAdmin):
             qs = qs.order_by(*ordering)
         return qs
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
-        
 
     @admin.display(empty_value="")
     def study__title(self, obj):
@@ -157,8 +155,6 @@ class StudyAdmin(ImportExportModelAdmin):
     inlines = [
         ExperimentInline
     ]
-
-
 
 
 class AuthorAdmin(ImportExportModelAdmin):

@@ -19,8 +19,19 @@ class RequestPasswordResetSerializer(serializers.Serializer):
     email = serializers.EmailField()
 
 
+class PasswordResetSerializer(serializers.Serializer):
+    email = serializers.EmailField()
+    password = serializers.CharField()
+    token = serializers.CharField()
+
+
+class PasswordResetResponseSerializer(serializers.Serializer):
+    password_reset = serializers.BooleanField()
+
+
 class RequestPasswordResetResponseSerializer(serializers.Serializer):
     reset_requested = serializers.BooleanField()
+
 
 class ProfileUpdateSerializer(serializers.ModelSerializer):
     user = PrimaryKeyRelatedField(queryset=get_user_model().objects.all())

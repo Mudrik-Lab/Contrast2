@@ -77,8 +77,8 @@ class Base(Configuration):
     ]
     ANYMAIL = {
         # (exact settings here depend on your ESP...)
-        "MAILGUN_API_KEY": values.Value(),
-        "MAILGUN_SENDER_DOMAIN": values.Value(),  # your Mailgun domain, if needed
+        "MAILGUN_API_KEY": values.Value(environ_prefix=""),
+        "MAILGUN_SENDER_DOMAIN": values.Value(environ_prefix=""),  # your Mailgun domain, if needed
     }
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
@@ -235,6 +235,10 @@ class Development(Base):
             {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'}
 
     }
+
+    DEFAULT_FROM_EMAIL = "localdev@test.com"
+    EMAIL_BACKEND = "anymail.backends.console.EmailBackend"
+
 
 
 class Testing(Development):

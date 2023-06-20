@@ -16,7 +16,8 @@ from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
 from users.serializers import ProfileSerializer, UsernameOnlySerializer, UserResponseSerializer, \
     ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer, ProfileCreateSerializer, \
-    RequestPasswordResetSerializer, RequestPasswordResetResponseSerializer
+    RequestPasswordResetSerializer, RequestPasswordResetResponseSerializer, PasswordResetSerializer, \
+    PasswordResetResponseSerializer
 
 
 # Create your views here.
@@ -118,6 +119,7 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
             serializer = RequestPasswordResetResponseSerializer(instance={"reset_requested": False})
             return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
+    @extend_schema(request=PasswordResetSerializer, responses=PasswordResetResponseSerializer)
     @action(detail=False, methods=["POST"], permission_classes=(AllowAny,))
     def reset_password(self, request):
         email = request.data["email"]
@@ -126,15 +128,20 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         try:
             user = get_user_model().objects.get(email=email)
         except get_user_model().DoesNotExist:
-            return Response({"password_reset": False}, status=status.HTTP_200_OK)
+            serializer = PasswordResetResponseSerializer(instance={"password_reset": False})
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         res = PasswordResetTokenGenerator().check_token(user=user, token=token)
 
         if res:
             user.set_password(password)
             user.save()
-            return Response({"password_reset": True}, status=status.HTTP_201_CREATED)
+            serializer = PasswordResetResponseSerializer(instance={"password_reset": True})
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         else:
-            return Response({"password_reset": False}, status=status.HTTP_200_OK)
+            serializer = PasswordResetResponseSerializer(instance={"password_reset": False})
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 

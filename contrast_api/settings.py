@@ -45,7 +45,8 @@ class Base(Configuration):
         'admin_reorder',
         'django_countries',
         'django_filters',
-        'rangefilter'
+        'rangefilter',
+        'anymail',
     ]
     DJANGO_APPS = [
         'django.contrib.admin',
@@ -74,6 +75,15 @@ class Base(Configuration):
         'admin_reorder.middleware.ModelAdminReorder'
 
     ]
+    ANYMAIL = {
+        # (exact settings here depend on your ESP...)
+        "MAILGUN_API_KEY": values.Value(),
+        "MAILGUN_SENDER_DOMAIN": values.Value(),  # your Mailgun domain, if needed
+    }
+
+    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+    DEFAULT_FROM_EMAIL = values.EmailValue()
+
     QUERYCOUNT = {
         'THRESHOLDS': {
             'MEDIUM': 50,
@@ -241,6 +251,10 @@ class Testing(Development):
             {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'},
 
     }
+
+    EMAIL_BACKEND = "anymail.backends.test.EmailBackend"
+    DEFAULT_FROM_EMAIL = "from@test.com"
+
 
 
 class Staging(Base):

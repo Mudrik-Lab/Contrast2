@@ -134,3 +134,7 @@ class SuggestNewQuerySerializer(BaseFeedbackSerializer):
 class ContactUsSerializer(BaseFeedbackSerializer):
     subject = serializers.CharField(required=True)
     message = serializers.CharField(required=False)
+
+
+class FeedbackResponseSerializer(serializers.Serializer):
+    submitted = serializers.BooleanField()

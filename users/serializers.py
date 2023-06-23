@@ -118,7 +118,7 @@ class SiteFeedbackSerializer(BaseFeedbackSerializer):
     experience_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
     completeness_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
     paper_uploading_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
-    comments = serializers.CharField(required=True)
+    comments = serializers.CharField(required=False, default="")
 
 
 class VetAPaperSerializer(BaseFeedbackSerializer):

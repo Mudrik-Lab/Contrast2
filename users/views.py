@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.exceptions import BadRequest
-from django.shortcuts import render
+import urllib.parse
+from django.utils.safestring import mark_safe
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import action
@@ -9,10 +11,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.viewsets import mixins
 
+from contrast_api.application_services.notifer import NotifierService
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
 from users.serializers import ProfileSerializer, UsernameOnlySerializer, UserResponseSerializer, \
-    ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer, ProfileCreateSerializer
+    ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer, ProfileCreateSerializer, \
+    RequestPasswordResetSerializer, RequestPasswordResetResponseSerializer, PasswordResetSerializer, \
+    PasswordResetResponseSerializer
 
 
 # Create your views here.
@@ -91,5 +96,52 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         user = request.user
         serializer = self.get_serializer(instance=user.profile)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @extend_schema(request=RequestPasswordResetSerializer, responses=RequestPasswordResetResponseSerializer)
+    @action(detail=False, methods=["POST"], permission_classes=(AllowAny,))
+    def request_password_reset(self, request):
+        email = request.data["email"]
+        try:
+            user = get_user_model().objects.get(email__iexact=email)
+            token = urllib.parse.quote_plus(PasswordResetTokenGenerator().make_token(user))
+        except get_user_model().DoesNotExist:
+            serializer = RequestPasswordResetResponseSerializer(instance={"reset_requested": True})
+            # The rationale for this is that we don't want different behavior exposing for frontend if the user exists or not
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+        notifier_service = NotifierService()
+        try:
+            notifier_service.notify_reset_password_request(request=request, recipient=email, user=user, token=token)
+            serializer = RequestPasswordResetResponseSerializer(instance={"reset_requested": True})
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        except Exception:
+            serializer = RequestPasswordResetResponseSerializer(instance={"reset_requested": False})
+            return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
+
+    @extend_schema(request=PasswordResetSerializer, responses=PasswordResetResponseSerializer)
+    @action(detail=False, methods=["POST"], permission_classes=(AllowAny,))
+    def reset_password(self, request):
+        email = request.data["email"]
+        password = request.data["password"]
+        token = request.data["token"]
+        try:
+            user = get_user_model().objects.get(email=email)
+        except get_user_model().DoesNotExist:
+            serializer = PasswordResetResponseSerializer(instance={"password_reset": False})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+        res = PasswordResetTokenGenerator().check_token(user=user, token=token)
+
+        if res:
+            user.set_password(password)
+            user.save()
+            serializer = PasswordResetResponseSerializer(instance={"password_reset": True})
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            serializer = PasswordResetResponseSerializer(instance={"password_reset": False})
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
 

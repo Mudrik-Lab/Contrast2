@@ -45,7 +45,8 @@ class Base(Configuration):
         'admin_reorder',
         'django_countries',
         'django_filters',
-        'rangefilter'
+        'rangefilter',
+        'anymail',
     ]
     DJANGO_APPS = [
         'django.contrib.admin',
@@ -74,6 +75,15 @@ class Base(Configuration):
         'admin_reorder.middleware.ModelAdminReorder'
 
     ]
+    ANYMAIL = {
+        # (exact settings here depend on your ESP...)
+        "MAILGUN_API_KEY": values.Value(environ_prefix=""),
+        "MAILGUN_SENDER_DOMAIN": values.Value(environ_prefix=""),  # your Mailgun domain, if needed
+    }
+
+    EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+    DEFAULT_FROM_EMAIL = values.EmailValue()
+
     QUERYCOUNT = {
         'THRESHOLDS': {
             'MEDIUM': 50,
@@ -92,7 +102,7 @@ class Base(Configuration):
             'studies.Study', 'studies.Author'
         )},
         {'app': 'studies', 'label': "experiments data", 'models': (
-            'studies.Experiment','studies.Stimulus', 'studies.FindingTag', 'studies.Interpretation','studies.Task',
+            'studies.Experiment', 'studies.Stimulus', 'studies.FindingTag', 'studies.Interpretation', 'studies.Task',
             'studies.Measure', 'studies.ConsciousnessMeasure', 'studies.Sample'
 
         )},
@@ -104,7 +114,7 @@ class Base(Configuration):
         )},
         {'app': 'configuration', 'label': 'general graphs and forms related configuration'},
 
-        {'app':'auth','label': 'user management and authorization', 'models':(
+        {'app': 'auth', 'label': 'user management and authorization', 'models': (
             'auth.Group', 'auth.User', 'users.Profile'
         )},
         {'app': 'studies', 'label': 'aggregates', 'models': (
@@ -114,11 +124,11 @@ class Base(Configuration):
     )
 
     ROOT_URLCONF = "contrast_api.urls"
-
+    EMAIL_SERVICE = "contrast_api.technical_services.email.EmailService"
     TEMPLATES = [
         {
             'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            "DIRS": [],
+            'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
             'APP_DIRS': True,
             'OPTIONS': {
                 'context_processors': [
@@ -130,7 +140,6 @@ class Base(Configuration):
             },
         },
     ]
-
 
     WSGI_APPLICATION = "contrast_api.wsgi.application"
 
@@ -227,6 +236,10 @@ class Development(Base):
 
     }
 
+    DEFAULT_FROM_EMAIL = "localdev@test.com"
+    EMAIL_BACKEND = "anymail.backends.console.EmailBackend"
+
+
 
 class Testing(Development):
     PASSWORD_HASHERS = [
@@ -242,6 +255,10 @@ class Testing(Development):
             {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'},
 
     }
+
+    EMAIL_BACKEND = "anymail.backends.test.EmailBackend"
+    DEFAULT_FROM_EMAIL = "from@test.com"
+
 
 
 class Staging(Base):

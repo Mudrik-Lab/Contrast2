@@ -1,4 +1,9 @@
+import json
+
 from django.contrib.auth import get_user_model
+from django.core import mail
+from django.urls import reverse
+from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from typing import Optional
@@ -128,3 +133,44 @@ class BaseTestCase(APITestCase):
                                                    is_superuser=is_superuser)
 
         return obj
+
+    def when_user_logs_in(self, username, password):
+        auth_url = reverse("api-token-obtain-pair")
+        res = self.client.post(auth_url, data=dict(username=username, password=password))
+        return res
+
+    def when_user_access_home(self):
+        res = self.client.get(reverse("profiles-home"))
+        return res
+
+    def when_user_does_username_check(self, username):
+        res = self.client.post(reverse("profiles-check-username"), data=dict(username=username))
+        return res
+
+    def when_user_requests_password_reset(self, email):
+        auth_url = reverse("profiles-request-password-reset")
+        res = self.client.post(auth_url, data=dict(email=email))
+        return res
+
+    def verify_no_email_was_sent_to_user(self, email: str):
+        for message in mail.outbox:
+            if message.to[0] == email:
+                raise AssertionError(f"Expected {email} not to exist but it does")
+
+    def verify_email_was_sent_to_user(self, email):
+        for message in mail.outbox:
+            if message.to[0] == email:
+                return True
+        raise AssertionError(f"Expected {email} to exist but it doesn't")
+
+    def when_user_resets_password(self, token, password, email):
+        auth_url = reverse("profiles-reset-password")
+        res = self.client.post(auth_url, data=dict(email=email, token=token, password=password))
+        return res
+
+    def when_user_is_registered(self, **kwargs):
+        data = dict(**kwargs)
+        res = self.client.post(reverse("profiles-register-user"), data=json.dumps(data),
+                               content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        return res.data

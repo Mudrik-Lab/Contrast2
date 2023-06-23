@@ -42,7 +42,7 @@ jobs:
         run: poetry run python manage.py test -v 3
         env:
           DJANGO_SETTINGS_MODULE: "contrast_api.settings"
-          DJANGO_CONFIGURATIONS: "Testing"
+          DJANGO_CONFIGURATION: "Testing"
           DATABASE_URL: "postgresql://django_user:django_pass@postgres/django_db"
 
   deploy:

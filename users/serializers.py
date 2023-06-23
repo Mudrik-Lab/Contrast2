@@ -113,7 +113,7 @@ class BaseFeedbackSerializer(serializers.Serializer):
     email = serializers.EmailField(required=True)
 
 
-class FeedbackSerializer(BaseFeedbackSerializer):
+class SiteFeedbackSerializer(BaseFeedbackSerializer):
     queries_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
     experience_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
     completeness_score = serializers.IntegerField(min_value=1, max_value=5, required=True)

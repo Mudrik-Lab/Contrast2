@@ -11,6 +11,7 @@ import urllib.parse
 logger = logging.getLogger(__name__)
 from django.conf import settings
 
+
 class NotifierService:
     """
     Applicative abstraction contains templates. and uses the email service
@@ -20,8 +21,11 @@ class NotifierService:
         self.email_service = ServiceLocator.get_service("EMAIL_SERVICE")
         self.default_from_email = settings.DEFAULT_FROM_EMAIL
 
-    def notify_site_feedback(self, request, **kwargs):
-        pass
+    def notify_feedback(self, subject, message):
+        recipient = settings.SITE_MANAGER_ADDRESS
+        logger.info(f"Sending feedback notification with subject: {subject}")
+        self.email_service.send_email(subject=subject, recipient=recipient, from_email=self.default_from_email,
+                                      html_text=message)
 
     def notify_reset_password_request(self, request: Request, recipient, **kwargs):
         subject = 'Reset your ContrastDb password'
@@ -33,7 +37,8 @@ class NotifierService:
             'reset_email_link': reset_email_link
         })
         logger.info(f"Sending reset password notification for {quoted_email} with message {message}")
-        self.email_service.send_email(subject=subject, recipient=recipient, from_email=self.default_from_email, html_text=message)
+        self.email_service.send_email(subject=subject, recipient=recipient, from_email=self.default_from_email,
+                                      html_text=message)
 
     def notify_study_status_change(self, request, recipient, **kwargs):
         pass

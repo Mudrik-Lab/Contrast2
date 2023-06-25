@@ -114,6 +114,7 @@ class BaseFeedbackSerializer(serializers.Serializer):
 
 
 class SiteFeedbackSerializer(BaseFeedbackSerializer):
+    email = serializers.EmailField(required=False)
     queries_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
     experience_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
     completeness_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
@@ -134,6 +135,7 @@ class SuggestNewQuerySerializer(BaseFeedbackSerializer):
 class ContactUsSerializer(BaseFeedbackSerializer):
     subject = serializers.CharField(required=True)
     message = serializers.CharField(required=False)
+    confirm_updates = serializers.BooleanField(required=True)
 
 
 class FeedbackResponseSerializer(serializers.Serializer):

@@ -83,6 +83,7 @@ class Base(Configuration):
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     DEFAULT_FROM_EMAIL = values.EmailValue()
+    SITE_MANAGER_ADDRESS = values.EmailValue(default=DEFAULT_FROM_EMAIL)
 
     QUERYCOUNT = {
         'THRESHOLDS': {
@@ -258,6 +259,7 @@ class Testing(Development):
 
     EMAIL_BACKEND = "anymail.backends.test.EmailBackend"
     DEFAULT_FROM_EMAIL = "from@test.com"
+    SITE_MANAGER_ADDRESS = "to@test.com"
 
 
 

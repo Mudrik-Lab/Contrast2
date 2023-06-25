@@ -107,3 +107,34 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
         fields = ("id", "email", "username")
+
+
+class BaseFeedbackSerializer(serializers.Serializer):
+    email = serializers.EmailField(required=True)
+
+
+class SiteFeedbackSerializer(BaseFeedbackSerializer):
+    queries_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
+    experience_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
+    completeness_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
+    paper_uploading_score = serializers.IntegerField(min_value=1, max_value=5, required=True)
+    comments = serializers.CharField(required=False, default="")
+
+
+class VetAPaperSerializer(BaseFeedbackSerializer):
+    DOI = serializers.CharField(required=True)
+    comments = serializers.CharField(required=True)
+    is_author = serializers.BooleanField(required=True)
+
+
+class SuggestNewQuerySerializer(BaseFeedbackSerializer):
+    suggestions = serializers.CharField(required=True)
+
+
+class ContactUsSerializer(BaseFeedbackSerializer):
+    subject = serializers.CharField(required=True)
+    message = serializers.CharField(required=False)
+
+
+class FeedbackResponseSerializer(serializers.Serializer):
+    submitted = serializers.BooleanField()

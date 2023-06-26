@@ -77,8 +77,8 @@ class Base(Configuration):
     ]
     ANYMAIL = {
         # (exact settings here depend on your ESP...)
-        "MAILGUN_API_KEY": values.Value(environ_prefix=""),
-        "MAILGUN_SENDER_DOMAIN": values.Value(environ_prefix=""),  # your Mailgun domain, if needed
+        "MAILGUN_API_KEY": values.Value(environ_prefix=None),
+        "MAILGUN_SENDER_DOMAIN": values.Value(environ_prefix=None),  # your Mailgun domain, if needed
     }
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"

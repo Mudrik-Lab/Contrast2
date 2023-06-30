@@ -191,7 +191,8 @@ class StudyParserHelpersTestCase(BaseTestCase):
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
     def test_fronto_parietal(self):
         item = {
-            "Paper.Title": "Fronto-parietal networks underlie the interaction between executive control and conscious perception: Evidence from TMS and DWI",
+            "Paper.Title": "Fronto-parietal networks underlie the interaction between executive control and conscious "
+                           "perception: Evidence from TMS and DWI",
             "Paper.DOI": "10.1016/j.cortex.2020.09.027", "# Exp": 1,
             "Experimental paradigms.Main Paradigm": "Direct Stimulation + Stimulus Degradation \u200e+ Cognitive Tasks",
             "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, SMA) + Contrast Reduction (Stimulus Degradation) + Executive Control (Cognitive Tasks)",

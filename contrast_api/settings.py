@@ -75,11 +75,9 @@ class Base(Configuration):
         'admin_reorder.middleware.ModelAdminReorder'
 
     ]
-    ANYMAIL = {
-        # (exact settings here depend on your ESP...)
-        "MAILGUN_API_KEY": values.Value(environ_prefix=None),
-        "MAILGUN_SENDER_DOMAIN": values.Value(environ_prefix=None),  # your Mailgun domain, if needed
-    }
+    ANYMAIL_MAILGUN_SENDER_DOMAIN = values.Value(environ_prefix=None, environ_name="MAILGUN_SENDER_DOMAIN")
+    ANYMAIL_MAILGUN_API_KEY = values.Value(environ_prefix=None, environ_name="MAILGUN_API_KEY")
+
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     DEFAULT_FROM_EMAIL = values.EmailValue()
@@ -277,4 +275,3 @@ class Production(Base):
     AWS_REGION = values.Value(environ_prefix="BUCKETEER")
     AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix="BUCKETEER")
     SENTRY_DSN = values.Value(environ_prefix='')
-    # Add buckateer for s3 intergration

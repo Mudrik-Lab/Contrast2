@@ -138,3 +138,11 @@ docker exec -it web_contrast_api python manage.py load_historic_data
 
 As part of deploying this app we also deploy a [separately build react app](https://github.com/Mudrik-Lab/ContrastFront), and serve it from the django project
 with django-spa. 
+
+### Linting
+
+With [ruff](https://github.com/astral-sh/ruff), not automated yet as part of CI
+
+```bash
+ruff check . --fix
+```

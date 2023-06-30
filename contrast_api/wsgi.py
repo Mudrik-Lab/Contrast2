@@ -12,6 +12,6 @@ import os
 os.environ.setdefault('DJANGO_CONFIGURATION', 'Development')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'contrast_api.settings')
 
-from configurations.wsgi import get_wsgi_application
+from configurations.wsgi import get_wsgi_application  # noqa: E402
 
 application = get_wsgi_application()

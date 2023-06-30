@@ -2,7 +2,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.core.exceptions import BadRequest
 import urllib.parse
-from django.utils.safestring import mark_safe
+
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import permissions, status
 from rest_framework.decorators import action
@@ -61,8 +62,9 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
 
         serializer = UserRegistrationSerializer(data=request.data, context=self.get_serializer_context())
         serializer.is_valid(raise_exception=True)
-        if UserModel.objects.filter(username=serializer.validated_data.get("username")).exists():
-            raise BadRequest("Attempting to register an existing user")
+        if UserModel.objects.filter(Q(username=serializer.validated_data.get("username")) | Q(
+                email=serializer.validated_data.get("email"))).exists():
+            raise BadRequest("Attempting to register an existing user/email")
         user = UserModel.objects.create_user(username=serializer.validated_data.get("username"),
                                              password=serializer.validated_data.get("password"),
                                              email=serializer.validated_data.get("email"))
@@ -143,5 +145,3 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
             serializer = PasswordResetResponseSerializer(instance={"password_reset": False})
 
             return Response(serializer.data, status=status.HTTP_200_OK)
-
-

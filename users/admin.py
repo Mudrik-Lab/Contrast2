@@ -1,5 +1,4 @@
 from django.contrib import admin
-from django.contrib.admin import FieldListFilter
 from import_export.admin import ImportExportModelAdmin
 
 from users.models import Profile

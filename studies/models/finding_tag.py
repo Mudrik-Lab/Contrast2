@@ -1,7 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import SET_NULL, CASCADE
-from django.utils.translation import gettext_lazy as _
 
 from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
 

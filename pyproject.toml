@@ -32,6 +32,7 @@ pandas = "^1.5.3"
 whitenoise = "6.2.0"
 django-admin-rangefilter = "^0.10.0"
 django-anymail = "^10.0"
+ruff = "^0.0.275"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.3.2"
@@ -39,3 +40,9 @@ pytest = "^7.3.2"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 88
+
+# Never enforce `E501` (line length violations).
+ignore = ["E501"]

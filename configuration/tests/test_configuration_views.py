@@ -1,4 +1,3 @@
-from django.urls import reverse
 from rest_framework import status
 
 from contrast_api.tests.base import BaseTestCase

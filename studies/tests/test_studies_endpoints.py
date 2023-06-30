@@ -18,7 +18,7 @@ class StudiesViewSetTestCase(BaseTestCase):
 
     def test_studies_endpoint_is_responding_to_list_for_approved(self):
         target_url = reverse("studies-list")
-        approved_study = self.given_study_exists(title="test_title")
+        self.given_study_exists(title="test_title")
 
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -28,14 +28,14 @@ class StudiesViewSetTestCase(BaseTestCase):
 
     def test_studies_endpoint_is_not_returning_pending_studies(self):
         target_url = reverse("studies-list")
-        pending_study = self.given_study_exists(title="test_title", approval_status=ApprovalChoices.PENDING)
+        self.given_study_exists(title="test_title", approval_status=ApprovalChoices.PENDING)
 
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(data["count"], 0)
 
-        approved_study = self.given_study_exists(title="better_title", approval_status=ApprovalChoices.APPROVED,
+        self.given_study_exists(title="better_title", approval_status=ApprovalChoices.APPROVED,
                                                  DOI="10.1017/j.cortex.2017.07.010")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
@@ -50,14 +50,14 @@ class StudiesViewSetTestCase(BaseTestCase):
 
     def test_excluded_studies_endpoint_is_not_returning_approved_studies(self):
         target_url = reverse("excluded_studies-list")
-        pending_study = self.given_study_exists(title="test_title", approval_status=ApprovalChoices.APPROVED)
+        self.given_study_exists(title="test_title", approval_status=ApprovalChoices.APPROVED)
 
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(data["count"], 0)
 
-        pending_study = self.given_study_exists(title="better_title", approval_status=ApprovalChoices.PENDING,
+        self.given_study_exists(title="better_title", approval_status=ApprovalChoices.PENDING,
                                                 DOI="10.1017/j.cortex.2017.07.010")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)

@@ -1,8 +1,5 @@
-import itertools
-
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, Subquery, OuterRef, Count, F, Func, IntegerField
-from django.db.models.expressions import RawSQL
+from django.db.models import QuerySet, Subquery, OuterRef, F, Func
 from django.db.models.functions import JSONObject
 
 from studies.choices import TheoryDrivenChoices, InterpretationsChoices
@@ -44,13 +41,13 @@ class TimingsGraphDataProcessor(BaseProcessor):
         experiments = experiments_interpretations  # .values("experiment")
 
         relevant_finding_tags = FindingTag.objects.select_related("experiment", "type", "family", "technique") \
-            .filter(family__name="Temporal")\
+            .filter(family__name="Temporal") \
             .filter(type__name__in=self.tags_types) \
             .filter(technique__name__in=self.techniques)
 
         if self.is_csv:
             ids = relevant_finding_tags.filter(experiment__in=experiments_interpretations
-                                               .values_list("experiment_id", flat=True))\
+                                               .values_list("experiment_id", flat=True)) \
                 .values_list("experiment_id", flat=True)
             return set(ids)
 
@@ -70,5 +67,5 @@ class TimingsGraphDataProcessor(BaseProcessor):
             .order_by("min_onset") \
             .distinct() \
             .values("series")
-        #TODO implement custom sort using union of two querysets
+        # TODO implement custom sort using union of two querysets
         return qs

@@ -17,12 +17,12 @@ class UserRegistrationTestCase(BaseTestCase):
         super().tearDown()
 
     def test_user_registration_without_actually_creating_a_profile_first(self):
-        user_birthdate = (timezone.now() - datetime.timedelta(days=365 * 30)).strftime("%Y-%m-%d")
+        (timezone.now() - datetime.timedelta(days=365 * 30)).strftime("%Y-%m-%d")
         username = "user1"
         password = "12345"
         email = "user1@test.com"
 
-        res = self.when_user_is_registered(username=username, password=password, email=email)
+        self.when_user_is_registered(username=username, password=password, email=email)
 
         # Should allow logging in
         login_res = self.when_user_logs_in(username, password)
@@ -36,7 +36,7 @@ class UserRegistrationTestCase(BaseTestCase):
 
         # Now update the academic stage
 
-        res = self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
+        self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
                                           email="my_new_email@test.com")
 
         # verify the change
@@ -87,14 +87,14 @@ class UserRegistrationTestCase(BaseTestCase):
         password = "12345"
         email = "user1@test.com"
 
-        res = self.when_user_is_registered(username=username, password=password, email=email)
+        self.when_user_is_registered(username=username, password=password, email=email)
 
         # Should allow logging in
         login_res = self.when_user_logs_in(username, password)
         self.assertEqual(login_res.status_code, status.HTTP_200_OK)
         self.given_user_authenticated_with_access_token(login_res)
 
-        res = self.when_user_profile_is_registered(
+        self.when_user_profile_is_registered(
             date_of_birth=user_birthdate,
             academic_stage=AcademicStageChoices.UNDERGRADUATE,
             self_identified_gender=GenderChoices.NOT_REPORTING)
@@ -106,7 +106,7 @@ class UserRegistrationTestCase(BaseTestCase):
 
         # Now update the academic stage
 
-        res = self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
+        self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
                                           email="my_new_email@test.com")
 
         # verify the change

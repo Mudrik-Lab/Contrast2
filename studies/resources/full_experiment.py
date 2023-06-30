@@ -1,10 +1,9 @@
-from django.db.models import Prefetch
+
 from import_export import resources
 from import_export.fields import Field
-from django.db import connection
 
 from studies.choices import ExperimentTypeChoices
-from studies.models import Experiment, Paradigm, Author, Theory, Interpretation
+from studies.models import Experiment
 
 
 class FullExperimentResource(resources.ModelResource):

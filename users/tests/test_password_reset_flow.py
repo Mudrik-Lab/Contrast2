@@ -1,15 +1,8 @@
-import datetime
-import json
-
 from django.contrib.auth import get_user_model
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from django.core import mail
-from django.urls import reverse
-from django.utils import timezone
 from rest_framework import status
 
 from contrast_api.tests.base import BaseTestCase
-from users.choices import GenderChoices, AcademicStageChoices
 import urllib.parse
 
 

@@ -14,7 +14,7 @@ class TheoryDrivenDistributionPieGraphDataProcessor(BaseProcessor):
         self.interpretation = interpretation[0]
 
     def process(self):
-        process_func = getattr(self, f"process_theory_driven")
+        process_func = getattr(self, "process_theory_driven")
         return process_func()
 
     def process_theory_driven(self):

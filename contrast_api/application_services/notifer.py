@@ -1,15 +1,15 @@
 import logging
 
 from django.template.loader import render_to_string
-from django.urls import reverse
+
 from django.utils.safestring import mark_safe
 from rest_framework.request import Request
 
 from contrast_api.locator import ServiceLocator
 import urllib.parse
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
-from django.conf import settings
 
 
 class NotifierService:

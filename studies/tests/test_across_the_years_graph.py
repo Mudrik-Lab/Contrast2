@@ -19,8 +19,8 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
                                                         DOI="10.1016/j.cortex.2017.07.012", year=2004)
         self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW", acronym="GNW")
         self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT", acronym="RPT")
-        gnw_child_theory = self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
-        rpt_child_theory = self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
+        self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
+        self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
         masking_parent_paradigm = self.given_paradigm_exists(name="masking_parent_paradigm")
         masking_child_paradigm = self.given_paradigm_exists(name="masking_child_paradigm",
                                                             parent=masking_parent_paradigm)

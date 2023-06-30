@@ -1,5 +1,3 @@
-import itertools
-
 from django.http import HttpResponse
 from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
@@ -38,7 +36,7 @@ from studies.processors.timings import TimingsGraphDataProcessor
 from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import FullExperimentSerializer, NationOfConsciousnessGraphSerializer, \
     TrendsOverYearsGraphSerializer, BarGraphSerializer, StackedBarGraphSerializer, DurationGraphSerializer, \
-    NestedPieChartSerializer, ComparisonNestedPieChartSerializer, PieChartSerializer
+    NestedPieChartSerializer, PieChartSerializer
 
 
 class ExperimentsGraphsViewSet(GenericViewSet):
@@ -290,7 +288,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
             And pass it through the import-export custom resource we've defined
             """
             flattened_ids = graph_data
-            dataset = FullExperimentResource().export(queryset=Experiment.objects.related().filter(id__in=flattened_ids))
+            dataset = FullExperimentResource().export(
+                queryset=Experiment.objects.related().filter(id__in=flattened_ids))
             response = HttpResponse(dataset.csv, content_type="text/csv",
                                     headers={"Content-Disposition": 'attachment; filename="export.csv"'})
 

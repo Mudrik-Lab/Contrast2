@@ -1,7 +1,6 @@
 import datetime
 import json
 
-from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 from approval_process.choices import ApprovalChoices

@@ -1,5 +1,4 @@
 import copy
-import json
 from typing import List, Dict
 
 from django.shortcuts import get_object_or_404
@@ -9,7 +8,7 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.models import Experiment, Study, Task, Measure
+from studies.models import Experiment, Study
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import FullExperimentSerializer, ExperimentSerializer, TaskSerializer, SampleSerializer, \
     StimulusSerializer, MeasureSerializer, InterpretationSerializer, ConsciousnessMeasureSerializer, \

@@ -1,5 +1,3 @@
-import itertools
-
 from django.db.models import QuerySet, Count, F
 
 from studies.choices import InterpretationsChoices

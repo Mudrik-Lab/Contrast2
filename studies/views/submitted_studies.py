@@ -90,7 +90,7 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
         data["approval_status"] = ApprovalChoices.PENDING
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        authors = serializer.validated_data.get("authors")
+        serializer.validated_data.get("authors")
         self.perform_create(serializer)
         headers = self.get_success_headers(serializer.data)
 

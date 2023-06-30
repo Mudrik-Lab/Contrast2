@@ -1,7 +1,6 @@
 from typing import List
 
 from django.contrib import admin
-from django.core.exceptions import ValidationError
 from django.db.models import Prefetch
 from import_export.admin import ImportExportModelAdmin
 from django.utils.translation import gettext_lazy as _
@@ -12,7 +11,7 @@ from studies.models import Study, Experiment, Author, ConsciousnessMeasure, Cons
     ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
     Paradigm, Sample, ModalityType, TaskType, Task, Technique, Theory, AggregatedInterpretation
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
-from rangefilter.filters import NumericRangeFilterBuilder, NumericRangeFilter
+from rangefilter.filters import NumericRangeFilter
 
 from studies.resources.full_experiment import FullExperimentResource
 

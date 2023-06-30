@@ -112,14 +112,14 @@ class JournalsGraphTestCase(BaseTestCase):
                                                         DOI="10.1016/j.cortex.2017.07.012", year=2004)
         gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW")
         rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
-        gnw_child_theory = self.given_theory_exists(parent=gnw_parent_theory, name="GNW_child")
-        rpt_child_theory = self.given_theory_exists(parent=rpt_parent_theory, name="RPT_child")
-        israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
+        self.given_theory_exists(parent=gnw_parent_theory, name="GNW_child")
+        self.given_theory_exists(parent=rpt_parent_theory, name="RPT_child")
+        self.given_experiment_exists_for_study(study=israeli_study,
                                                                           is_reporting=ReportingChoices.NO_REPORT)
-        israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
+        self.given_experiment_exists_for_study(study=israeli_study,
                                                                             finding_description="brave new world",
                                                                             is_reporting=ReportingChoices.NO_REPORT)
-        british_israeli_study_experiment = self.given_experiment_exists_for_study(study=british_israeli_study,
+        self.given_experiment_exists_for_study(study=british_israeli_study,
                                                                                   is_reporting=ReportingChoices.BOTH,
                                                                                     )
 

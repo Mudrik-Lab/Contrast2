@@ -1,12 +1,11 @@
 import logging
 import re
 from collections import namedtuple
-from itertools import zip_longest, chain
-from string import printable
-from configuration.initial_setup import task_types_mapping, findings_measures, modalities, consciousness_measure_phases, \
+from itertools import zip_longest
+from configuration.initial_setup import task_types_mapping, findings_measures, modalities, \
+    consciousness_measure_phases, \
     consciousness_measure_types, paradigms, ambiguous_paradigms, main_paradigms
 from studies.choices import TheoryDrivenChoices, SampleChoices
-from studies.models import Paradigm, Stimulus
 
 logger = logging.getLogger('Contrast2')
 
@@ -76,8 +75,6 @@ def get_consciousness_measure_type_and_phase_from_data(item):
     resolved_phases = find_in_list(cm_phase_list, consciousness_measure_phase_lookup)
     resolved_types = find_in_list(cm_type_list, consciousness_measure_type_lookup)
 
-    phases = chain.from_iterable(resolved_phases)
-    types = chain.from_iterable(resolved_types)
     try:
         for resolved_phase, resolved_type in zip_longest(resolved_phases, resolved_types):
             if resolved_phase and resolved_type:
@@ -219,9 +216,9 @@ def clean_text(text, mode):
         else:
             main_text = text
 
-        multiple_entries = re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
-        verbose = re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
-        special_char = re.search("[:,&\/]+", main_text)
+        re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
+        re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
+        re.search("[:,&\/]+", main_text)
 
         cleaned_text = ''.join(char for char in main_text if char.isprintable()).strip()
 

@@ -1,15 +1,12 @@
 import json
-import unittest
-from typing import Any
 
 from configuration.initial_setup import consciousness_measure_types
 from studies.parsers.historic_data_helpers import find_in_list, get_paradigms_from_data
 from studies.parsers.parsing_findings_Contrast2 import parse
-from studies.parsers.process_row import process_row, create_study
+from studies.parsers.process_row import create_study
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
     resolve_country_from_affiliation_text
 from contrast_api.tests.base import BaseTestCase
-from studies.tests.implementation_tests.test_study_parsers_helpers import test_data_doesnt_exist
 
 
 class StudyParserHelpersTestCase(BaseTestCase):
@@ -34,7 +31,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
         lookup_list2 = text2.split("+")
         lookup_list3 = text3.split("+")
         res1 = find_in_list(lookup_list1, consciousness_measure_type_lookup)
-        res2 = find_in_list(lookup_list2, consciousness_measure_type_lookup)
+        find_in_list(lookup_list2, consciousness_measure_type_lookup)
         res3 = find_in_list(lookup_list3, consciousness_measure_type_lookup)
 
         self.assertEqual(len(res1), 2)
@@ -68,7 +65,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             try:
                 study = create_study(item=study_item)
                 studies_data.append(study)
-            except:
+            except Exception:
                 print(json.dumps(study_item))
                 raise AssertionError()
 
@@ -108,4 +105,3 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
         res = get_paradigms_from_data(item_TMS)
         self.assertEqual(len(res), 4)
-

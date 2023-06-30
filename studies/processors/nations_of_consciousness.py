@@ -1,6 +1,5 @@
-from django.db.models import Func, F, Count, QuerySet, OuterRef
+from django.db.models import Func, F, Count, QuerySet
 
-from contrast_api.orm_helpers import SubqueryCount
 from studies.choices import InterpretationsChoices
 from studies.models import Interpretation, Theory, Experiment
 from studies.processors.base import BaseProcessor

@@ -1,6 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.core import validators
-from django.db.models import CASCADE, SET_NULL
+from django.db.models import SET_NULL
 from django.db import models
 from django_countries.fields import CountryField
 from django.conf import settings

@@ -1,7 +1,7 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Func, Subquery, Count, Sum, IntegerField
+from django.db.models import QuerySet, OuterRef, F, Func, Count
 from django.db.models.functions import JSONObject
 
 from studies.choices import InterpretationsChoices

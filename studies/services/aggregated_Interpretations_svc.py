@@ -1,5 +1,5 @@
 from collections import namedtuple
-from typing import List, Dict
+from typing import List
 
 from studies.choices import InterpretationsChoices, AggregatedInterpretationsChoices
 

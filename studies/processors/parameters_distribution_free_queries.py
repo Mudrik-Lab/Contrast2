@@ -1,10 +1,9 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import Func, F, Count, QuerySet, OuterRef, Q
+from django.db.models import Func, F, Count, QuerySet, OuterRef
 
-from studies.choices import InterpretationsChoices
-from studies.models import Interpretation, Theory, Experiment, MeasureType, Technique, ConsciousnessMeasureType, \
+from studies.models import Interpretation, Experiment, MeasureType, Technique, ConsciousnessMeasureType, \
     ConsciousnessMeasurePhaseType, ModalityType, TaskType, FindingTagFamily, FindingTagType, Sample, Paradigm
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor

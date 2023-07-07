@@ -26,16 +26,15 @@ admin.site.site_header = "contrast2  admin site"
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('health_check', views.healthcheck, name='healthcheck'),
-    path('api-token-auth/', TokenObtainPairView.as_view(), name='api-token-obtain-pair'),
-    path('api-token-refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
+    path('api/api-token-auth/', TokenObtainPairView.as_view(), name='api-token-obtain-pair'),
+    path('api/api-token-refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
     path('api/studies/', include('studies.urls')),
     path('api/configuration/', include('configuration.urls')),
     path('api/profiles/', include('users.urls'))
 ]
 
-configuration_name = settings.CONFIGURATION.split(".")[-1]
 
-if configuration_name == "Development":
+if settings.SWAGGER_ENABLED:
     urlpatterns.extend([path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
                         # Optional UI:
                         path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'),

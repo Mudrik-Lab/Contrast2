@@ -221,9 +221,11 @@ class Base(Configuration):
     STATICFILES_DIRS = [
         os.path.join(BASE_DIR, "frontapp")
     ]
+    SWAGGER_ENABLED = values.BooleanValue(default=False)
 
 
 class Development(Base):
+    SWAGGER_ENABLED = values.BooleanValue(default=True)
     CORS_ALLOW_ALL_ORIGINS = True
     ALLOWED_HOSTS = values.ListValue(["web", "localhost", "127.0.0.1"])
 

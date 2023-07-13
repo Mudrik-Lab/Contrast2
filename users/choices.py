@@ -15,3 +15,4 @@ class AcademicStageChoices(TextChoices):
     POSTDOC = "postdoctoral_fellow", _("Postdoctoral fellow")
     PRINCIPLE_RESEARCHER = "principle_researcher", _("Principle researcher")
     OTHER = "other", _("Other")
+    NON_ACADEMIC = "non_academic", _("Non academic")

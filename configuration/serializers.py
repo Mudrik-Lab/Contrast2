@@ -120,6 +120,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_stimulus_category_type = StimulusCategorySerializer(many=True)
     available_stimulus_sub_category_type = StimulusSubCategorySerializer(many=True)
     available_authors = ConfigurationAuthorSerializer(many=True)
+    existing_journals = serializers.ListSerializer(child=serializers.CharField())
 
 
 class GraphImageSerializer(serializers.ModelSerializer):

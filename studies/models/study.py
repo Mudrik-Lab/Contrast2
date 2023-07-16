@@ -15,7 +15,7 @@ class Study(models.Model):
     title = models.TextField(null=False, blank=False)
     year = models.PositiveIntegerField(null=False, blank=False, validators=[validators.MinValueValidator(1900),
                                                                             validators.MaxValueValidator(2100)])
-    corresponding_author_email = models.EmailField(null=False, blank=False)
+    corresponding_author_email = models.EmailField(null=True, blank=True)
     approval_process = models.OneToOneField(null=True,
                                             blank=True,
                                             to="approval_process.ApprovalProcess",
@@ -27,7 +27,7 @@ class Study(models.Model):
     source_title = models.CharField(null=True, blank=True, max_length=200)
     abbreviated_source_title = models.CharField(null=True, blank=True, max_length=200)
     countries = ArrayField(CountryField(null=False, blank=False))  # Wondering if this is a good modeling, but we'll see
-    affiliations = models.TextField(null=False, blank=False)
+    affiliations = models.TextField(null=True, blank=True)
     submitter = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL) #Optional submitter
 
     def __str__(self):

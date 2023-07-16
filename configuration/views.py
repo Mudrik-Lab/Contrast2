@@ -9,7 +9,7 @@ from configuration.serializers import StudiesConfigurationSerializer, GraphsConf
     RegistrationConfigurationSerializer
 from studies.choices import SampleChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
-    ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType
+    ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType, Experiment
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
 from users.choices import GenderChoices, AcademicStageChoices
 
@@ -32,6 +32,7 @@ class ConfigurationView(GenericViewSet):
     @action(detail=False, methods=["GET"], serializer_class=StudiesConfigurationSerializer,
             permission_classes=[AllowAny])
     def studies_form(self, request, **kwargs):
+        existing_journals = Study.objects.values("abbreviated_source_title").distinct()
         techniques = Technique.objects.all()
         available_finding_tags_types = FindingTagType.objects.all().select_related()
         available_finding_tags_families = FindingTagFamily.objects.all()
@@ -49,7 +50,8 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_category_type = StimulusCategory.objects.all()
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
         available_experiment_types = ExperimentTypeChoices.values
-        configuration_data = dict(available_techniques=techniques,
+        configuration_data = dict(existing_journals=existing_journals,
+                                  available_techniques=techniques,
                                   available_paradigms_families=available_paradigms_families,
                                   available_populations_types=available_populations_types,
                                   available_theory_driven_types=available_theory_driven_types,

@@ -32,7 +32,9 @@ class ConfigurationView(GenericViewSet):
     @action(detail=False, methods=["GET"], serializer_class=StudiesConfigurationSerializer,
             permission_classes=[AllowAny])
     def studies_form(self, request, **kwargs):
-        existing_journals = Study.objects.values("abbreviated_source_title").distinct()
+        existing_journals = Study.objects.values("abbreviated_source_title") \
+            .order_by("abbreviated_source_title") \
+            .distinct().values_list("abbreviated_source_title", flat=True)
         techniques = Technique.objects.all()
         available_finding_tags_types = FindingTagType.objects.all().select_related()
         available_finding_tags_families = FindingTagFamily.objects.all()

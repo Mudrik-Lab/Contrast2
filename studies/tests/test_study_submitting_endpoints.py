@@ -64,6 +64,22 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 201)
         return res.data
 
+    def test_study_creation_and_update_flow(self):
+        """
+        test study is created with 201
+        test approval status is pending and approval process is created
+        test submitter gets study back, but other user don't
+        """
+        self.given_user_exists(username="submitting_user")
+        self.given_user_authenticated("submitting_user", "12345")
+        study_res = self.when_study_created_by_user_via_api(authors_key_words=[])
+        study_id = study_res["id"]
+
+        update_res = self.when_study_is_updated(study_id, authors_key_words=["what"], countries=["GB", "IL"])
+
+        res = self.get_pending_studies()
+        self.assertEqual(len(res["results"]), 1)
+
     def when_experiment_is_added_to_study_via_api(self, study_id: int, **kwargs):
         target_url = reverse("studies-experiments-list", args=[study_id])
         default_experiment = dict(
@@ -102,5 +118,11 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def get_experiments_for_study(self, study_id):
         target_url = reverse("studies-experiments-list", args=[study_id])
         res = self.client.get(target_url)
+        self.assertEqual(res.status_code, 200)
+        return res.data
+
+    def when_study_is_updated(self, study_id, **kwargs):
+        target_url = reverse("studies-submitted-detail", args=[study_id])
+        res = self.client.patch(target_url, data=json.dumps(kwargs), content_type="application/json")
         self.assertEqual(res.status_code, 200)
         return res.data

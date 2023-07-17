@@ -22,7 +22,7 @@ class Study(models.Model):
                                             on_delete=SET_NULL)
     approval_status = models.IntegerField(choices=ApprovalChoices.choices, null=False, blank=False,
                                           default=ApprovalChoices.PENDING)
-    authors_key_words = ArrayField(models.CharField(max_length=50, blank=False, null=False))
+    authors_key_words = ArrayField(models.CharField(max_length=50, blank=False, null=False), default=list)
     funding = models.TextField(null=True, blank=True)
     source_title = models.CharField(null=True, blank=True, max_length=200)
     abbreviated_source_title = models.CharField(null=True, blank=True, max_length=200)

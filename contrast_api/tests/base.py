@@ -10,7 +10,7 @@ from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, \
     ExperimentTypeChoices
 from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, \
-    Technique, Study, FindingTag, Sample
+    Technique, Study, FindingTag, Sample, Author
 
 
 class BaseTestCase(APITestCase):
@@ -173,3 +173,15 @@ class BaseTestCase(APITestCase):
                                content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
+
+    def given_an_author_exists(self, name: str) -> Author:
+        auther, created = Author.objects.get_or_create(name=name)
+        return auther
+
+    def when_a_user_creates_an_auther(self, name: str):
+        res = self.client.post(reverse("authors-list"), data=dict(name=name))
+        return res
+
+    def when_a_user_searches_for_author(self, part_name: str):
+        res = self.client.get(self.reverse_with_query_params("authors-list", search=part_name))
+        return res

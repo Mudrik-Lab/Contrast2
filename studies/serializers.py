@@ -196,6 +196,7 @@ class StudySerializer(serializers.ModelSerializer):
 class StudyWithExperimentsSerializer(serializers.ModelSerializer):
     authors = AuthorSerializer(many=True, required=False)
     experiments = FullExperimentSerializer(many=True, required=False)
+    authors_key_words = serializers.ListSerializer(child=serializers.CharField(), required=False)
 
     class Meta:
         model = Study
@@ -217,12 +218,24 @@ class StudyWithExperimentsSerializer(serializers.ModelSerializer):
                   "experiments"
                   ]
 
+
+class StudyWithExperimentsCreateSerializer(StudyWithExperimentsSerializer):
+    authors = serializers.PrimaryKeyRelatedField(queryset=Author.objects.all(), many=True)
+
     def save(self, **kwargs):
         instance = super().save(**kwargs)
         if not hasattr(instance, "approval_process") or instance.approval_process is None:
             process = ApprovalProcess.objects.create()
             instance.approval_process = process
             instance.save()
+        return instance
+
+    def create(self, validated_data):
+        instance = super().create(validated_data)
+        authors = Author.objects.filter(id__in=validated_data.get("authors", []))
+        for author in authors:
+            instance.authors.add(author)
+
         return instance
 
 

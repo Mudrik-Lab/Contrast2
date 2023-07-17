@@ -38,14 +38,4 @@ class AuthorsTestCase(BaseTestCase):
         self.assertEqual(len(res.data["results"]), 1)
         self.assertEqual(res.data["results"][0]["name"], "mr researcher")
 
-    def given_an_author_exists(self, name: str) -> Author:
-        auther, created = Author.objects.get_or_create(name=name)
-        return auther
 
-    def when_a_user_creates_an_auther(self, name: str):
-        res = self.client.post(reverse("authors-list"), data=dict(name=name))
-        return res
-
-    def when_a_user_searches_for_author(self, part_name: str):
-        res = self.client.get(self.reverse_with_query_params("authors-list", search=part_name))
-        return res

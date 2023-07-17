@@ -55,12 +55,13 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def when_study_created_by_user_via_api(self, **kwargs):
         default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
                              corresponding_author_email="test@example.com",
+                             authors=[],
                              authors_key_words=["key", "word"],
                              affiliations="some affiliations", countries=["IL"])
         study_params = {**default_study, **kwargs}
 
         target_url = reverse("studies-submitted-list")
-        res = self.client.post(target_url, data=study_params)
+        res = self.client.post(target_url, data=json.dumps(study_params), content_type="application/json")
         self.assertEqual(res.status_code, 201)
         return res.data
 
@@ -72,10 +73,14 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         """
         self.given_user_exists(username="submitting_user")
         self.given_user_authenticated("submitting_user", "12345")
-        study_res = self.when_study_created_by_user_via_api(authors_key_words=[])
+        author1 = self.given_an_author_exists("author1")
+        study_res = self.when_study_created_by_user_via_api(authors_key_words=[], authors=[author1.id])
         study_id = study_res["id"]
+        self.assertEqual(study_res["authors"][0]["name"], author1.name)
 
         update_res = self.when_study_is_updated(study_id, authors_key_words=["what"], countries=["GB", "IL"])
+        self.assertListEqual(update_res["countries"], ["GB", "IL"])
+        self.assertEqual(update_res["authors"][0]["name"], author1.name)
 
         res = self.get_pending_studies()
         self.assertEqual(len(res["results"]), 1)

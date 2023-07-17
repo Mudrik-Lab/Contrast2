@@ -10,7 +10,8 @@ from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
 from studies.models import Study, Measure, FindingTag, Task, ConsciousnessMeasure, Stimulus, Paradigm
-from studies.serializers import StudyWithExperimentsSerializer, ThinStudyWithExperimentsSerializer
+from studies.serializers import StudyWithExperimentsSerializer, ThinStudyWithExperimentsSerializer, \
+    StudyWithExperimentsCreateSerializer
 
 
 class SubmitStudiesViewSet(mixins.CreateModelMixin,
@@ -51,6 +52,8 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
     def get_serializer_class(self):
         if self.action in ['list', 'my_studies']:
             return ThinStudyWithExperimentsSerializer
+        if self.action in ["create", "update", "partial_update"]:
+            return StudyWithExperimentsCreateSerializer
         else:
             return super().get_serializer_class()
 
@@ -84,14 +87,32 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
+    @extend_schema(request=StudyWithExperimentsCreateSerializer, responses=StudyWithExperimentsSerializer)
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        updated_instance = serializer.save()
+
+        if getattr(instance, '_prefetched_objects_cache', None):
+            # If 'prefetch_related' has been applied to a queryset, we need to
+            # forcibly invalidate the prefetch cache on the instance.
+            instance._prefetched_objects_cache = {}
+        result_serializer = StudyWithExperimentsSerializer(instance=updated_instance)
+
+        return Response(result_serializer.data)
+
+    @extend_schema(request=StudyWithExperimentsCreateSerializer, responses=StudyWithExperimentsSerializer)
     def create(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
         data["submitter"] = request.user.id
         data["approval_status"] = ApprovalChoices.PENDING
         serializer = self.get_serializer(data=data)
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data.get("authors")
-        self.perform_create(serializer)
+        instance = serializer.save()
         headers = self.get_success_headers(serializer.data)
 
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        result_serializer = StudyWithExperimentsSerializer(instance=instance)
+
+        return Response(result_serializer.data, status=status.HTTP_201_CREATED, headers=headers)

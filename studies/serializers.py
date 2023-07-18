@@ -1,4 +1,5 @@
 from django_countries import countries
+from drf_spectacular.utils import extend_schema, extend_schema_field
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
@@ -13,6 +14,14 @@ class TheorySerializer(serializers.ModelSerializer):
         model = Theory
         depth = 2
         fields = ('id', 'name', 'parent')
+
+
+class MeasureCreateSerializer(serializers.ModelSerializer):
+    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
+
+    class Meta:
+        model = Measure
+        fields = ("type", "notes")
 
 
 class MeasureSerializer(serializers.ModelSerializer):
@@ -52,6 +61,14 @@ class InterpretationSerializer(serializers.ModelSerializer):
         fields = ("experiment", "theory", "type")
 
 
+class InterpretationCreateSerializer(serializers.ModelSerializer):
+    theory = serializers.PrimaryKeyRelatedField(queryset=Theory.objects.all())
+
+    class Meta:
+        model = Interpretation
+        fields = ("theory", "type")
+
+
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
     phase = serializers.SlugRelatedField(slug_field="name", queryset=ConsciousnessMeasurePhaseType.objects.all())
     type = serializers.SlugRelatedField(slug_field="name", queryset=ConsciousnessMeasureType.objects.all())
@@ -86,6 +103,7 @@ class StimulusSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     type = serializers.SlugRelatedField(slug_field="name", queryset=TaskType.objects.all())
+    description = serializers.CharField(required=False)
 
     class Meta:
         model = Task
@@ -127,6 +145,7 @@ class FullExperimentSerializer(serializers.ModelSerializer):
                   "tasks"
                   )
 
+    @extend_schema_field(InterpretationSerializer(many=True))
     def get_interpretations(self, obj: Experiment):
         interpretations = Interpretation.objects.filter(experiment=obj)
         return InterpretationSerializer(many=True, instance=interpretations).data
@@ -260,10 +279,10 @@ class NationOfConsciousnessGraphSerializer(serializers.Serializer):
     total = serializers.IntegerField()
     theory = serializers.CharField(source="theory__parent__name")
 
-    def get_country(self, obj):
+    def get_country(self, obj) -> str:
         return countries.alpha3(obj["country"])
 
-    def get_country_name(self, obj):
+    def get_country_name(self, obj) -> str:
         return countries.name(obj["country"])
 
 

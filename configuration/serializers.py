@@ -16,7 +16,7 @@ class TheoryConfigurationSerializer(serializers.ModelSerializer):
         model = Theory
         fields = ('name', 'parent', 'acronym', 'full_name')
 
-    def get_full_name(self, obj):
+    def get_full_name(self, obj) -> str:
         if obj.acronym:
             return f"{obj.name} ({obj.acronym})"
         else:

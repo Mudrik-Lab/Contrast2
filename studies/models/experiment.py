@@ -10,8 +10,10 @@ class Experiment(models.Model):
     """
     This is a major model here, lots of data "belongs" to the experiment in related models, so the experiment is codified there
     """
+
     class Meta:
         ordering = ["id"]
+
     study = models.ForeignKey(to="studies.Study", on_delete=CASCADE, related_name="experiments")
     finding_description = models.TextField(null=False, blank=False)
     techniques = models.ManyToManyField(to="studies.Technique", related_name="experiments")  # validator at least one
@@ -30,7 +32,8 @@ class Experiment(models.Model):
                                                     limit_choices_to=Q(parent__isnull=False),
 
                                                     )
-    type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices)
+    type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices,
+                                       default=ExperimentTypeChoices.NEUROSCIENTIFIC)
     notes = models.TextField(null=True, blank=True)
 
     objects = ExperimentManager()

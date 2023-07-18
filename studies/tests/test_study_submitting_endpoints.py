@@ -5,8 +5,8 @@ from django.urls import reverse
 
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
-    SampleChoices
-from studies.models import Study
+    SampleChoices, InterpretationsChoices
+from studies.models import Study, Theory
 from contrast_api.tests.base import BaseTestCase
 
 
@@ -43,11 +43,15 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         experiments_res = self.get_experiments_for_study(first_result["id"])
         self.assertEqual(experiments_res["count"], 0)
-
-        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"])
+        rpt_theory = Theory.objects.get(name="RPT")
+        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"], tasks=[
+            {"type": "Mathematics", "description": "LSD - volunteers underwent two scans"}],
+                                                                        interpretations=[{"theory": rpt_theory.id,
+                                                                                          "type": InterpretationsChoices.PRO}])
 
         self.assertListEqual(res_experiment["techniques"], ["EEG"])
-        self.assertEqual(res_experiment["tasks"][0]["description"], "a task")
+        self.assertEqual(res_experiment["tasks"][0]["description"], "LSD - volunteers underwent two scans")
+        self.assertEqual(res_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
 
         experiments_res = self.get_experiments_for_study(first_result["id"])
         self.assertEqual(experiments_res["count"], 1)

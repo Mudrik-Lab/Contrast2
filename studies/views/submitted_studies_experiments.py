@@ -13,13 +13,14 @@ from studies.choices import ReportingChoices, TheoryDrivenChoices, ExperimentTyp
 from studies.models import Experiment, Study
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import FullExperimentSerializer, ExperimentSerializer, TaskSerializer, SampleSerializer, \
-    StimulusSerializer, MeasureSerializer, InterpretationSerializer, ConsciousnessMeasureSerializer, \
-    FindingTagSerializer, InterpretationCreateSerializer, MeasureCreateSerializer
+    StimulusSerializer, MeasureSerializer, ConsciousnessMeasureSerializer, \
+    FindingTagSerializer, InterpretationCreateSerializer
 
 
 class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
                                 mixins.CreateModelMixin,
                                 mixins.ListModelMixin,
+                                mixins.UpdateModelMixin,
                                 mixins.DestroyModelMixin,
                                 GenericViewSet):
     # TODO handle permissions, so delete/patch can't be done for non draft studies, or none mine
@@ -125,7 +126,7 @@ class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
 
         interpretations_data = data.pop("interpretations")
         self.create_nested_objects(experiment_id=experiment.id, items_data=interpretations_data,
-                                   serializer_cls=InterpretationSerializer)
+                                   serializer_cls=InterpretationCreateSerializer)
 
         consciousness_measures_data = data.pop("consciousness_measures")
         self.create_nested_objects(experiment_id=experiment.id, items_data=consciousness_measures_data,
@@ -140,3 +141,48 @@ class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
         serializer = self.get_serializer(instance=instance)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @extend_schema(parameters=[OpenApiParameter(name='tasks', type=TaskSerializer, many=True, required=True,
+                                                description="tasks - note you don't to pass experiment id"),
+                               OpenApiParameter(name='samples', type=SampleSerializer, many=True, required=True,
+                                                description="samples - note you don't to pass experiment id"),
+                               OpenApiParameter(name='stimuli', type=StimulusSerializer, many=True, required=True,
+                                                description="stimuli - note you don't to pass experiment id"),
+                               OpenApiParameter(name='measures', type=MeasureSerializer, many=True, required=True,
+                                                description="measures - note you don't to pass experiment id"),
+                               OpenApiParameter(name='interpretations', type=InterpretationCreateSerializer, many=True,
+                                                required=True,
+                                                description="interpretations - note you don't to pass experiment id"),
+                               OpenApiParameter(name='consciousness_measures', type=ConsciousnessMeasureSerializer,
+                                                many=True,
+                                                required=True,
+                                                description="consciousness_measures - note you don't to pass experiment id"),
+                               OpenApiParameter(name='finding_tags', type=FindingTagSerializer, many=True,
+                                                required=True,
+                                                description="finding_tags - note you don't to pass experiment id"),
+                               OpenApiParameter(name='techniques', type=str, many=True,
+                                                required=True,
+                                                description="techniques names"),
+                               OpenApiParameter(name='paradigms', type=str, many=True,
+                                                required=True,
+                                                description="paradigms names"),
+                               OpenApiParameter(name='theory_driven_theories', type=str, many=True,
+                                                required=True,
+                                                description="theory_driven_theories names"),
+                               OpenApiParameter(name="is_reporting", type=str, description="is reporting",
+                                                enum=[option[0] for option in ReportingChoices.choices]),
+                               OpenApiParameter(name="theory_driven", type=str, description="theory driven",
+                                                enum=[option[0] for option in TheoryDrivenChoices.choices]),
+                               OpenApiParameter(name='notes', type=str, many=False,
+                                                required=False,
+                                                description="notes"),
+                               OpenApiParameter(name='finding_description', type=str, many=False,
+                                                required=True,
+                                                description="finding description"),
+                               OpenApiParameter(name='type', type=int, many=False, required=False,
+                                                default=ExperimentTypeChoices.NEUROSCIENTIFIC,
+                                                enum=[option[0] for option in ExperimentTypeChoices.choices])
+
+                               ])
+    def update(self, request, *args, **kwargs):
+        return super().update(request, *args, **kwargs)

@@ -16,14 +16,6 @@ class TheorySerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'parent')
 
 
-class MeasureCreateSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
-
-    class Meta:
-        model = Measure
-        fields = ("type", "notes")
-
-
 class MeasureSerializer(serializers.ModelSerializer):
     type = serializers.SlugRelatedField(slug_field="name", read_only=True)
 
@@ -66,7 +58,7 @@ class InterpretationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interpretation
-        fields = ("theory", "type")
+        fields = ("experiment_id", "theory", "type")
 
 
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):

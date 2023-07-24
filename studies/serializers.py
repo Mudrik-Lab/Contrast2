@@ -58,7 +58,7 @@ class InterpretationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interpretation
-        fields = ("experiment_id", "theory", "type")
+        fields = ("experiment", "theory", "type")
 
 
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
@@ -142,7 +142,40 @@ class FullExperimentSerializer(serializers.ModelSerializer):
         interpretations = Interpretation.objects.filter(experiment=obj)
         return InterpretationSerializer(many=True, instance=interpretations).data
 
+class FullExperimentCreateSerializer(serializers.ModelSerializer):
+    study = serializers.PrimaryKeyRelatedField(queryset=Study.objects.all())
+    interpretations = InterpretationCreateSerializer(many=True, read_only=True)
+    finding_tags = FindingTagSerializer(many=True, read_only=True)
+    measures = MeasureSerializer(many=True, read_only=True)
+    samples = SampleSerializer(many=True, read_only=True)
+    stimuli = StimulusSerializer(many=True, read_only=True)
+    tasks = TaskSerializer(many=True, read_only=True)
+    consciousness_measures = ConsciousnessMeasureSerializer(many=True, read_only=True)
+    techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
+    paradigms = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Paradigm.objects.all())
+    theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())
 
+    class Meta:
+        model = Experiment
+        depth = 2
+        fields = ("id",
+                  "study",
+                  "interpretations",
+                  "finding_description",
+                  "techniques",
+                  "paradigms",
+                  "type_of_consciousness",
+                  "is_reporting",
+                  "theory_driven",
+                  "theory_driven_theories",
+                  "type",
+                  "finding_tags",
+                  "measures",
+                  "consciousness_measures",
+                  "samples",
+                  "stimuli",
+                  "tasks"
+                  )
 class ExperimentSerializer(FullExperimentSerializer):
     techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
     paradigms = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Paradigm.objects.all())

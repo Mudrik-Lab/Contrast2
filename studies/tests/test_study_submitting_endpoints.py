@@ -6,7 +6,7 @@ from django.urls import reverse
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
     SampleChoices, InterpretationsChoices
-from studies.models import Study, Theory
+from studies.models import Study, Theory, Paradigm
 from contrast_api.tests.base import BaseTestCase
 
 
@@ -20,7 +20,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
-    def test_study_creation_by_user(self):
+    def test_study_and_experiment_creation_by_user(self):
         """
         test study is created with 201
         test approval status is pending and approval process is created
@@ -38,36 +38,32 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res["approval_status"], ApprovalChoices.PENDING)
 
         self.assertIsNotNone(res["approval_process"])
-        study = Study.objects.get(id=study_res["id"])
+        study_id = study_res["id"]
+        study = Study.objects.get(id=study_id)
         self.assertEqual(study.approval_process.started_at.date(), datetime.date.today())
 
         experiments_res = self.get_experiments_for_study(first_result["id"])
         self.assertEqual(experiments_res["count"], 0)
         rpt_theory = Theory.objects.get(name="RPT")
-        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"], tasks=[
-            {"type": "Mathematics", "description": "LSD - volunteers underwent two scans"}],
-                                                                        interpretations=[{"theory": rpt_theory.id,
-                                                                                          "type": InterpretationsChoices.PRO}])
+        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"])
 
-        self.assertListEqual(res_experiment["techniques"], ["EEG"])
-        self.assertEqual(res_experiment["tasks"][0]["description"], "LSD - volunteers underwent two scans")
-        self.assertEqual(res_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
+        self.assertListEqual(res_experiment["techniques"], [])
+        self.assertListEqual(res_experiment["tasks"], [])
 
-        experiments_res = self.get_experiments_for_study(first_result["id"])
+        experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res["count"], 1)
 
-    def when_study_created_by_user_via_api(self, **kwargs):
-        default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
-                             corresponding_author_email="test@example.com",
-                             authors=[],
-                             authors_key_words=["key", "word"],
-                             affiliations="some affiliations", countries=["IL"])
-        study_params = {**default_study, **kwargs}
+        experiment_id = res_experiment["id"]
+        paradigm, created = Paradigm.objects.get_or_create(name="Amusia")
+        paradigms_res = self.when_paradigm_is_added_to_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertListEqual(experiments_res["results"][0]["paradigms"], ["Amusia"])
 
-        target_url = reverse("studies-submitted-list")
-        res = self.client.post(target_url, data=json.dumps(study_params), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
-        return res.data
+        paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertListEqual(experiments_res["results"][0]["paradigms"], [])
+
+
 
     def test_study_creation_and_update_flow(self):
         """
@@ -89,22 +85,28 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         res = self.get_pending_studies()
         self.assertEqual(len(res["results"]), 1)
 
+    def when_study_created_by_user_via_api(self, **kwargs):
+        default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
+                             corresponding_author_email="test@example.com",
+                             authors=[],
+                             authors_key_words=["key", "word"],
+                             affiliations="some affiliations", countries=["IL"])
+        study_params = {**default_study, **kwargs}
+
+        target_url = reverse("studies-submitted-list")
+        res = self.client.post(target_url, data=json.dumps(study_params), content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
     def when_experiment_is_added_to_study_via_api(self, study_id: int, **kwargs):
         target_url = reverse("studies-experiments-list", args=[study_id])
         default_experiment = dict(
             finding_description="look what we found",
             is_reporting=ReportingChoices.NO_REPORT,
             theory_driven=TheoryDrivenChoices.POST_HOC,
-            tasks=[dict(description="a task", type="Deviant Detection")],
-            samples=[dict(total_size=10, size_included=5, type=SampleChoices.CHILDREN)],
-            stimuli=[],
-            measures=[],
-            interpretations=[],
-            finding_tags=[],
-            consciousness_measures=[],
+
             type=ExperimentTypeChoices.NEUROSCIENTIFIC,
-            techniques=["EEG"],
-            paradigms=["Blindsight (Abnormal Contents of Consciousness)"],
+
             theory_driven_theories=["GNW"],
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
         experiment_params = {**default_experiment, **kwargs}
@@ -134,4 +136,16 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         target_url = reverse("studies-submitted-detail", args=[study_id])
         res = self.client.patch(target_url, data=json.dumps(kwargs), content_type="application/json")
         self.assertEqual(res.status_code, 200)
+        return res.data
+
+    def when_paradigm_is_added_to_experiment(self, study_id, experiment_id:int, paradigm_id:int):
+        target_url = reverse("studies-experiments-add-paradigm", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(dict(id=paradigm_id)), content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
+    def when_paradigm_is_removed_from_experiment(self, study_id, experiment_id:int, paradigm_id:int):
+        target_url = reverse("studies-experiments-remove-paradigm", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(dict(id=paradigm_id)), content_type="application/json")
+        self.assertEqual(res.status_code, 204)
         return res.data

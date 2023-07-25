@@ -77,6 +77,10 @@ class ParadigmSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "parent")
 
 
+class ParadigmAddRemoveSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
 class SampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sample
@@ -100,6 +104,16 @@ class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
         fields = ("experiment", "id", "description", "type")
+
+
+class TechniqueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Technique
+        fields = ("id", "name")
+
+
+class TechniqueAddRemoveSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
 
 
 class FullExperimentSerializer(serializers.ModelSerializer):
@@ -142,6 +156,7 @@ class FullExperimentSerializer(serializers.ModelSerializer):
         interpretations = Interpretation.objects.filter(experiment=obj)
         return InterpretationSerializer(many=True, instance=interpretations).data
 
+
 class FullExperimentCreateSerializer(serializers.ModelSerializer):
     study = serializers.PrimaryKeyRelatedField(queryset=Study.objects.all())
     interpretations = InterpretationCreateSerializer(many=True, read_only=True)
@@ -176,6 +191,8 @@ class FullExperimentCreateSerializer(serializers.ModelSerializer):
                   "stimuli",
                   "tasks"
                   )
+
+
 class ExperimentSerializer(FullExperimentSerializer):
     techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
     paradigms = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Paradigm.objects.all())

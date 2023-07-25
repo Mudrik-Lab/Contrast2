@@ -183,7 +183,7 @@ class ThinExperimentSerializer(ExperimentSerializer):
         fields = ("id",
                   "study",
                   "finding_description",
-
+                  "type_of_consciousness",
                   "is_reporting",
                   "theory_driven",
                   "type",

@@ -125,8 +125,8 @@ class FullExperimentSerializer(serializers.ModelSerializer):
     stimuli = StimulusSerializer(many=True, read_only=True)
     tasks = TaskSerializer(many=True, read_only=True)
     consciousness_measures = ConsciousnessMeasureSerializer(many=True, read_only=True)
-    techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
-    paradigms = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Paradigm.objects.all())
+    techniques = TechniqueSerializer(many=True, read_only=True)
+    paradigms = ParadigmSerializer(many=True, read_only=True)
     theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())
 
     class Meta:

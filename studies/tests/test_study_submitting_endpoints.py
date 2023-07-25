@@ -6,7 +6,7 @@ from django.urls import reverse
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
     SampleChoices, InterpretationsChoices
-from studies.models import Study, Theory, Paradigm
+from studies.models import Study, Theory, Paradigm, Technique
 from contrast_api.tests.base import BaseTestCase
 
 
@@ -55,13 +55,19 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         experiment_id = res_experiment["id"]
         paradigm, created = Paradigm.objects.get_or_create(name="Amusia")
+        technique, created = Technique.objects.get_or_create(name="fMRI")
         paradigms_res = self.when_paradigm_is_added_to_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
+        technique_res = self.when_technique_is_added_to_experiment(study_id, experiment_id, technique_id=technique.id)
         experiments_res = self.get_experiments_for_study(study_id)
-        self.assertListEqual(experiments_res["results"][0]["paradigms"], ["Amusia"])
+        self.assertEqual(experiments_res["results"][0]["paradigms"][0]["name"], "Amusia")
+        self.assertEqual(experiments_res["results"][0]["techniques"][0]["name"], "fMRI")
+
 
         paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
+        technique_res = self.when_technique_is_removed_from_experiment(study_id, experiment_id, technique_id=technique.id)
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertListEqual(experiments_res["results"][0]["paradigms"], [])
+        self.assertListEqual(experiments_res["results"][0]["techniques"], [])
 
 
 
@@ -147,5 +153,17 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def when_paradigm_is_removed_from_experiment(self, study_id, experiment_id:int, paradigm_id:int):
         target_url = reverse("studies-experiments-remove-paradigm", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(dict(id=paradigm_id)), content_type="application/json")
+        self.assertEqual(res.status_code, 204)
+        return res.data
+
+    def when_technique_is_added_to_experiment(self, study_id, experiment_id:int, technique_id:int):
+        target_url = reverse("studies-experiments-add-technique", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(dict(id=technique_id)), content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
+    def when_technique_is_removed_from_experiment(self, study_id, experiment_id:int, technique_id:int):
+        target_url = reverse("studies-experiments-remove-technique", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(dict(id=technique_id)), content_type="application/json")
         self.assertEqual(res.status_code, 204)
         return res.data

@@ -98,7 +98,7 @@ class StimulusSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", queryset=TaskType.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=TaskType.objects.all())
     description = serializers.CharField(required=False)
 
     class Meta:

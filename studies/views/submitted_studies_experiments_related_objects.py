@@ -8,70 +8,77 @@ from studies.views.base_study_related_views_mixins import StudyRelatedPermission
     ExperimentRelatedNestedObjectMixin
 
 
-class StudyExperimentsTasks(ModelViewSet,
+class StudyExperimentsTasks(StudyRelatedPermissionsViewMixin,
+                            ExperimentRelatedNestedObjectMixin,
+                            ModelViewSet,
                             GenericViewSet,
-                            StudyRelatedPermissionsViewMixin,
-                            ExperimentRelatedNestedObjectMixin):
+                            ):
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
 
     permission_classes = [SubmitterOnlyPermission]
 
 
-class StudyExperimentsSamples(ModelViewSet,
+class StudyExperimentsSamples(StudyRelatedPermissionsViewMixin,
+                              ExperimentRelatedNestedObjectMixin,
+                              ModelViewSet,
                               GenericViewSet,
-                              StudyRelatedPermissionsViewMixin,
-                              ExperimentRelatedNestedObjectMixin):
+                              ):
     serializer_class = SampleSerializer
     queryset = Sample.objects.all()
 
     permission_classes = [SubmitterOnlyPermission]
 
 
-class StudyExperimentsStimuli(ModelViewSet,
+class StudyExperimentsStimuli(StudyRelatedPermissionsViewMixin,
+                              ExperimentRelatedNestedObjectMixin,
+                              ModelViewSet,
                               GenericViewSet,
-                              StudyRelatedPermissionsViewMixin,
-                              ExperimentRelatedNestedObjectMixin):
+                              ):
     serializer_class = StimulusSerializer
     queryset = Stimulus.objects.all()
 
     permission_classes = [SubmitterOnlyPermission]
 
 
-class StudyExperimentsMeasures(ModelViewSet,
+class StudyExperimentsMeasures(StudyRelatedPermissionsViewMixin,
+                               ExperimentRelatedNestedObjectMixin,
+                               ModelViewSet,
                                GenericViewSet,
-                               StudyRelatedPermissionsViewMixin,
-                               ExperimentRelatedNestedObjectMixin):
+                               ):
     serializer_class = MeasureSerializer
     queryset = Measure.objects.all()
 
     permission_classes = [SubmitterOnlyPermission]
 
 
-class StudyExperimentsInterpretations(ModelViewSet,
+class StudyExperimentsInterpretations(StudyRelatedPermissionsViewMixin,
+                                      ExperimentRelatedNestedObjectMixin,
+                                      ModelViewSet,
                                       GenericViewSet,
-                                      StudyRelatedPermissionsViewMixin,
-                                      ExperimentRelatedNestedObjectMixin):
+                                      ):
     serializer_class = InterpretationCreateSerializer
     queryset = Interpretation.objects.all()
 
     permission_classes = [SubmitterOnlyPermission]
 
 
-class StudyExperimentsFindingTags(ModelViewSet,
+class StudyExperimentsFindingTags(StudyRelatedPermissionsViewMixin,
+                                  ExperimentRelatedNestedObjectMixin,
+                                  ModelViewSet,
                                   GenericViewSet,
-                                  StudyRelatedPermissionsViewMixin,
-                                  ExperimentRelatedNestedObjectMixin):
+                                  ):
     serializer_class = FindingTagSerializer
     queryset = FindingTag.objects.all()
 
     permission_classes = [SubmitterOnlyPermission]
 
 
-class StudyExperimentsConsciousnessMeasures(ModelViewSet,
+class StudyExperimentsConsciousnessMeasures(StudyRelatedPermissionsViewMixin,
+                                            ExperimentRelatedNestedObjectMixin,
+                                            ModelViewSet,
                                             GenericViewSet,
-                                            StudyRelatedPermissionsViewMixin,
-                                            ExperimentRelatedNestedObjectMixin):
+                                            ):
     serializer_class = ConsciousnessMeasureSerializer
     queryset = ConsciousnessMeasure.objects.all()
 

@@ -21,6 +21,9 @@ class StudyRelatedPermissionsViewMixin:
 
 
 class ExperimentRelatedNestedObjectMixin:
+    """
+    Mixin to be used with GenericViewSet
+    """
     def get_queryset(self):
         qs = super().get_queryset() \
             .filter(study=self.kwargs.get("experiment_pk"))

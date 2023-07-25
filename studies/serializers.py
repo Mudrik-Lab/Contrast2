@@ -17,7 +17,7 @@ class TheorySerializer(serializers.ModelSerializer):
 
 
 class MeasureSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    type = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Measure
@@ -25,9 +25,9 @@ class MeasureSerializer(serializers.ModelSerializer):
 
 
 class FindingTagSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", queryset=FindingTagType.objects.all())
-    family = serializers.SlugRelatedField(slug_field="name", queryset=FindingTagFamily.objects.all())
-    technique = serializers.SlugRelatedField(slug_field="name", queryset=Technique.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=FindingTagType.objects.all())
+    family = serializers.PrimaryKeyRelatedField(queryset=FindingTagFamily.objects.all())
+    technique = serializers.PrimaryKeyRelatedField(queryset=Technique.objects.all())
 
     class Meta:
         model = FindingTag
@@ -62,8 +62,8 @@ class InterpretationCreateSerializer(serializers.ModelSerializer):
 
 
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
-    phase = serializers.SlugRelatedField(slug_field="name", queryset=ConsciousnessMeasurePhaseType.objects.all())
-    type = serializers.SlugRelatedField(slug_field="name", queryset=ConsciousnessMeasureType.objects.all())
+    phase = serializers.PrimaryKeyRelatedField(queryset=ConsciousnessMeasurePhaseType.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=ConsciousnessMeasureType.objects.all())
 
     class Meta:
         model = ConsciousnessMeasure
@@ -88,9 +88,9 @@ class SampleSerializer(serializers.ModelSerializer):
 
 
 class StimulusSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(slug_field="name", queryset=StimulusCategory.objects.all())
-    sub_category = serializers.SlugRelatedField(slug_field="name", queryset=StimulusSubCategory.objects.all())
-    modality = serializers.SlugRelatedField(slug_field="name", queryset=ModalityType.objects.all())
+    category = serializers.PrimaryKeyRelatedField(queryset=StimulusCategory.objects.all())
+    sub_category = serializers.PrimaryKeyRelatedField(queryset=StimulusSubCategory.objects.all())
+    modality = serializers.PrimaryKeyRelatedField(queryset=ModalityType.objects.all())
 
     class Meta:
         model = Stimulus
@@ -155,42 +155,6 @@ class FullExperimentSerializer(serializers.ModelSerializer):
     def get_interpretations(self, obj: Experiment):
         interpretations = Interpretation.objects.filter(experiment=obj)
         return InterpretationSerializer(many=True, instance=interpretations).data
-
-
-class FullExperimentCreateSerializer(serializers.ModelSerializer):
-    study = serializers.PrimaryKeyRelatedField(queryset=Study.objects.all())
-    interpretations = InterpretationCreateSerializer(many=True, read_only=True)
-    finding_tags = FindingTagSerializer(many=True, read_only=True)
-    measures = MeasureSerializer(many=True, read_only=True)
-    samples = SampleSerializer(many=True, read_only=True)
-    stimuli = StimulusSerializer(many=True, read_only=True)
-    tasks = TaskSerializer(many=True, read_only=True)
-    consciousness_measures = ConsciousnessMeasureSerializer(many=True, read_only=True)
-    techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
-    paradigms = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Paradigm.objects.all())
-    theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())
-
-    class Meta:
-        model = Experiment
-        depth = 2
-        fields = ("id",
-                  "study",
-                  "interpretations",
-                  "finding_description",
-                  "techniques",
-                  "paradigms",
-                  "type_of_consciousness",
-                  "is_reporting",
-                  "theory_driven",
-                  "theory_driven_theories",
-                  "type",
-                  "finding_tags",
-                  "measures",
-                  "consciousness_measures",
-                  "samples",
-                  "stimuli",
-                  "tasks"
-                  )
 
 
 class ExperimentSerializer(FullExperimentSerializer):

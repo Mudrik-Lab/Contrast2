@@ -9,12 +9,9 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.choices import ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.models import Experiment, Paradigm, Technique
 from studies.permissions import SubmitterOnlyPermission
-from studies.serializers import FullExperimentSerializer, ExperimentSerializer, TaskSerializer, SampleSerializer, \
-    StimulusSerializer, MeasureSerializer, ConsciousnessMeasureSerializer, \
-    FindingTagSerializer, InterpretationCreateSerializer, ParadigmSerializer, ParadigmAddRemoveSerializer, \
+from studies.serializers import FullExperimentSerializer, ParadigmSerializer, ParadigmAddRemoveSerializer, \
     TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 

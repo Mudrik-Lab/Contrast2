@@ -17,7 +17,7 @@ class TheorySerializer(serializers.ModelSerializer):
 
 
 class MeasureSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    type = serializers.PrimaryKeyRelatedField(read_only=True)
 
     class Meta:
         model = Measure
@@ -25,9 +25,9 @@ class MeasureSerializer(serializers.ModelSerializer):
 
 
 class FindingTagSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", queryset=FindingTagType.objects.all())
-    family = serializers.SlugRelatedField(slug_field="name", queryset=FindingTagFamily.objects.all())
-    technique = serializers.SlugRelatedField(slug_field="name", queryset=Technique.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=FindingTagType.objects.all())
+    family = serializers.PrimaryKeyRelatedField(queryset=FindingTagFamily.objects.all())
+    technique = serializers.PrimaryKeyRelatedField(queryset=Technique.objects.all())
 
     class Meta:
         model = FindingTag
@@ -58,12 +58,12 @@ class InterpretationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interpretation
-        fields = ("experiment_id", "theory", "type")
+        fields = ("experiment", "theory", "type")
 
 
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
-    phase = serializers.SlugRelatedField(slug_field="name", queryset=ConsciousnessMeasurePhaseType.objects.all())
-    type = serializers.SlugRelatedField(slug_field="name", queryset=ConsciousnessMeasureType.objects.all())
+    phase = serializers.PrimaryKeyRelatedField(queryset=ConsciousnessMeasurePhaseType.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=ConsciousnessMeasureType.objects.all())
 
     class Meta:
         model = ConsciousnessMeasure
@@ -77,6 +77,10 @@ class ParadigmSerializer(serializers.ModelSerializer):
         fields = ("id", "name", "parent")
 
 
+class ParadigmAddRemoveSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+
+
 class SampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Sample
@@ -84,9 +88,9 @@ class SampleSerializer(serializers.ModelSerializer):
 
 
 class StimulusSerializer(serializers.ModelSerializer):
-    category = serializers.SlugRelatedField(slug_field="name", queryset=StimulusCategory.objects.all())
-    sub_category = serializers.SlugRelatedField(slug_field="name", queryset=StimulusSubCategory.objects.all())
-    modality = serializers.SlugRelatedField(slug_field="name", queryset=ModalityType.objects.all())
+    category = serializers.PrimaryKeyRelatedField(queryset=StimulusCategory.objects.all())
+    sub_category = serializers.PrimaryKeyRelatedField(queryset=StimulusSubCategory.objects.all())
+    modality = serializers.PrimaryKeyRelatedField(queryset=ModalityType.objects.all())
 
     class Meta:
         model = Stimulus
@@ -94,12 +98,22 @@ class StimulusSerializer(serializers.ModelSerializer):
 
 
 class TaskSerializer(serializers.ModelSerializer):
-    type = serializers.SlugRelatedField(slug_field="name", queryset=TaskType.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=TaskType.objects.all())
     description = serializers.CharField(required=False)
 
     class Meta:
         model = Task
         fields = ("experiment", "id", "description", "type")
+
+
+class TechniqueSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Technique
+        fields = ("id", "name")
+
+
+class TechniqueAddRemoveSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
 
 
 class FullExperimentSerializer(serializers.ModelSerializer):
@@ -111,8 +125,8 @@ class FullExperimentSerializer(serializers.ModelSerializer):
     stimuli = StimulusSerializer(many=True, read_only=True)
     tasks = TaskSerializer(many=True, read_only=True)
     consciousness_measures = ConsciousnessMeasureSerializer(many=True, read_only=True)
-    techniques = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Technique.objects.all())
-    paradigms = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Paradigm.objects.all())
+    techniques = TechniqueSerializer(many=True, read_only=True)
+    paradigms = ParadigmSerializer(many=True, read_only=True)
     theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())
 
     class Meta:
@@ -169,7 +183,7 @@ class ThinExperimentSerializer(ExperimentSerializer):
         fields = ("id",
                   "study",
                   "finding_description",
-
+                  "type_of_consciousness",
                   "is_reporting",
                   "theory_driven",
                   "type",

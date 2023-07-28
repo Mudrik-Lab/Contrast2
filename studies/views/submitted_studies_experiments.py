@@ -16,14 +16,16 @@ from studies.serializers import FullExperimentSerializer, ParadigmSerializer, Pa
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 
 
-class SubmittedStudyExperiments(mixins.RetrieveModelMixin,
+class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
+                                mixins.RetrieveModelMixin,
                                 mixins.CreateModelMixin,
                                 mixins.ListModelMixin,
                                 mixins.UpdateModelMixin,
                                 mixins.DestroyModelMixin,
-                                GenericViewSet, StudyRelatedPermissionsViewMixin):
+                                GenericViewSet):
     # TODO handle permissions, so delete/patch can't be done for non draft studies, or none mine
     permission_classes = [SubmitterOnlyPermission]
+    pagination_class = None
     serializer_class = FullExperimentSerializer
     queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
 

@@ -43,7 +43,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(study.approval_process.started_at.date(), datetime.date.today())
 
         experiments_res = self.get_experiments_for_study(first_result["id"])
-        self.assertEqual(experiments_res["count"], 0)
+        self.assertEqual(len(experiments_res), 0)
         rpt_theory = Theory.objects.get(name="RPT")
         res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"])
 
@@ -51,7 +51,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertListEqual(res_experiment["tasks"], [])
 
         experiments_res = self.get_experiments_for_study(study_id)
-        self.assertEqual(experiments_res["count"], 1)
+        self.assertEqual(len(experiments_res), 1)
 
         experiment_id = res_experiment["id"]
         paradigm, created = Paradigm.objects.get_or_create(name="Amusia")
@@ -64,17 +64,46 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
                                                                                                   description="we did this"))
 
         experiments_res = self.get_experiments_for_study(study_id)
-        self.assertEqual(experiments_res["results"][0]["paradigms"][0]["name"], "Amusia")
-        self.assertEqual(experiments_res["results"][0]["techniques"][0]["name"], "fMRI")
-        self.assertEqual(experiments_res["results"][0]["tasks"][0]["type"], task_type.id)
-        self.assertEqual(experiments_res["results"][0]["tasks"][0]["description"], "we did this")
+        self.assertEqual(experiments_res[0]["paradigms"][0]["name"], "Amusia")
+        self.assertEqual(experiments_res[0]["techniques"][0]["name"], "fMRI")
+        self.assertEqual(experiments_res[0]["tasks"][0]["type"], task_type.id)
+        self.assertEqual(experiments_res[0]["tasks"][0]["description"], "we did this")
 
         paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
         technique_res = self.when_technique_is_removed_from_experiment(study_id, experiment_id,
                                                                        technique_id=technique.id)
         experiments_res = self.get_experiments_for_study(study_id)
-        self.assertListEqual(experiments_res["results"][0]["paradigms"], [])
-        self.assertListEqual(experiments_res["results"][0]["techniques"], [])
+        self.assertListEqual(experiments_res[0]["paradigms"], [])
+        self.assertListEqual(experiments_res[0]["techniques"], [])
+
+    def test_study_and_experiment_deletion_by_user(self):
+        """
+        test study is created with 201
+        test approval status is pending and approval process is created
+        test submitter gets study back, but other user don't
+        """
+        self.given_user_exists(username="submitting_user")
+        self.given_user_authenticated("submitting_user", "12345")
+        study_res = self.when_study_created_by_user_via_api()
+
+        study_id = study_res["id"]
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(len(experiments_res), 0)
+        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=study_id)
+        experiment_id = res_experiment["id"]
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(len(experiments_res), 1)
+
+        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(len(experiments_res), 0)
+
+        delete_study_res = self.when_study_is_removed(study_id)
+
+        studies_res = self.get_pending_studies()
+        self.assertEqual(studies_res["count"], 0)
 
     def test_study_creation_and_update_flow(self):
         """
@@ -177,4 +206,16 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         target_url = reverse("tasks-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(task_data), content_type="application/json")
         self.assertEqual(res.status_code, 201)
+        return res.data
+
+    def when_experiment_is_removed_from_study(self, study_id: int, experiment_id: int):
+        target_url = reverse("studies-experiments-detail", args=[study_id, experiment_id])
+        res = self.client.delete(target_url)
+        self.assertEqual(res.status_code, 204)
+        return res.data
+
+    def when_study_is_removed(self, study_id: int):
+        target_url = reverse("studies-submitted-detail", args=[study_id])
+        res = self.client.delete(target_url)
+        self.assertEqual(res.status_code, 204)
         return res.data

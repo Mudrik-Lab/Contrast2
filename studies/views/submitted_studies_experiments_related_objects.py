@@ -26,7 +26,7 @@ class StudyExperimentsSamples(StudyRelatedPermissionsViewMixin,
                               ):
     serializer_class = SampleSerializer
     queryset = Sample.objects.all()
-
+    pagination_class = None
     permission_classes = [SubmitterOnlyPermission]
 
 
@@ -37,7 +37,7 @@ class StudyExperimentsStimuli(StudyRelatedPermissionsViewMixin,
                               ):
     serializer_class = StimulusSerializer
     queryset = Stimulus.objects.all()
-
+    pagination_class = None
     permission_classes = [SubmitterOnlyPermission]
 
 
@@ -48,7 +48,7 @@ class StudyExperimentsMeasures(StudyRelatedPermissionsViewMixin,
                                ):
     serializer_class = MeasureSerializer
     queryset = Measure.objects.all()
-
+    pagination_class = None
     permission_classes = [SubmitterOnlyPermission]
 
 
@@ -59,7 +59,7 @@ class StudyExperimentsInterpretations(StudyRelatedPermissionsViewMixin,
                                       ):
     serializer_class = InterpretationCreateSerializer
     queryset = Interpretation.objects.all()
-
+    pagination_class = None
     permission_classes = [SubmitterOnlyPermission]
 
 
@@ -70,7 +70,7 @@ class StudyExperimentsFindingTags(StudyRelatedPermissionsViewMixin,
                                   ):
     serializer_class = FindingTagSerializer
     queryset = FindingTag.objects.all()
-
+    pagination_class = None
     permission_classes = [SubmitterOnlyPermission]
 
 
@@ -81,5 +81,5 @@ class StudyExperimentsConsciousnessMeasures(StudyRelatedPermissionsViewMixin,
                                             ):
     serializer_class = ConsciousnessMeasureSerializer
     queryset = ConsciousnessMeasure.objects.all()
-
+    pagination_class = None
     permission_classes = [SubmitterOnlyPermission]

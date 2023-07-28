@@ -10,6 +10,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
 from studies.models import Study, Measure, FindingTag, Task, ConsciousnessMeasure, Stimulus, Paradigm
+from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import StudyWithExperimentsSerializer, ThinStudyWithExperimentsSerializer, \
     StudyWithExperimentsCreateSerializer
 
@@ -18,6 +19,7 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
                            mixins.ListModelMixin,
                            mixins.RetrieveModelMixin,
                            mixins.UpdateModelMixin,
+                           mixins.DestroyModelMixin,
                            GenericViewSet):
     """
     Getting/creating studies I've submitted, editing, etc
@@ -44,7 +46,7 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
 
                           ) \
         .order_by("-id", "approval_status")
-    permission_classes = [IsAuthenticated]
+    permission_classes = [SubmitterOnlyPermission]
     serializer_class = StudyWithExperimentsSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['title', "DOI"]
@@ -62,7 +64,7 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
         if self.action in ['my_studies']:
             # for my studies we need to limit that
             qs = qs.filter(submitter=self.request.user)
-        if self.action in ["update", "partial_update"]:
+        if self.action in ["update", "partial_update", "delete"]:
             # we can update only items still in pending status and that are 'mine"
             qs = qs.filter(approval_status=ApprovalChoices.PENDING) \
                 .filter(submitter=self.request.user)

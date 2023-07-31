@@ -54,7 +54,7 @@ class ExperimentRelatedNestedObjectMixin:
     """
     def get_queryset(self):
         qs = super().get_queryset() \
-            .filter(study=self.kwargs.get("experiment_pk"))
+            .filter(experiment_id=self.kwargs.get("experiment_pk"))
         return qs
 
     def create(self, request, *args, **kwargs):

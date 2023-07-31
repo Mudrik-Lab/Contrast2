@@ -62,7 +62,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         technique_res = self.when_technique_is_added_to_experiment(study_id, experiment_id, technique_id=technique.id)
         tasks_res = self.when_task_is_added_to_experiment(study_id, experiment_id, task_data=dict(type=task_type.id,
                                                                                                   description="we did this"))
-
+        task_id = tasks_res["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res[0]["paradigms"][0]["name"], "Amusia")
         self.assertEqual(experiments_res[0]["techniques"][0]["name"], "fMRI")
@@ -72,9 +72,11 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
         technique_res = self.when_technique_is_removed_from_experiment(study_id, experiment_id,
                                                                        technique_id=technique.id)
+        tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertListEqual(experiments_res[0]["paradigms"], [])
         self.assertListEqual(experiments_res[0]["techniques"], [])
+        self.assertListEqual(experiments_res[0]["tasks"], [])
 
     def test_study_and_experiment_deletion_by_user(self):
         """
@@ -216,6 +218,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
     def when_study_is_removed(self, study_id: int):
         target_url = reverse("studies-submitted-detail", args=[study_id])
+        res = self.client.delete(target_url)
+        self.assertEqual(res.status_code, 204)
+        return res.data
+
+    def when_task_is_removed_from_experiment(self, study_id, experiment_id, task_id):
+        target_url = reverse("tasks-detail", args=[study_id, experiment_id, task_id])
         res = self.client.delete(target_url)
         self.assertEqual(res.status_code, 204)
         return res.data

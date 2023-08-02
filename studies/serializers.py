@@ -58,7 +58,7 @@ class InterpretationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Interpretation
-        fields = ("experiment", "theory", "type")
+        fields = ("experiment", "theory", "type", "id")
 
 
 class ConsciousnessMeasureSerializer(serializers.ModelSerializer):

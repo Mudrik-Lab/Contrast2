@@ -38,7 +38,6 @@ class Experiment(models.Model):
 
     objects = ExperimentManager()
 
-    # TODO add all relevant Interpretations on creations
 
     def clean(self):
         if self.paradigms.count() == 0 or self.paradigms is None:

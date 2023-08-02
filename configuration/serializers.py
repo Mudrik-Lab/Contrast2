@@ -14,7 +14,7 @@ class TheoryConfigurationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Theory
-        fields = ('name', 'parent', 'acronym', 'full_name')
+        fields = ('name', 'parent', 'acronym', 'full_name', 'id', 'parent_id')
 
     def get_full_name(self, obj) -> str:
         if obj.acronym:

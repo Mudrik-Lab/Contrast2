@@ -5,7 +5,7 @@ from rest_framework import serializers
 from approval_process.models import ApprovalProcess
 from studies.models import Experiment, Study, Theory, Interpretation, Technique, Author, Paradigm, ConsciousnessMeasure, \
     Measure, FindingTag, Sample, Stimulus, Task, TaskType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, \
-    FindingTagType, FindingTagFamily
+    FindingTagType, FindingTagFamily, MeasureType
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, ModalityType
 
 
@@ -17,7 +17,7 @@ class TheorySerializer(serializers.ModelSerializer):
 
 
 class MeasureSerializer(serializers.ModelSerializer):
-    type = serializers.PrimaryKeyRelatedField(read_only=True)
+    type = serializers.PrimaryKeyRelatedField(queryset=MeasureType.objects.all())
 
     class Meta:
         model = Measure

@@ -6,7 +6,7 @@ from django.urls import reverse
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
     SampleChoices, InterpretationsChoices
-from studies.models import Study, Theory, Paradigm, Technique, TaskType
+from studies.models import Study, Theory, Paradigm, Technique, TaskType, MeasureType
 from contrast_api.tests.base import BaseTestCase
 
 
@@ -57,11 +57,16 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         paradigm, created = Paradigm.objects.get_or_create(name="Amusia")
         technique, created = Technique.objects.get_or_create(name="fMRI")
         task_type, created = TaskType.objects.get_or_create(name="Discrimination")
+        measure_type, created = MeasureType.objects.get_or_create(name="PHI")
 
         paradigms_res = self.when_paradigm_is_added_to_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
         technique_res = self.when_technique_is_added_to_experiment(study_id, experiment_id, technique_id=technique.id)
         tasks_res = self.when_task_is_added_to_experiment(study_id, experiment_id, task_data=dict(type=task_type.id,
                                                                                                   description="we did this"))
+
+        measure_res = self.when_measure_is_added_to_experiment(study_id, experiment_id,
+                                                               measure_data=dict(type=measure_type.id,
+                                                                                 notes="this is a measure"))
         task_id = tasks_res["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res[0]["paradigms"][0]["name"], "Amusia")
@@ -207,6 +212,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def when_task_is_added_to_experiment(self, study_id, experiment_id, task_data):
         target_url = reverse("tasks-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(task_data), content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
+    def when_measure_is_added_to_experiment(self, study_id, experiment_id, measure_data):
+        target_url = reverse("measures-list", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(measure_data), content_type="application/json")
         self.assertEqual(res.status_code, 201)
         return res.data
 

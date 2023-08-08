@@ -6,7 +6,7 @@ from studies.views import ApprovedStudiesViewSet, ExcludedStudiesViewSet, Experi
 from studies.views.authors import AuthorsViewSet
 from studies.views.submitted_studies_experiments_related_objects import StudyExperimentsTasks, StudyExperimentsSamples, \
     StudyExperimentsStimuli, StudyExperimentsMeasures, StudyExperimentsInterpretations, StudyExperimentsFindingTags, \
-    StudyExperimentsConsciousnessMeasures
+    StudyExperimentsAnalysisMeasures
 
 router = routers.SimpleRouter()
 
@@ -30,8 +30,10 @@ studies_experiments_nested_router.register("measures", StudyExperimentsMeasures,
 studies_experiments_nested_router.register("interpretations", StudyExperimentsInterpretations,
                                            basename="interpretations")
 studies_experiments_nested_router.register("finding_tags", StudyExperimentsFindingTags, basename="finding_tags")
-studies_experiments_nested_router.register("consciousness_measures", StudyExperimentsConsciousnessMeasures,
+studies_experiments_nested_router.register("consciousness_measures", StudyExperimentsAnalysisMeasures,
                                            basename="consciousness_measures")
+studies_experiments_nested_router.register("analysis_measures", StudyExperimentsAnalysisMeasures,
+                                           basename="analysis_measures")
 
 urlpatterns = [
     path('', include(router.urls)),

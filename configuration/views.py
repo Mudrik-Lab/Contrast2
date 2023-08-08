@@ -45,13 +45,13 @@ class ConfigurationView(GenericViewSet):
         available_populations_types = SampleChoices.values
         available_theory_driven_types = TheoryDrivenChoices.values
         available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseType.objects.all()
-        available_consciousness_measure_type = ConsciousnessMeasureType.objects.all()
+        available_analysis_measure_type = ConsciousnessMeasureType.objects.all()
         available_tasks_types = TaskType.objects.all()
         available_authors = Author.objects.all()
         available_stimulus_modality_type = ModalityType.objects.all()
         available_stimulus_category_type = StimulusCategory.objects.all()
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
-        available_experiment_types = ExperimentTypeChoices.values
+        available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
         configuration_data = dict(existing_journals=existing_journals,
                                   available_techniques=techniques,
                                   available_paradigms_families=available_paradigms_families,
@@ -64,7 +64,8 @@ class ConfigurationView(GenericViewSet):
                                   available_theories=available_theories,
                                   available_paradigms=available_paradigms,
                                   available_consciousness_measure_phase_type=available_consciousness_measure_phase_type,
-                                  available_consciousness_measure_type=available_consciousness_measure_type,
+                                  available_consciousness_measure_type=available_analysis_measure_type,
+                                  available_analysis_measure_type=available_analysis_measure_type,
                                   available_authors=available_authors,
                                   available_stimulus_modality_type=available_stimulus_modality_type,
                                   available_stimulus_category_type=available_stimulus_category_type,

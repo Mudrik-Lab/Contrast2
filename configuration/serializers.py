@@ -53,7 +53,8 @@ class ConsciousnessMeasurePhaseTypeSerializer(serializers.ModelSerializer):
         fields = ('name', 'id')
 
 
-class ConsciousnessMeasureTypeSerializer(serializers.ModelSerializer):
+class AnalysisMeasureTypeSerializer(serializers.ModelSerializer):
+    # Formerly: ConsciousnessMeasureTypeSerializer
     class Meta:
         model = ConsciousnessMeasureType
         fields = ('name', 'id')
@@ -102,6 +103,11 @@ class ParadigmSerializer(serializers.ModelSerializer):
         return obj.parent.name
 
 
+class ExperimentTypeSerializer(serializers.Serializer):
+    name = serializers.CharField()
+    value = serializers.IntegerField()
+
+
 class StudiesConfigurationSerializer(serializers.Serializer):
     available_techniques = TechniqueSerializer(many=True)
     available_finding_tags_types = FindingTagTypeSerializer(many=True)
@@ -113,8 +119,9 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseTypeSerializer(many=True)
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_theory_driven_types = serializers.ListSerializer(child=serializers.CharField())
-    available_experiment_types = serializers.ListSerializer(child=serializers.CharField())
-    available_consciousness_measure_type = ConsciousnessMeasureTypeSerializer(many=True)
+    available_experiment_types = ExperimentTypeSerializer(many=True)
+    available_consciousness_measure_type = AnalysisMeasureTypeSerializer(many=True)
+    available_analysis_measure_type = AnalysisMeasureTypeSerializer(many=True)
     available_tasks_types = TaskTypeSerializer(many=True)
     available_stimulus_modality_type = ModalityTypeSerializer(many=True)
     available_stimulus_category_type = StimulusCategorySerializer(many=True)

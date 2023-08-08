@@ -151,9 +151,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
             finding_description="look what we found",
             is_reporting=ReportingChoices.NO_REPORT,
             theory_driven=TheoryDrivenChoices.POST_HOC,
-
             type=ExperimentTypeChoices.NEUROSCIENTIFIC,
-
             theory_driven_theories=["GNW"],
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
         experiment_params = {**default_experiment, **kwargs}

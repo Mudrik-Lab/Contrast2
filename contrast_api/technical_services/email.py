@@ -9,7 +9,7 @@ class EmailService:
 
     def send_email(self, recipient, from_email, subject, html_text):
         try:
-            send_mail(subject=subject, recipient_list=[recipient], message=html_text, from_email=from_email)
+            send_mail(subject=subject, recipient_list=[recipient], message=html_text, html_message=html_text, from_email=from_email)
         except Exception:
             logger.exception("Failing to send email")
             raise

@@ -77,6 +77,7 @@ class Base(Configuration):
     ]
     ANYMAIL_MAILGUN_SENDER_DOMAIN = values.Value(environ_prefix=None, environ_name="MAILGUN_SENDER_DOMAIN")
     ANYMAIL_MAILGUN_API_KEY = values.Value(environ_prefix=None, environ_name="MAILGUN_API_KEY")
+    ANYMAIL_MAILGUN_API_URL = values.Value(environ_prefix=None, environ_name="MAILGUN_API_URL", default="https://api.eu.mailgun.net/v3")
 
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
@@ -237,7 +238,7 @@ class Development(Base):
 
     }
 
-    DEFAULT_FROM_EMAIL = "localdev@test.com"
+    DEFAULT_FROM_EMAIL = values.EmailValue(default="localdev@test.com")
     EMAIL_BACKEND = "anymail.backends.console.EmailBackend"
 
 

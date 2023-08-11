@@ -137,6 +137,12 @@ class ContactUsSerializer(BaseFeedbackSerializer):
     message = serializers.CharField(required=False)
     confirm_updates = serializers.BooleanField(required=False, default=False)
 
+    def to_internal_value(self, data):
+        if "confirm_updates" in data:
+            if data["confirm_updates"] == "":
+                data["confirm_updates"] = False
+        return super().to_internal_value(data)
+
 
 class FeedbackResponseSerializer(serializers.Serializer):
     submitted = serializers.BooleanField()

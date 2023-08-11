@@ -1,3 +1,4 @@
+import json
 from typing import Dict
 
 from django.conf import settings
@@ -26,12 +27,12 @@ class UserFeedbackTestCase(BaseTestCase):
 
         self.verify_email_was_sent_to_user(email=settings.SITE_MANAGER_ADDRESS)
 
-    def test_contact_form_with_confirm_updates_false(self):
+    def test_contact_form_with_confirm_updates_missing(self):
         email = "user1@test.com"
 
         self.verify_no_email_was_sent_to_user(email=settings.SITE_MANAGER_ADDRESS)
         feedback_type = "contact-us"
-        feedback_data = dict(subject="my contact", message="what ever")
+        feedback_data = dict(subject="my contact", message="what ever", confirm_updates="")
         res = self.when_user_provides_feedback(email=email, feedback_type=feedback_type, feedback_data=feedback_data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 
@@ -40,5 +41,5 @@ class UserFeedbackTestCase(BaseTestCase):
     def when_user_provides_feedback(self, email: str, feedback_type: str, feedback_data: Dict):
         url = reverse(f"feedback-{feedback_type}")
         data = dict(email=email, **feedback_data)
-        res = self.client.post(url, data=data)
+        res = self.client.post(url, data=json.dumps(data), content_type="application/json")
         return res

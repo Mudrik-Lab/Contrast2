@@ -64,7 +64,7 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
         if self.action in ['my_studies']:
             # for my studies we need to limit that
             qs = qs.filter(submitter=self.request.user)
-        if self.action in ["update", "partial_update", "delete"]:
+        if self.action in ["update", "partial_update", "delete", "submit_to_review"]:
             # we can update only items still in pending status and that are 'mine"
             qs = qs.filter(approval_status=ApprovalChoices.PENDING) \
                 .filter(submitter=self.request.user)
@@ -77,6 +77,16 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
         Note this endpoint is paginated and returns a "thin" experiment
         """
         return super().list(request, *args, **kwargs)
+
+    @action(methods=["POST"], detail=True, serializer_class=None)
+    def submit_to_review(self, request, pk, *args, **kwargs):
+        """
+        Endpoint to change the study status
+        """
+        instance: Study = self.get_object()
+        instance.approval_status = ApprovalChoices.AWAITING_REVIEW
+        instance.save()
+        return Response(status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["GET"])
     def my_studies(self, request, *args, **kwargs):

@@ -20,7 +20,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
-    def test_study_and_experiment_creation_by_user(self):
+    def test_study_and_experiment_sub_relations_creation_by_user(self):
         """
         test study is created with 201
         test approval status is pending and approval process is created
@@ -67,12 +67,33 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         measure_res = self.when_measure_is_added_to_experiment(study_id, experiment_id,
                                                                measure_data=dict(type=measure_type.id,
                                                                                  notes="this is a measure"))
+        relevant_theories = Theory.objects.filter(parent__isnull=False)
+        interpretations_res = self.when_setup_interpretations_on_experiment(study_id, experiment_id,
+                                                                            data=[dict(theory=theory.id,
+                                                                                       type=InterpretationsChoices.PRO)
+                                                                                  for theory in relevant_theories])
         task_id = tasks_res["id"]
         experiments_res = self.get_experiments_for_study(study_id)
-        self.assertEqual(experiments_res[0]["paradigms"][0]["name"], "Amusia")
-        self.assertEqual(experiments_res[0]["techniques"][0]["name"], "fMRI")
-        self.assertEqual(experiments_res[0]["tasks"][0]["type"], task_type.id)
-        self.assertEqual(experiments_res[0]["tasks"][0]["description"], "we did this")
+        first_experiment = experiments_res[0]
+        self.assertEqual(first_experiment["paradigms"][0]["name"], "Amusia")
+        self.assertEqual(first_experiment["techniques"][0]["name"], "fMRI")
+        self.assertEqual(first_experiment["tasks"][0]["type"], task_type.id)
+        self.assertEqual(first_experiment["tasks"][0]["description"], "we did this")
+        self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
+        self.assertEqual(first_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
+
+        # Now replace it
+        interpretations_res = self.when_setup_interpretations_on_experiment(study_id, experiment_id,
+                                                                            data=[dict(theory=theory.id,
+                                                                                       type=InterpretationsChoices.CHALLENGES)
+                                                                                  for theory in relevant_theories])
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        first_experiment = experiments_res[0]
+        # verify count hasn't been changed
+        self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
+        self.assertEqual(first_experiment["interpretations"][0]["type"],
+                         InterpretationsChoices.CHALLENGES)  # data has been updated
 
         paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
         technique_res = self.when_technique_is_removed_from_experiment(study_id, experiment_id,
@@ -82,6 +103,9 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertListEqual(experiments_res[0]["paradigms"], [])
         self.assertListEqual(experiments_res[0]["techniques"], [])
         self.assertListEqual(experiments_res[0]["tasks"], [])
+
+        # now submit to review
+        self.when_study_is_submitted_to_review(study_id)
 
     def test_study_and_experiment_deletion_by_user(self):
         """
@@ -124,6 +148,11 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         study_res = self.when_study_created_by_user_via_api(authors_key_words=[], authors=[author1.id])
         study_id = study_res["id"]
         self.assertEqual(study_res["authors"][0]["name"], author1.name)
+        # verify status in "my_studies"
+
+        res = self.when_user_fetches_his_studies()
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0]["approval_status"], ApprovalChoices.PENDING)
 
         update_res = self.when_study_is_updated(study_id, authors_key_words=["what"], countries=["GB", "IL"])
         self.assertListEqual(update_res["countries"], ["GB", "IL"])
@@ -131,6 +160,11 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         res = self.get_pending_studies()
         self.assertEqual(len(res["results"]), 1)
+
+        self.when_study_is_submitted_to_review(study_id)
+        res = self.when_user_fetches_his_studies()
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0]["approval_status"], ApprovalChoices.AWAITING_REVIEW)
 
     def when_study_created_by_user_via_api(self, **kwargs):
         default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
@@ -235,4 +269,22 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         target_url = reverse("tasks-detail", args=[study_id, experiment_id, task_id])
         res = self.client.delete(target_url)
         self.assertEqual(res.status_code, 204)
+        return res.data
+
+    def when_setup_interpretations_on_experiment(self, study_id, experiment_id, data):
+        target_url = reverse("studies-experiments-setup-interpretations", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(data), content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
+    def when_study_is_submitted_to_review(self, study_id):
+        target_url = reverse("studies-submitted-submit-to-review", args=[study_id])
+        res = self.client.post(target_url)
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
+    def when_user_fetches_his_studies(self):
+        target_url = reverse("studies-submitted-my-studies")
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, 200)
         return res.data

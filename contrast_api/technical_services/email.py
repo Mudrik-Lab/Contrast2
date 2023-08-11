@@ -11,5 +11,5 @@ class EmailService:
         try:
             send_mail(subject=subject, recipient_list=[recipient], message=html_text, html_message=html_text, from_email=from_email)
         except Exception:
-            logger.exception("Failing to send email")
+            logger.exception(f"Failing to send email with {subject} to {recipient} ")
             raise

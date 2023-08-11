@@ -26,6 +26,17 @@ class UserFeedbackTestCase(BaseTestCase):
 
         self.verify_email_was_sent_to_user(email=settings.SITE_MANAGER_ADDRESS)
 
+    def test_contact_form_with_confirm_updates_false(self):
+        email = "user1@test.com"
+
+        self.verify_no_email_was_sent_to_user(email=settings.SITE_MANAGER_ADDRESS)
+        feedback_type = "contact-us"
+        feedback_data = dict(subject="my contact", message="what ever")
+        res = self.when_user_provides_feedback(email=email, feedback_type=feedback_type, feedback_data=feedback_data)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+        self.verify_email_was_sent_to_user(email=settings.SITE_MANAGER_ADDRESS)
+
     def when_user_provides_feedback(self, email: str, feedback_type: str, feedback_data: Dict):
         url = reverse(f"feedback-{feedback_type}")
         data = dict(email=email, **feedback_data)

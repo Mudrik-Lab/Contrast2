@@ -9,10 +9,10 @@ from rest_framework.serializers import ModelSerializer
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.models import Experiment, Paradigm, Technique
+from studies.models import Experiment, Paradigm, Technique, Interpretation
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import FullExperimentSerializer, ParadigmSerializer, ParadigmAddRemoveSerializer, \
-    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer
+    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer, InterpretationCreateSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 
 
@@ -54,6 +54,21 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
 
         res_serializer = ParadigmSerializer(instance=paradigm)
         return Response(res_serializer.data, status=status.HTTP_201_CREATED)
+
+    @extend_schema(request=InterpretationCreateSerializer(many=True))
+    @action(detail=True, methods=["POST"], serializer_class=InterpretationCreateSerializer(many=True))
+    def setup_interpretations(self, request, pk, *args, **kwargs):
+        data = copy.deepcopy(request.data)
+        experiment = Experiment.objects.get(id=pk)
+
+        Interpretation.objects.filter(experiment=experiment).delete()
+        for item in data:
+            item["experiment"] = pk
+        serializer = InterpretationCreateSerializer(data=data, many=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @extend_schema(request=ParadigmAddRemoveSerializer())
     @action(detail=True, methods=["POST"], serializer_class=ParadigmSerializer)

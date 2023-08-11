@@ -13,8 +13,10 @@ import datetime
 from pathlib import Path
 import os
 
+import sentry_sdk
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from configurations import Configuration, values
+from sentry_sdk.integrations.django import DjangoIntegration
 
 
 class Base(Configuration):
@@ -77,8 +79,8 @@ class Base(Configuration):
     ]
     ANYMAIL_MAILGUN_SENDER_DOMAIN = values.Value(environ_prefix=None, environ_name="MAILGUN_SENDER_DOMAIN")
     ANYMAIL_MAILGUN_API_KEY = values.Value(environ_prefix=None, environ_name="MAILGUN_API_KEY")
-    ANYMAIL_MAILGUN_API_URL = values.Value(environ_prefix=None, environ_name="MAILGUN_API_URL", default="https://api.eu.mailgun.net/v3")
-
+    ANYMAIL_MAILGUN_API_URL = values.Value(environ_prefix=None, environ_name="MAILGUN_API_URL",
+                                           default="https://api.eu.mailgun.net/v3")
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     DEFAULT_FROM_EMAIL = values.EmailValue()
@@ -242,7 +244,6 @@ class Development(Base):
     EMAIL_BACKEND = "anymail.backends.console.EmailBackend"
 
 
-
 class Testing(Development):
     PASSWORD_HASHERS = [
         'django.contrib.auth.hashers.MD5PasswordHasher',
@@ -263,7 +264,6 @@ class Testing(Development):
     SITE_MANAGER_ADDRESS = "to@test.com"
 
 
-
 class Staging(Base):
     DEBUG = values.BooleanValue(default=False, environ_prefix="")
     CORS_ALLOW_ALL_ORIGINS = False
@@ -278,3 +278,22 @@ class Production(Base):
     AWS_REGION = values.Value(environ_prefix="BUCKETEER")
     AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix="BUCKETEER")
     SENTRY_DSN = values.Value(environ_prefix='')
+
+    @classmethod
+    def post_setup(cls):
+        super().post_setup()
+        sentry_sdk.init(
+            dsn=cls.SENTRY_DSN,
+            integrations=[
+                DjangoIntegration(),
+            ],
+            environment=cls.__name__,
+            # Set traces_sample_rate to 1.0 to capture 100%
+            # of transactions for performance monitoring.
+            # We recommend adjusting this value in production.
+            traces_sample_rate=0.05,
+
+            # If you wish to associate users to errors (assuming you are using
+            # django.contrib.auth) you may enable sending PII data.
+            send_default_pii=True
+        )

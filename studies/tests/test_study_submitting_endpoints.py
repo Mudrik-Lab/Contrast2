@@ -68,10 +68,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
                                                                measure_data=dict(type=measure_type.id,
                                                                                  notes="this is a measure"))
         relevant_theories = Theory.objects.filter(parent__isnull=False)
-        interpretations_res = self.when_setup_interpretations_on_experiment(study_id, experiment_id,
-                                                                            data=[dict(theory=theory.id,
-                                                                                       type=InterpretationsChoices.PRO)
-                                                                                  for theory in relevant_theories])
+        for theory in relevant_theories:
+            interpretations_res = self.when_interpretation_is_added_to_experiment(study_id, experiment_id,
+                                                                                  interpretation_data=dict(
+                                                                                      theory=theory.id,
+                                                                                      type=InterpretationsChoices.PRO)
+                                                                                  )
         task_id = tasks_res["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         first_experiment = experiments_res[0]
@@ -83,17 +85,21 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(first_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
 
         # Now replace it
-        interpretations_res = self.when_setup_interpretations_on_experiment(study_id, experiment_id,
-                                                                            data=[dict(theory=theory.id,
-                                                                                       type=InterpretationsChoices.CHALLENGES)
-                                                                                  for theory in relevant_theories])
+        interpretations_res = self.when_interpretation_is_added_to_experiment(study_id, experiment_id,
+                                                                              interpretation_data=dict(
+                                                                                  theory=relevant_theories[0].id,
+                                                                                  type=InterpretationsChoices.CHALLENGES)
+                                                                              )
 
         experiments_res = self.get_experiments_for_study(study_id)
         first_experiment = experiments_res[0]
         # verify count hasn't been changed
         self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
-        self.assertEqual(first_experiment["interpretations"][0]["type"],
-                         InterpretationsChoices.CHALLENGES)  # data has been updated
+        for interpretation in first_experiment["interpretations"]:
+            if interpretation["theory"] == relevant_theories[0].id:
+                self.assertEqual(first_experiment["interpretations"][0]["type"],
+                                 InterpretationsChoices.CHALLENGES)  # data has been updated
+                break
 
         paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
         technique_res = self.when_technique_is_removed_from_experiment(study_id, experiment_id,
@@ -253,6 +259,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 201)
         return res.data
 
+    def when_interpretation_is_added_to_experiment(self, study_id, experiment_id, interpretation_data):
+        target_url = reverse("interpretations-list", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(interpretation_data), content_type="application/json")
+        self.assertEqual(res.status_code, 201)
+        return res.data
+
     def when_experiment_is_removed_from_study(self, study_id: int, experiment_id: int):
         target_url = reverse("studies-experiments-detail", args=[study_id, experiment_id])
         res = self.client.delete(target_url)
@@ -269,12 +281,6 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         target_url = reverse("tasks-detail", args=[study_id, experiment_id, task_id])
         res = self.client.delete(target_url)
         self.assertEqual(res.status_code, 204)
-        return res.data
-
-    def when_setup_interpretations_on_experiment(self, study_id, experiment_id, data):
-        target_url = reverse("studies-experiments-setup-interpretations", args=[study_id, experiment_id])
-        res = self.client.post(target_url, data=json.dumps(data), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
         return res.data
 
     def when_study_is_submitted_to_review(self, study_id):

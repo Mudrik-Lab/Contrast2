@@ -1,3 +1,7 @@
+import copy
+
+from rest_framework import status
+from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from studies.models import Task, Sample, Stimulus, Measure, Interpretation, FindingTag, ConsciousnessMeasure
@@ -45,6 +49,13 @@ class StudyExperimentsMeasures(BaseStudyExperimentObjectView):
 class StudyExperimentsInterpretations(BaseStudyExperimentObjectView):
     serializer_class = InterpretationCreateSerializer
     queryset = Interpretation.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        """
+        Note: DONT pass explicit experiment id in the creation data, as it's provided by the URI
+        """
+        Interpretation.objects.filter(experiment=int(self.kwargs.get("experiment_pk")), theory=request.data["theory"]).delete()
+        return super().create(request, *args, **kwargs)
 
 
 class StudyExperimentsFindingTags(BaseStudyExperimentObjectView):

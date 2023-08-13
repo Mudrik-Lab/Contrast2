@@ -47,7 +47,7 @@ class ConfigurationView(GenericViewSet):
         available_theory_driven_types = TheoryDrivenChoices.values
         available_AAL_atlas_tag_types = AALAtlasTagChoices.values
         available_analysis_type_choices = AnalysisTypeChoices.values
-        available_correlation_sign_choices = DirectionChoices.values
+        available_direction_choices = DirectionChoices.values
         available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseType.objects.all()
         available_analysis_measure_type = ConsciousnessMeasureType.objects.all()
         available_tasks_types = TaskType.objects.all()
@@ -63,7 +63,7 @@ class ConfigurationView(GenericViewSet):
                                   available_theory_driven_types=available_theory_driven_types,
                                   available_AAL_atlas_tag_types=available_AAL_atlas_tag_types,
                                   available_analysis_type_choices=available_analysis_type_choices,
-                                  available_correlation_sign_choices=available_correlation_sign_choices,
+                                  available_direction_choices=available_direction_choices,
                                   available_experiment_types=available_experiment_types,
                                   available_finding_tags_types=available_finding_tags_types,
                                   available_finding_tags_families=available_finding_tags_families,

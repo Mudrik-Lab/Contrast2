@@ -42,6 +42,7 @@ class FrequenciesGraphDataProcessor(BaseProcessor):
         relevant_finding_tags = FindingTag.objects.select_related("experiment") \
             .prefetch_related("type", "technique") \
             .filter(family__name="Frequency") \
+            .filter(is_NCC=True) \
             .filter(technique__name__in=self.techniques)
 
         if self.is_csv:

@@ -8,6 +8,7 @@ class Paradigm(models.Model):
                                related_name="child_paradigm", to="studies.Paradigm",
                                on_delete=SET_NULL)
     name = models.CharField(null=False, blank=False, max_length=100)
+    sub_type = models.CharField(null=True, blank=True, max_length=100)
 
     def __str__(self):
         if self.parent_id:

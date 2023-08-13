@@ -190,7 +190,7 @@ class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
     search_fields = ('notes',)
     list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound",
-                    'correlation_sign', 'AAL_atlas_tag', 'notes', "experiment_id")
+                    'direction', 'AAL_atlas_tag', 'notes', "experiment_id")
     list_filter = (("family", admin.RelatedOnlyFieldListFilter),
                    ("type", admin.RelatedOnlyFieldListFilter),
                    ("onset", NumericRangeFilter),
@@ -198,8 +198,9 @@ class FindingTagAdmin(ImportExportModelAdmin):
                    ("band_lower_bound", NumericRangeFilter),
                    ("band_higher_bound", NumericRangeFilter),
                    ("technique", admin.RelatedOnlyFieldListFilter),
-                   'correlation_sign',
+                   "direction",
                    "analysis_type",
+                   "is_NCC",
                    TheoryInterpretationFilter)
 
 

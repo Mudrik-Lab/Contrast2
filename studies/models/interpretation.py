@@ -5,6 +5,9 @@ from studies.choices import InterpretationsChoices
 
 
 class Interpretation(models.Model):
+    class Meta:
+        index_together = (("experiment", "theory"),)
+
     experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE, related_name="theories")
     theory = models.ForeignKey(to="studies.Theory", on_delete=CASCADE, related_name="experiments",
                                limit_choices_to=Q(parent__isnull=False))

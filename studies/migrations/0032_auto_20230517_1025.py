@@ -2,12 +2,14 @@
 
 from django.db import migrations
 
+from configuration.initial_setup import ParentTheories
+
 acronyms = {
-    "Global Workspace": "GWT",
-    "Integrated Information": "IIT",
-    "Higher Order Thought": "HOT",
-    "First Order & Predictive Processing": "FOT",
-    "Other": "Other"
+    ParentTheories.GLOBAL_WORKSPACE: "GWT",
+    ParentTheories.INTEGRATED_INFORMATION: "IIT",
+    ParentTheories.HIGHER_ORDER: "HOT",
+    ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING: "FOT",
+    ParentTheories.OTHER: "Other"
 }
 
 

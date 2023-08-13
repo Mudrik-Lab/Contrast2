@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import SET_NULL, CASCADE
 
-from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
+from studies.choices import AnalysisTypeChoices, DirectionChoices, AALAtlasTagChoices
 
 
 class FindingTagFamily(models.Model):
@@ -32,7 +32,7 @@ class FindingTag(models.Model):
     """
     available_properties_by_family = {
         "Temporal": ["onset", "offset"],
-        "Frequency": ["onset", "offset", "correlation_sign", "band_lower_bound", "band_higher_bound", "analysis_type"],
+        "Frequency": ["onset", "offset", "direction", "band_lower_bound", "band_higher_bound", "analysis_type"],
         "Spatial Areas": ["AAL_atlas_tag"]
     }
     # properties changing by type, if you add one, you need to add it here also
@@ -42,7 +42,7 @@ class FindingTag(models.Model):
                            "band_higher_bound",
                            "AAL_atlas_tag",
                            "analysis_type",
-                           "correlation_sign"]
+                           "direction"]
 
     # TODO validator + custom admin form
     experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",
@@ -54,16 +54,17 @@ class FindingTag(models.Model):
     offset = models.IntegerField(null=True, blank=True)  # ma
     band_lower_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # HZ
     band_higher_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # HZ
-    AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500)
+    AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500, choices=AALAtlasTagChoices.choices) #add choices
     notes = models.TextField(null=True, blank=True)
     analysis_type = models.CharField(null=True, blank=True, max_length=100,
                                      choices=AnalysisTypeChoices.choices,
                                      default=AnalysisTypeChoices.POWER)
-    correlation_sign = models.CharField(null=True, blank=True, max_length=10,
-                                        choices=CorrelationSignChoices.choices,
-                                        default=CorrelationSignChoices.POSITIVE)
+    direction = models.CharField(null=True, blank=True, max_length=10,
+                                        choices=DirectionChoices.choices,
+                                        default=DirectionChoices.POSITIVE)
     technique = models.ForeignKey(null=True, blank=True, to="studies.Technique", related_name="findings_tags",
                                   on_delete=SET_NULL)
+    is_NCC = models.BooleanField(null=False, blank=False, default=True) # later remove the default
 
     def clean(self):
         if self.type.family != self.family:

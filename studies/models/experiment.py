@@ -27,6 +27,9 @@ class Experiment(models.Model):
                                              max_length=20)
     is_reporting = models.CharField(null=False, blank=False, choices=ReportingChoices.choices, max_length=20)
     theory_driven = models.CharField(null=False, blank=False, choices=TheoryDrivenChoices.choices, max_length=20)
+    tasks_notes = models.TextField(null=True, blank=True)
+    consciousness_measures_notes = models.TextField(null=True, blank=True)
+    stimuli_notes = models.TextField(null=True, blank=True)
     theory_driven_theories = models.ManyToManyField(to="studies.Theory",
                                                     related_name="experiments_driven",
                                                     limit_choices_to=Q(parent__isnull=False),

@@ -64,7 +64,7 @@ class Stimulus(models.Model):
                                      to=StimulusSubCategory, related_name='stimuli')  # TODO validators from config
     modality = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                                  to=ModalityType, related_name='stimuli')  # TODO validators from config
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)  # Deprecated to be removed
     duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
 
     def __str__(self):

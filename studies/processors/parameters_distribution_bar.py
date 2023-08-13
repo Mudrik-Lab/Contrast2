@@ -72,6 +72,7 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
     def process_finding_tag(self):
         experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.experiments) \
             .filter(experiment__finding_tags__type=OuterRef("pk")) \
+            .filter(experiment__finding_tags__is_NCC=True) \
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 
@@ -85,6 +86,7 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
     def process_finding_tag_family(self):
         experiments_subquery_by_breakdown = Interpretation.objects.filter(experiment__in=self.experiments) \
             .filter(experiment__finding_tags__family=OuterRef("pk")) \
+            .filter(experiment__finding_tags__is_NCC=True) \
             .annotate(relation_type=F("type")) \
             .values("experiment", "relation_type")
 

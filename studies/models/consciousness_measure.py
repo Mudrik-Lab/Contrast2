@@ -20,7 +20,7 @@ class ConsciousnessMeasure(models.Model):
     experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE, related_name="consciousness_measures")
     phase = models.ForeignKey(blank=False, null=False, on_delete=CASCADE, to=ConsciousnessMeasurePhaseType, related_name="consciousness_measures")
     type = models.ForeignKey(blank=False, null=False, on_delete=CASCADE, to=ConsciousnessMeasureType, related_name="consciousness_measures")
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(null=True, blank=True)  # Deprecated to be removed
 
     def __str__(self):
         return f"experiment: {self.experiment_id} phase {self.phase}, type {self.type}"

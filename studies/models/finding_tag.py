@@ -2,7 +2,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import SET_NULL, CASCADE
 
-from studies.choices import AnalysisTypeChoices, CorrelationSignChoices
+from studies.choices import AnalysisTypeChoices, CorrelationSignChoices, AALAtlasTagChoices
 
 
 class FindingTagFamily(models.Model):
@@ -54,7 +54,7 @@ class FindingTag(models.Model):
     offset = models.IntegerField(null=True, blank=True)  # ma
     band_lower_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # HZ
     band_higher_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # HZ
-    AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500)
+    AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500, choices=AALAtlasTagChoices.choices) #add choices
     notes = models.TextField(null=True, blank=True)
     analysis_type = models.CharField(null=True, blank=True, max_length=100,
                                      choices=AnalysisTypeChoices.choices,
@@ -64,6 +64,7 @@ class FindingTag(models.Model):
                                         default=CorrelationSignChoices.POSITIVE)
     technique = models.ForeignKey(null=True, blank=True, to="studies.Technique", related_name="findings_tags",
                                   on_delete=SET_NULL)
+    is_NCC = models.BooleanField(null=False, blank=False, default=True) # later remove the default
 
     def clean(self):
         if self.type.family != self.family:

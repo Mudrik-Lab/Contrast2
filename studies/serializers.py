@@ -42,6 +42,7 @@ class FindingTagSerializer(serializers.ModelSerializer):
                   "AAL_atlas_tag",
                   "notes",
                   "analysis_type",
+                  "NCC",
                   "technique")
 
 
@@ -149,7 +150,10 @@ class FullExperimentSerializer(serializers.ModelSerializer):
                   "consciousness_measures",
                   "samples",
                   "stimuli",
-                  "tasks"
+                  "tasks",
+                  "tasks_notes",
+                  "stimuli_notes",
+                  "consciousness_measures_notes"
                   )
 
     @extend_schema_field(InterpretationSerializer(many=True))
@@ -174,7 +178,9 @@ class ExperimentSerializer(FullExperimentSerializer):
                   "theory_driven",
                   "theory_driven_theories",
                   "type",
-
+                  "tasks_notes",
+                  "stimuli_notes",
+                  "consciousness_measures_notes"
                   )
 
 

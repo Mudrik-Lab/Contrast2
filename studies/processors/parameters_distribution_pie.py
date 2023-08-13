@@ -62,7 +62,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_finding_tag(self):
         experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO) \
             .filter(experiment__in=self.experiments) \
-            .filter(experiment__finding_tags__type=OuterRef("pk"))
+            .filter(experiment__finding_tags__type=OuterRef("pk")) \
+            .filter(experiment__finding_tags__is_NCC=True)
 
         breakdown_query = FindingTagType.objects.values("name") \
             .distinct() \
@@ -74,7 +75,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_finding_tag_family(self):
         experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO) \
             .filter(experiment__in=self.experiments) \
-            .filter(experiment__finding_tags__family=OuterRef("pk"))
+            .filter(experiment__finding_tags__family=OuterRef("pk")) \
+            .filter(experiment__finding_tags__is_NCC=True)
 
         breakdown_query = FindingTagFamily.objects.values("name") \
             .distinct() \

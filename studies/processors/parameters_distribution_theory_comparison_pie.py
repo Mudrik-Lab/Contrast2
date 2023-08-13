@@ -56,6 +56,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_finding_tag(self, theory_interpretations_experiments):
         subquery = FindingTagType.objects \
             .filter(findingtag__experiment__in=theory_interpretations_experiments) \
+            .filter(findingtag__is_NCC=True) \
             .distinct() \
             .values("name") \
             .annotate(experiment_count=Count("findingtag__experiment", distinct=True)) \
@@ -66,6 +67,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_finding_tag_family(self, theory_interpretations_experiments):
         subquery = FindingTagFamily.objects \
             .filter(findingtag__experiment__in=theory_interpretations_experiments) \
+            .filter(findingtag__is_NCC=True) \
             .distinct() \
             .values("name") \
             .annotate(experiment_count=Count("findingtag__experiment", distinct=True)) \

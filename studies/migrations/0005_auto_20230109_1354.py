@@ -3,7 +3,7 @@
 from django.db import migrations
 
 from configuration.initial_setup import paradigms, task_types, techniques, modalities, consciousness_measure_types, \
-    consciousness_measure_phases, main_paradigms
+    consciousness_measure_phases, main_paradigms, ParentTheories
 
 
 def bootstrap_type_models(apps, schema_editor):
@@ -28,23 +28,23 @@ def bootstrap_type_models(apps, schema_editor):
         TaskType.objects.get_or_create(name=task_type)
 
     Theory = apps.get_model("studies", "Theory")
-    for theory in ["Global Workspace",
-                   "Integrated Information",
-                   "Higher Order Thought",
-                   "First Order & Predictive Processing",
-                   "Other"]:
+    for theory in [ParentTheories.GLOBAL_WORKSPACE,
+                   ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING,
+                   ParentTheories.INTEGRATED_INFORMATION,
+                   ParentTheories.HIGHER_ORDER,
+                   ParentTheories.OTHER]:
         Theory.objects.get_or_create(name=theory)
 
-    global_workspace_theory = Theory.objects.get(name='Global Workspace')
+    global_workspace_theory = Theory.objects.get(name=ParentTheories.GLOBAL_WORKSPACE)
     Theory.objects.get_or_create(name='GNW', parent=global_workspace_theory)
 
-    integrated_information = Theory.objects.get(name='Integrated Information')
+    integrated_information = Theory.objects.get(name=ParentTheories.INTEGRATED_INFORMATION)
     Theory.objects.get_or_create(name='IIT', parent=integrated_information)
 
-    higher_order_thought = Theory.objects.get(name='Higher Order Thought')
+    higher_order_thought = Theory.objects.get(name=ParentTheories.HIGHER_ORDER)
     Theory.objects.get_or_create(name='HOT', parent=higher_order_thought)
 
-    first_order_and_predictive_processing = Theory.objects.get(name='First Order & Predictive Processing')
+    first_order_and_predictive_processing = Theory.objects.get(name=ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING)
     Theory.objects.get_or_create(name='RPT', parent=first_order_and_predictive_processing)
 
     Paradigm = apps.get_model("studies", "Paradigm")

@@ -5,7 +5,7 @@ import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
-from configuration.initial_setup import parent_theories, techniques, finding_tags_map
+from configuration.initial_setup import current_child_theories, techniques, finding_tags_map
 from studies.choices import InterpretationsChoices, ExperimentTypeChoices, TypeOfConsciousnessChoices, ReportingChoices
 from studies.models import Theory, Technique, Paradigm, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, \
     ConsciousnessMeasure, MeasureType, Measure, Sample, TaskType, Task, ModalityType, FindingTagFamily, FindingTagType, \
@@ -51,7 +51,7 @@ def create_experiment(item: dict):
     experiment_type = ExperimentTypeChoices.NEUROSCIENTIFIC
 
     # resolve choices fields (theory_driven, type_of_consciousness, is_reporting)
-    theories = parent_theories
+    theories = current_child_theories
     theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
 
     type_of_consciousness = ""
@@ -120,7 +120,7 @@ def process_row(item: dict):
         theory = Theory.objects.get(name=theory)
         experiment.theory_driven_theories.add(theory)
 
-    theories = parent_theories
+    theories = current_child_theories
     interpretation = ""
     for theory in theories:
         for key, value in item.items():

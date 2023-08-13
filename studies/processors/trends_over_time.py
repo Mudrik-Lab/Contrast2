@@ -47,7 +47,8 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_finding_tag(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__type=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__type=OuterRef("pk"))\
+            .filter(finding_tags__is_NCC=True)
 
         breakdown_query = FindingTagType.objects.values("name").distinct(
             "name").annotate(series_name=F("name"))
@@ -56,7 +57,8 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_finding_tag_family(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__family=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__family=OuterRef("pk")) \
+            .filter(finding_tags__is_NCC=True)
 
         breakdown_query = FindingTagFamily.objects.values("name").distinct(
             "name").annotate(series_name=F("name"))

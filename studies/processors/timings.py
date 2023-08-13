@@ -32,6 +32,7 @@ class TimingsGraphDataProcessor(BaseProcessor):
         experiments_interpretations = queryset \
             .filter(experiment__finding_tags__technique__name__in=self.techniques) \
             .filter(experiment__finding_tags__type__name__in=self.tags_types) \
+            .filter(experiment__finding_tags__is_NCC=True) \
             .filter(experiment__in=self.experiments)
 
         if self.is_theory_driven_only:
@@ -42,6 +43,7 @@ class TimingsGraphDataProcessor(BaseProcessor):
 
         relevant_finding_tags = FindingTag.objects.select_related("experiment", "type", "family", "technique") \
             .filter(family__name="Temporal") \
+            .filter(is_NCC=True) \
             .filter(type__name__in=self.tags_types) \
             .filter(technique__name__in=self.techniques)
 

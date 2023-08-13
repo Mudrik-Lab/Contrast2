@@ -5,8 +5,7 @@ from studies.views import ApprovedStudiesViewSet, ExcludedStudiesViewSet, Experi
     SubmitStudiesViewSet, SubmittedStudyExperiments
 from studies.views.authors import AuthorsViewSet
 from studies.views.submitted_studies_experiments_related_objects import StudyExperimentsTasks, StudyExperimentsSamples, \
-    StudyExperimentsStimuli, StudyExperimentsMeasures, StudyExperimentsInterpretations, StudyExperimentsFindingTags, \
-    StudyExperimentsAnalysisMeasures
+    StudyExperimentsStimuli, StudyExperimentsMeasures, StudyExperimentsInterpretations, StudyExperimentsFindingTags
 
 router = routers.SimpleRouter()
 

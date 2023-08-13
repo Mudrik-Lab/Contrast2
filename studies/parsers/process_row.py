@@ -275,7 +275,7 @@ def process_row(item: dict):
                                           band_lower_bound=finding.band_low,
                                           band_higher_bound=finding.band_high,
                                           notes=comment, analysis_type=finding.analysis,
-                                          correlation_sign=finding.cor_type, technique=technique)
+                                          direction=finding.cor_type, technique=technique)
 
             elif isinstance(finding, TemporalFinding):
                 family_name = 'Temporal'

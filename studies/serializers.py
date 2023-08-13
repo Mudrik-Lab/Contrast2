@@ -62,8 +62,7 @@ class InterpretationCreateSerializer(serializers.ModelSerializer):
         fields = ("experiment", "theory", "type", "id")
 
 
-class AnalysisMeasureSerializer(serializers.ModelSerializer):
-    # Formerly ConsciousnessMeasureSerializer
+class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
     phase = serializers.PrimaryKeyRelatedField(queryset=ConsciousnessMeasurePhaseType.objects.all())
     type = serializers.PrimaryKeyRelatedField(queryset=ConsciousnessMeasureType.objects.all())
 
@@ -126,7 +125,7 @@ class FullExperimentSerializer(serializers.ModelSerializer):
     samples = SampleSerializer(many=True, read_only=True)
     stimuli = StimulusSerializer(many=True, read_only=True)
     tasks = TaskSerializer(many=True, read_only=True)
-    consciousness_measures = AnalysisMeasureSerializer(many=True, read_only=True)
+    consciousness_measures = ConsciousnessMeasureSerializer(many=True, read_only=True)
     techniques = TechniqueSerializer(many=True, read_only=True)
     paradigms = ParadigmSerializer(many=True, read_only=True)
     theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())

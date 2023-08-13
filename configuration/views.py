@@ -8,7 +8,7 @@ from configuration.models import GraphImage
 from configuration.serializers import StudiesConfigurationSerializer, GraphsConfigurationSerializer, \
     RegistrationConfigurationSerializer
 from studies.choices import SampleChoices, TheoryDrivenChoices, ExperimentTypeChoices, AALAtlasTagChoices, \
-    AnalysisTypeChoices, CorrelationSignChoices
+    AnalysisTypeChoices, DirectionChoices
 from studies.models import Study, Technique, FindingTagType, FindingTagFamily, MeasureType, Theory, Paradigm, TaskType, \
     ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, Author, ModalityType, Experiment
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
@@ -47,7 +47,7 @@ class ConfigurationView(GenericViewSet):
         available_theory_driven_types = TheoryDrivenChoices.values
         available_AAL_atlas_tag_types = AALAtlasTagChoices.values
         available_analysis_type_choices = AnalysisTypeChoices.values
-        available_correlation_sign_choices = CorrelationSignChoices.values
+        available_correlation_sign_choices = DirectionChoices.values
         available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseType.objects.all()
         available_analysis_measure_type = ConsciousnessMeasureType.objects.all()
         available_tasks_types = TaskType.objects.all()

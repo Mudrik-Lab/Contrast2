@@ -32,8 +32,7 @@ studies_experiments_nested_router.register("interpretations", StudyExperimentsIn
 studies_experiments_nested_router.register("finding_tags", StudyExperimentsFindingTags, basename="finding_tags")
 studies_experiments_nested_router.register("consciousness_measures", StudyExperimentsAnalysisMeasures,
                                            basename="consciousness_measures")
-studies_experiments_nested_router.register("analysis_measures", StudyExperimentsAnalysisMeasures,
-                                           basename="analysis_measures")
+
 
 urlpatterns = [
     path('', include(router.urls)),

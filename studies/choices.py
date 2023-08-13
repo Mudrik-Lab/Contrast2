@@ -41,7 +41,7 @@ class TheoryDrivenChoices(TextChoices):
     POST_HOC = "post-hoc", _("Post hoc")
 
 
-class CorrelationSignChoices(TextChoices):
+class DirectionChoices(TextChoices):
     NEGATIVE = "negative", _("Negative")
     POSITIVE = "positive", _("Positive")
 

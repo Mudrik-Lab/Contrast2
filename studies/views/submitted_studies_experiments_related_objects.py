@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from studies.models import Task, Sample, Stimulus, Measure, Interpretation, FindingTag, ConsciousnessMeasure
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import TaskSerializer, SampleSerializer, StimulusSerializer, MeasureSerializer, \
-    InterpretationCreateSerializer, FindingTagSerializer, AnalysisMeasureSerializer
+    InterpretationCreateSerializer, FindingTagSerializer, ConsciousnessMeasureSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin, \
     ExperimentRelatedNestedObjectMixin
 
@@ -63,7 +63,7 @@ class StudyExperimentsFindingTags(BaseStudyExperimentObjectView):
     queryset = FindingTag.objects.all()
 
 
-class StudyExperimentsAnalysisMeasures(BaseStudyExperimentObjectView):
+class StudyExperimentsConsciousnessMeasures(BaseStudyExperimentObjectView):
     # Formerly StudyExperimentsConsciousnessMeasures
-    serializer_class = AnalysisMeasureSerializer
+    serializer_class = ConsciousnessMeasureSerializer
     queryset = ConsciousnessMeasure.objects.all()

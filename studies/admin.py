@@ -73,7 +73,7 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
 
 
 class ExperimentAdmin(ImportExportModelAdmin):
-    # todo add theory to display
+    # todo add theory to display, add results summary to search fields
     list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
     fields = ("type_of_consciousness", "is_reporting", "theory_driven", "techniques", "paradigms")
@@ -161,8 +161,8 @@ class AuthorAdmin(ImportExportModelAdmin):
 
 
 class ConsciousnessMeasureAdmin(ImportExportModelAdmin):
-    list_display = ("phase", "type", "description", "experiment_id")
-    search_fields = ('description',)
+    list_display = ("phase", "type", "experiment_id")
+    # search_fields = ('description',)
     model = ConsciousnessMeasure
     list_filter = ("phase", "type", TheoryInterpretationFilter)
 
@@ -278,9 +278,9 @@ class StimulusSubCategoryAdmin(ImportExportModelAdmin):
 
 
 class StimulusAdmin(ImportExportModelAdmin):
-    list_display = ("id", "category", "sub_category", "modality", "duration", "description", "experiment_id")
+    list_display = ("id", "category", "sub_category", "modality", "duration", "experiment_id")
     model = Stimulus
-    search_fields = ('description',)
+    # search_fields = ('description',)
     list_filter = (
         ("category", admin.RelatedOnlyFieldListFilter),
         ("sub_category", admin.RelatedOnlyFieldListFilter),
@@ -297,8 +297,8 @@ class TaskTypeAdmin(ImportExportModelAdmin):
 
 
 class TaskAdmin(ImportExportModelAdmin):
-    list_display = ('id', 'type', 'description', 'experiment_id')
-    search_fields = ('description',)
+    list_display = ('id', 'type', 'experiment_id')
+    # search_fields = ('description',)
     model = Task
     list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 

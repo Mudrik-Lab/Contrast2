@@ -136,7 +136,7 @@ class FullExperimentSerializer(serializers.ModelSerializer):
         fields = ("id",
                   "study",
                   "interpretations",
-                  "finding_description",
+                  "results_summary",
                   "techniques",
                   "paradigms",
                   "type_of_consciousness",
@@ -170,7 +170,7 @@ class ExperimentSerializer(FullExperimentSerializer):
         model = Experiment
         fields = ("id",
                   "study",
-                  "finding_description",
+                  "results_summary",
                   "techniques",
                   "paradigms",
                   "is_reporting",
@@ -188,7 +188,7 @@ class ThinExperimentSerializer(ExperimentSerializer):
         model = Experiment
         fields = ("id",
                   "study",
-                  "finding_description",
+                  "results_summary",
                   "type_of_consciousness",
                   "is_reporting",
                   "theory_driven",

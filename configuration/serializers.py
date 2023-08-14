@@ -23,7 +23,7 @@ class TheoryConfigurationSerializer(serializers.ModelSerializer):
             return f"{obj.name}"
 
 
-class TechniqueSerializer(serializers.ModelSerializer):
+class TechniqueConfigurationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Technique
         fields = ('name', 'id')
@@ -90,12 +90,12 @@ class StimulusCategorySerializer(serializers.ModelSerializer):
         fields = ('name', 'id')
 
 
-class ParadigmSerializer(serializers.ModelSerializer):
+class ParadigmConfigurationSerializer(serializers.ModelSerializer):
     parent = serializers.SerializerMethodField()
 
     class Meta:
         model = Paradigm
-        fields = ('name', 'parent', 'id')
+        fields = ('name', 'parent', 'id', 'sub_type')
 
     def get_parent(self, obj) -> Optional[str]:
         if obj.parent is None:
@@ -109,13 +109,13 @@ class ExperimentTypeSerializer(serializers.Serializer):
 
 
 class StudiesConfigurationSerializer(serializers.Serializer):
-    available_techniques = TechniqueSerializer(many=True)
+    available_techniques = TechniqueConfigurationSerializer(many=True)
     available_finding_tags_types = FindingTagTypeSerializer(many=True)
     available_finding_tags_families = FindingTagFamilySerializer(many=True)
     available_measure_types = MeasureTypeSerializer(many=True)
     available_theories = TheoryConfigurationSerializer(many=True)
-    available_paradigms = ParadigmSerializer(many=True)
-    available_paradigms_families = ParadigmSerializer(many=True)
+    available_paradigms = ParadigmConfigurationSerializer(many=True)
+    available_paradigms_families = ParadigmConfigurationSerializer(many=True)
     available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseTypeSerializer(many=True)
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_theory_driven_types = serializers.ListSerializer(child=serializers.CharField())

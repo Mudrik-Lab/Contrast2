@@ -54,7 +54,7 @@ class SubmitStudiesViewSet(mixins.CreateModelMixin,
     def get_serializer_class(self):
         if self.action in ['list', 'my_studies']:
             return ThinStudyWithExperimentsSerializer
-        if self.action in ["create", "update", "partial_update"]:
+        elif self.action in ["create", "update", "partial_update"]:
             return StudyWithExperimentsCreateSerializer
         else:
             return super().get_serializer_class()

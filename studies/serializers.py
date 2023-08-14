@@ -42,7 +42,7 @@ class FindingTagSerializer(serializers.ModelSerializer):
                   "AAL_atlas_tag",
                   "notes",
                   "analysis_type",
-                  "NCC",
+                  "is_NCC",
                   "technique")
 
 
@@ -75,7 +75,7 @@ class ParadigmSerializer(serializers.ModelSerializer):
     class Meta:
         model = Paradigm
         depth = 2
-        fields = ("id", "name", "parent")
+        fields = ("id", "name", "parent", "sub_type")
 
 
 class ParadigmAddRemoveSerializer(serializers.Serializer):

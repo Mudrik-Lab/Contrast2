@@ -142,7 +142,7 @@ def get_paradigms_from_data(item: dict) -> list:
     only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
 
     parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")
-    clean_main_paradigms = [clean_text(item.strip(), "category") for item in parsed_main_paradigms]
+    clean_main_paradigms = [clean_text(item.strip()) for item in parsed_main_paradigms]
     parsed_specific_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
     clean_specific_paradigms = [item.strip() for item in parsed_specific_paradigms]
 
@@ -209,22 +209,22 @@ def get_measures_from_data(item: dict):
     return measures_from_data
 
 
-def clean_text(text, mode):
-    if mode == "duration":
-        if "(" in text:
-            main_text = text.split("(")[0].strip()
-        else:
-            main_text = text
+def clean_text(text):
+    cleaned_text = ''.join(char for char in text if char.isprintable()).strip()
+    return cleaned_text
 
-        re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
-        re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
-        re.search("[:,&\/]+", main_text)
 
-        cleaned_text = ''.join(char for char in main_text if char.isprintable()).strip()
+def clean_duration_text(text):
+    if "(" in text:
+        main_text = text.split("(")[0].strip()
+    else:
+        main_text = text
 
-    if mode == "category":
-        cleaned_text = ''.join(char for char in text if char.isprintable()).strip()
+    re.search("[0-9]+[ms]*\s*/\s*[0-9]+[ms]*", main_text)
+    re.search("[a-z]+\s*[:,&\/]*\s*[0-9]+", main_text)
+    re.search("[:,&\/]+", main_text)
 
+    cleaned_text = clean_text(main_text)
     return cleaned_text
 
 
@@ -247,12 +247,12 @@ def get_stimuli_from_data(item):
         else:
             resolved_category = category.split("(")[0].strip()
             sub_category = category.split("(")[1].split(")")[0].strip()
-            resolved_sub_category = clean_text(sub_category, "category")
+            resolved_sub_category = clean_text(sub_category)
 
-        clean_category = clean_text(resolved_category, "category")
+        clean_category = clean_text(resolved_category)
 
         # resolve modality
-        modality_type = clean_text(modality.strip(), "category")
+        modality_type = clean_text(modality.strip())
         resolved_modality = ""
         for modality_name in modalities:
             if modality_type.lower() == modality_name.lower():
@@ -262,16 +262,16 @@ def get_stimuli_from_data(item):
 
         # resolve duration
         none_values = ["N/A", "NA", "N.A", "None", "0", 0, "none", ""]
-        clean_duration_text = clean_text(duration, "duration")
+        clean_duration = clean_duration_text(duration)
         resolved_duration = None
         try:
-            if "ms" in clean_duration_text:
-                raw_duration = clean_duration_text.split("ms")[0]
+            if "ms" in clean_duration:
+                raw_duration = clean_duration.split("ms")[0]
                 duration_ms = float(raw_duration.strip().split(" ")[-1].strip())
-            elif "sec" in clean_duration_text:
-                raw_duration = clean_duration_text.split("sec")[0].strip()
+            elif "sec" in clean_duration:
+                raw_duration = clean_duration.split("sec")[0].strip()
                 duration_ms = int(raw_duration.strip().split(" ")[-1].strip()) * 1000
-            elif clean_duration_text in none_values:
+            elif clean_duration in none_values:
                 duration_ms = None
             else:
                 raise StimulusDurationError()

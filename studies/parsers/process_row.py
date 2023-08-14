@@ -6,7 +6,8 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
 from configuration.initial_setup import current_child_theories, techniques, finding_tags_map
-from studies.choices import InterpretationsChoices, ExperimentTypeChoices, TypeOfConsciousnessChoices, ReportingChoices
+from studies.choices import InterpretationsChoices, ExperimentTypeChoices, TypeOfConsciousnessChoices, ReportingChoices, \
+    DirectionChoices
 from studies.models import Theory, Technique, Paradigm, ConsciousnessMeasureType, ConsciousnessMeasurePhaseType, \
     ConsciousnessMeasure, MeasureType, Measure, Sample, TaskType, Task, ModalityType, FindingTagFamily, FindingTagType, \
     FindingTag, Study, Experiment, Author
@@ -41,20 +42,19 @@ def get_list_from_excel(path: str, sheet_name: str) -> list:
 
 
 def create_experiment(item: dict):
-    # start with straight-forward data (study, finding description, type)
+    # start with straight-forward data (study, results summary, type)
     try:
         study = Study.objects.get(DOI=item["Paper.DOI"])
     except ObjectDoesNotExist:
         raise ProblemInStudyExistingDataException()
 
-    finding_description = item["Findings.Summary"]
+    results_summary = item["Findings.Summary"]
     experiment_type = ExperimentTypeChoices.NEUROSCIENTIFIC
 
     # resolve choices fields (theory_driven, type_of_consciousness, is_reporting)
     theories = current_child_theories
     theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
 
-    type_of_consciousness = ""
     type_of_consciousness_choice = item['State - Content']
     if type_of_consciousness_choice in ["0", 0]:
         type_of_consciousness = TypeOfConsciousnessChoices.STATE
@@ -63,7 +63,6 @@ def create_experiment(item: dict):
     elif type_of_consciousness_choice in ["2", 2]:
         type_of_consciousness = TypeOfConsciousnessChoices.BOTH
 
-    is_reporting = ""
     reporting_choice = item['Experimental paradigms.Report']
     if reporting_choice in ["0", 0]:
         is_reporting = ReportingChoices.NO_REPORT
@@ -72,10 +71,16 @@ def create_experiment(item: dict):
     elif reporting_choice in ["2", 2]:
         is_reporting = ReportingChoices.BOTH
 
+    tasks_notes = item["Task.Description"]
+    consciousness_measures_notes = item["Measures of consciousness.Description"]
+    stimuli_notes = item["Stimuli Features.Description"]
+
     experiment = Experiment.objects.create(study=study, type_of_consciousness=type_of_consciousness,
-                                           finding_description=finding_description,
+                                           results_summary=results_summary,
                                            is_reporting=is_reporting, theory_driven=theory_driven,
-                                           type=experiment_type)
+                                           type=experiment_type, tasks_notes=tasks_notes, stimuli_notes=stimuli_notes,
+                                           consciousness_measures_notes=consciousness_measures_notes)
+
     logger.info(f'experiment {experiment.id} for study {study.DOI} created')
 
     return experiment, theory_driven_theories
@@ -179,10 +184,8 @@ def process_row(item: dict):
             consciousness_measure_type = ConsciousnessMeasureType.objects.get(name=consciousness_type)
             consciousness_measure_phase = ConsciousnessMeasurePhaseType.objects.get(
                 name=consciousness_phase)
-            consciousness_measure_description = item["Measures of consciousness.Description"]
             ConsciousnessMeasure.objects.create(experiment=experiment, phase=consciousness_measure_phase,
-                                                type=consciousness_measure_type,
-                                                description=consciousness_measure_description)
+                                                type=consciousness_measure_type)
     except ObjectDoesNotExist:
         raise ProblemInCMExistingDataException()
 
@@ -219,8 +222,8 @@ def process_row(item: dict):
     # resolve and create tasks
     for parsed_task_type in parse_task_types(item):
         task_type = TaskType.objects.get(name=parsed_task_type)
-        description = item["Task.Description"]
-        Task.objects.create(experiment=experiment, description=description, type=task_type)
+
+        Task.objects.create(experiment=experiment, type=task_type)
 
     # resolve and create stimuli
     stimuli_from_data = get_stimuli_from_data(item)
@@ -230,7 +233,6 @@ def process_row(item: dict):
             duration = None
         else:
             duration = float(stimulus.duration)
-        stimulus_description = item["Stimuli Features.Description"]
         try:
             modality_type = ""
             if stimulus.modality:
@@ -243,8 +245,7 @@ def process_row(item: dict):
                     name=stimulus.sub_category, parent=stimulus_category)
             Stimulus.objects.create(experiment=experiment, category=stimulus_category,
                                     sub_category=stimulus_sub_category,
-                                    modality=modality_type, description=stimulus_description,
-                                    duration=duration)
+                                    modality=modality_type, duration=duration)
 
         except (ObjectDoesNotExist, ValueError) as error:
             logger.exception(f'{error} while processing stimuli data')
@@ -257,6 +258,7 @@ def process_row(item: dict):
         for finding in findings:
             resolved_tag_type = finding_tags_map[finding.tag]
             comment = finding.comment
+            is_ncc = finding.is_NCC
             if finding.technique is not None:
                 resolved_technique = finding.technique
                 technique = Technique.objects.get(name=resolved_technique)
@@ -270,12 +272,17 @@ def process_row(item: dict):
                 family_name = 'Frequency'
                 family = FindingTagFamily.objects.get(name=family_name)
                 tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
+                if finding.direction == 'Negative':
+                    direction = DirectionChoices.NEGATIVE
+                else:
+                    direction = DirectionChoices.POSITIVE
+
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                           onset=finding.onset, offset=finding.offset,
                                           band_lower_bound=finding.band_low,
                                           band_higher_bound=finding.band_high,
                                           notes=comment, analysis_type=finding.analysis,
-                                          direction=finding.cor_type, technique=technique)
+                                          direction=direction, technique=technique, is_NCC=is_ncc)
 
             elif isinstance(finding, TemporalFinding):
                 family_name = 'Temporal'
@@ -283,7 +290,7 @@ def process_row(item: dict):
                 tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                           onset=finding.onset, offset=finding.offset, notes=comment,
-                                          technique=technique)
+                                          technique=technique, is_NCC=is_ncc)
 
             elif isinstance(finding, SpatialFinding):
                 family_name = 'Spatial Areas'
@@ -291,14 +298,14 @@ def process_row(item: dict):
                 tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
                                           AAL_atlas_tag=finding.area, notes=comment,
-                                          technique=technique)
+                                          technique=technique, is_NCC=is_ncc)
 
             else:
                 family_name = 'miscellaneous'
                 family = FindingTagFamily.objects.get(name=family_name)
                 tag_type = FindingTagType.objects.get(name=resolved_tag_type, family=family)
                 FindingTag.objects.create(experiment=experiment, family=family, type=tag_type,
-                                          notes=comment)
+                                          notes=comment, is_NCC=is_ncc)
     except (
             ValueError, IndexError, KeyError, FindingTagType.DoesNotExist, Technique.DoesNotExist,
             IntegrityError) as error:

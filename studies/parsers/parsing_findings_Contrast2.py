@@ -1,5 +1,7 @@
 import re
 
+from studies.choices import AnalysisTypeChoices
+
 # constants
 ITEM_SEP = '+'
 FINDING_INNER_S_SEP = '<'
@@ -15,8 +17,8 @@ TEMPORAL_NEGATIVE_TIMING_SIGN = '!'
 TEMPORAL_APPROX_SIGN = '~'
 ONSET_OFFSET_SEP = '-'
 FREQUENCY_DATA_SEP = ' '
-FREQ_CORR_TYPE_DEF_VAL = 'Positive'
-FREQ_CORR_TYPE_NEGATIVE = 'Neg'
+FREQ_DIRECTION_DEF_VAL = 'Positive'
+FREQ_DIRECTION_NEGATIVE = 'Neg'
 FREQ_BAND_DEF_IDX = 1
 FREQUENCY_HZ = 'Hz'
 
@@ -51,11 +53,11 @@ def fill_temporal_util(finding, txt):
 
 class BaseFinding:
     def __init__(self, tag_code, txt):
-        # save only positive tags, negative findings will be encoded in  'is_negative'
+        # save only positive tags, encoded in 'is_NCC'
         self.finding_txt = txt
         if tag_code:
             self.tag = tag_code.replace(NEGATIVE_TAG, '')
-            self.is_negative = tag_code[0] == NEGATIVE_TAG
+            self.is_NCC = tag_code[0] != NEGATIVE_TAG
         else:
             raise FindingTagDataError()
         self.comment = UNINITIALIZED_VAL
@@ -120,7 +122,7 @@ class TemporalFinding(BaseFinding):
 class FrequencyFinding(BaseFinding):
     def __init__(self, tag, txt):
         self.analysis = UNINITIALIZED_VAL
-        self.cor_type = FREQ_CORR_TYPE_DEF_VAL
+        self.direction = FREQ_DIRECTION_DEF_VAL
         self.band_low = UNINITIALIZED_VAL
         self.band_high = UNINITIALIZED_VAL
         self.onset = UNINITIALIZED_VAL
@@ -133,14 +135,38 @@ class FrequencyFinding(BaseFinding):
         # split frequency information
         freq_split = self.finding_txt.replace(FINDING_INNER_S_SEP, ' ', ).split(FREQUENCY_DATA_SEP)
         # 1st item - analysis type (obligatory)
-        self.analysis = freq_split[0]
+        analysis_type = freq_split[0]
+        if str(analysis_type).lower() == "power":
+            self.analysis = AnalysisTypeChoices.POWER
+        elif str(analysis_type).lower() == "connectivity":
+            self.analysis = AnalysisTypeChoices.CONNECTIVITY
+        elif str(analysis_type).lower() == "phi":
+            self.analysis = AnalysisTypeChoices.PHI
+        elif str(analysis_type).lower() == "complexity":
+            self.analysis = AnalysisTypeChoices.COMPLEXITY
+        elif str(analysis_type).lower() == "te":
+            self.analysis = AnalysisTypeChoices.TE
+        elif str(analysis_type).lower() == "pca":
+            self.analysis = AnalysisTypeChoices.PCA
+        elif str(analysis_type).lower() == "lrtc":
+            self.analysis = AnalysisTypeChoices.LRTC
+        elif str(analysis_type).lower() == "microstates":
+            self.analysis = AnalysisTypeChoices.MICROSTATES
+        elif str(analysis_type).lower() == "cd":
+            self.analysis = AnalysisTypeChoices.CD
+        elif str(analysis_type).lower() == "clustering":
+            self.analysis = AnalysisTypeChoices.CLUSTERING
+        else:
+            raise FindingTagDataError()
+
         band_idx = FREQ_BAND_DEF_IDX
+
         # correlation type is optional, so keep track of the items index
-        if FREQ_CORR_TYPE_NEGATIVE in freq_split:
-            self.cor_type = 'Negative'
+        if FREQ_DIRECTION_NEGATIVE in freq_split:
+            self.direction = 'Negative'
             band_idx = band_idx + 1
 
-        # band  is obligatory
+        # band is obligatory
         re.split(ONSET_OFFSET_SEP + FINDING_INNER_S_SEP, freq_split[band_idx])
         band_split = freq_split[band_idx].replace(FREQUENCY_HZ, '', ).split(ONSET_OFFSET_SEP)
         self.band_low = float(band_split[0].replace(",", ""))

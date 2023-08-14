@@ -14,7 +14,6 @@ class Task(models.Model):
                                    on_delete=CASCADE,
                                    related_name="tasks")
 
-    description = models.TextField(null=True, blank=True)  # Deprecated to be removed
     type = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
                              to=TaskType)  # TODO validators from configuration
 

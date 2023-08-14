@@ -15,7 +15,7 @@ class Experiment(models.Model):
         ordering = ["id"]
 
     study = models.ForeignKey(to="studies.Study", on_delete=CASCADE, related_name="experiments")
-    finding_description = models.TextField(null=False, blank=False)
+    results_summary = models.TextField(null=False, blank=False)
     techniques = models.ManyToManyField(to="studies.Technique", related_name="experiments")  # validator at least one
     interpretations = models.ManyToManyField(to="studies.Theory",
                                              related_name="experiments_interpretations",

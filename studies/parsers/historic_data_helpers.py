@@ -4,7 +4,7 @@ from collections import namedtuple
 from itertools import zip_longest
 from configuration.initial_setup import task_types_mapping, findings_measures, modalities, \
     consciousness_measure_phases, \
-    consciousness_measure_types, paradigms, ambiguous_paradigms, main_paradigms
+    consciousness_measure_types, paradigms, ambiguous_paradigms, main_paradigms, paradigm_sub_types
 from studies.choices import TheoryDrivenChoices, SampleChoices
 
 logger = logging.getLogger('Contrast2')
@@ -43,7 +43,7 @@ class ParadigmError(Exception):
 
 
 ConsciousnessMeasureFromData = namedtuple("ConsciousnessMeasureFromData", ["type", "phase"])
-ParadigmFromData = namedtuple("ParadigmFromData", ["parent", "name"])
+ParadigmFromData = namedtuple("ParadigmFromData", ["parent", "name", "sub_type"])
 MeasureFromData = namedtuple("MeasureFromData", ["measure_type", "measure_notes"])
 StimulusFromData = namedtuple("StimulusFromData", ["category", "sub_category", "modality", "duration"])
 SampleFromData = namedtuple("SampleFromData", ["sample_type", "total_size", "included_size", "note"])
@@ -144,13 +144,13 @@ def get_paradigms_from_data(item: dict) -> list:
     parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")
     clean_main_paradigms = [clean_text(item.strip()) for item in parsed_main_paradigms]
     parsed_specific_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
-    clean_specific_paradigms = [item.strip() for item in parsed_specific_paradigms]
+    specific_paradigms_with_parenthesis = [item.replace(")", "").strip() for item in parsed_specific_paradigms]
 
     # check for missing values and assign only-child paradigms correct values
-    if not clean_specific_paradigms:
+    if not specific_paradigms_with_parenthesis:
         for item in clean_main_paradigms:
             if item in only_child_paradigms:
-                only_child_paradigm = ParadigmFromData(name=item, parent=item)
+                only_child_paradigm = ParadigmFromData(name=item, parent=item, sub_type=None)
                 paradigms_in_data.append(only_child_paradigm)
             else:
                 raise ParadigmError(f"missing specific paradigm for: {item}")
@@ -160,26 +160,48 @@ def get_paradigms_from_data(item: dict) -> list:
         if paradigm not in main_paradigms:
             raise ParadigmError(f"missing paradigm: {paradigm}.")
 
-        parent = ParadigmFromData(name=paradigm, parent=None)
+        parent = ParadigmFromData(name=paradigm, parent=None, sub_type=None)
         paradigms_in_data.append(parent)
         if paradigm in only_child_paradigms:
-            only_child_paradigm = ParadigmFromData(name=paradigm, parent=paradigm)
+            only_child_paradigm = ParadigmFromData(name=paradigm, parent=paradigm, sub_type=None)
             paradigms_in_data.append(only_child_paradigm)
 
-    # check for specific paradigms that have ambiguous parent paradigm and remove ambiguity
-    for item in clean_specific_paradigms:
+    for item in specific_paradigms_with_parenthesis:
+        classification_data = str(item.split("(")[1])
+        classification_data_split = classification_data.split(",")
+        main_paradigm_classification = classification_data_split[0].strip()
+        clean_specific_paradigm = str(item.split("(")[0]).strip()
+        full_sub_type_list = [sub_type.strip() for sub_type in classification_data_split[1].split("&")]
+
+        # check for specific paradigms that have subtypes and assign subtype
+        for specific_paradigm, sub_types in paradigm_sub_types.items():
+            if clean_specific_paradigm == specific_paradigm:
+                if len(full_sub_type_list) == 0:
+                    raise ParadigmError(f"missing sub-type for specific paradigm: {clean_specific_paradigm}")
+                for sub_type_from_data in full_sub_type_list:
+                    if sub_type_from_data not in sub_types:
+                        raise ParadigmError(f"sub-type: {sub_type_from_data} is not on the list of allowed sub-types")
+
+                    sub_typed_paradigm = ParadigmFromData(parent=main_paradigm_classification,
+                                                          name=specific_paradigm, sub_type=sub_type_from_data)
+                    paradigms_in_data.append(sub_typed_paradigm)
+                specific_paradigms_with_parenthesis.remove(item)  # so we don't accidentally assign it twice
+            continue
+
+        # check for specific paradigms that have ambiguous parent paradigm and remove ambiguity
         for main_paradigm in ambiguous_paradigms:
-            if (f'({main_paradigm})' in item) and (item in paradigms[main_paradigm]):
-                specific_paradigm = ParadigmFromData(name=item, parent=main_paradigm)
+            if (main_paradigm in main_paradigm_classification) and (item in paradigms[main_paradigm]):
+                specific_paradigm = ParadigmFromData(name=item, parent=main_paradigm, sub_type=None)
                 paradigms_in_data.append(specific_paradigm)
-                clean_specific_paradigms.remove(item)
+                specific_paradigms_with_parenthesis.remove(item)  # so we don't accidentally assign it twice
 
     # assign specific paradigms to main paradigms
-    no_parenthesis_specific_paradigms = [paradigm.split("(")[0].strip() for paradigm in clean_specific_paradigms]
-    for specific_paradigm in no_parenthesis_specific_paradigms:
+    specific_paradigms_without_parenthesis = [paradigm.split("(")[0].strip() for paradigm in
+                                              specific_paradigms_with_parenthesis]
+    for specific_paradigm in specific_paradigms_without_parenthesis:
         for main_paradigm, group_of_specific_paradigms in paradigms.items():
             if specific_paradigm in group_of_specific_paradigms:
-                paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm)
+                paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm, sub_type=None)
                 paradigms_in_data.append(paradigm)
             else:
                 continue

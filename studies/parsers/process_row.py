@@ -55,6 +55,7 @@ def create_experiment(item: dict):
     theories = current_child_theories
     theory_driven, theory_driven_theories = parse_theory_driven_from_data(item, theories)
 
+    type_of_consciousness = ""
     type_of_consciousness_choice = item['State - Content']
     if type_of_consciousness_choice in ["0", 0]:
         type_of_consciousness = TypeOfConsciousnessChoices.STATE
@@ -63,6 +64,7 @@ def create_experiment(item: dict):
     elif type_of_consciousness_choice in ["2", 2]:
         type_of_consciousness = TypeOfConsciousnessChoices.BOTH
 
+    is_reporting = ""
     reporting_choice = item['Experimental paradigms.Report']
     if reporting_choice in ["0", 0]:
         is_reporting = ReportingChoices.NO_REPORT
@@ -159,12 +161,16 @@ def process_row(item: dict):
         for paradigm in paradigms_in_data:
             name = paradigm.name
             if paradigm.parent is None:
-                main_paradigm = Paradigm.objects.get(name=name, parent=None)
+                main_paradigm = Paradigm.objects.get(name=name, parent=None, sub_type=None)
                 main_paradigms.append(main_paradigm)
-            else:
-                main_paradigm = Paradigm.objects.get(name=paradigm.parent, parent=None)
-                specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm)
+
+            main_paradigm = Paradigm.objects.get(name=paradigm.parent, parent=None, sub_type=None)
+            if paradigm.sub_type is None:
+                specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm, sub_type=None)
                 specific_paradigms.append(specific_paradigm)
+            sub_type = paradigm.sub_type
+            specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm, sub_type=sub_type)
+            specific_paradigms.append(specific_paradigm)
 
         for specific_paradigm in specific_paradigms:
             if specific_paradigm.parent not in main_paradigms:

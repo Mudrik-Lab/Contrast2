@@ -135,7 +135,7 @@ class FrequencyFinding(BaseFinding):
         # split frequency information
         freq_split = self.finding_txt.replace(FINDING_INNER_S_SEP, ' ', ).split(FREQUENCY_DATA_SEP)
         # 1st item - analysis type (obligatory)
-        analysis_type = freq_split[0]
+        analysis_type = freq_split[0].strip()
         if str(analysis_type).lower() == "power":
             self.analysis = AnalysisTypeChoices.POWER
         elif str(analysis_type).lower() == "connectivity":
@@ -150,12 +150,18 @@ class FrequencyFinding(BaseFinding):
             self.analysis = AnalysisTypeChoices.PCA
         elif str(analysis_type).lower() == "lrtc":
             self.analysis = AnalysisTypeChoices.LRTC
-        elif str(analysis_type).lower() == "microstates":
+        elif str(analysis_type).lower() in ["microstates", "microstate"]:
             self.analysis = AnalysisTypeChoices.MICROSTATES
         elif str(analysis_type).lower() == "cd":
             self.analysis = AnalysisTypeChoices.CD
         elif str(analysis_type).lower() == "clustering":
             self.analysis = AnalysisTypeChoices.CLUSTERING
+        elif str(analysis_type).lower() == "mst":
+            self.analysis = AnalysisTypeChoices.MST
+        elif str(analysis_type).lower() == "psd":
+            self.analysis = AnalysisTypeChoices.PSD
+        elif str(analysis_type).lower() == "ersp":
+            self.analysis = AnalysisTypeChoices.ERSP
         else:
             raise FindingTagDataError()
 

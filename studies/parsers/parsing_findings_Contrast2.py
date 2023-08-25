@@ -1,6 +1,6 @@
 import re
 
-from studies.choices import AnalysisTypeChoices
+from studies.choices import AnalysisTypeChoices, DirectionChoices
 
 # constants
 ITEM_SEP = '+'
@@ -53,7 +53,7 @@ def fill_temporal_util(finding, txt):
 
 class BaseFinding:
     def __init__(self, tag_code, txt):
-        # save only positive tags, encoded in 'is_NCC'
+        # save all findings, but show in graphs only relevant findings, encoded in 'is_NCC'
         self.finding_txt = txt
         if tag_code:
             self.tag = tag_code.replace(NEGATIVE_TAG, '')
@@ -66,7 +66,7 @@ class BaseFinding:
         self.decode()
 
     def decode(self):
-        # comments are written after # or as free text in basic tags (non temporal/spatial/frequency tags)
+        # comments are written after # or as free text in basic tags (not temporal/spatial/frequency tags)
         if COMMENT_CHAR in self.finding_txt:
             # we expect a single comment char
             comment_split = self.finding_txt.split(COMMENT_CHAR)
@@ -163,13 +163,13 @@ class FrequencyFinding(BaseFinding):
         elif str(analysis_type).lower() == "ersp":
             self.analysis = AnalysisTypeChoices.ERSP
         else:
-            raise FindingTagDataError()
+            raise FindingTagDataError(f"Parsed analysis type: {analysis_type} not compatible with existing options")
 
         band_idx = FREQ_BAND_DEF_IDX
 
-        # correlation type is optional, so keep track of the items index
+        # direction (+/-) is optional, so keep track of the items index
         if FREQ_DIRECTION_NEGATIVE in freq_split:
-            self.direction = 'Negative'
+            self.direction = DirectionChoices.NEGATIVE
             band_idx = band_idx + 1
 
         # band is obligatory

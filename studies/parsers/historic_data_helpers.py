@@ -314,7 +314,7 @@ def get_stimuli_from_data(item: dict) -> List[StimulusFromData]:
             elif clean_duration in none_values:
                 duration_ms = None
             else:
-                raise StimulusDurationError()
+                raise StimulusDurationError(f'unable to process duration data: {clean_duration}')
             resolved_duration = str(duration_ms)
 
         except ValueError as error:

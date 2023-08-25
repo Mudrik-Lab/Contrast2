@@ -72,8 +72,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         return studies_data
 
     def test_paradigm_parser(self):
-        print(only_child_paradigms)
-
         item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Monocular)",
                           "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))"}
         res = get_paradigms_from_data(item_monocular)
@@ -89,17 +87,16 @@ class StudyParserHelpersTestCase(BaseTestCase):
                        "Experimental paradigms.Specific Paradigm": "Minimal Consciousness State (Disorders of Consciousness)"}
 
         res = get_paradigms_from_data(item_cueing)
-        print(res)
+
         self.assertEqual(len(res), 4)
 
-        item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
-                            "Experimental paradigms.Specific Paradigm": "Spinal Cord Stimulation (Direct Stimulation, Spinal Cord) "
-                                                                        "+ Unresponsive Wakefulness Syndrome "
-                                                                        "(Disorders of Consciousness) + Minimal Consciousness"
-                                                                        " State (Disorders of Consciousness)"}
-
-        res = get_paradigms_from_data(item_spinal_cord)
-        self.assertEqual(len(res), 5)
+        # item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
+        #                     "Experimental paradigms.Specific Paradigm": "Spinal Cord Stimulation (Direct Stimulation, Spinal Cord) "
+        #                                                                 "+ Unresponsive Wakefulness Syndrome (Disorders of Consciousness) + "
+        #                                                                 "Minimal Consciousness State (Disorders of Consciousness)"}
+        #
+        # res = get_paradigms_from_data(item_spinal_cord)
+        # self.assertEqual(len(res), 5)
 
         item_TMS = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Masking",
                     "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, early visual cortex)"

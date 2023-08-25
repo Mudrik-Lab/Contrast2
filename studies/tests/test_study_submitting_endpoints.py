@@ -54,7 +54,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(len(experiments_res), 1)
 
         experiment_id = res_experiment["id"]
-        paradigm, created = Paradigm.objects.get_or_create(name="Amusia")
+        paradigm, created = Paradigm.objects.get_or_create(name="Amusia", parent="Abnormal Contents of Consciousness", sub_type=None)
         technique, created = Technique.objects.get_or_create(name="fMRI")
         task_type, created = TaskType.objects.get_or_create(name="Discrimination")
         measure_type, created = MeasureType.objects.get_or_create(name="PHI")
@@ -156,7 +156,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(study_res["authors"][0]["name"], author1.name)
         # verify status in "my_studies"
 
-        res = self.when_user_fetches_his_studies()
+        res = self.when_user_fetches_their_studies()
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]["approval_status"], ApprovalChoices.PENDING)
 
@@ -168,7 +168,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(len(res["results"]), 1)
 
         self.when_study_is_submitted_to_review(study_id)
-        res = self.when_user_fetches_his_studies()
+        res = self.when_user_fetches_their_studies()
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]["approval_status"], ApprovalChoices.AWAITING_REVIEW)
 
@@ -188,7 +188,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def when_experiment_is_added_to_study_via_api(self, study_id: int, **kwargs):
         target_url = reverse("studies-experiments-list", args=[study_id])
         default_experiment = dict(
-            finding_description="look what we found",
+            results_summary="look what we found",
             is_reporting=ReportingChoices.NO_REPORT,
             theory_driven=TheoryDrivenChoices.POST_HOC,
             type=ExperimentTypeChoices.NEUROSCIENTIFIC,
@@ -289,7 +289,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res.status_code, 201)
         return res.data
 
-    def when_user_fetches_his_studies(self):
+    def when_user_fetches_their_studies(self):
         target_url = reverse("studies-submitted-my-studies")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, 200)

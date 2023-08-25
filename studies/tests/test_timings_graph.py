@@ -36,11 +36,11 @@ class TimingsGraphTestCase(BaseTestCase):
         tag_type_N400 = FindingTagType.objects.create(name="N400", family=temporal_family)
         tag_type_P300 = FindingTagType.objects.create(name="P300", family=temporal_family)
         first_tag_data = dict(type=tag_type_N400, technique=first_technique, family=temporal_family, onset=100,
-                              offset=150)
+                              offset=150, is_NCC=True)
         second_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=120,
-                               offset=150)
+                               offset=150, is_NCC=True)
         third_tag_data = dict(type=tag_type_P300, technique=second_technique, family=temporal_family, onset=200,
-                              offset=250)
+                              offset=250, is_NCC=True)
 
         israeli_study_experiment = self.given_experiment_exists_for_study(study=israeli_study,
                                                                           paradigms=[masking_child_paradigm],
@@ -48,7 +48,7 @@ class TimingsGraphTestCase(BaseTestCase):
                                                                           techniques=[second_technique],
                                                                           finding_tags=[third_tag_data])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
-                                                                            finding_description="brave new world",
+                                                                            results_summary="brave new world",
                                                                             techniques=[second_technique],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
                                                                             finding_tags=[second_tag_data,

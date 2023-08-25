@@ -31,7 +31,7 @@ class BaseTestCase(APITestCase):
 
     def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
         default_experiment = dict(study=study,
-                                  finding_description="look what we found",
+                                  results_summary="look what we found",
                                   is_reporting=ReportingChoices.NO_REPORT,
                                   theory_driven=kwargs.get("theory_driven", TheoryDrivenChoices.POST_HOC),
                                   type=ExperimentTypeChoices.NEUROSCIENTIFIC,
@@ -104,7 +104,7 @@ class BaseTestCase(APITestCase):
         return interpretation
 
     def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):
-        params = dict(name=name, parent=parent)
+        params = dict(name=name, parent=parent, subtype=None)
         paradigm, created = Paradigm.objects.get_or_create(**params)
         return paradigm
 

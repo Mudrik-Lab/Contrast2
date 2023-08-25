@@ -83,6 +83,7 @@ main_paradigms = [
     "Visual Persistence",
     "Visual Search"]
 
+
 paradigms = {
 
     'Abnormal Contents of Consciousness': ["Amusia",
@@ -263,6 +264,8 @@ paradigms = {
     'Visual Search': ["Visual Search"]
 }
 
+only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
+
 ambiguous_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)', 'Competition (Monoaural)',
                        'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
                        'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
@@ -271,7 +274,7 @@ paradigm_sub_types = {
     "Direct Stimulation": [
         "Anterior Cingulate Gyrus",
         "Auditory Cortex",
-        "extra-striate visual cortex",
+        "Extra-Striate Visual Cortex",
         "FEF",
         "IPS",
         "LO",
@@ -314,6 +317,10 @@ paradigm_sub_types = {
         "BA 6",
         "Occipital",
         "Right Parietal Cortex",
+        "V1/V2",
+        "V5/MT",
+        "O1/O2",
+        "P3/P4",
         "Other"],
     "Seizures / Unclassified DOC": ["Parietal Lobe", "Temporal Lobe", "Frontal Lobe", "Occipital Lobe", "Other"],
     "Oddball": ["Local-Global", "Deviant detection", "Visual", "MMN", "Roving Tactile Oddball", "Other"]

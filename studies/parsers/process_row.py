@@ -163,20 +163,21 @@ def process_row(item: dict):
             if paradigm.parent is None:
                 main_paradigm = Paradigm.objects.get(name=name, parent=None, sub_type=None)
                 main_paradigms.append(main_paradigm)
-
-            main_paradigm = Paradigm.objects.get(name=paradigm.parent, parent=None, sub_type=None)
-            if paradigm.sub_type is None:
-                specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm, sub_type=None)
-                specific_paradigms.append(specific_paradigm)
-            sub_type = paradigm.sub_type
-            specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm, sub_type=sub_type)
-            specific_paradigms.append(specific_paradigm)
+            else:
+                main_paradigm = Paradigm.objects.get(name=paradigm.parent, parent=None, sub_type=None)
+                if paradigm.sub_type is None:
+                    specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm, sub_type=None)
+                    specific_paradigms.append(specific_paradigm)
+                else:
+                    sub_type = paradigm.sub_type
+                    specific_paradigm = Paradigm.objects.get(name=name, parent=main_paradigm, sub_type=sub_type)
+                    specific_paradigms.append(specific_paradigm)
 
         for specific_paradigm in specific_paradigms:
-            if specific_paradigm.parent not in main_paradigms:
+            if specific_paradigm.parent in main_paradigms:
+                experiment.paradigms.add(specific_paradigm)
+            else:
                 raise ParadigmError(f"main paradigm {specific_paradigm.parent} doesn't exist")
-
-            experiment.paradigms.add(specific_paradigm)
 
     except (ParadigmError, ObjectDoesNotExist):
         raise ParadigmDataException()

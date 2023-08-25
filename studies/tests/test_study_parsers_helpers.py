@@ -1,6 +1,6 @@
 import json
 
-from configuration.initial_setup import consciousness_measure_types
+from configuration.initial_setup import consciousness_measure_types, only_child_paradigms
 from studies.parsers.historic_data_helpers import find_in_list, get_paradigms_from_data
 from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.process_row import create_study
@@ -72,6 +72,8 @@ class StudyParserHelpersTestCase(BaseTestCase):
         return studies_data
 
     def test_paradigm_parser(self):
+        print(only_child_paradigms)
+
         item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Monocular)",
                           "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))"}
         res = get_paradigms_from_data(item_monocular)
@@ -83,20 +85,20 @@ class StudyParserHelpersTestCase(BaseTestCase):
         res = get_paradigms_from_data(item_sedation)
         self.assertEqual(len(res), 4)
 
-        item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing",
-                       "Experimental paradigms.Specific Paradigm": ""}
+        item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing + Disorders of Consciousness" ,
+                       "Experimental paradigms.Specific Paradigm": "Minimal Consciousness State (Disorders of Consciousness)"}
 
         res = get_paradigms_from_data(item_cueing)
-        self.assertEqual(len(res), 2)
+        print(res)
+        self.assertEqual(len(res), 4)
 
         item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
-                            "Experimental paradigms.Specific Paradigm": "Spinal Cord Stimulation (Direct Stimulation, "
-                                                                        "Spinal Cord) + Unresponsive Wakefulness Syndrome "
+                            "Experimental paradigms.Specific Paradigm": "Spinal Cord Stimulation (Direct Stimulation, Spinal Cord) "
+                                                                        "+ Unresponsive Wakefulness Syndrome "
                                                                         "(Disorders of Consciousness) + Minimal Consciousness"
                                                                         " State (Disorders of Consciousness)"}
 
         res = get_paradigms_from_data(item_spinal_cord)
-        print(res)
         self.assertEqual(len(res), 5)
 
         item_TMS = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Masking",
@@ -105,3 +107,25 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
         res = get_paradigms_from_data(item_TMS)
         self.assertEqual(len(res), 4)
+
+        item_oddball = {"Experimental paradigms.Main Paradigm": "Expectation + Sedation",
+                        "Experimental paradigms.Specific Paradigm": "Oddball(Expectation, Local-Global) + Propofol (Sedation)"}
+        res = get_paradigms_from_data(item_oddball)
+
+        item_exists = False
+        for item in res:
+            if item.name == "Oddball" and item.sub_type == "Local-Global":
+                item_exists = True
+                break
+
+        self.assertTrue(item_exists)
+        self.assertEqual(len(res), 4)
+
+        item_only_child = {
+            "Experimental paradigms.Main Paradigm": "Abnormal Contents of Consciousness + Direct Stimulation + Resting State",
+            "Experimental paradigms.Specific Paradigm": "Tinnitus (Abnormal Contents of Consciousness) + Intracranial Stimulation (Direct Stimulation, Auditory Cortex)"}
+
+        res = get_paradigms_from_data(item_only_child)
+        self.assertEqual(len(res), 6)
+
+

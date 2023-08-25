@@ -175,7 +175,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             'Measures of consciousness.Description': 'CRS-R (Pre & post Experiment) + EEG (rest & auditory oddball) (Per & Post Trial)',
             'State - Content': 0, 'Techniques': 'EEG + tDCS',
             'Findings.Summary': 'behavioral (CRS-R): 20% of patients responded positivly to tDCS (R+) & 3 patients shwoed change in conscious states. None of the patients showed decrease(R-) the rest of the patients stayed stable (also R-).\n EEG resting state in interation with (CRS-R):\n Power spectral: Post tDCS (and compared to R-) R+ increased normalized theta power over parietal cortices + Increase raw and normalized alpha\n Complexity: (PeEn in theta-alpha band) trends of increase in parietal.\n Functional connectivity: increase in parieto-occipital value in R+ vs. R-\n EEG auditory regularities during oddball:\n  R+ showed positive left lateralized anterior cluster spaning (vs. R-, comparing pre-post ERP from oddball task) from 28-376ms. (posterior cluster from 52-312ms & left-kateralized anterior cluster from 68-392ms) ERP started early but sustained and peaked and 200ms (P3).',
-            'Findings.NCC Tags': '28(Power 4-8Hz) + 14(Power 8-12Hz#parietal) + 6(PeEn #Theta-Alpha parietal) + 41(parieto-occipital, 4-10Hz) + 28(Conectivity 4-8Hz) + 14(Connectivity 8-10Hz) + 3 (52-312ms#P3a peaked at 200ms, posterior) + 3(68-392ms# P3a peaked at 200ms, left-lateralized anterior)',
+            'Findings.NCC Tags': '28(Power 4-8Hz) + 14(Power 8-12Hz#parietal) + 6(PeEn #Theta-Alpha parietal) + 41(parieto-occipital, 4-10Hz) + 28(Connectivity 4-8Hz) + 14(Connectivity 8-10Hz) + 3 (52-312ms#P3a peaked at 200ms, posterior) + 3(68-392ms# P3a peaked at 200ms, left-lateralized anterior)',
             'Findings.Measures': '2 (induced # power) +9(functional, SMI) + 14(PeEn) + 3 (cluster) + 0 (MVPA)',
             'Encoding Notes': '', 'Interpretation.GNW': 1, 'Interpretation.IIT': 'X', 'Interpretation.RPT': 'X',
             'Interpretation.HOT': 'X', 'Affiliation': 'X', 'Theory Driven': '2 (GNW)',
@@ -220,6 +220,37 @@ class StudyParserHelpersTestCase(BaseTestCase):
         except Exception:
             raise AssertionError()
 
+
+    @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
+    def test_mulitple_main_paradigms(self):
+        item = {
+            "Paper.Title": "Fronto-parietal networks underlie the interaction between executive control and conscious perception: Evidence from TMS and DWI",
+            "Paper.DOI": "10.1016/j.cortex.2020.09.027", "# Exp": 1,
+            "Experimental paradigms.Main Paradigm": "Figure-Ground + Direct Stimulation",
+            "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, V1/V2)",
+            "Experimental paradigms.Report": 1, "Sample.Type": 0, "Sample.Total": 24, "Sample.Included": 24,
+            "Task.Description": "Participants were presented with a color word and a Gabor stimulus",
+            "Task.Code": "1 + 2", "Should be included?": 1,
+            "Stimuli Features.Categories": "Words + Color + Gratings (Gabor)",
+            "Stimuli Features.Description": "Colored color words (stroop task)",
+            "Stimuli Features.Modality": "Visual + Visual + Visual",
+            "Stimuli Features.Duration": "515ms + 515ms + 33ms",
+            "Stimuli Features.Contrast": "Gabor contrast was manipulated",
+            "Measures of consciousness.Phase": "Trial By Trial", "Measures of consciousness.Type": "Objective",
+            "Measures of consciousness.Description": "Accuracy in Gabor detected",
+            "State - Content": 1, "Techniques": "MRI + TMS",
+            "Findings.Summary": "Gabor detection",
+            "Findings.NCC Tags": "9(lower integretity/valume of rSLFII, larger TMS over SMA effect # in perceptual sensitivity)",
+            "Findings.Measures": "9(DWI)+52(acuracy)", "Encoding Notes": "", "Interpretation.GNW": 1,
+            "Interpretation.IIT": "X", "Interpretation.RPT": "X", "Interpretation.HOT": "X", "Affiliation": "X",
+            "Theory Driven": "1(GNW)", "Internal Replication [0 = Not, 1=Internal Replication]": "",
+            "Findings.Spatial AAL Mapping": ""}
+        self.given_studies_exist(test_file_path,
+                                 sheet_name='test_studies')
+        try:
+            process_row(item=item)
+        except Exception:
+            raise AssertionError()
     def given_studies_exist(self, path, sheet_name):
         test_studies = get_list_from_excel(path, sheet_name)
         studies_data = []

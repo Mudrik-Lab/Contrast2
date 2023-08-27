@@ -44,7 +44,7 @@ class ConfigurationViewsTestCase(BaseTestCase):
                                                                           techniques=[second_technique],
                                                                           finding_tags=[third_tag_data])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
-                                                                            finding_description="brave new world",
+                                                                            results_summary="brave new world",
                                                                             techniques=[second_technique],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
                                                                             finding_tags=[second_tag_data,

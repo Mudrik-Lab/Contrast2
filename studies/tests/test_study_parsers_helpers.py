@@ -71,39 +71,43 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
         return studies_data
 
-    def test_paradigm_parser(self):
+    def test_paradigm_parser_for_one_paradigm(self):
         item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Monocular)",
                           "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))"}
         res = get_paradigms_from_data(item_monocular)
         self.assertEqual(len(res), 2)
 
-        item_sedation = {"Experimental paradigms.Main Paradigm": "Sedation + Resting State",
-                         "Experimental paradigms.Specific Paradigm": "Medetomidine (Sedation)"}
+    def test_paradigm_parser_for_ambiguous_parent_paradigm(self):
+        item_monocular = {"Experimental paradigms.Main Paradigm": "Psychedelic Drugs + Anesthesia",
+                          "Experimental paradigms.Specific Paradigm": "Ketamine (Anesthesia) + Psilocybin (Psychedelic Drugs)"}
+
+        res = get_paradigms_from_data(item_monocular)
+        self.assertEqual(len(res), 4)
+
+    def test_paradigm_parser_for_only_child_paradigm(self):
+
+        item_sedation = {"Experimental paradigms.Main Paradigm": "Cognitive Tasks + Resting State",
+                         "Experimental paradigms.Specific Paradigm": "Memory"}
 
         res = get_paradigms_from_data(item_sedation)
         self.assertEqual(len(res), 4)
 
-        item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing + Disorders of Consciousness" ,
+        item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing + Disorders of Consciousness",
                        "Experimental paradigms.Specific Paradigm": "Minimal Consciousness State (Disorders of Consciousness)"}
 
         res = get_paradigms_from_data(item_cueing)
 
         self.assertEqual(len(res), 4)
 
-        # item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
-        #                     "Experimental paradigms.Specific Paradigm": "Spinal Cord Stimulation (Direct Stimulation, Spinal Cord) "
-        #                                                                 "+ Unresponsive Wakefulness Syndrome (Disorders of Consciousness) + "
-        #                                                                 "Minimal Consciousness State (Disorders of Consciousness)"}
-        #
-        # res = get_paradigms_from_data(item_spinal_cord)
-        # self.assertEqual(len(res), 5)
+    def test_paradigm_parser_for_multiple_child_paradigms(self):
 
-        item_TMS = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Masking",
-                    "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, early visual cortex)"
-                                                                " + Backward Masking (Masking)"}
+        item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Disorders of Consciousness",
+                            "Experimental paradigms.Specific Paradigm": "Unresponsive Wakefulness Syndrome (Disorders of Consciousness) + Minimal Consciousness State (Disorders of Consciousness)"}
 
-        res = get_paradigms_from_data(item_TMS)
-        self.assertEqual(len(res), 4)
+        res = get_paradigms_from_data(item_spinal_cord)
+        self.assertEqual(len(res), 3)
+
+    def test_paradigm_parser_for_multiple_paradigms_with_subtype(self):
 
         item_oddball = {"Experimental paradigms.Main Paradigm": "Expectation + Sedation",
                         "Experimental paradigms.Specific Paradigm": "Oddball(Expectation, Local-Global) + Propofol (Sedation)"}
@@ -111,18 +115,21 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
         item_exists = False
         for item in res:
-            if item.name == "Oddball" and item.sub_type == "Local-Global":
+            if (item.name == "Oddball") and (item.sub_type == "Local-Global"):
                 item_exists = True
                 break
-
+        print(res)
         self.assertTrue(item_exists)
         self.assertEqual(len(res), 4)
+
+    def test_paradigm_parser_for_multiple_paradigms_with_subtype_and_ambiguous_parent_and_only_child(self):
 
         item_only_child = {
             "Experimental paradigms.Main Paradigm": "Abnormal Contents of Consciousness + Direct Stimulation + Resting State",
             "Experimental paradigms.Specific Paradigm": "Tinnitus (Abnormal Contents of Consciousness) + Intracranial Stimulation (Direct Stimulation, Auditory Cortex)"}
 
         res = get_paradigms_from_data(item_only_child)
+        print(res)
         self.assertEqual(len(res), 6)
 
 

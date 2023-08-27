@@ -54,7 +54,8 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(len(experiments_res), 1)
 
         experiment_id = res_experiment["id"]
-        paradigm, created = Paradigm.objects.get_or_create(name="Amusia", parent="Abnormal Contents of Consciousness", sub_type=None)
+        parent_paradigm, created = Paradigm.objects.get_or_create(name="Abnormal Contents of Consciousness", parent=None, sub_type=None)
+        paradigm, created = Paradigm.objects.get_or_create(name="Amusia", parent=parent_paradigm, sub_type=None)
         technique, created = Technique.objects.get_or_create(name="fMRI")
         task_type, created = TaskType.objects.get_or_create(name="Discrimination")
         measure_type, created = MeasureType.objects.get_or_create(name="PHI")
@@ -80,7 +81,6 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(first_experiment["paradigms"][0]["name"], "Amusia")
         self.assertEqual(first_experiment["techniques"][0]["name"], "fMRI")
         self.assertEqual(first_experiment["tasks"][0]["type"], task_type.id)
-        self.assertEqual(first_experiment["tasks"][0]["description"], "we did this")
         self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
         self.assertEqual(first_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
 

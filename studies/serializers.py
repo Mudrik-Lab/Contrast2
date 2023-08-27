@@ -43,7 +43,8 @@ class FindingTagSerializer(serializers.ModelSerializer):
                   "notes",
                   "analysis_type",
                   "is_NCC",
-                  "technique")
+                  "technique",
+                  "direction")
 
 
 class InterpretationSerializer(serializers.ModelSerializer):
@@ -100,11 +101,10 @@ class StimulusSerializer(serializers.ModelSerializer):
 
 class TaskSerializer(serializers.ModelSerializer):
     type = serializers.PrimaryKeyRelatedField(queryset=TaskType.objects.all())
-    description = serializers.CharField(required=False)
 
     class Meta:
         model = Task
-        fields = ("experiment", "id", "description", "type")
+        fields = ("experiment", "id", "type")
 
 
 class TechniqueSerializer(serializers.ModelSerializer):
@@ -152,7 +152,8 @@ class FullExperimentSerializer(serializers.ModelSerializer):
                   "tasks",
                   "tasks_notes",
                   "stimuli_notes",
-                  "consciousness_measures_notes"
+                  "consciousness_measures_notes",
+                  "paradigms_notes"
                   )
 
     @extend_schema_field(InterpretationSerializer(many=True))
@@ -179,7 +180,8 @@ class ExperimentSerializer(FullExperimentSerializer):
                   "type",
                   "tasks_notes",
                   "stimuli_notes",
-                  "consciousness_measures_notes"
+                  "consciousness_measures_notes",
+                  "paradigms_notes"
                   )
 
 

@@ -104,7 +104,7 @@ class BaseTestCase(APITestCase):
         return interpretation
 
     def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):
-        params = dict(name=name, parent=parent, subtype=None)
+        params = dict(name=name, parent=parent, sub_type=None)
         paradigm, created = Paradigm.objects.get_or_create(**params)
         return paradigm
 

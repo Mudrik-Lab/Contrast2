@@ -83,7 +83,6 @@ main_paradigms = [
     "Visual Persistence",
     "Visual Search"]
 
-
 paradigms = {
 
     'Abnormal Contents of Consciousness': ["Amusia",
@@ -267,9 +266,40 @@ paradigms = {
 
 only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
 
-ambiguous_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)', 'Competition (Monoaural)',
-                       'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
-                       'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
+ambiguous_parent_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)',
+                              'Competition (Monoaural)',
+                              'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
+                              'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
+
+ambiguous_paradigms = ["Blindsight",
+                       "Conversion Deafness",
+                       "Tinnitus",
+                       "Visual Extinction",
+                       "Dexmedetomidine",
+                       "Dextromethorphan",
+                       "Halothane",
+                       "Isoflurane",
+                       "Ketamine",
+                       "Medetomidine",
+                       "Propofol",
+                       "Urethane",
+                       "Blindsight",
+                       "Conversion Deafness",
+                       "Locked In Syndrome",
+                       "Tinnitus",
+                       "Unresponsive Wakefulness Syndrome",
+                       "Visual Extinction"
+                       "Unresponsive Wakefulness Syndrome",
+                       "Prior Exposure",
+                       "Ketamine",
+                       "Dextromethorphan",
+                       "Halothane",
+                       "Isoflurane",
+                       "Ketamine",
+                       "Medetomidine",
+                       "Midazolam",
+                       "Propofol",
+                       "Urethane"]
 
 paradigm_sub_types = {
     "Direct Stimulation": [

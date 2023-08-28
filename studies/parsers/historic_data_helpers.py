@@ -2,7 +2,7 @@ import logging
 import re
 from collections import namedtuple
 from itertools import zip_longest
-from typing import List, Any
+from typing import List
 
 from configuration.initial_setup import task_types_mapping, findings_measures, modalities, \
     consciousness_measure_phases, \
@@ -149,80 +149,79 @@ def get_paradigms_from_data(item: dict) -> List[ParadigmFromData]:
     parsed_main_paradigms = item["Experimental paradigms.Main Paradigm"].split("+")
     clean_main_paradigms = [clean_text(item.strip()) for item in parsed_main_paradigms]
     parsed_specific_paradigms = item["Experimental paradigms.Specific Paradigm"].split("+")
-    clean_specific_paradigms = [item.strip() for item in parsed_specific_paradigms]
+    clean_specific_paradigms = [clean_text(item.strip()) for item in parsed_specific_paradigms]
 
-    # check for missing values and assign only-child paradigms correct values
+    # check for missing values and assign only-child paradigms if applicable
     if len(clean_specific_paradigms) < len(clean_main_paradigms):
         specific_paradigm_missing = True
         for item in clean_main_paradigms:
             if item in only_child_paradigms:
                 only_child_paradigm = ParadigmFromData(name=item, parent=item, sub_type=None)
                 paradigms_in_data.append(only_child_paradigm)
-                specific_paradigm_missing = False
                 parent = ParadigmFromData(name=item, parent=None, sub_type=None)
                 paradigms_in_data.append(parent)
                 clean_main_paradigms.remove(item)
+                specific_paradigm_missing = False
             else:
                 continue
         if specific_paradigm_missing:
             raise ParadigmError(f"missing specific paradigm for: {item}")
 
-    # check for parent paradigms
+    # assign parent paradigms
     for paradigm in clean_main_paradigms:
         if paradigm not in main_paradigms:
             raise ParadigmError(f"missing paradigm: {paradigm}.")
-
-        parent = ParadigmFromData(name=paradigm, parent=None, sub_type=None)
-        paradigms_in_data.append(parent)
-        # if paradigm in only_child_paradigms:
-        #     only_child_paradigm = ParadigmFromData(name=paradigm, parent=paradigm, sub_type=None)
-        #     paradigms_in_data.append(only_child_paradigm)
-
-    # check for specific paradigms that have ambiguous parent paradigm and remove ambiguity
-    for item in clean_specific_paradigms:
-        for main_paradigm in ambiguous_paradigms:
-            if (f'({main_paradigm})' in item) and (item in paradigms[main_paradigm]):
-                specific_paradigm = ParadigmFromData(name=item, parent=main_paradigm, sub_type=None)
-                paradigms_in_data.append(specific_paradigm)
-                clean_specific_paradigms.remove(item)
+        else:
+            parent = ParadigmFromData(name=paradigm, parent=None, sub_type=None)
+            paradigms_in_data.append(parent)
+            if paradigm in only_child_paradigms:
+                only_child_paradigm = ParadigmFromData(name=paradigm, parent=paradigm, sub_type=None)
+                paradigms_in_data.append(only_child_paradigm)
 
     # assign specific paradigms to main paradigms
     for specific_paradigm in clean_specific_paradigms:
         no_parenthesis_specific_paradigm = specific_paradigm.split("(")[0].strip()
-        for main_paradigm, group_of_specific_paradigms in paradigms.items():
-            if no_parenthesis_specific_paradigm in group_of_specific_paradigms:
-                if "(" not in specific_paradigm:
-                    paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=main_paradigm,
-                                                sub_type=None)
+        if "(" not in specific_paradigm:
+            for main_paradigm, group_of_specific_paradigms in paradigms.items():
+                if specific_paradigm in group_of_specific_paradigms:
+                    paradigm = ParadigmFromData(name=specific_paradigm, parent=main_paradigm, sub_type=None)
                     paradigms_in_data.append(paradigm)
                 else:
-                    classification_data = specific_paradigm.split("(")[1]
-                    if "," in classification_data:
-                        # parse subtype data
-                        subtype_data = classification_data.split(",")[1].replace(")", "")
-                        if "&" in subtype_data:
-                            subtypes_list = subtype_data.split("&")
-                            resolved_sub_types = [subtype.strip() for subtype in subtypes_list]
-                        else:
-                            resolved_sub_types = [subtype_data.strip()]
+                    continue
+        else:
+            classification_data = specific_paradigm.split("(")[1]
+            if "," in classification_data:
+                main_paradigm = classification_data.split(',')[0].strip()
+                # parse subtype data
+                subtype_data = classification_data.split(",")[1].replace(")", "")
+                if "&" in subtype_data:
+                    subtypes_list = subtype_data.split("&")
+                    resolved_sub_types = [subtype.strip() for subtype in subtypes_list]
+                else:
+                    resolved_sub_types = [subtype_data.strip()]
 
-                        # check for match with existing subtypes from config
-                        for sub_type in resolved_sub_types:
-                            sub_types: list[str]
-                            for list_of_sub_types in paradigm_sub_types.values():
-                                for possible_sub_type in list_of_sub_types:
-                                    if str(sub_type).lower == possible_sub_type.lower():
-                                        paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=main_paradigm,
-                                                                    sub_type=possible_sub_type)
-                                        paradigms_in_data.append(paradigm)
-                                    else:
-                                        continue
-                    else:
-                        paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=main_paradigm,
-                                                    sub_type=None)
-                        paradigms_in_data.append(paradigm)
+                # check for match with existing subtypes from config
+                matching_sub_types = []
+                for list_of_sub_types in paradigm_sub_types.values():
+                    matches = find_in_list(resolved_sub_types, list_of_sub_types)
+                    matching_sub_types.extend(matches)
+                for subtype in matching_sub_types:
+                    paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=main_paradigm,
+                                                sub_type=subtype)
+                    paradigms_in_data.append(paradigm)
+
             else:
-                continue
+                # check for specific paradigms that still have ambiguous parent paradigm and resolve ambiguity
+                parent = str(classification_data).split(')')[0].strip()
+                if no_parenthesis_specific_paradigm in ambiguous_paradigms:
+                    if (f'({parent})' in specific_paradigm) and (specific_paradigm in paradigms[parent]):
+                        ambiguous_specific_paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=parent, sub_type=None)
+                        paradigms_in_data.append(ambiguous_specific_paradigm)
+                    else:
+                        continue
+                else:
+                    paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=parent, sub_type=None)
+                    paradigms_in_data.append(paradigm)
 
     return paradigms_in_data
 

@@ -3,11 +3,7 @@ import os
 import unittest
 from typing import Any
 
-from studies.parsers.historic_data_helpers import find_in_list
-from studies.parsers.parsing_findings_Contrast2 import parse
 from studies.parsers.process_row import process_row, create_study, get_list_from_excel
-from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
-    resolve_country_from_affiliation_text
 from contrast_api.tests.base import BaseTestCase
 
 test_file_path = "studies/data/test_data.xlsx"
@@ -21,68 +17,7 @@ def test_data_doesnt_exist():
                 )
 
 
-class StudyParserHelpersTestCase(BaseTestCase):
-    def test_parsing_authors_from_affiliation_text(self):
-        text = 'Zhou S., Zou G., Xu J., Su Z., Zhu H., Zou Q., Gao J.-H.'
-        res = parse_authors_from_authors_text(text)
-        self.assertEqual(res, ['Zhou S.', 'Zou G.', 'Xu J.', 'Su Z.', 'Zhu H.', 'Zou Q.', 'Gao J.-H.'])
-
-    # TODO: somewhere we need to make sure names don't include ", " so they don't break
-
-    def test_resolving_countries_from_affiliation_text(self):
-        text = 'Center for MRI Research, Academy for Advanced Interdisciplinary Studies, Peking University, Beijing, ' \
-               'United Kingdom; Department of Biomedical Engineering, College of Engineering, Peking University, ' \
-               'Beijing, China; Beijing City Key Lab for Medical Physics and Engineering, Institution of Heavy Ion ' \
-               'Physics, School of Physics, Peking University, Beijing, China; Laboratory of Applied Brain and ' \
-               'Cognitive Sciences, College of International Business, Shanghai International Studies University, ' \
-               'Shanghai, China; Nuffield Department of Clinical Neurosciences, Oxford University, Oxford, ' \
-               'United Kingdom; McGovern Institute for Brain Research, Peking University, Beijing, China; Shenzhen ' \
-               'Institute of Neuroscience, Shenzhen, China '
-        res = resolve_country_from_affiliation_text(text)
-        self.assertEqual(res, {"United Kingdom", "China"})
-
-    def test_getting_resolved_list_from_data(self):
-        consciousness_measure_type_lookup = ["None",
-                                             "Condition Assessment",
-                                             "Subjective",
-                                             "State Induction Assessment",
-                                             "Sleep Monitoring",
-                                             "Objective"]
-        text1 = "Objective + Subjective (Confidence)"
-        text2 = "Sleep Monitoring + State Induction Assessment"
-        text3 = "Subjective + Objective"
-        lookup_list1 = text1.split("+")
-        lookup_list2 = text2.split("+")
-        lookup_list3 = text3.split("+")
-        res1 = find_in_list(lookup_list1, consciousness_measure_type_lookup)
-        find_in_list(lookup_list2, consciousness_measure_type_lookup)
-        res3 = find_in_list(lookup_list3, consciousness_measure_type_lookup)
-
-        self.assertEqual(len(res1), 2)
-        self.assertEqual(res1[0], "Objective")
-        self.assertEqual(res3[1], "Objective")
-        self.assertEqual(len(res3), 2)
-
-    def test_finding_tag_parser(self):
-        text = "50 (# The findings of frontal and posterior areas are reflecting significant differences between light" \
-               " and deep sedation states in this measure) + 0 (medial PFC & Orbital PFC & dorsolateral PFC & Insular" \
-               " Cortex &) + 21 (Temporal Pole &) + 8 (#frequency analysis of slow oscillations considered to reflect" \
-               " long distance synchronization) + 42 (Amygdala & Hippocampus & Parahippocampal Gyrus)"
-        res = parse(text)
-        self.assertEqual(len(res), 10)
-
-        text2 = "41(connectivity between A1 and ACC ) + 11 + 16 (posterior cingulate cortex# −5 −49 26)"
-        res = parse(text2)
-        self.assertEqual(len(res), 3)
-
-        text3 = "5 (Connectivity 90-120Hz) + 7 (?) + 8 (Normalized Degree) + 6 (Dimension of activation) + 14 (Connectivity Neg 7-13Hz) + 38 (Normalized Degree)"
-        res = parse(text3)
-        self.assertEqual(len(res), 6)
-
-        text4 = "-5 (Power 30-40Hz<340-420ms> # gamma activity reflected task relevance and not visibility)+ -3(380-550ms # P300 reflected task relevance and not visibility)"
-        res = parse(text4)
-        self.assertEqual(len(res), 2)
-
+class ProcessRowImplementationTestCase(BaseTestCase):
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
     def test_process_row(self):
         self.given_studies_exist(test_file_path,

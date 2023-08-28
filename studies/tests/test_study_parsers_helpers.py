@@ -1,9 +1,8 @@
 import json
 
-from configuration.initial_setup import consciousness_measure_types, only_child_paradigms
+from configuration.initial_setup import consciousness_measure_types
 from studies.parsers.historic_data_helpers import find_in_list, get_paradigms_from_data
 from studies.parsers.parsing_findings_Contrast2 import parse
-from studies.parsers.process_row import create_study
 from studies.parsers.studies_parsing_helpers import parse_authors_from_authors_text, \
     resolve_country_from_affiliation_text
 from contrast_api.tests.base import BaseTestCase
@@ -14,8 +13,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         text = 'Zhou S., Zou G., Xu J., Su Z., Zhu H., Zou Q., Gao J.-H.'
         res = parse_authors_from_authors_text(text)
         self.assertEqual(res, ['Zhou S.', 'Zou G.', 'Xu J.', 'Su Z.', 'Zhu H.', 'Zou Q.', 'Gao J.-H.'])
-
-    # TODO: somewhere we need to make sure names don't include ", " so they don't break
 
     def test_resolving_countries_from_affiliation_text(self):
         text = 'Department of Physiology and Pharmacology, Sackler School of Medicine, Tel Aviv University, Tel Aviv, 6997801, Israel; Department of Anesthesiology and Critical Care Medicine, Hadassah-Hebrew University Medical Center, Jerusalem, 91120, Israel; Hadassah School of Medicine, Hebrew University, Jerusalem, 91120, Israel; Sagol School of Neuroscience, Tel Aviv University, Tel Aviv, 6997801, Israel; Functional Neurosurgery Unit, Tel Aviv Sourasky Medical Center, Tel Aviv, 6423906, Israel; Department of Neurology and Neurosurgery, Sackler School of Medicine, Tel Aviv University, Tel Aviv, 6997801, Israel; Department of Anesthesia, Intensive Care and Pain, Tel Aviv Medical Center, Sackler Medical School, Tel Aviv University, Tel Aviv, 6997801, Israel; EEG and Epilepsy Unit, Department of Neurology, Tel Aviv Sourasky Medical Center, Tel Aviv, 6423906, Israel; Department of Anesthesiology and Intensive Care Medicine, University of Bonn Medical Center, Bonn, 53127, Germany; Department of Neurosurgery, University of Bonn Medical Center, Bonn, 53127, Germany; Department of Epileptology, University of Bonn Medical Center, Bonn, 53127, Germany; Department of Neurosurgery, University of California, Los Angeles, CA  90095, United States'
@@ -59,18 +56,6 @@ class StudyParserHelpersTestCase(BaseTestCase):
         res = parse(text4)
         self.assertEqual(len(res), 2)
 
-    def given_studies_exist(self, test_studies: list) -> list:
-        studies_data = []
-        for study_item in test_studies:
-            try:
-                study = create_study(item=study_item)
-                studies_data.append(study)
-            except Exception:
-                print(json.dumps(study_item))
-                raise AssertionError()
-
-        return studies_data
-
     def test_paradigm_parser_for_one_paradigm(self):
         item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Monocular)",
                           "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))"}
@@ -86,11 +71,11 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
     def test_paradigm_parser_for_only_child_paradigm(self):
 
-        item_sedation = {"Experimental paradigms.Main Paradigm": "Cognitive Tasks + Resting State",
-                         "Experimental paradigms.Specific Paradigm": "Memory"}
+        item_sedation = {"Experimental paradigms.Main Paradigm": "Resting State",
+                         "Experimental paradigms.Specific Paradigm": ""}
 
         res = get_paradigms_from_data(item_sedation)
-        self.assertEqual(len(res), 4)
+        self.assertEqual(len(res), 2)
 
         item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing + Disorders of Consciousness",
                        "Experimental paradigms.Specific Paradigm": "Minimal Consciousness State (Disorders of Consciousness)"}

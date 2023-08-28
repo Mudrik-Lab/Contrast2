@@ -170,7 +170,8 @@ paradigms = {
                                    "Emergence from MCS",
                                    "Epilepsy",
                                    "Minimal Consciousness State",
-                                   "Seizures / Unclassified DOC",
+                                   "Seizures",
+                                   "Unclassified Disorders of Consciousness",
                                    "Unresponsive Wakefulness Syndrome (Disorders of Consciousness)"],
 
     'Drowsiness': ["Drowsiness"],
@@ -322,7 +323,7 @@ paradigm_sub_types = {
         "O1/O2",
         "P3/P4",
         "Other"],
-    "Seizures / Unclassified DOC": ["Parietal Lobe", "Temporal Lobe", "Frontal Lobe", "Occipital Lobe", "Other"],
+    "Seizures": ["Parietal Lobe", "Temporal Lobe", "Frontal Lobe", "Occipital Lobe", "Other"],
     "Oddball": ["Local-Global", "Deviant detection", "Visual", "MMN", "Roving Tactile Oddball", "Other"]
 }
 

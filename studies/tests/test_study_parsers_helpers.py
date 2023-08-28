@@ -63,33 +63,35 @@ class StudyParserHelpersTestCase(BaseTestCase):
         self.assertEqual(len(res), 2)
 
     def test_paradigm_parser_for_ambiguous_parent_paradigm(self):
-        item_monocular = {"Experimental paradigms.Main Paradigm": "Psychedelic Drugs + Anesthesia",
-                          "Experimental paradigms.Specific Paradigm": "Ketamine (Anesthesia) + Psilocybin (Psychedelic Drugs)"}
+        item_anesthesia = {"Experimental paradigms.Main Paradigm": "Psychedelic Drugs + Anesthesia",
+                           "Experimental paradigms.Specific Paradigm": "Ketamine (Anesthesia) + Psilocybin (Psychedelic Drugs)"}
 
-        res = get_paradigms_from_data(item_monocular)
+        res = get_paradigms_from_data(item_anesthesia)
+        print(res)
         self.assertEqual(len(res), 4)
 
     def test_paradigm_parser_for_only_child_paradigm(self):
 
-        item_sedation = {"Experimental paradigms.Main Paradigm": "Resting State",
-                         "Experimental paradigms.Specific Paradigm": ""}
+        item_resting_state = {"Experimental paradigms.Main Paradigm": "Resting State",
+                              "Experimental paradigms.Specific Paradigm": ""}
 
-        res = get_paradigms_from_data(item_sedation)
+        res = get_paradigms_from_data(item_resting_state)
         self.assertEqual(len(res), 2)
 
         item_cueing = {"Experimental paradigms.Main Paradigm": "Contextual Cueing + Disorders of Consciousness",
                        "Experimental paradigms.Specific Paradigm": "Minimal Consciousness State (Disorders of Consciousness)"}
 
         res = get_paradigms_from_data(item_cueing)
-
+        print(res)
         self.assertEqual(len(res), 4)
 
     def test_paradigm_parser_for_multiple_child_paradigms(self):
 
-        item_spinal_cord = {"Experimental paradigms.Main Paradigm": "Disorders of Consciousness",
-                            "Experimental paradigms.Specific Paradigm": "Unresponsive Wakefulness Syndrome (Disorders of Consciousness) + Minimal Consciousness State (Disorders of Consciousness)"}
+        item_doc = {"Experimental paradigms.Main Paradigm": "Disorders of Consciousness",
+                    "Experimental paradigms.Specific Paradigm": "Unresponsive Wakefulness Syndrome (Disorders of Consciousness) + Minimal Consciousness State (Disorders of Consciousness)"}
 
-        res = get_paradigms_from_data(item_spinal_cord)
+        res = get_paradigms_from_data(item_doc)
+        print(res)
         self.assertEqual(len(res), 3)
 
     def test_paradigm_parser_for_multiple_paradigms_with_subtype(self):
@@ -109,12 +111,10 @@ class StudyParserHelpersTestCase(BaseTestCase):
 
     def test_paradigm_parser_for_multiple_paradigms_with_subtype_and_ambiguous_parent_and_only_child(self):
 
-        item_only_child = {
+        item_only_child_and_subtype = {
             "Experimental paradigms.Main Paradigm": "Abnormal Contents of Consciousness + Direct Stimulation + Resting State",
             "Experimental paradigms.Specific Paradigm": "Tinnitus (Abnormal Contents of Consciousness) + Intracranial Stimulation (Direct Stimulation, Auditory Cortex)"}
 
-        res = get_paradigms_from_data(item_only_child)
+        res = get_paradigms_from_data(item_only_child_and_subtype)
         print(res)
         self.assertEqual(len(res), 6)
-
-

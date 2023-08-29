@@ -89,6 +89,7 @@ paradigms = {
                                            "Blindsight (Abnormal Contents of Consciousness)",
                                            "Conversion Deafness (Abnormal Contents of Consciousness)",
                                            "Hypoactive delirium",
+                                           "Meditation",
                                            "Neglect",
                                            "Parkinson Disease",
                                            "Schizophrenia",
@@ -101,11 +102,12 @@ paradigms = {
     'Anesthesia': ["Dexmedetomidine (Anesthesia)",
                    "Dextromethorphan (Anesthesia)",
                    "Enflurane",
+                   "Etomidate",
                    "Halothane (Anesthesia)",
                    "Isoflurane (Anesthesia)",
                    "Ketamine (Anesthesia)",
                    "Medetomidine (Anesthesia)",
-                   "Midazolam",
+                   "Midazolam (Anesthesia)",
                    "Pancuronium",
                    "Propofol (Anesthesia)",
                    "Sevoflurane",
@@ -147,7 +149,7 @@ paradigms = {
     'Competition (Binocular)': ["b-CFS",
                                 "Binocular Rivalry",
                                 "CFS",
-                                "Flash Supression"],
+                                "Flash Suppression"],
 
     'Competition (Monocular)': ["Bistable percepts (Competition (Monocular))"],
     'Competition (Monoaural)': ["Bistable percepts (Competition (Monoaural))"],
@@ -169,7 +171,8 @@ paradigms = {
                                    "Emergence from MCS",
                                    "Epilepsy",
                                    "Minimal Consciousness State",
-                                   "Seizures / Unclassified DOC",
+                                   "Seizures",
+                                   "Unclassified Disorders of Consciousness",
                                    "Unresponsive Wakefulness Syndrome (Disorders of Consciousness)"],
 
     'Drowsiness': ["Drowsiness"],
@@ -177,6 +180,7 @@ paradigms = {
 
     'Expectation': ["Emotional",
                     "Oddball",
+                    "Predictive Cue",
                     "Prior Exposure (Expectation)"],
 
     'Familiarity': ["Own Name",
@@ -203,6 +207,7 @@ paradigms = {
                   "Pinna-Brelstaff",
                   "Proprioceptive Illusion",
                   "Tilt Illusion",
+                  "Uniformity Illusion",
                   "Verbal Transformation",
                   "Zwicker Tone"],
 
@@ -216,6 +221,7 @@ paradigms = {
                 "Metacontrast Masking",
                 "Object Substitution Masking",
                 "Paracontrast Masking",
+                "Repeated Masking",
                 "Target Masking"],
 
     'Mirror Masking': ["Mirror Masking"],
@@ -227,6 +233,7 @@ paradigms = {
     'Pop out': ["Mooney Images"],
 
     'Psychedelic Drugs': ["Ketamine (Psychedelic Drugs)",
+                          "LSD",
                           "Psilocybin"],
 
     'Repetition Suppression': ["Repetition Suppression"],
@@ -263,9 +270,85 @@ paradigms = {
     'Visual Search': ["Visual Search"]
 }
 
-ambiguous_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)', 'Competition (Monoaural)',
-                       'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
-                       'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
+only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
+
+ambiguous_parent_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)',
+                              'Competition (Monoaural)', 'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
+                              'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
+
+ambiguous_paradigms = ["Blindsight",
+                       "Conversion Deafness",
+                       "Tinnitus",
+                       "Visual Extinction",
+                       "Dexmedetomidine",
+                       "Dextromethorphan",
+                       "Halothane",
+                       "Isoflurane",
+                       "Ketamine",
+                       "Medetomidine",
+                       "Propofol",
+                       "Locked In Syndrome",
+                       "Unresponsive Wakefulness Syndrome",
+                       "Prior Exposure",
+                       "Midazolam",
+                       "Urethane",
+                       "Bistable percepts"]
+
+paradigm_sub_types = {
+    "Direct Stimulation": [
+        "Anterior Cingulate Gyrus",
+        "Auditory Cortex",
+        "Extra-Striate Visual Cortex",
+        "FEF",
+        "IPS",
+        "LO",
+        "M1",
+        "MT",
+        "O2",
+        "OFC",
+        "Parietal Cortex",
+        "PCM",
+        "PMd",
+        "Posterior Parietal Cortex",
+        "Precuneus",
+        "pre-SMA",
+        "Sensorymotor Cortex",
+        "Superior Parietal Lobule",
+        "V1",
+        "V2",
+        "V3",
+        "V5",
+        "OFA",
+        "EBA",
+        "O1",
+        "P3",
+        "P4",
+        "V4",
+        "rOFA",
+        "rPMC",
+        "Superior Frontal Gyrus",
+        "Posterior Superior Temporal Gyrus",
+        "Occipital Cortical Gyrus",
+        "BA 19",
+        "Middle Frontal Gyrus",
+        "Subcentral Sulcus",
+        "Spinal Cord",
+        "lDLPFC",
+        "SMA",
+        "Early Visual Cortex",
+        "BA 7",
+        "BA 5",
+        "BA 6",
+        "Occipital",
+        "Right Parietal Cortex",
+        "V1/V2",
+        "V5/MT",
+        "O1/O2",
+        "P3/P4",
+        "Other"],
+    "Seizures": ["Parietal Lobe", "Temporal Lobe", "Frontal Lobe", "Occipital Lobe", "Other"],
+    "Oddball": ["Local-Global", "Deviant detection", "Visual", "MMN", "Roving Tactile Oddball", "Other"]
+}
 
 task_types = ["No Task",
               "Discrimination",

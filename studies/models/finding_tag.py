@@ -50,18 +50,18 @@ class FindingTag(models.Model):
                                    related_name="finding_tags")
     family = models.ForeignKey(null=False, blank=False, on_delete=CASCADE, to=FindingTagFamily)
     type = models.ForeignKey(null=False, blank=False, on_delete=CASCADE, to=FindingTagType)
-    onset = models.IntegerField(null=True, blank=True)  # ms
-    offset = models.IntegerField(null=True, blank=True)  # ma
-    band_lower_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # HZ
-    band_higher_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # HZ
-    AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500, choices=AALAtlasTagChoices.choices) #add choices
+    onset = models.IntegerField(null=True, blank=True, verbose_name="Onset timing in ms")
+    offset = models.IntegerField(null=True, blank=True, verbose_name="Offset timing in ms")
+    band_lower_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3, verbose_name="Band Lower bound in Hz")
+    band_higher_bound = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3, verbose_name="Band Higher bound in Hz")
+    AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500, choices=AALAtlasTagChoices.choices)
     notes = models.TextField(null=True, blank=True)
     analysis_type = models.CharField(null=True, blank=True, max_length=100,
                                      choices=AnalysisTypeChoices.choices,
                                      default=AnalysisTypeChoices.POWER)
     direction = models.CharField(null=True, blank=True, max_length=10,
-                                        choices=DirectionChoices.choices,
-                                        default=DirectionChoices.POSITIVE)
+                                 choices=DirectionChoices.choices,
+                                 default=DirectionChoices.POSITIVE)
     technique = models.ForeignKey(null=True, blank=True, to="studies.Technique", related_name="findings_tags",
                                   on_delete=SET_NULL)
     is_NCC = models.BooleanField(null=False, blank=False, default=True) # later remove the default

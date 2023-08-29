@@ -41,7 +41,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
                                                                           samples=[sample_data_1],
                                                                           techniques=[second_technique])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=israeli_study,
-                                                                            finding_description="brave new world",
+                                                                            results_summary="brave new world",
                                                                             techniques=[second_technique],
                                                                             samples=[sample_data_2],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
@@ -103,7 +103,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(len(res.data), 2)  # as gnw child interperation to two paradigms
+        self.assertEqual(len(res.data), 2)  # as gnw child interpretation to two paradigms
         """
         masking parent paradigm 
          gnw -pro: 2 against: 1
@@ -121,7 +121,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
 
         target_url = self.reverse_with_query_params("experiments-graphs-parameters-distribution-free-queries",
                                                     breakdown="paradigm_family", techniques=[first_technique.id])
-        # now should be filtered only the third experimeint
+        # now should be filtered only the third experiment
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 2)
@@ -146,7 +146,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
                                                     breakdown="population")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)  # as gnw child interperation to two paradigms
+        self.assertEqual(len(res.data), 2)  # as gnw child interpretation to two paradigms
         first_series = res.data[0]
         second_series = res.data[1]
         self.assertEqual(first_series["key"], SampleChoices.CHILDREN)

@@ -57,6 +57,9 @@ class AnalysisTypeChoices(TextChoices):
     MICROSTATES = "microstates", _("Microstates")
     CD = "cd", _("CD - correlation dimension")
     CLUSTERING = "clustering", _("Clustering")
+    MST = "mst", _("MST - minimum spanning tree")
+    PSD = "psd", _("PSD - power spectral density")
+    ERSP = "ersp", _("ERSP - event-related spectral perturbations")
 
 
 class ExperimentTypeChoices(IntegerChoices):

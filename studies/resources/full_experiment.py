@@ -30,7 +30,7 @@ class FullExperimentResource(resources.ModelResource):
                   'study__countries',
                   'study__affiliations',
                   'id',
-                  'finding_description',
+                  'results_summary',
                   'techniques',
                   'interpretations',
                   'paradigms',

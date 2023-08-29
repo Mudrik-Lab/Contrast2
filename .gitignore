@@ -13,7 +13,7 @@ __pycache__
 /scanned_results
 /created_files
 /data
-
+/media
 
 studies/data/*.csv
 studies/data/*.xls

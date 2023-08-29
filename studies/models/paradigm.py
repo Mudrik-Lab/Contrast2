@@ -14,5 +14,8 @@ class Paradigm(models.Model):
         if self.parent_id:
             return f"{self.name}. parent paradigm: {self.parent.name}"
         else:
-            return f"{self.name}"
+            if self.sub_type is None:
+                return f"{self.name}"
+            else:
+                return f"{self.name}, sub-type: {self.sub_type}"
 

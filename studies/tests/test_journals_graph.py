@@ -40,7 +40,7 @@ class JournalsGraphTestCase(BaseTestCase):
                                                                           is_reporting=ReportingChoices.NO_REPORT,
                                                                           techniques=[second_technique])
         israeli_study_experiment_2 = self.given_experiment_exists_for_study(study=self.israeli_study,
-                                                                            finding_description="brave new world",
+                                                                            results_summary="brave new world",
                                                                             techniques=[second_technique],
                                                                             is_reporting=ReportingChoices.NO_REPORT,
                                                                             paradigms=[different_child_paradigm,
@@ -87,17 +87,17 @@ class JournalsGraphTestCase(BaseTestCase):
                                                     theory=self.gnw_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1) # as only one study with this interpertation as pro
+        self.assertEqual(len(res.data), 1)  # as only one study with this interpretation as pro
         first_result = res.data[0]
         self.assertEqual(first_result["key"], "the first journal")
-        self.assertEqual(first_result["value"], 2) #two experiments
+        self.assertEqual(first_result["value"], 2)  # two experiments
 
-        # Now check for another theory, rememebr we query by PARENT theory, of the actual theories connected
+        # Now check for another theory, remember we query by PARENT theory, of the actual theories connected
         target_url = self.reverse_with_query_params("experiments-graphs-journals",
                                                     theory=self.rpt_parent_theory.id)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 1)  # as only one study with this interpertation as pro
+        self.assertEqual(len(res.data), 1)  # as only one study with this interpretation as pro
         first_result = res.data[0]
         self.assertEqual(first_result["key"], "the second journal")
         self.assertEqual(first_result["value"], 1)  # one experiment
@@ -114,12 +114,7 @@ class JournalsGraphTestCase(BaseTestCase):
         rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT")
         self.given_theory_exists(parent=gnw_parent_theory, name="GNW_child")
         self.given_theory_exists(parent=rpt_parent_theory, name="RPT_child")
-        self.given_experiment_exists_for_study(study=israeli_study,
-                                                                          is_reporting=ReportingChoices.NO_REPORT)
-        self.given_experiment_exists_for_study(study=israeli_study,
-                                                                            finding_description="brave new world",
-                                                                            is_reporting=ReportingChoices.NO_REPORT)
-        self.given_experiment_exists_for_study(study=british_israeli_study,
-                                                                                  is_reporting=ReportingChoices.BOTH,
-                                                                                    )
+        self.given_experiment_exists_for_study(study=israeli_study, is_reporting=ReportingChoices.NO_REPORT)
+        self.given_experiment_exists_for_study(study=israeli_study, results_summary="brave new world", is_reporting=ReportingChoices.NO_REPORT)
+        self.given_experiment_exists_for_study(study=british_israeli_study, is_reporting=ReportingChoices.BOTH)
 

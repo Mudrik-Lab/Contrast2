@@ -103,7 +103,7 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
-        self.assertEqual(len(res.data), 2)  # as gnw child interpreation to two paradigms
+        self.assertEqual(len(res.data), 2)  # as gnw child interpretation to two paradigms
         """
         masking parent paradigm 
          gnw -pro: 2 against: 1

@@ -60,7 +60,32 @@ class StudyParserHelpersTestCase(BaseTestCase):
         item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Monocular)",
                           "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))"}
         res = get_paradigms_from_data(item_monocular)
+        print(res)
         self.assertEqual(len(res), 2)
+
+    def test_paradigm_competition(self):
+        item_monocular = {"Experimental paradigms.Main Paradigm": "Competition (Binocular)",
+                          "Experimental paradigms.Specific Paradigm": "Binocular Rivalry (Competition (Binocular))"}
+        res = get_paradigms_from_data(item_monocular)
+        print(res)
+        self.assertEqual(len(res), 2)
+
+    def test_paradigm_psilocybin(self):
+        item_monocular = {"Experimental paradigms.Main Paradigm": "Psychedelic Drugs + Resting State",
+                          "Experimental paradigms.Specific Paradigm": "Psilocybin (Psychedelic Drugs)"}
+        res = get_paradigms_from_data(item_monocular)
+        print(res)
+        self.assertEqual(len(res), 4)
+
+    def test_paradigm_direct_stimulation(self):
+        item_monocular = {"Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
+                          "Experimental paradigms.Specific Paradigm": "tDCS (Direct Stimulation, lDLPFC) + Unresponsive "
+                                                                      "Wakefulness Syndrome (Disorders of Consciousness) + "
+                                                                      "Minimal Consciousness State (Disorders of Consciousness)"
+                                                                      " + Emergence from MCS (Disorders of Consciousness)"}
+        res = get_paradigms_from_data(item_monocular)
+        print(res)
+        self.assertEqual(len(res), 6)
 
     def test_paradigm_parser_for_ambiguous_parent_paradigm(self):
         item_anesthesia = {"Experimental paradigms.Main Paradigm": "Psychedelic Drugs + Anesthesia",

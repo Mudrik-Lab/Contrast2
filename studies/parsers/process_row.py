@@ -180,7 +180,7 @@ def process_row(item: dict):
                 raise ParadigmError(f"main paradigm {specific_paradigm.parent} doesn't exist")
 
     except (ParadigmError, ObjectDoesNotExist):
-        raise ParadigmDataException()
+        raise ParadigmDataException(f"paradigm error for {item['Experimental paradigms.Main Paradigm']} or {item['Experimental paradigms.Specific Paradigm']}")
 
     # resolve and create consciousness measures
     consciousness_measures_from_data = get_consciousness_measure_type_and_phase_from_data(item)

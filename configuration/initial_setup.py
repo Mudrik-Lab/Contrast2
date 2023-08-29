@@ -89,6 +89,7 @@ paradigms = {
                                            "Blindsight (Abnormal Contents of Consciousness)",
                                            "Conversion Deafness (Abnormal Contents of Consciousness)",
                                            "Hypoactive delirium",
+                                           "Meditation",
                                            "Neglect",
                                            "Parkinson Disease",
                                            "Schizophrenia",
@@ -101,11 +102,12 @@ paradigms = {
     'Anesthesia': ["Dexmedetomidine (Anesthesia)",
                    "Dextromethorphan (Anesthesia)",
                    "Enflurane",
+                   "Etomidate",
                    "Halothane (Anesthesia)",
                    "Isoflurane (Anesthesia)",
                    "Ketamine (Anesthesia)",
                    "Medetomidine (Anesthesia)",
-                   "Midazolam",
+                   "Midazolam (Anesthesia)",
                    "Pancuronium",
                    "Propofol (Anesthesia)",
                    "Sevoflurane",
@@ -147,7 +149,7 @@ paradigms = {
     'Competition (Binocular)': ["b-CFS",
                                 "Binocular Rivalry",
                                 "CFS",
-                                "Flash Supression"],
+                                "Flash Suppression"],
 
     'Competition (Monocular)': ["Bistable percepts (Competition (Monocular))"],
     'Competition (Monoaural)': ["Bistable percepts (Competition (Monoaural))"],
@@ -178,6 +180,7 @@ paradigms = {
 
     'Expectation': ["Emotional",
                     "Oddball",
+                    "Predictive Cue",
                     "Prior Exposure (Expectation)"],
 
     'Familiarity': ["Own Name",
@@ -204,6 +207,7 @@ paradigms = {
                   "Pinna-Brelstaff",
                   "Proprioceptive Illusion",
                   "Tilt Illusion",
+                  "Uniformity Illusion",
                   "Verbal Transformation",
                   "Zwicker Tone"],
 
@@ -217,6 +221,7 @@ paradigms = {
                 "Metacontrast Masking",
                 "Object Substitution Masking",
                 "Paracontrast Masking",
+                "Repeated Masking",
                 "Target Masking"],
 
     'Mirror Masking': ["Mirror Masking"],
@@ -228,6 +233,7 @@ paradigms = {
     'Pop out': ["Mooney Images"],
 
     'Psychedelic Drugs': ["Ketamine (Psychedelic Drugs)",
+                          "LSD",
                           "Psilocybin"],
 
     'Repetition Suppression': ["Repetition Suppression"],
@@ -267,8 +273,7 @@ paradigms = {
 only_child_paradigms = [paradigm for paradigm in main_paradigms if paradigms[paradigm] == [paradigm]]
 
 ambiguous_parent_paradigms = ['Sedation', 'Anesthesia', 'Case Study', 'Competition (Monocular)',
-                              'Competition (Monoaural)',
-                              'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
+                              'Competition (Monoaural)', 'Competition (Binaural)', 'Psychedelic Drugs', 'Familiarity',
                               'Abnormal Contents of Consciousness', 'Disorders of Consciousness', 'Expectation']
 
 ambiguous_paradigms = ["Blindsight",
@@ -282,24 +287,12 @@ ambiguous_paradigms = ["Blindsight",
                        "Ketamine",
                        "Medetomidine",
                        "Propofol",
-                       "Urethane",
-                       "Blindsight",
-                       "Conversion Deafness",
                        "Locked In Syndrome",
-                       "Tinnitus",
-                       "Unresponsive Wakefulness Syndrome",
-                       "Visual Extinction"
                        "Unresponsive Wakefulness Syndrome",
                        "Prior Exposure",
-                       "Ketamine",
-                       "Dextromethorphan",
-                       "Halothane",
-                       "Isoflurane",
-                       "Ketamine",
-                       "Medetomidine",
                        "Midazolam",
-                       "Propofol",
-                       "Urethane"]
+                       "Urethane",
+                       "Bistable percepts"]
 
 paradigm_sub_types = {
     "Direct Stimulation": [

@@ -61,13 +61,15 @@ class ProcessRowImplementationTestCase(BaseTestCase):
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
-    def test_Early_bilateral(self):
+    def test_tDCS_paradigm(self):
         self.given_studies_exist(test_file_path,
                                  sheet_name='test_studies')
         item = {"Paper.Title": "Early bilateral and massive compromise of the frontal lobes",
                 "Paper.DOI": "10.1016/j.nicl.2018.02.026", "# Exp": 1,
-                "Experimental paradigms.Main Paradigm": "Case Study + Cognitive Tasks",
-                "Experimental paradigms.Specific Paradigm": "Bilateral Frontal Affectation (Case Study) + Executive Control (Cognitive Tasks) + Memory (Cognitive Tasks) + Language (Cognitive Tasks)",
+                "Experimental paradigms.Main Paradigm": "Direct Stimulation + Disorders of Consciousness",
+                "Experimental paradigms.Specific Paradigm": "tDCS (Direct Stimulation, lDLPFC) + Unresponsive Wakefulness Syndrome "
+                                                            "(Disorders of Consciousness) + Minimal Consciousness State (Disorders of "
+                                                            "Consciousness) + Emergence from MCS (Disorders of Consciousness)",
                 "Experimental paradigms.Report": 1, "Sample.Type": "3 (Bilateral Frontal Affectation Patients)",
                 "Sample.Total": "1 (1 Bilateral Frontal Affectation Patients)", "Sample.Included": 1,
                 "Task.Description": "The subject underwent neuropsychological examination in which a battery of neuropsychological functions were used to evaluate attention (visual and auditory), memory encoding, language, praxis, and emotional processing.",
@@ -93,12 +95,12 @@ class ProcessRowImplementationTestCase(BaseTestCase):
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
-    def test_hidden_characters(self):
+    def test_psilocybin_paradigm(self):
         item: dict[str | Any, str | int | Any] = {
             'Paper.Title': 'Combined behavioral and electrophysiological evidence for a direct cortical effect of prefrontal tDCS on disorders of consciousness',
             'Paper.DOI': '10.1038/s41598-020-61180-2', '# Exp': 1,
-            'Experimental paradigms.Main Paradigm': 'Direct Stimulation + Disorders of Consciousness',
-            'Experimental paradigms.Specific Paradigm': 'Spinal Cord Stimulation (Direct Stimulation, Spinal Cord) + Unresponsive Wakefulness Syndrome (Disorders of Consciousness) + Minimal Consciousness State (Disorders of Consciousness)',
+            'Experimental paradigms.Main Paradigm': 'Psychedelic Drugs + Resting State',
+            'Experimental paradigms.Specific Paradigm': 'Psilocybin (Psychedelic Drugs)',
             'Experimental paradigms.Report': 0, 'Sample.Type': '3 (UWS & MCS & EMCS)', 'Sample.Total': 69,
             'Sample.Included': 60,
             'Task.Description': 'Auditory regularities during oddball paradigm: Patients were instructed to actively count the occurrence of auditory oddballs (series of 4 identical tones followed by a 5th\n distinct tone; 20% of trials) delivered randomly among series of 5 identical tones (standard trials; 80% of trials).',
@@ -124,13 +126,13 @@ class ProcessRowImplementationTestCase(BaseTestCase):
             raise AssertionError()
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
-    def test_fronto_parietal(self):
+    def test_bistable_percepts_paradigm(self):
         item = {
             "Paper.Title": "Fronto-parietal networks underlie the interaction between executive control and conscious "
                            "perception: Evidence from TMS and DWI",
             "Paper.DOI": "10.1016/j.cortex.2020.09.027", "# Exp": 1,
-            "Experimental paradigms.Main Paradigm": "Direct Stimulation + Stimulus Degradation \u200e+ Cognitive Tasks",
-            "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, SMA) + Contrast Reduction (Stimulus Degradation) + Executive Control (Cognitive Tasks)",
+            "Experimental paradigms.Main Paradigm": 'Competition (Monocular)',
+            "Experimental paradigms.Specific Paradigm": 'Bistable percepts (Competition (Monocular))',
             "Experimental paradigms.Report": 1, "Sample.Type": 0, "Sample.Total": 24, "Sample.Included": 24,
             "Task.Description": "Participants were presented with a color word and a Gabor stimulus (except for catch trials, in which the Gabor was not presented). First, they had to discriminate the color of the word as fast and accurately as possible. Participants responded to this task orally RT collected through the microphone. For the computation of the accuracy, the experimenter recorded the participant\u2019s responses using four keys of the keyboard. Second, they had to report if they consciously detected the appearance of the Gabor. By choosing one of the two arrow-like stimuli (>>> or <<<) pointing to the two possible locations of target appearance. On each trial, a burst of three TMS pulses were applied at 40 Hz simultaneously to the presentation of the Stroop word and with a total duration of 56 ms. using a 70mm figure eight coil at ~45_x0003_ respect to the scalp using a a TMS neuronavigation system.",
             "Task.Code": "1 + 2", "Should be included?": 1,
@@ -157,12 +159,12 @@ class ProcessRowImplementationTestCase(BaseTestCase):
 
 
     @unittest.skipIf(test_data_doesnt_exist(), "Skipping if test_data doesn't exist")
-    def test_mulitple_main_paradigms(self):
+    def test_binocular_rivalry_paradigms(self):
         item = {
             "Paper.Title": "Fronto-parietal networks underlie the interaction between executive control and conscious perception: Evidence from TMS and DWI",
             "Paper.DOI": "10.1016/j.cortex.2020.09.027", "# Exp": 1,
-            "Experimental paradigms.Main Paradigm": "Figure-Ground + Direct Stimulation",
-            "Experimental paradigms.Specific Paradigm": "TMS (Direct Stimulation, V1/V2)",
+            "Experimental paradigms.Main Paradigm": "Competition (Binocular)",
+            "Experimental paradigms.Specific Paradigm": "Binocular Rivalry (Competition (Binocular))",
             "Experimental paradigms.Report": 1, "Sample.Type": 0, "Sample.Total": 24, "Sample.Included": 24,
             "Task.Description": "Participants were presented with a color word and a Gabor stimulus",
             "Task.Code": "1 + 2", "Should be included?": 1,

@@ -177,6 +177,8 @@ def get_paradigms_from_data(item: dict) -> List[ParadigmFromData]:
             if paradigm in only_child_paradigms:
                 only_child_paradigm = ParadigmFromData(name=paradigm, parent=paradigm, sub_type=None)
                 paradigms_in_data.append(only_child_paradigm)
+                if str(paradigm) in clean_specific_paradigms:
+                    clean_specific_paradigms.remove(str(paradigm))
 
     # assign specific paradigms to main paradigms
     for specific_paradigm in clean_specific_paradigms:
@@ -213,9 +215,19 @@ def get_paradigms_from_data(item: dict) -> List[ParadigmFromData]:
             else:
                 # check for specific paradigms that still have ambiguous parent paradigm and resolve ambiguity
                 parent = str(classification_data).split(')')[0].strip()
-                if no_parenthesis_specific_paradigm in ambiguous_paradigms:
-                    if (f'({parent})' in specific_paradigm) and (specific_paradigm in paradigms[parent]):
-                        ambiguous_specific_paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=parent, sub_type=None)
+                if "Binocular" in specific_paradigm:  # only parent paradigm with parenthesis that's not ambiguous
+                    paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent='Competition (Binocular)',
+                                                sub_type=None)
+                    paradigms_in_data.append(paradigm)
+                elif no_parenthesis_specific_paradigm in ambiguous_paradigms:
+                    if "))" in specific_paradigm:
+                        parent = specific_paradigm.replace("Bistable percepts (", "").replace("))", ")")
+                        ambiguous_specific_paradigm = ParadigmFromData(name=specific_paradigm, parent=parent,
+                                                                       sub_type=None)
+                        paradigms_in_data.append(ambiguous_specific_paradigm)
+                    elif (f'({parent})' in specific_paradigm) and (specific_paradigm in paradigms[parent]):
+                        ambiguous_specific_paradigm = ParadigmFromData(name=specific_paradigm, parent=parent,
+                                                                       sub_type=None)
                         paradigms_in_data.append(ambiguous_specific_paradigm)
                     else:
                         continue

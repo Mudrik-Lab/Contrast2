@@ -2,26 +2,21 @@ import copy
 from typing import List, Dict
 
 from drf_spectacular.utils import extend_schema, OpenApiParameter
-from rest_framework import mixins, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.serializers import ModelSerializer
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from approval_process.choices import ApprovalChoices
-from studies.models import Experiment, Paradigm, Technique, Interpretation
+from studies.models import Experiment, Paradigm, Technique
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import FullExperimentSerializer, ParadigmSerializer, ParadigmAddRemoveSerializer, \
-    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer, InterpretationCreateSerializer
+    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 
 
 class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
-                                mixins.RetrieveModelMixin,
-                                mixins.CreateModelMixin,
-                                mixins.ListModelMixin,
-                                mixins.UpdateModelMixin,
-                                mixins.DestroyModelMixin,
+                                ModelViewSet,
                                 GenericViewSet):
     # TODO handle permissions, so delete/patch can't be done for non draft studies, or none mine
     permission_classes = [SubmitterOnlyPermission]

@@ -69,7 +69,7 @@ class ConsciousnessMeasureSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ConsciousnessMeasure
-        fields = ("experiment", "id", "phase", "type", "description")
+        fields = ("experiment", "id", "phase", "type")
 
 
 class ParadigmSerializer(serializers.ModelSerializer):
@@ -96,7 +96,7 @@ class StimulusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Stimulus
-        fields = ("experiment", "id", "category", "sub_category", "modality", "description", "duration")
+        fields = ("experiment", "id", "category", "sub_category", "modality", "duration")
 
 
 class TaskSerializer(serializers.ModelSerializer):

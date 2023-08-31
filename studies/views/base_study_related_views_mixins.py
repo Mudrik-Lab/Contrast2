@@ -1,6 +1,7 @@
 import copy
 
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema, OpenApiParameter
 from rest_framework import status
 from rest_framework.response import Response
 
@@ -19,6 +20,8 @@ class StudyRelatedPermissionsViewMixin:
         super().check_permissions(request)
         super().check_object_permissions(request, self.parent_object)
 
+    @extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
+                               OpenApiParameter(location="path", name="experiment_pk", type=str)])
     def get_object(self):
         """
         Returns the object the view is displaying.
@@ -57,6 +60,8 @@ class ExperimentRelatedNestedObjectMixin:
             .filter(experiment_id=self.kwargs.get("experiment_pk"))
         return qs
 
+    @extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
+                               OpenApiParameter(location="path", name="experiment_pk", type=str)])
     def create(self, request, *args, **kwargs):
         """
         Note: DONT pass explicit experiment id in the creation data, as it's provided by the URI

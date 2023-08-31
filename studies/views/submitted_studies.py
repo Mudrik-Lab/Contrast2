@@ -6,7 +6,7 @@ from rest_framework import mixins, status, filters
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.viewsets import GenericViewSet
+from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from approval_process.choices import ApprovalChoices
 from studies.models import Study, Measure, FindingTag, Task, ConsciousnessMeasure, Stimulus, Paradigm
@@ -15,12 +15,7 @@ from studies.serializers import StudyWithExperimentsSerializer, ThinStudyWithExp
     StudyWithExperimentsCreateSerializer
 
 
-class SubmitStudiesViewSet(mixins.CreateModelMixin,
-                           mixins.ListModelMixin,
-                           mixins.RetrieveModelMixin,
-                           mixins.UpdateModelMixin,
-                           mixins.DestroyModelMixin,
-                           GenericViewSet):
+class SubmitStudiesViewSet(ModelViewSet):
     """
     Getting/creating studies I've submitted, editing, etc
     Also allows single link of a specific study (as result of search perhaps)

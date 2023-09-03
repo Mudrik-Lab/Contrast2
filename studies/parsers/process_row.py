@@ -207,7 +207,7 @@ def process_row(item: dict):
     # resolve and create samples
     try:
         samples = get_sample_from_data(item)
-        experiment_notes = []
+        sample_notes_list = []
         for sample in samples:
             sample_type = sample.sample_type
             total_size = int(sample.total_size)
@@ -217,9 +217,9 @@ def process_row(item: dict):
                                   size_included=included_size)
             note = sample.note
             if note is not None:
-                experiment_notes.append(note)
-        notes_string = '; '.join(map(str, experiment_notes))
-        experiment.notes = notes_string
+                sample_notes_list.append(note)
+        sample_notes_string = '; '.join(map(str, sample_notes_list))
+        experiment.sample_notes = sample_notes_string
         experiment.save()
 
     except ValueError as error:

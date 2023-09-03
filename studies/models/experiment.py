@@ -38,7 +38,7 @@ class Experiment(models.Model):
                                                     )
     type = models.PositiveIntegerField(null=False, blank=False, choices=ExperimentTypeChoices.choices,
                                        default=ExperimentTypeChoices.NEUROSCIENTIFIC)
-    notes = models.TextField(null=True, blank=True)
+    sample_notes = models.TextField(null=True, blank=True)
 
     objects = ExperimentManager()
 

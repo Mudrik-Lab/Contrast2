@@ -153,7 +153,8 @@ class FullExperimentSerializer(serializers.ModelSerializer):
                   "tasks_notes",
                   "stimuli_notes",
                   "consciousness_measures_notes",
-                  "paradigms_notes"
+                  "paradigms_notes",
+                  "sample_notes"
                   )
 
     @extend_schema_field(InterpretationSerializer(many=True))
@@ -181,7 +182,8 @@ class ExperimentSerializer(FullExperimentSerializer):
                   "tasks_notes",
                   "stimuli_notes",
                   "consciousness_measures_notes",
-                  "paradigms_notes"
+                  "paradigms_notes",
+                  "sample_notes"
                   )
 
 

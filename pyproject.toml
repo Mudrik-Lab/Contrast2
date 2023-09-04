@@ -36,7 +36,7 @@ ruff = "^0.0.286"
 sentry-sdk = "^1.29.2"
 
 [tool.poetry.dev-dependencies]
-pytest = "^7.4.0"
+pytest = "^7.4.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

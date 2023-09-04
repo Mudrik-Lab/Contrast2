@@ -288,6 +288,10 @@ class ExcludedStudySerializer(StudySerializer):
         fields = StudySerializer.Meta.fields + ["exclusion_reason", "research_area", "sub_research_area"]
 
 
+class NoteUpdateSerializer(serializers.Serializer):
+    note = serializers.CharField()
+
+
 class NationOfConsciousnessGraphSerializer(serializers.Serializer):
     country = serializers.SerializerMethodField()
     country_name = serializers.SerializerMethodField()

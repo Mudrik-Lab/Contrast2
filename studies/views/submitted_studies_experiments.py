@@ -11,7 +11,7 @@ from approval_process.choices import ApprovalChoices
 from studies.models import Experiment, Paradigm, Technique
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import FullExperimentSerializer, ParadigmSerializer, ParadigmAddRemoveSerializer, \
-    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer
+    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer, NoteUpdateSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 
 
@@ -43,21 +43,19 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
     def add_paradigm(self, request, pk, *args, **kwargs):
         serializer = ParadigmAddRemoveSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        experiment = Experiment.objects.get(id=pk)
+        experiment = self.get_object()
         paradigm = Paradigm.objects.get(id=serializer.validated_data.get("id"))
         experiment.paradigms.add(paradigm)
 
         res_serializer = ParadigmSerializer(instance=paradigm)
         return Response(res_serializer.data, status=status.HTTP_201_CREATED)
 
-
-
     @extend_schema(request=ParadigmAddRemoveSerializer())
     @action(detail=True, methods=["POST"], serializer_class=ParadigmSerializer)
     def remove_paradigm(self, request, pk, *args, **kwargs):
         serializer = ParadigmAddRemoveSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        experiment = Experiment.objects.get(id=pk)
+        experiment = self.get_object()
         paradigm = Paradigm.objects.get(id=serializer.validated_data.get("id"))
         experiment.paradigms.remove(paradigm)
 
@@ -68,7 +66,7 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
     def add_technique(self, request, pk, *args, **kwargs):
         serializer = TechniqueAddRemoveSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        experiment = Experiment.objects.get(id=pk)
+        experiment = self.get_object()
         technique = Technique.objects.get(id=serializer.validated_data.get("id"))
         experiment.techniques.add(technique)
 
@@ -80,7 +78,7 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
     def remove_technique(self, request, pk, *args, **kwargs):
         serializer = TechniqueAddRemoveSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        experiment = Experiment.objects.get(id=pk)
+        experiment = self.get_object()
         technique = Technique.objects.get(id=serializer.validated_data.get("id"))
         experiment.techniques.remove(technique)
         return Response({}, status=status.HTTP_204_NO_CONTENT)
@@ -118,3 +116,44 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
         serializer = FullExperimentSerializer(instance=experiment)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def _set_experiment_note(self, request, note_field="results_summary"):
+        instance: Experiment = self.get_object()
+        serializer = NoteUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        note_text = serializer.validated_data.get("note")
+        setattr(instance, note_field, note_text)
+        instance.save()
+        serializer = self.get_serializer(instance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @extend_schema(request=NoteUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
+    def set_results_summary(self, request, pk, *args, **kwargs):
+        return self._set_experiment_note(request, note_field="results_summary")
+
+    @extend_schema(request=NoteUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
+    def set_tasks_notes(self, request, pk, *args, **kwargs):
+        return self._set_experiment_note(request, note_field="tasks_notes")
+
+    @extend_schema(request=NoteUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
+    def set_consciousness_measures_notes(self, request, pk, *args, **kwargs):
+        return self._set_experiment_note(request, note_field="consciousness_measures_notes")
+
+    @extend_schema(request=NoteUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
+    def set_stimuli_notes(self, request, pk, *args, **kwargs):
+        return self._set_experiment_note(request, note_field="stimuli_notes")
+
+    @extend_schema(request=NoteUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
+    def set_paradigms_notes(self, request, pk, *args, **kwargs):
+        return self._set_experiment_note(request, note_field="paradigms_notes")
+
+    @extend_schema(request=NoteUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
+    def set_sample_notes(self, request, pk, *args, **kwargs):
+        return self._set_experiment_note(request, note_field="sample_notes")

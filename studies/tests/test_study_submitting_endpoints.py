@@ -2,6 +2,7 @@ import datetime
 import json
 
 from django.urls import reverse
+from rest_framework import status
 
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
@@ -54,7 +55,8 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(len(experiments_res), 1)
 
         experiment_id = res_experiment["id"]
-        parent_paradigm, created = Paradigm.objects.get_or_create(name="Abnormal Contents of Consciousness", parent=None, sub_type=None)
+        parent_paradigm, created = Paradigm.objects.get_or_create(name="Abnormal Contents of Consciousness",
+                                                                  parent=None, sub_type=None)
         paradigm, created = Paradigm.objects.get_or_create(name="Amusia", parent=parent_paradigm, sub_type=None)
         technique, created = Technique.objects.get_or_create(name="fMRI")
         task_type, created = TaskType.objects.get_or_create(name="Discrimination")
@@ -131,7 +133,8 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         experiment_id = res_experiment["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 1)
-
+        self.add_results_summary_to_experiment(study_id=study_id, experiment_id=experiment_id,
+                                               results_summary="the results are here")
         delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
 
         experiments_res = self.get_experiments_for_study(study_id)
@@ -182,7 +185,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         target_url = reverse("studies-submitted-list")
         res = self.client.post(target_url, data=json.dumps(study_params), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_experiment_is_added_to_study_via_api(self, study_id: int, **kwargs):
@@ -196,101 +199,106 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
         experiment_params = {**default_experiment, **kwargs}
         res = self.client.post(target_url, data=json.dumps(experiment_params), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def get_pending_studies(self):
         target_url = reverse("studies-submitted-list")
         res = self.client.get(target_url)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
     def get_specific_study(self, study_id):
         target_url = reverse("studies-submitted-detail", args=[study_id])
         res = self.client.get(target_url)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
     def get_experiments_for_study(self, study_id):
         target_url = reverse("studies-experiments-list", args=[study_id])
         res = self.client.get(target_url)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
     def when_study_is_updated(self, study_id, **kwargs):
         target_url = reverse("studies-submitted-detail", args=[study_id])
         res = self.client.patch(target_url, data=json.dumps(kwargs), content_type="application/json")
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
     def when_paradigm_is_added_to_experiment(self, study_id, experiment_id: int, paradigm_id: int):
         target_url = reverse("studies-experiments-add-paradigm", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(dict(id=paradigm_id)), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_paradigm_is_removed_from_experiment(self, study_id, experiment_id: int, paradigm_id: int):
         target_url = reverse("studies-experiments-remove-paradigm", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(dict(id=paradigm_id)), content_type="application/json")
-        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         return res.data
 
     def when_technique_is_added_to_experiment(self, study_id, experiment_id: int, technique_id: int):
         target_url = reverse("studies-experiments-add-technique", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(dict(id=technique_id)), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_technique_is_removed_from_experiment(self, study_id, experiment_id: int, technique_id: int):
         target_url = reverse("studies-experiments-remove-technique", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(dict(id=technique_id)), content_type="application/json")
-        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         return res.data
 
     def when_task_is_added_to_experiment(self, study_id, experiment_id, task_data):
         target_url = reverse("tasks-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(task_data), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_measure_is_added_to_experiment(self, study_id, experiment_id, measure_data):
         target_url = reverse("measures-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(measure_data), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_interpretation_is_added_to_experiment(self, study_id, experiment_id, interpretation_data):
         target_url = reverse("interpretations-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(interpretation_data), content_type="application/json")
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_experiment_is_removed_from_study(self, study_id: int, experiment_id: int):
         target_url = reverse("studies-experiments-detail", args=[study_id, experiment_id])
         res = self.client.delete(target_url)
-        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         return res.data
 
     def when_study_is_removed(self, study_id: int):
         target_url = reverse("studies-submitted-detail", args=[study_id])
         res = self.client.delete(target_url)
-        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         return res.data
 
     def when_task_is_removed_from_experiment(self, study_id, experiment_id, task_id):
         target_url = reverse("tasks-detail", args=[study_id, experiment_id, task_id])
         res = self.client.delete(target_url)
-        self.assertEqual(res.status_code, 204)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
         return res.data
 
     def when_study_is_submitted_to_review(self, study_id):
         target_url = reverse("studies-submitted-submit-to-review", args=[study_id])
         res = self.client.post(target_url)
-        self.assertEqual(res.status_code, 201)
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
     def when_user_fetches_their_studies(self):
         target_url = reverse("studies-submitted-my-studies")
         res = self.client.get(target_url)
-        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
+
+    def add_results_summary_to_experiment(self, study_id: int, experiment_id: int, results_summary):
+        target_url = reverse("studies-experiments-set-results-summary", args=[study_id, experiment_id])
+        res = self.client.post(target_url, json.dumps(dict(note=results_summary)), content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)

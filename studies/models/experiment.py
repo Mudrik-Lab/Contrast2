@@ -15,7 +15,9 @@ class Experiment(models.Model):
         ordering = ["id"]
 
     study = models.ForeignKey(to="studies.Study", on_delete=CASCADE, related_name="experiments")
-    results_summary = models.TextField(null=False, blank=False)
+    # results_summary is nullable at the beginning, when finding tags are created it should be populated
+    results_summary = models.TextField(null=True,
+                                       blank=True)
     techniques = models.ManyToManyField(to="studies.Technique", related_name="experiments")  # validator at least one
     interpretations = models.ManyToManyField(to="studies.Theory",
                                              related_name="experiments_interpretations",
@@ -41,7 +43,6 @@ class Experiment(models.Model):
     sample_notes = models.TextField(null=True, blank=True)
 
     objects = ExperimentManager()
-
 
     def clean(self):
         if self.paradigms.count() == 0 or self.paradigms is None:

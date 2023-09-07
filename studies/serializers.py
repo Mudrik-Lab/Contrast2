@@ -292,6 +292,10 @@ class NoteUpdateSerializer(serializers.Serializer):
     note = serializers.CharField()
 
 
+class OptionalNoteUpdateSerializer(serializers.Serializer):
+    note = serializers.CharField(default="")
+
+
 class NationOfConsciousnessGraphSerializer(serializers.Serializer):
     country = serializers.SerializerMethodField()
     country_name = serializers.SerializerMethodField()

@@ -299,6 +299,6 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         return res.data
 
     def add_results_summary_to_experiment(self, study_id: int, experiment_id: int, results_summary):
-        target_url = reverse("studies-experiments-set-results-summary", args=[study_id, experiment_id])
+        target_url = reverse("studies-experiments-set-results-summary-notes", args=[study_id, experiment_id])
         res = self.client.post(target_url, json.dumps(dict(note=results_summary)), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

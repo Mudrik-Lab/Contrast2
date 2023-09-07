@@ -156,5 +156,5 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
-    def set_sample_notes(self, request, pk, *args, **kwargs):
+    def set_samples_notes(self, request, pk, *args, **kwargs):
         return self._set_experiment_note(request, note_field="sample_notes")

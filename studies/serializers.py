@@ -188,6 +188,8 @@ class ExperimentSerializer(FullExperimentSerializer):
 
 
 class ThinExperimentSerializer(ExperimentSerializer):
+    theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())
+
     class Meta:
         model = Experiment
         fields = ("id",
@@ -197,7 +199,7 @@ class ThinExperimentSerializer(ExperimentSerializer):
                   "is_reporting",
                   "theory_driven",
                   "type",
-
+                  "theory_driven_theories"
                   )
 
 

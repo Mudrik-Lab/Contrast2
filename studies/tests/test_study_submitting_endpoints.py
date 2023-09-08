@@ -133,6 +133,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         experiment_id = res_experiment["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 1)
+        self.assertListEqual(experiments_res[0]["theory_driven_theories"], ["GNW"])
         self.add_results_summary_to_experiment(study_id=study_id, experiment_id=experiment_id,
                                                results_summary="the results are here")
         delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)

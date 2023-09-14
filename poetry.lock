@@ -235,13 +235,13 @@ bcrypt = ["bcrypt"]
 
 [[package]]
 name = "django-admin-rangefilter"
-version = "0.11.0"
+version = "0.11.1"
 description = "django-admin-rangefilter app, add the filter by a custom date range on the admin UI."
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 files = [
-    {file = "django-admin-rangefilter-0.11.0.tar.gz", hash = "sha256:e92179ebab4ca11919bd7070712e4c0fc2b56a3c111b62a9e482e7fdfede1de9"},
-    {file = "django_admin_rangefilter-0.11.0-py2.py3-none-any.whl", hash = "sha256:4a17a231973e6f4f7de27d730674f407825919de64094f06ad9582dd094f14a4"},
+    {file = "django-admin-rangefilter-0.11.1.tar.gz", hash = "sha256:844f6cc65492d90ecaa561b2f93eb31c596d2c0d3f70f238f0500aee415f4ad0"},
+    {file = "django_admin_rangefilter-0.11.1-py2.py3-none-any.whl", hash = "sha256:3e66530ca1dc8553a6b20f12219d3d99b48ff9cf987786cd06282154314912ce"},
 ]
 
 [[package]]
@@ -1274,4 +1274,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = "~3.10"
-content-hash = "6342c281c45f5472d79b6e1e0c27fd520485a924501c0bd5d510772733a00537"
+content-hash = "daf15f179e740deb07ec82bf04b854e7f064e13cffaca937cab0db7d5ec6e960"

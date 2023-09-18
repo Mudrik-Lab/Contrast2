@@ -295,7 +295,7 @@ class NoteUpdateSerializer(serializers.Serializer):
 
 
 class OptionalNoteUpdateSerializer(serializers.Serializer):
-    note = serializers.CharField(default="")
+    note = serializers.CharField(trim_whitespace=True, allow_blank=True, allow_null=True)
 
 
 class NationOfConsciousnessGraphSerializer(serializers.Serializer):

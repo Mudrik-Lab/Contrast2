@@ -136,6 +136,14 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertListEqual(experiments_res[0]["theory_driven_theories"], ["GNW"])
         self.add_results_summary_to_experiment(study_id=study_id, experiment_id=experiment_id,
                                                results_summary="the results are here")
+        # trying with empty
+        self.add_sample_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="bla notes")
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(experiments_res[0]["sample_notes"], "bla notes")
+        self.add_sample_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="")
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(experiments_res[0]["sample_notes"], "")
+
         delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
 
         experiments_res = self.get_experiments_for_study(study_id)
@@ -302,4 +310,9 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def add_results_summary_to_experiment(self, study_id: int, experiment_id: int, results_summary):
         target_url = reverse("studies-experiments-set-results-summary-notes", args=[study_id, experiment_id])
         res = self.client.post(target_url, json.dumps(dict(note=results_summary)), content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def add_sample_notes_to_experiment(self, study_id: int, experiment_id: int, notes):
+        target_url = reverse("studies-experiments-set-samples-notes", args=[study_id, experiment_id])
+        res = self.client.post(target_url, json.dumps(dict(note=notes)), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

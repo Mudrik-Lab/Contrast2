@@ -118,9 +118,12 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    def _set_experiment_note(self, request, note_field="results_summary"):
+    def _set_experiment_note(self, request, note_field: str, is_optional_note: bool = False):
         instance: Experiment = self.get_object()
         serializer = NoteUpdateSerializer(data=request.data)
+        if is_optional_note:
+            serializer = OptionalNoteUpdateSerializer(data=request.data)
+
         serializer.is_valid(raise_exception=True)
         note_text = serializer.validated_data.get("note")
         setattr(instance, note_field, note_text)
@@ -132,29 +135,29 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
     @extend_schema(request=NoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
     def set_results_summary_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="results_summary")
+        return self._set_experiment_note(request, note_field="results_summary", is_optional_note=False)
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
     def set_tasks_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="tasks_notes")
+        return self._set_experiment_note(request, note_field="tasks_notes", is_optional_note=True)
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
     def set_consciousness_measures_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="consciousness_measures_notes")
+        return self._set_experiment_note(request, note_field="consciousness_measures_notes", is_optional_note=True)
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
     def set_stimuli_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="stimuli_notes")
+        return self._set_experiment_note(request, note_field="stimuli_notes", is_optional_note=True)
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
     def set_paradigms_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="paradigms_notes")
+        return self._set_experiment_note(request, note_field="paradigms_notes", is_optional_note=True)
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullExperimentSerializer)
     def set_samples_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="sample_notes")
+        return self._set_experiment_note(request, note_field="sample_notes", is_optional_note=True)

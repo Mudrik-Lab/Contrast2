@@ -377,7 +377,8 @@ task_types = ["No Task",
               "Mood",
               "Mathematics"]
 
-techniques = ["Ca2 Imaging",
+techniques = ["Behavior",
+              "Ca2 Imaging",
               "Computational Modelling",
               "EEG",
               "fMRI",

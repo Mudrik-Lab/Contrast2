@@ -91,7 +91,7 @@ class SampleSerializer(serializers.ModelSerializer):
 
 class StimulusSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=StimulusCategory.objects.all())
-    sub_category = serializers.PrimaryKeyRelatedField(queryset=StimulusSubCategory.objects.all())
+    sub_category = serializers.PrimaryKeyRelatedField(queryset=StimulusSubCategory.objects.all(), required=False)
     modality = serializers.PrimaryKeyRelatedField(queryset=ModalityType.objects.all())
 
     class Meta:

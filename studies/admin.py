@@ -73,11 +73,15 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
 
 
 class ExperimentAdmin(ImportExportModelAdmin):
-    # todo add theory to display, add results summary to search fields
     list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
     model = Experiment
-    fields = ("type_of_consciousness", "is_reporting", "theory_driven", "techniques", "paradigms")
-    search_fields = ("results_summary", "paradigms_notes", "tasks_notes", "consciousness_measures_notes", "stimuli_notes")
+    fields = (
+        "type_of_consciousness", "is_reporting", "theory_driven", "results_summary", "paradigms_notes", "tasks_notes",
+        "consciousness_measures_notes", "stimuli_notes", "techniques", "paradigms"
+    )
+    search_fields = (
+        "results_summary", "paradigms_notes", "tasks_notes", "consciousness_measures_notes", "stimuli_notes"
+    )
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
     filter_horizontal = ("paradigms", "techniques")
     resource_class = FullExperimentResource

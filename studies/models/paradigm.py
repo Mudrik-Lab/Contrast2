@@ -11,11 +11,9 @@ class Paradigm(models.Model):
     sub_type = models.CharField(null=True, blank=True, max_length=100)
 
     def __str__(self):
-        if self.parent_id:
-            return f"{self.name}. parent paradigm: {self.parent.name}"
+
+        if self.sub_type is None:
+            return f"{self.name}"
         else:
-            if self.sub_type is None:
-                return f"{self.name}"
-            else:
-                return f"{self.name}, sub-type: {self.sub_type}"
+            return f"{self.name}, sub-type: {self.sub_type}"
 

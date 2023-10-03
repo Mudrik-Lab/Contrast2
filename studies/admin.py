@@ -110,7 +110,8 @@ class ExperimentAdmin(ImportExportModelAdmin):
 class ExperimentInline(admin.StackedInline):
     model = Experiment
     filter_horizontal = ("techniques", "paradigms")
-
+    fields = ('type_of_consciousness', 'is_reporting', 'theory_driven', 'stimuli_notes', 'results_summary',
+              'paradigms_notes', 'tasks_notes', 'consciousness_measures_notes', 'paradigms', 'techniques')
     # fields =
     show_change_link = True
     extra = 0
@@ -119,7 +120,8 @@ class ExperimentInline(admin.StackedInline):
         qs = super().get_queryset(request=request)
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
         return qs.select_related("study") \
-            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.select_related('parent'))) \
+            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.filter(parent__isnull=False)
+                                       .select_related('parent', 'parent__parent'))) \
             .prefetch_related("techniques")
 
     def has_delete_permission(self, request, obj=None):
@@ -153,12 +155,16 @@ class StudyAdmin(ImportExportModelAdmin):
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title")
     search_fields = ("title", "DOI")
-    list_filter = (CountryFilter,
+    list_filter = ("approval_status",
+                   CountryFilter,
                    ("year", NumericRangeFilter),
                    )
     inlines = [
         ExperimentInline
     ]
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).prefetch_related("authors")
 
 
 class AuthorAdmin(ImportExportModelAdmin):

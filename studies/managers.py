@@ -13,7 +13,7 @@ class ExperimentManager(models.Manager):
             .prefetch_related("aggregated_theories") \
             .prefetch_related(Prefetch('measures', queryset=Measure.objects.select_related("type"))) \
             .prefetch_related(Prefetch('tasks', queryset=Task.objects.select_related("type"))) \
-            .prefetch_related(Prefetch('finding_tags', queryset=FindingTag.objects.select_related("type"))) \
+            .prefetch_related(Prefetch('finding_tags', queryset=FindingTag.objects.select_related("type", "family"))) \
             .prefetch_related(Prefetch('consciousness_measures',
                                        queryset=ConsciousnessMeasure.objects.select_related("type", "phase"))) \
             .prefetch_related(Prefetch('stimuli',

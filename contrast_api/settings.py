@@ -12,12 +12,21 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 import datetime
 from pathlib import Path
 import os
+from urllib.parse import urlparse
 
 import sentry_sdk
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from configurations import Configuration, values
 from sentry_sdk.integrations.django import DjangoIntegration
 
+
+def _sentry_event_filter(event, hint):
+    raw_url = event['request']['url']
+    parsed_url = urlparse(raw_url)
+    filter_paths = ('/static', '/health_check', '/assets')
+    if parsed_url.path.startswith(filter_paths):
+        return None
+    return event
 
 class Base(Configuration):
     BASE_DIR = Path(__file__).resolve().parent.parent
@@ -288,10 +297,12 @@ class Production(Base):
                 DjangoIntegration(),
             ],
             environment=cls.__name__,
+            # we are filtering out events to clean data for performance profiling
+            before_send_transaction=_sentry_event_filter,
             # Set traces_sample_rate to 1.0 to capture 100%
             # of transactions for performance monitoring.
             # We recommend adjusting this value in production.
-            traces_sample_rate=0.05,
+            traces_sample_rate=0.2,
 
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.

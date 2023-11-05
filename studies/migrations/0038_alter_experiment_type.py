@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0037_alter_study_authors_key_words'),
+        ("studies", "0037_alter_study_authors_key_words"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='experiment',
-            name='type',
-            field=models.PositiveIntegerField(choices=[(1, 'Neuroscientific'), (2, 'Behavioral'), (3, 'Both')], default=1),
+            model_name="experiment",
+            name="type",
+            field=models.PositiveIntegerField(
+                choices=[(1, "Neuroscientific"), (2, "Behavioral"), (3, "Both")], default=1
+            ),
         ),
     ]

@@ -6,6 +6,7 @@ from configuration.models import GraphImage
 
 # Register your models here.
 
+
 class GraphImagesAdmin(ImportExportModelAdmin):
     list_display = ("key", "image")
 

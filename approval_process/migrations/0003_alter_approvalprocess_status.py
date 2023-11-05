@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('approval_process', '0002_alter_approvalprocess_status'),
+        ("approval_process", "0002_alter_approvalprocess_status"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='approvalprocess',
-            name='status',
-            field=models.SmallIntegerField(choices=[(0, 'Pending'), (3, 'Awaiting Review'), (1, 'Approved'), (2, 'Rejected')], default=0),
+            model_name="approvalprocess",
+            name="status",
+            field=models.SmallIntegerField(
+                choices=[(0, "Pending"), (3, "Awaiting Review"), (1, "Approved"), (2, "Rejected")], default=0
+            ),
         ),
     ]

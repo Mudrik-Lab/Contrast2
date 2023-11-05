@@ -11,15 +11,17 @@ class AggregatedInterpretationsServiceTestCase(BaseTestCase):
         super().tearDown()
 
     def test_resolve_simple_pro(self):
-        current = [AggregatedInterpretationDTO("GNW", "GNW",InterpretationsChoices.PRO)]
+        current = [AggregatedInterpretationDTO("GNW", "GNW", InterpretationsChoices.PRO)]
         svc = AggregatedInterpretationService(current)
         result = svc.resolve()
         self.assertEqual(len(result), 1)
         self.assertEqual(result[0].parent_theory_names, "GNW")
 
     def test_resolve_simple_pro_and_challenges(self):
-        current = [AggregatedInterpretationDTO("GNW", "GNT", InterpretationsChoices.PRO),
-                   AggregatedInterpretationDTO("ITT","ITT", InterpretationsChoices.CHALLENGES)]
+        current = [
+            AggregatedInterpretationDTO("GNW", "GNT", InterpretationsChoices.PRO),
+            AggregatedInterpretationDTO("ITT", "ITT", InterpretationsChoices.CHALLENGES),
+        ]
         svc = AggregatedInterpretationService(current)
         result = svc.resolve()
         self.assertEqual(len(result), 2)
@@ -29,18 +31,20 @@ class AggregatedInterpretationsServiceTestCase(BaseTestCase):
         self.assertEqual(result[1].type, AggregatedInterpretationsChoices.CHALLENGES)
 
     def test_all_neutral_returns_empty_list(self):
-        current = [AggregatedInterpretationDTO("GNW", "GNW", InterpretationsChoices.NEUTRAL),
-                   AggregatedInterpretationDTO("ITT", "ITT",InterpretationsChoices.NEUTRAL)]
+        current = [
+            AggregatedInterpretationDTO("GNW", "GNW", InterpretationsChoices.NEUTRAL),
+            AggregatedInterpretationDTO("ITT", "ITT", InterpretationsChoices.NEUTRAL),
+        ]
         svc = AggregatedInterpretationService(current)
         result = svc.resolve()
         self.assertEqual(len(result), 0)
 
     def test_multiple_pro_and_multiple_challenges(self):
-        current = [ # Note we provide in non Alphabetical ordr to test
-            AggregatedInterpretationDTO("RPT", "RPT",InterpretationsChoices.PRO),
-            AggregatedInterpretationDTO("GNW", "GNW",InterpretationsChoices.PRO),
-            AggregatedInterpretationDTO("IIT", "ITT",InterpretationsChoices.CHALLENGES),
-            AggregatedInterpretationDTO("HOT","HOT",InterpretationsChoices.CHALLENGES),
+        current = [  # Note we provide in non Alphabetical ordr to test
+            AggregatedInterpretationDTO("RPT", "RPT", InterpretationsChoices.PRO),
+            AggregatedInterpretationDTO("GNW", "GNW", InterpretationsChoices.PRO),
+            AggregatedInterpretationDTO("IIT", "ITT", InterpretationsChoices.CHALLENGES),
+            AggregatedInterpretationDTO("HOT", "HOT", InterpretationsChoices.CHALLENGES),
         ]
         svc = AggregatedInterpretationService(current)
         result = svc.resolve()

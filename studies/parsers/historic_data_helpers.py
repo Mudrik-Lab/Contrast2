@@ -4,13 +4,21 @@ from collections import namedtuple
 from itertools import zip_longest
 from typing import List
 
-from configuration.initial_setup import task_types_mapping, findings_measures, modalities, \
-    consciousness_measure_phases, \
-    consciousness_measure_types, paradigms, ambiguous_paradigms, main_paradigms, paradigm_sub_types, \
-    only_child_paradigms
+from configuration.initial_setup import (
+    task_types_mapping,
+    findings_measures,
+    modalities,
+    consciousness_measure_phases,
+    consciousness_measure_types,
+    paradigms,
+    ambiguous_paradigms,
+    main_paradigms,
+    paradigm_sub_types,
+    only_child_paradigms,
+)
 from studies.choices import TheoryDrivenChoices, SampleChoices
 
-logger = logging.getLogger('Contrast2')
+logger = logging.getLogger("Contrast2")
 
 
 class ProblemInTheoryDrivenExistingDataException(Exception):
@@ -53,7 +61,7 @@ SampleFromData = namedtuple("SampleFromData", ["sample_type", "total_size", "inc
 
 
 def add_to_notes(prefix, text: str):
-    note = f'{prefix} notes: {text}; '
+    note = f"{prefix} notes: {text}; "
     return note
 
 
@@ -69,8 +77,8 @@ def find_in_list(items_to_compare: list, compared_items_list: list):
 
 
 def get_consciousness_measure_type_and_phase_from_data(item: dict) -> List[ConsciousnessMeasureFromData]:
-    cm_phase_list = item['Measures of consciousness.Phase'].split("+")
-    cm_type_list = item['Measures of consciousness.Type'].split("+")
+    cm_phase_list = item["Measures of consciousness.Phase"].split("+")
+    cm_type_list = item["Measures of consciousness.Type"].split("+")
     consciousness_measure_phase_lookup = consciousness_measure_phases
     consciousness_measure_type_lookup = consciousness_measure_types
     results = []
@@ -89,7 +97,7 @@ def get_consciousness_measure_type_and_phase_from_data(item: dict) -> List[Consc
             else:
                 break
     except IndexError as error:
-        logger.exception(f'{error} while processing consciousness measure data (either type or phase)')
+        logger.exception(f"{error} while processing consciousness measure data (either type or phase)")
         print(f"phases: {resolved_phases}, types: {resolved_types}")
     return results
 
@@ -193,7 +201,7 @@ def get_paradigms_from_data(item: dict) -> List[ParadigmFromData]:
         else:
             classification_data = specific_paradigm.split("(")[1]
             if "," in classification_data:
-                main_paradigm = classification_data.split(',')[0].strip()
+                main_paradigm = classification_data.split(",")[0].strip()
                 # parse subtype data
                 subtype_data = classification_data.split(",")[1].replace(")", "")
                 if "&" in subtype_data:
@@ -208,26 +216,30 @@ def get_paradigms_from_data(item: dict) -> List[ParadigmFromData]:
                     matches = find_in_list(resolved_sub_types, list_of_sub_types)
                     matching_sub_types.extend(matches)
                 for subtype in matching_sub_types:
-                    paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent=main_paradigm,
-                                                sub_type=subtype)
+                    paradigm = ParadigmFromData(
+                        name=no_parenthesis_specific_paradigm, parent=main_paradigm, sub_type=subtype
+                    )
                     paradigms_in_data.append(paradigm)
 
             else:
                 # check for specific paradigms that still have ambiguous parent paradigm and resolve ambiguity
-                parent = str(classification_data).split(')')[0].strip()
+                parent = str(classification_data).split(")")[0].strip()
                 if "Binocular" in specific_paradigm:  # only parent paradigm with parenthesis that's not ambiguous
-                    paradigm = ParadigmFromData(name=no_parenthesis_specific_paradigm, parent='Competition (Binocular)',
-                                                sub_type=None)
+                    paradigm = ParadigmFromData(
+                        name=no_parenthesis_specific_paradigm, parent="Competition (Binocular)", sub_type=None
+                    )
                     paradigms_in_data.append(paradigm)
                 elif no_parenthesis_specific_paradigm in ambiguous_paradigms:
                     if "))" in specific_paradigm:
                         parent = specific_paradigm.replace("Bistable percepts (", "").replace("))", ")")
-                        ambiguous_specific_paradigm = ParadigmFromData(name=specific_paradigm, parent=parent,
-                                                                       sub_type=None)
+                        ambiguous_specific_paradigm = ParadigmFromData(
+                            name=specific_paradigm, parent=parent, sub_type=None
+                        )
                         paradigms_in_data.append(ambiguous_specific_paradigm)
-                    elif (f'({parent})' in specific_paradigm) and (specific_paradigm in paradigms[parent]):
-                        ambiguous_specific_paradigm = ParadigmFromData(name=specific_paradigm, parent=parent,
-                                                                       sub_type=None)
+                    elif (f"({parent})" in specific_paradigm) and (specific_paradigm in paradigms[parent]):
+                        ambiguous_specific_paradigm = ParadigmFromData(
+                            name=specific_paradigm, parent=parent, sub_type=None
+                        )
                         paradigms_in_data.append(ambiguous_specific_paradigm)
                     else:
                         continue
@@ -239,7 +251,7 @@ def get_paradigms_from_data(item: dict) -> List[ParadigmFromData]:
 
 
 def get_measures_from_data(item: dict) -> List[MeasureFromData]:
-    measures_data = item['Findings.Measures']
+    measures_data = item["Findings.Measures"]
     measures_data_split = str(measures_data).split("+")
     measures_from_data = []
     for measure in measures_data_split:
@@ -261,7 +273,7 @@ def get_measures_from_data(item: dict) -> List[MeasureFromData]:
 
 
 def clean_text(text):
-    cleaned_text = ''.join(char for char in text if char.isprintable()).strip()
+    cleaned_text = "".join(char for char in text if char.isprintable()).strip()
     return cleaned_text
 
 
@@ -325,15 +337,21 @@ def get_stimuli_from_data(item: dict) -> List[StimulusFromData]:
             elif clean_duration in none_values:
                 duration_ms = None
             else:
-                raise StimulusDurationError(f'unable to process duration data: {clean_duration}')
+                raise StimulusDurationError(f"unable to process duration data: {clean_duration}")
             resolved_duration = str(duration_ms)
 
         except ValueError as error:
-            logger.exception(f'{error} while processing stimuli duration data')
+            logger.exception(f"{error} while processing stimuli duration data")
             raise StimulusDurationError()
 
-        stimuli_from_data.append(StimulusFromData(category=clean_category, sub_category=resolved_sub_category,
-                                                  modality=resolved_modality, duration=resolved_duration))
+        stimuli_from_data.append(
+            StimulusFromData(
+                category=clean_category,
+                sub_category=resolved_sub_category,
+                modality=resolved_modality,
+                duration=resolved_duration,
+            )
+        )
     return stimuli_from_data
 
 
@@ -399,9 +417,13 @@ def get_sample_from_data(item: dict) -> List[SampleFromData]:
             else:
                 resolved_included_sample = included_sample.strip()
 
-        notes_string = '; '.join(map(str, notes))
-        sample = SampleFromData(sample_type=resolved_sample_type, total_size=resolved_total_sample,
-                                included_size=resolved_included_sample, note=notes_string)
+        notes_string = "; ".join(map(str, notes))
+        sample = SampleFromData(
+            sample_type=resolved_sample_type,
+            total_size=resolved_total_sample,
+            included_size=resolved_included_sample,
+            note=notes_string,
+        )
         samples.append(sample)
 
     return samples

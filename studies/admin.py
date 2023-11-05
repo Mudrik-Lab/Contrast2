@@ -2,19 +2,41 @@ from typing import List
 
 from django.contrib import admin
 from django.db.models import Prefetch
-from import_export.admin import ImportExportModelAdmin
+from import_export.admin import ImportExportModelAdmin, ImportExportMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
+from simple_history.admin import SimpleHistoryAdmin
 
 from studies.choices import InterpretationsChoices
-from studies.models import Study, Experiment, Author, ConsciousnessMeasure, ConsciousnessMeasureType, \
-    ConsciousnessMeasurePhaseType, FindingTagFamily, FindingTagType, FindingTag, Interpretation, MeasureType, Measure, \
-    Paradigm, Sample, ModalityType, TaskType, Task, Technique, Theory, AggregatedInterpretation
+from studies.models import (
+    Study,
+    Experiment,
+    Author,
+    ConsciousnessMeasure,
+    ConsciousnessMeasureType,
+    ConsciousnessMeasurePhaseType,
+    FindingTagFamily,
+    FindingTagType,
+    FindingTag,
+    Interpretation,
+    MeasureType,
+    Measure,
+    Paradigm,
+    Sample,
+    ModalityType,
+    TaskType,
+    Task,
+    Technique,
+    Theory,
+    AggregatedInterpretation,
+)
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from rangefilter.filters import NumericRangeFilter
 
 from studies.resources.full_experiment import FullExperimentResource
 
+class BaseContrastAdmin(ImportExportMixin, SimpleHistoryAdmin):
+    pass
 
 # Register your models here.
 class ExperimentRelatedInline:
@@ -28,8 +50,8 @@ class ExperimentRelatedInline:
 
 
 class TheoryInterpretationFilter(admin.SimpleListFilter):
-    title = 'Theory Interpretations'
-    parameter_name = 'theory_interpretation'
+    title = "Theory Interpretations"
+    parameter_name = "theory_interpretation"
 
     def lookups(self, request, model_admin):
         lookups = []
@@ -72,15 +94,33 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
     model = ConsciousnessMeasure
 
 
-class ExperimentAdmin(ImportExportModelAdmin):
-    list_display = ("id", "type_of_consciousness", "is_reporting", "theory_driven", "study__title",)
+class ExperimentAdmin(BaseContrastAdmin):
+    list_display = (
+        "id",
+        "type_of_consciousness",
+        "is_reporting",
+        "theory_driven",
+        "study__title",
+    )
     model = Experiment
     fields = (
-        "type_of_consciousness", "is_reporting", "theory_driven", "results_summary", "paradigms_notes", "tasks_notes",
-        "consciousness_measures_notes", "stimuli_notes", "techniques", "paradigms"
+        "type_of_consciousness",
+        "is_reporting",
+        "theory_driven",
+        "results_summary",
+        "paradigms_notes",
+        "tasks_notes",
+        "consciousness_measures_notes",
+        "stimuli_notes",
+        "techniques",
+        "paradigms",
     )
     search_fields = (
-        "results_summary", "paradigms_notes", "tasks_notes", "consciousness_measures_notes", "stimuli_notes"
+        "results_summary",
+        "paradigms_notes",
+        "tasks_notes",
+        "consciousness_measures_notes",
+        "stimuli_notes",
     )
     list_filter = ("type_of_consciousness", "type", "is_reporting", "theory_driven", "study__approval_status")
     filter_horizontal = ("paradigms", "techniques")
@@ -91,7 +131,8 @@ class ExperimentAdmin(ImportExportModelAdmin):
         FindingTagInline,
         MeasureInline,
         ConsciousnessMeasureInline,
-        StimulusInline)
+        StimulusInline,
+    )
 
     def get_queryset(self, request):
         qs = self.model._default_manager.related()
@@ -110,8 +151,18 @@ class ExperimentAdmin(ImportExportModelAdmin):
 class ExperimentInline(admin.StackedInline):
     model = Experiment
     filter_horizontal = ("techniques", "paradigms")
-    fields = ('type_of_consciousness', 'is_reporting', 'theory_driven', 'stimuli_notes', 'results_summary',
-              'paradigms_notes', 'tasks_notes', 'consciousness_measures_notes', 'paradigms', 'techniques')
+    fields = (
+        "type_of_consciousness",
+        "is_reporting",
+        "theory_driven",
+        "stimuli_notes",
+        "results_summary",
+        "paradigms_notes",
+        "tasks_notes",
+        "consciousness_measures_notes",
+        "paradigms",
+        "techniques",
+    )
     # fields =
     show_change_link = True
     extra = 0
@@ -119,10 +170,16 @@ class ExperimentInline(admin.StackedInline):
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
-        return qs.select_related("study") \
-            .prefetch_related(Prefetch('paradigms', queryset=Paradigm.objects.filter(parent__isnull=False)
-                                       .select_related('parent', 'parent__parent'))) \
+        return (
+            qs.select_related("study")
+            .prefetch_related(
+                Prefetch(
+                    "paradigms",
+                    queryset=Paradigm.objects.filter(parent__isnull=False).select_related("parent", "parent__parent"),
+                )
+            )
             .prefetch_related("techniques")
+        )
 
     def has_delete_permission(self, request, obj=None):
         # Disable delete
@@ -130,14 +187,15 @@ class ExperimentInline(admin.StackedInline):
 
 
 class CountryFilter(admin.SimpleListFilter):
-    title = 'Country'
-    parameter_name = 'country'
+    title = "Country"
+    parameter_name = "country"
 
     def lookups(self, request, model_admin):
         # Get a list of all distinct countries that exist in the database
-        existing_countries = model_admin.get_queryset(request).values_list('countries', flat=True).distinct()
+        existing_countries = model_admin.get_queryset(request).values_list("countries", flat=True).distinct()
         flattened_existing_countries = sorted(
-            set(country for the_countries in existing_countries for country in the_countries))
+            set(country for the_countries in existing_countries for country in the_countries)
+        )
 
         # Create a list of tuples for the filter dropdown
         # Each tuple contains the country code and name
@@ -155,13 +213,12 @@ class StudyAdmin(ImportExportModelAdmin):
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title")
     search_fields = ("title", "DOI")
-    list_filter = ("approval_status",
-                   CountryFilter,
-                   ("year", NumericRangeFilter),
-                   )
-    inlines = [
-        ExperimentInline
-    ]
+    list_filter = (
+        "approval_status",
+        CountryFilter,
+        ("year", NumericRangeFilter),
+    )
+    inlines = [ExperimentInline]
 
     def get_queryset(self, request):
         return super().get_queryset(request).prefetch_related("authors")
@@ -198,20 +255,33 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 
 class FindingTagAdmin(ImportExportModelAdmin):
     model = FindingTag
-    search_fields = ('notes',)
-    list_display = ("id", "type", "family", "onset", "offset", "band_lower_bound", "band_higher_bound",
-                    'direction', 'AAL_atlas_tag', 'notes', "experiment_id")
-    list_filter = (("family", admin.RelatedOnlyFieldListFilter),
-                   ("type", admin.RelatedOnlyFieldListFilter),
-                   ("onset", NumericRangeFilter),
-                   ("offset", NumericRangeFilter),
-                   ("band_lower_bound", NumericRangeFilter),
-                   ("band_higher_bound", NumericRangeFilter),
-                   ("technique", admin.RelatedOnlyFieldListFilter),
-                   "direction",
-                   "analysis_type",
-                   "is_NCC",
-                   TheoryInterpretationFilter)
+    search_fields = ("notes",)
+    list_display = (
+        "id",
+        "type",
+        "family",
+        "onset",
+        "offset",
+        "band_lower_bound",
+        "band_higher_bound",
+        "direction",
+        "AAL_atlas_tag",
+        "notes",
+        "experiment_id",
+    )
+    list_filter = (
+        ("family", admin.RelatedOnlyFieldListFilter),
+        ("type", admin.RelatedOnlyFieldListFilter),
+        ("onset", NumericRangeFilter),
+        ("offset", NumericRangeFilter),
+        ("band_lower_bound", NumericRangeFilter),
+        ("band_higher_bound", NumericRangeFilter),
+        ("technique", admin.RelatedOnlyFieldListFilter),
+        "direction",
+        "analysis_type",
+        "is_NCC",
+        TheoryInterpretationFilter,
+    )
 
 
 class InterpretationAdmin(ImportExportModelAdmin):
@@ -235,8 +305,8 @@ class MeasureTypeAdmin(ImportExportModelAdmin):
 
 class MeasureAdmin(ImportExportModelAdmin):
     model = Measure
-    search_fields = ('notes',)
-    list_display = ('id', 'type', 'notes', 'experiment_id')
+    search_fields = ("notes",)
+    list_display = ("id", "type", "notes", "experiment_id")
     list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
     def get_queryset(self, request):
@@ -294,11 +364,13 @@ class StimulusAdmin(ImportExportModelAdmin):
         ("category", admin.RelatedOnlyFieldListFilter),
         ("sub_category", admin.RelatedOnlyFieldListFilter),
         ("modality", admin.RelatedOnlyFieldListFilter),
-        TheoryInterpretationFilter)
+        TheoryInterpretationFilter,
+    )
 
     def get_queryset(self, request):
-        return super().get_queryset(request).select_related("category", "sub_category", "modality",
-                                                            "sub_category__parent")
+        return (
+            super().get_queryset(request).select_related("category", "sub_category", "modality", "sub_category__parent")
+        )
 
 
 class TaskTypeAdmin(ImportExportModelAdmin):
@@ -306,13 +378,13 @@ class TaskTypeAdmin(ImportExportModelAdmin):
 
 
 class TaskAdmin(ImportExportModelAdmin):
-    list_display = ('id', 'type', 'experiment_id')
+    list_display = ("id", "type", "experiment_id")
     model = Task
     list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
 
 class TechniqueAdmin(ImportExportModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ("id", "name")
     model = Technique
 
 

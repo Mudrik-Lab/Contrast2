@@ -5,25 +5,36 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0017_alter_findingtagfamily_options_and_more'),
+        ("studies", "0017_alter_findingtagfamily_options_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='experiment',
-            name='interpretations',
-            field=models.ManyToManyField(limit_choices_to=models.Q(('parent__isnull', False)), related_name='experiments_interpretations', through='studies.Interpretation', to='studies.theory'),
+            model_name="experiment",
+            name="interpretations",
+            field=models.ManyToManyField(
+                limit_choices_to=models.Q(("parent__isnull", False)),
+                related_name="experiments_interpretations",
+                through="studies.Interpretation",
+                to="studies.theory",
+            ),
         ),
         migrations.AlterField(
-            model_name='experiment',
-            name='paradigms',
-            field=models.ManyToManyField(limit_choices_to=models.Q(('parent__isnull', False)), related_name='experiments', to='studies.paradigm'),
+            model_name="experiment",
+            name="paradigms",
+            field=models.ManyToManyField(
+                limit_choices_to=models.Q(("parent__isnull", False)), related_name="experiments", to="studies.paradigm"
+            ),
         ),
         migrations.AlterField(
-            model_name='interpretation',
-            name='theory',
-            field=models.ForeignKey(limit_choices_to=models.Q(('parent__isnull', False)), on_delete=django.db.models.deletion.CASCADE, related_name='experiments', to='studies.theory'),
+            model_name="interpretation",
+            name="theory",
+            field=models.ForeignKey(
+                limit_choices_to=models.Q(("parent__isnull", False)),
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="experiments",
+                to="studies.theory",
+            ),
         ),
     ]

@@ -5,10 +5,9 @@ from configuration.views import ConfigurationView
 
 router = routers.SimpleRouter()
 
-router.register(r'configuration', ConfigurationView, basename="configuration")
+router.register(r"configuration", ConfigurationView, basename="configuration")
 
 
 urlpatterns = [
-    path('', include(router.urls)),
-
+    path("", include(router.urls)),
 ]

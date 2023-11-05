@@ -1,0 +1,25 @@
+{% extends "admin/base.html" %}
+{% load static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} |
+    {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+
+            {{ site_header|default:_('Contrast Administration') }}
+        </a>
+    </h1>
+{% endblock %}
+{% block userlinks %}
+
+
+    <a style="color: #f5dd63; font-size: 1.2em;" href="/account/two_factor/setup/"
+       target="_self">הפעלת אימות דו שלבי</a>/
+
+    {{ block.super }}
+{% endblock %}
+
+
+{% block nav-global %}{% endblock %}

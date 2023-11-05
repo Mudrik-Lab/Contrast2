@@ -20,10 +20,7 @@ def bootstrap_type_models(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('studies', '0007_alter_stimulussubcategory_parent'),
+        ("studies", "0007_alter_stimulussubcategory_parent"),
     ]
 
-    operations = [
-        migrations.RunPython(bootstrap_type_models, reverse_code=migrations.RunPython.noop)
-
-    ]
+    operations = [migrations.RunPython(bootstrap_type_models, reverse_code=migrations.RunPython.noop)]

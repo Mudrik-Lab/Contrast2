@@ -14,13 +14,8 @@ def bootstrap_fmri_image(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('configuration', '0002_rename_graphimages_graphimage'),
+        ("configuration", "0002_rename_graphimages_graphimage"),
     ]
 
-    operations = [
-        migrations.RunPython(bootstrap_fmri_image, reverse_code=migrations.RunPython.noop)
-
-    ]
-
+    operations = [migrations.RunPython(bootstrap_fmri_image, reverse_code=migrations.RunPython.noop)]

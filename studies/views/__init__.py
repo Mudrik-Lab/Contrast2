@@ -6,5 +6,10 @@ from studies.views.submitted_studies_experiments import SubmittedStudyExperiment
 
 from studies.views.approved_studies import ApprovedStudiesViewSet
 
-__all__ = [ApprovedStudiesViewSet, ExcludedStudiesViewSet, ExperimentsGraphsViewSet,
-           SubmitStudiesViewSet, SubmittedStudyExperiments]
+__all__ = [
+    ApprovedStudiesViewSet,
+    ExcludedStudiesViewSet,
+    ExperimentsGraphsViewSet,
+    SubmitStudiesViewSet,
+    SubmittedStudyExperiments,
+]

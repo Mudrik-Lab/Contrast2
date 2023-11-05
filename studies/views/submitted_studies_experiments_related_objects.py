@@ -7,30 +7,62 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from studies.models import Task, Sample, Stimulus, Measure, Interpretation, FindingTag, ConsciousnessMeasure
 from studies.permissions import SubmitterOnlyPermission
-from studies.serializers import TaskSerializer, SampleSerializer, StimulusSerializer, MeasureSerializer, \
-    InterpretationCreateSerializer, FindingTagSerializer, ConsciousnessMeasureSerializer
-from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin, \
-    ExperimentRelatedNestedObjectMixin
+from studies.serializers import (
+    TaskSerializer,
+    SampleSerializer,
+    StimulusSerializer,
+    MeasureSerializer,
+    InterpretationCreateSerializer,
+    FindingTagSerializer,
+    ConsciousnessMeasureSerializer,
+)
+from studies.views.base_study_related_views_mixins import (
+    StudyRelatedPermissionsViewMixin,
+    ExperimentRelatedNestedObjectMixin,
+)
 
 
 @extend_schema_view(
-    list=extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                                   OpenApiParameter(location="path", name="experiment_pk", type=str)]),
-    retrieve=extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                                       OpenApiParameter(location="path", name="experiment_pk", type=str)]),
-    destroy=extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                                      OpenApiParameter(location="path", name="experiment_pk", type=str)]),
-    update=extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                                     OpenApiParameter(location="path", name="experiment_pk", type=str)]),
-    partial_update=extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                                             OpenApiParameter(location="path", name="experiment_pk", type=str)]),
-    create=extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                                     OpenApiParameter(location="path", name="experiment_pk", type=str)])
+    list=extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    ),
+    retrieve=extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    ),
+    destroy=extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    ),
+    update=extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    ),
+    partial_update=extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    ),
+    create=extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    ),
 )
-class BaseStudyExperimentObjectView(StudyRelatedPermissionsViewMixin,
-                                    ExperimentRelatedNestedObjectMixin,
-                                    ModelViewSet,
-                                    GenericViewSet):
+class BaseStudyExperimentObjectView(
+    StudyRelatedPermissionsViewMixin, ExperimentRelatedNestedObjectMixin, ModelViewSet, GenericViewSet
+):
     pagination_class = None
     permission_classes = [SubmitterOnlyPermission]
 
@@ -61,14 +93,19 @@ class StudyExperimentsInterpretations(BaseStudyExperimentObjectView):
     serializer_class = InterpretationCreateSerializer
     queryset = Interpretation.objects.all()
 
-    @extend_schema(parameters=[OpenApiParameter(location="path", name="study_pk", type=str),
-                               OpenApiParameter(location="path", name="experiment_pk", type=str)])
+    @extend_schema(
+        parameters=[
+            OpenApiParameter(location="path", name="study_pk", type=str),
+            OpenApiParameter(location="path", name="experiment_pk", type=str),
+        ]
+    )
     def create(self, request, *args, **kwargs):
         """
         Note: DONT pass explicit experiment id in the creation data, as it's provided by the URI
         """
-        Interpretation.objects.filter(experiment=int(self.kwargs.get("experiment_pk")),
-                                      theory=request.data["theory"]).delete()
+        Interpretation.objects.filter(
+            experiment=int(self.kwargs.get("experiment_pk")), theory=request.data["theory"]
+        ).delete()
         return super().create(request, *args, **kwargs)
 
 

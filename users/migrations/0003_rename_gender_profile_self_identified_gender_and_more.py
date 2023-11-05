@@ -5,25 +5,24 @@ import django_countries.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0002_profile_academic_affiliation_profile_academic_stage_and_more'),
+        ("users", "0002_profile_academic_affiliation_profile_academic_stage_and_more"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='profile',
-            old_name='gender',
-            new_name='self_identified_gender',
+            model_name="profile",
+            old_name="gender",
+            new_name="self_identified_gender",
         ),
         migrations.AddField(
-            model_name='profile',
-            name='country_of_residence',
+            model_name="profile",
+            name="country_of_residence",
             field=django_countries.fields.CountryField(blank=True, max_length=2, null=True),
         ),
         migrations.AddField(
-            model_name='profile',
-            name='has_ASSC_membership',
+            model_name="profile",
+            name="has_ASSC_membership",
             field=models.BooleanField(blank=True, null=True),
         ),
     ]

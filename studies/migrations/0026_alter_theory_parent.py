@@ -5,15 +5,20 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0025_alter_findingtag_offset_alter_findingtag_onset'),
+        ("studies", "0025_alter_findingtag_offset_alter_findingtag_onset"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='theory',
-            name='parent',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='children', to='studies.theory'),
+            model_name="theory",
+            name="parent",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="children",
+                to="studies.theory",
+            ),
         ),
     ]

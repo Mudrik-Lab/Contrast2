@@ -4,15 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0014_study_submitter'),
+        ("studies", "0014_study_submitter"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='experiment',
-            name='interpretations',
-            field=models.ManyToManyField(limit_choices_to={'parent': None}, related_name='experiments_interpretations', through='studies.Interpretation', to='studies.theory'),
+            model_name="experiment",
+            name="interpretations",
+            field=models.ManyToManyField(
+                limit_choices_to={"parent": None},
+                related_name="experiments_interpretations",
+                through="studies.Interpretation",
+                to="studies.theory",
+            ),
         ),
     ]

@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0022_alter_stimulus_duration'),
+        ("studies", "0022_alter_stimulus_duration"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='findingtag',
-            name='band_higher_bound',
+            model_name="findingtag",
+            name="band_higher_bound",
             field=models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True),
         ),
         migrations.AlterField(
-            model_name='findingtag',
-            name='band_lower_bound',
+            model_name="findingtag",
+            name="band_lower_bound",
             field=models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True),
         ),
     ]

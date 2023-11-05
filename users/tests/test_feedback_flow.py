@@ -20,8 +20,13 @@ class UserFeedbackTestCase(BaseTestCase):
 
         self.verify_no_email_was_sent_to_user(email=settings.SITE_MANAGER_ADDRESS)
         feedback_type = "site-feedback"
-        feedback_data = dict(queries_score=4, experience_score=3, completeness_score=5, paper_uploading_score=4,
-                             comments="comments are here")
+        feedback_data = dict(
+            queries_score=4,
+            experience_score=3,
+            completeness_score=5,
+            paper_uploading_score=4,
+            comments="comments are here",
+        )
         res = self.when_user_provides_feedback(email=email, feedback_type=feedback_type, feedback_data=feedback_data)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
 

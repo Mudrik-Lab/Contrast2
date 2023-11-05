@@ -6,16 +6,17 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('studies', '0013_rename_key_words_study_authors_key_words_and_more'),
+        ("studies", "0013_rename_key_words_study_authors_key_words_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='study',
-            name='submitter',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
+            model_name="study",
+            name="submitter",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]

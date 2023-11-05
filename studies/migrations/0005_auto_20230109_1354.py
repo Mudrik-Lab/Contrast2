@@ -2,8 +2,16 @@
 
 from django.db import migrations
 
-from configuration.initial_setup import paradigms, task_types, techniques, modalities, consciousness_measure_types, \
-    consciousness_measure_phases, main_paradigms, ParentTheories
+from configuration.initial_setup import (
+    paradigms,
+    task_types,
+    techniques,
+    modalities,
+    consciousness_measure_types,
+    consciousness_measure_phases,
+    main_paradigms,
+    ParentTheories,
+)
 
 
 def bootstrap_type_models(apps, schema_editor):
@@ -28,24 +36,28 @@ def bootstrap_type_models(apps, schema_editor):
         TaskType.objects.get_or_create(name=task_type)
 
     Theory = apps.get_model("studies", "Theory")
-    for theory in [ParentTheories.GLOBAL_WORKSPACE,
-                   ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING,
-                   ParentTheories.INTEGRATED_INFORMATION,
-                   ParentTheories.HIGHER_ORDER,
-                   ParentTheories.OTHER]:
+    for theory in [
+        ParentTheories.GLOBAL_WORKSPACE,
+        ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING,
+        ParentTheories.INTEGRATED_INFORMATION,
+        ParentTheories.HIGHER_ORDER,
+        ParentTheories.OTHER,
+    ]:
         Theory.objects.get_or_create(name=theory)
 
     global_workspace_theory = Theory.objects.get(name=ParentTheories.GLOBAL_WORKSPACE)
-    Theory.objects.get_or_create(name='GNW', parent=global_workspace_theory)
+    Theory.objects.get_or_create(name="GNW", parent=global_workspace_theory)
 
     integrated_information = Theory.objects.get(name=ParentTheories.INTEGRATED_INFORMATION)
-    Theory.objects.get_or_create(name='IIT', parent=integrated_information)
+    Theory.objects.get_or_create(name="IIT", parent=integrated_information)
 
     higher_order_thought = Theory.objects.get(name=ParentTheories.HIGHER_ORDER)
-    Theory.objects.get_or_create(name='HOT', parent=higher_order_thought)
+    Theory.objects.get_or_create(name="HOT", parent=higher_order_thought)
 
-    first_order_and_predictive_processing = Theory.objects.get(name=ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING)
-    Theory.objects.get_or_create(name='RPT', parent=first_order_and_predictive_processing)
+    first_order_and_predictive_processing = Theory.objects.get(
+        name=ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING
+    )
+    Theory.objects.get_or_create(name="RPT", parent=first_order_and_predictive_processing)
 
     Paradigm = apps.get_model("studies", "Paradigm")
     for paradigm in main_paradigms:
@@ -59,9 +71,7 @@ def bootstrap_type_models(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('studies', '0004_experiment_type'),
+        ("studies", "0004_experiment_type"),
     ]
 
-    operations = [
-        migrations.RunPython(bootstrap_type_models, reverse_code=migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(bootstrap_type_models, reverse_code=migrations.RunPython.noop)]

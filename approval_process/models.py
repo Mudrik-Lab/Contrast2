@@ -17,8 +17,9 @@ class ApprovalComment(models.Model):
 
 class ApprovalProcess(models.Model):
     started_at = models.DateTimeField(auto_now_add=True)
-    status = models.SmallIntegerField(choices=ApprovalChoices.choices, null=False, blank=False,
-                                      default=ApprovalChoices.PENDING)
+    status = models.SmallIntegerField(
+        choices=ApprovalChoices.choices, null=False, blank=False, default=ApprovalChoices.PENDING
+    )
     reviewers = models.ManyToManyField(to=settings.AUTH_USER_MODEL, related_name="approvals")
     exclusion_reason = models.TextField(null=True, blank=True)
     research_area = models.CharField(null=True, blank=True, max_length=50)  # currently only for excluded items

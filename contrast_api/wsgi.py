@@ -9,8 +9,8 @@ https://docs.djangoproject.com/en/3.1/howto/deployment/wsgi/
 
 import os
 
-os.environ.setdefault('DJANGO_CONFIGURATION', 'Development')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'contrast_api.settings')
+os.environ.setdefault("DJANGO_CONFIGURATION", "Development")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "contrast_api.settings")
 
 from configurations.wsgi import get_wsgi_application  # noqa: E402
 

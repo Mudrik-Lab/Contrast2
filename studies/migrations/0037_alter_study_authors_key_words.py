@@ -5,15 +5,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0036_alter_study_affiliations_and_more'),
+        ("studies", "0036_alter_study_affiliations_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='authors_key_words',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=50), default=list, size=None),
+            model_name="study",
+            name="authors_key_words",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=50), default=list, size=None
+            ),
         ),
     ]

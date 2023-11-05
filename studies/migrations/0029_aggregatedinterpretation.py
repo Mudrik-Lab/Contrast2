@@ -5,19 +5,25 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0028_alter_consciousnessmeasure_phase_and_more'),
+        ("studies", "0028_alter_consciousnessmeasure_phase_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AggregatedInterpretation',
+            name="AggregatedInterpretation",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('parent_theory_names', models.CharField(max_length=200)),
-                ('type', models.CharField(choices=[('pro', 'Pro'), ('challenges', 'Challenges')], max_length=30)),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='aggregated_theories', to='studies.experiment')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("parent_theory_names", models.CharField(max_length=200)),
+                ("type", models.CharField(choices=[("pro", "Pro"), ("challenges", "Challenges")], max_length=30)),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="aggregated_theories",
+                        to="studies.experiment",
+                    ),
+                ),
             ],
         ),
     ]

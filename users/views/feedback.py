@@ -1,4 +1,3 @@
-
 from drf_spectacular.utils import extend_schema
 from rest_framework import status, permissions
 from rest_framework.decorators import action
@@ -6,9 +5,13 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from contrast_api.application_services.feedback import FeedbackService
-from users.serializers import SuggestNewQuerySerializer, ContactUsSerializer, VetAPaperSerializer, \
-    SiteFeedbackSerializer, \
-    FeedbackResponseSerializer
+from users.serializers import (
+    SuggestNewQuerySerializer,
+    ContactUsSerializer,
+    VetAPaperSerializer,
+    SiteFeedbackSerializer,
+    FeedbackResponseSerializer,
+)
 
 
 class FeedbackView(GenericViewSet):

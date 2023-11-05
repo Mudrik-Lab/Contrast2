@@ -5,30 +5,50 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0026_alter_theory_parent'),
+        ("studies", "0026_alter_theory_parent"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sample',
-            name='type',
-            field=models.CharField(choices=[('healthy_adults', 'Healthy_adults'), ('Healthy_college_students', 'Healthy_college_students'), ('children', 'Children'), ('patients', 'Patients'), ('non_human', 'Non_human'), ('computer', 'Computer'), ('Young_patients_(children)', 'Young_patients_(children)')], max_length=30),
+            model_name="sample",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("healthy_adults", "Healthy_adults"),
+                    ("Healthy_college_students", "Healthy_college_students"),
+                    ("children", "Children"),
+                    ("patients", "Patients"),
+                    ("non_human", "Non_human"),
+                    ("computer", "Computer"),
+                    ("Young_patients_(children)", "Young_patients_(children)"),
+                ],
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='stimulus',
-            name='category',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='stimuli', to='studies.stimuluscategory'),
+            model_name="stimulus",
+            name="category",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name="stimuli", to="studies.stimuluscategory"
+            ),
         ),
         migrations.AlterField(
-            model_name='stimulus',
-            name='modality',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='stimuli', to='studies.modalitytype'),
+            model_name="stimulus",
+            name="modality",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, related_name="stimuli", to="studies.modalitytype"
+            ),
         ),
         migrations.AlterField(
-            model_name='stimulus',
-            name='sub_category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='stimuli', to='studies.stimulussubcategory'),
+            model_name="stimulus",
+            name="sub_category",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="stimuli",
+                to="studies.stimulussubcategory",
+            ),
         ),
     ]

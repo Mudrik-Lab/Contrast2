@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0035_alter_study_approval_status'),
+        ("studies", "0035_alter_study_approval_status"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='affiliations',
+            model_name="study",
+            name="affiliations",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='study',
-            name='corresponding_author_email',
+            model_name="study",
+            name="corresponding_author_email",
             field=models.EmailField(blank=True, max_length=254, null=True),
         ),
     ]

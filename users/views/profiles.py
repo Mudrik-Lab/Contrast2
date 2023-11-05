@@ -15,13 +15,23 @@ from rest_framework.viewsets import mixins
 from contrast_api.application_services.notifer import NotifierService
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
-from users.serializers import ProfileSerializer, UsernameOnlySerializer, UserResponseSerializer, \
-    ProfileUpdateSerializer, UserRegistrationSerializer, UserSerializer, ProfileCreateSerializer, \
-    RequestPasswordResetSerializer, RequestPasswordResetResponseSerializer, PasswordResetSerializer, \
-    PasswordResetResponseSerializer
+from users.serializers import (
+    ProfileSerializer,
+    UsernameOnlySerializer,
+    UserResponseSerializer,
+    ProfileUpdateSerializer,
+    UserRegistrationSerializer,
+    UserSerializer,
+    ProfileCreateSerializer,
+    RequestPasswordResetSerializer,
+    RequestPasswordResetResponseSerializer,
+    PasswordResetSerializer,
+    PasswordResetResponseSerializer,
+)
 
 
 # Create your views here.
+
 
 class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
     queryset = Profile.objects.all()
@@ -29,16 +39,15 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
     serializer_class = ProfileSerializer
 
     def get_serializer_class(self):
-        if self.action in ['update', 'partial_update']:
+        if self.action in ["update", "partial_update"]:
             return ProfileUpdateSerializer
-        elif self.action in ['register']:
+        elif self.action in ["register"]:
             return ProfileCreateSerializer
         else:
             return super().get_serializer_class()
 
     @extend_schema(request=UsernameOnlySerializer)
-    @action(detail=False, methods=["POST"],
-            permission_classes=[AllowAny], serializer_class=UserResponseSerializer)
+    @action(detail=False, methods=["POST"], permission_classes=[AllowAny], serializer_class=UserResponseSerializer)
     def check_username(self, request, **kwargs):
         """
         Part of the login/register flow
@@ -55,25 +64,26 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     @extend_schema(request=UserRegistrationSerializer)
-    @action(detail=False, methods=["POST"],
-            permission_classes=[AllowAny], serializer_class=UserSerializer)
+    @action(detail=False, methods=["POST"], permission_classes=[AllowAny], serializer_class=UserSerializer)
     def register_user(self, request, **kwargs):
         UserModel = get_user_model()
 
         serializer = UserRegistrationSerializer(data=request.data, context=self.get_serializer_context())
         serializer.is_valid(raise_exception=True)
-        if UserModel.objects.filter(Q(username=serializer.validated_data.get("username")) | Q(
-                email=serializer.validated_data.get("email"))).exists():
+        if UserModel.objects.filter(
+            Q(username=serializer.validated_data.get("username")) | Q(email=serializer.validated_data.get("email"))
+        ).exists():
             raise BadRequest("Attempting to register an existing user/email")
-        user = UserModel.objects.create_user(username=serializer.validated_data.get("username"),
-                                             password=serializer.validated_data.get("password"),
-                                             email=serializer.validated_data.get("email"))
+        user = UserModel.objects.create_user(
+            username=serializer.validated_data.get("username"),
+            password=serializer.validated_data.get("password"),
+            email=serializer.validated_data.get("email"),
+        )
         Profile.create_profile(user=user)
         user_serializer = self.get_serializer(instance=user)
         return Response(user_serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=["POST"],
-            permission_classes=[permissions.IsAuthenticated])
+    @action(detail=False, methods=["POST"], permission_classes=[permissions.IsAuthenticated])
     def register(self, request, **kwargs):
         if not Profile.objects.filter(user=request.user).exists():
             profile_data = dict(user=request.user.id, **request.data)
@@ -86,7 +96,7 @@ class ProfilesView(GenericViewSet, mixins.UpdateModelMixin):
             profile_serializer.is_valid(raise_exception=True)
             self.perform_update(profile_serializer)
 
-            if getattr(instance, '_prefetched_objects_cache', None):
+            if getattr(instance, "_prefetched_objects_cache", None):
                 # If 'prefetch_related' has been applied to a queryset, we need to
                 # forcibly invalidate the prefetch cache on the instance.
                 instance._prefetched_objects_cache = {}

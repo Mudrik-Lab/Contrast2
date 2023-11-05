@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CASCADE
+from simple_history.models import HistoricalRecords
 
 
 class TaskType(models.Model):
@@ -10,13 +11,14 @@ class TaskType(models.Model):
 
 
 class Task(models.Model):
-    experiment = models.ForeignKey(null=False, blank=False, to="studies.Experiment",
-                                   on_delete=CASCADE,
-                                   related_name="tasks")
+    experiment = models.ForeignKey(
+        null=False, blank=False, to="studies.Experiment", on_delete=CASCADE, related_name="tasks"
+    )
 
-    type = models.ForeignKey(null=False, blank=False, on_delete=CASCADE,
-                             to=TaskType)  # TODO validators from configuration
+    type = models.ForeignKey(
+        null=False, blank=False, on_delete=CASCADE, to=TaskType
+    )  # TODO validators from configuration
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"experiment: {self.experiment_id}, type {self.type}"
-

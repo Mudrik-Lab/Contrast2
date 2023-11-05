@@ -4,35 +4,38 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0044_alter_findingtag_analysis_type'),
+        ("studies", "0044_alter_findingtag_analysis_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='experiment',
-            name='paradigms_notes',
+            model_name="experiment",
+            name="paradigms_notes",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='findingtag',
-            name='band_higher_bound',
-            field=models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Band Higher bound in Hz'),
+            model_name="findingtag",
+            name="band_higher_bound",
+            field=models.DecimalField(
+                blank=True, decimal_places=3, max_digits=10, null=True, verbose_name="Band Higher bound in Hz"
+            ),
         ),
         migrations.AlterField(
-            model_name='findingtag',
-            name='band_lower_bound',
-            field=models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Band Lower bound in Hz'),
+            model_name="findingtag",
+            name="band_lower_bound",
+            field=models.DecimalField(
+                blank=True, decimal_places=3, max_digits=10, null=True, verbose_name="Band Lower bound in Hz"
+            ),
         ),
         migrations.AlterField(
-            model_name='findingtag',
-            name='offset',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Offset timing in ms'),
+            model_name="findingtag",
+            name="offset",
+            field=models.IntegerField(blank=True, null=True, verbose_name="Offset timing in ms"),
         ),
         migrations.AlterField(
-            model_name='findingtag',
-            name='onset',
-            field=models.IntegerField(blank=True, null=True, verbose_name='Onset timing in ms'),
+            model_name="findingtag",
+            name="onset",
+            field=models.IntegerField(blank=True, null=True, verbose_name="Onset timing in ms"),
         ),
     ]

@@ -9,30 +9,31 @@ from studies.services.aggregated_Interpretations_svc import AggregatedInterpreta
 def bootstrap_aggregate_interpretations(apps, schema_editor):
     Interpretation = apps.get_model("studies", "Interpretation")
     AggregatedInterpretation = apps.get_model("studies", "AggregatedInterpretation")
-    non_neutrals = Interpretation.objects.filter(type__in=[InterpretationsChoices.PRO,
-                                                           InterpretationsChoices.CHALLENGES])
+    non_neutrals = Interpretation.objects.filter(
+        type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]
+    )
     experiments_ids = non_neutrals.values_list("experiment_id", flat=True)
     for experiment_id in experiments_ids:
         current_interpretations = Interpretation.objects.filter(experiment_id=experiment_id)
         serialized_interpretations = [
-            AggregatedInterpretationDTO(parent_theory_names=item.theory.parent.name, type=item.type) for item in
-            current_interpretations]
+            AggregatedInterpretationDTO(parent_theory_names=item.theory.parent.name, type=item.type)
+            for item in current_interpretations
+        ]
         service = AggregatedInterpretationService(serialized_interpretations)
         updated_aggregated_interpretations = service.resolve()
         # remove current ones
         AggregatedInterpretation.objects.filter(experiment_id=experiment_id).delete()
         for aggregated_interpretation in updated_aggregated_interpretations:
-            AggregatedInterpretation.objects.create(experiment_id=experiment_id,
-                                                    type=aggregated_interpretation.type,
-                                                    parent_theory_names=aggregated_interpretation.parent_theory_names)
+            AggregatedInterpretation.objects.create(
+                experiment_id=experiment_id,
+                type=aggregated_interpretation.type,
+                parent_theory_names=aggregated_interpretation.parent_theory_names,
+            )
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0029_aggregatedinterpretation'),
+        ("studies", "0029_aggregatedinterpretation"),
     ]
 
-    operations = [
-        migrations.RunPython(bootstrap_aggregate_interpretations)
-    ]
+    operations = [migrations.RunPython(bootstrap_aggregate_interpretations)]

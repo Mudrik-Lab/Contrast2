@@ -18,7 +18,7 @@ def bootstrap_paradigm_sub_type(apps, schema_editor):
             if specific_paradigm in paradigm_sub_types.keys():
                 for sub_type in paradigm_sub_types[specific_paradigm]:
                     Paradigm.objects.get_or_create(name=specific_paradigm, parent=parent, sub_type=sub_type)
-                # making sure we don't keep a wrong version of these paradigms
+                    # making sure we don't keep a wrong version of these paradigms
                     try:
                         paradigm_to_delete = Paradigm.objects.get(name=specific_paradigm, parent=parent, sub_type=None)
                         paradigm_to_delete.delete()
@@ -29,12 +29,8 @@ def bootstrap_paradigm_sub_type(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0042_remove_consciousnessmeasure_description_and_more'),
+        ("studies", "0042_remove_consciousnessmeasure_description_and_more"),
     ]
 
-    operations = [
-        migrations.RunPython(bootstrap_paradigm_sub_type, reverse_code=migrations.RunPython.noop)
-
-    ]
+    operations = [migrations.RunPython(bootstrap_paradigm_sub_type, reverse_code=migrations.RunPython.noop)]

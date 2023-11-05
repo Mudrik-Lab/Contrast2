@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0015_alter_experiment_interpretations'),
+        ("studies", "0015_alter_experiment_interpretations"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='experiment',
-            name='theory_driven_theories',
-            field=models.ManyToManyField(limit_choices_to=models.Q(('parent__isnull', False)), related_name='experiments_driven', to='studies.theory'),
+            model_name="experiment",
+            name="theory_driven_theories",
+            field=models.ManyToManyField(
+                limit_choices_to=models.Q(("parent__isnull", False)),
+                related_name="experiments_driven",
+                to="studies.theory",
+            ),
         ),
     ]

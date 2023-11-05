@@ -7,18 +7,36 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from typing import Optional
 from approval_process.choices import ApprovalChoices
-from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, \
-    ExperimentTypeChoices
-from studies.models import Experiment, Theory, Interpretation, Paradigm, Measure, MeasureType, TaskType, Task, \
-    Technique, Study, FindingTag, Sample, Author
+from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
+from studies.models import (
+    Experiment,
+    Theory,
+    Interpretation,
+    Paradigm,
+    Measure,
+    MeasureType,
+    TaskType,
+    Task,
+    Technique,
+    Study,
+    FindingTag,
+    Sample,
+    Author,
+)
 
 
 class BaseTestCase(APITestCase):
     def given_study_exists(self, **kwargs) -> Study:
-        default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
-                             corresponding_author_email="test@example.com",
-                             approval_status=ApprovalChoices.APPROVED, authors_key_words=["key", "word"],
-                             affiliations="some affiliations", countries=["IL"])
+        default_study = dict(
+            DOI="10.1016/j.cortex.2017.07.010",
+            title="a study",
+            year=1990,
+            corresponding_author_email="test@example.com",
+            approval_status=ApprovalChoices.APPROVED,
+            authors_key_words=["key", "word"],
+            affiliations="some affiliations",
+            countries=["IL"],
+        )
         study_params = {**default_study, **kwargs}
         study, created = Study.objects.get_or_create(**study_params)
         return study
@@ -27,15 +45,17 @@ class BaseTestCase(APITestCase):
         auth_url = reverse("api-token-obtain-pair")
         res = self.client.post(auth_url, data=dict(username=username, password=password))
         access_token = res.data["access"]
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + access_token)
 
     def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
-        default_experiment = dict(study=study,
-                                  results_summary="look what we found",
-                                  is_reporting=ReportingChoices.NO_REPORT,
-                                  theory_driven=kwargs.get("theory_driven", TheoryDrivenChoices.POST_HOC),
-                                  type=ExperimentTypeChoices.NEUROSCIENTIFIC,
-                                  type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
+        default_experiment = dict(
+            study=study,
+            results_summary="look what we found",
+            is_reporting=ReportingChoices.NO_REPORT,
+            theory_driven=kwargs.get("theory_driven", TheoryDrivenChoices.POST_HOC),
+            type=ExperimentTypeChoices.NEUROSCIENTIFIC,
+            type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
+        )
         paradigms = None
         techniques = None
         theory_driven_theories = None
@@ -91,7 +111,7 @@ class BaseTestCase(APITestCase):
             parts.append(part)
         params = "&".join(parts)
         url = reverse(url_name, args=args)
-        url = f'{url}?{params}'
+        url = f"{url}?{params}"
         return url
 
     def given_theory_exists(self, name: str, parent: Theory = None, acronym: str = None):
@@ -99,8 +119,9 @@ class BaseTestCase(APITestCase):
         return theory
 
     def given_interpretation_exist(self, experiment: Experiment, theory: Theory, interpretation_type: str):
-        interpretation, created = Interpretation.objects.get_or_create(experiment=experiment, theory=theory,
-                                                                       type=interpretation_type)
+        interpretation, created = Interpretation.objects.get_or_create(
+            experiment=experiment, theory=theory, type=interpretation_type
+        )
         return interpretation
 
     def given_paradigm_exists(self, name: str, parent: Optional[Paradigm] = None):
@@ -128,8 +149,9 @@ class BaseTestCase(APITestCase):
         return task
 
     def given_user_exists(self, username, password="12345", is_staff=False, is_superuser=False):
-        obj = get_user_model().objects.create_user(username=username, password=password, is_staff=is_staff,
-                                                   is_superuser=is_superuser)
+        obj = get_user_model().objects.create_user(
+            username=username, password=password, is_staff=is_staff, is_superuser=is_superuser
+        )
 
         return obj
 
@@ -169,8 +191,9 @@ class BaseTestCase(APITestCase):
 
     def when_user_is_registered(self, **kwargs):
         data = dict(**kwargs)
-        res = self.client.post(reverse("profiles-register-user"), data=json.dumps(data),
-                               content_type="application/json")
+        res = self.client.post(
+            reverse("profiles-register-user"), data=json.dumps(data), content_type="application/json"
+        )
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 

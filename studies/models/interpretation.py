@@ -9,8 +9,9 @@ class Interpretation(models.Model):
         index_together = (("experiment", "theory"),)
 
     experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE, related_name="theories")
-    theory = models.ForeignKey(to="studies.Theory", on_delete=CASCADE, related_name="experiments",
-                               limit_choices_to=Q(parent__isnull=False))
+    theory = models.ForeignKey(
+        to="studies.Theory", on_delete=CASCADE, related_name="experiments", limit_choices_to=Q(parent__isnull=False)
+    )
     type = models.CharField(null=False, blank=False, choices=InterpretationsChoices.choices, max_length=30)
 
     def __str__(self):

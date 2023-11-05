@@ -15,18 +15,20 @@ import os
 from urllib.parse import urlparse
 
 import sentry_sdk
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from configurations import Configuration, values
 from sentry_sdk.integrations.django import DjangoIntegration
 
 
 def _sentry_event_filter(event, hint):
-    raw_url = event['request']['url']
+    raw_url = event["request"]["url"]
     parsed_url = urlparse(raw_url)
-    filter_paths = ('/static', '/health_check', '/assets')
+    filter_paths = ("/static", "/health_check", "/assets")
     if parsed_url.path.startswith(filter_paths):
         return None
     return event
+
 
 class Base(Configuration):
     BASE_DIR = Path(__file__).resolve().parent.parent
@@ -35,7 +37,7 @@ class Base(Configuration):
     # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
     # SECURITY WARNING: keep the secret key used in production secret!
-    SECRET_KEY = values.Value('YEtrZsZRynSAqRIJFHkVwtoAIaeQKrKInDZrxRDwHMUmeCJLqQ')
+    SECRET_KEY = values.Value("YEtrZsZRynSAqRIJFHkVwtoAIaeQKrKInDZrxRDwHMUmeCJLqQ")
 
     # SECURITY WARNING: don't run with debug turned on in production!
     DEBUG = True
@@ -46,108 +48,133 @@ class Base(Configuration):
     CSRF_TRUSTED_ORIGINS = values.ListValue([])
     # Application definition
     THIRD_PARTY_APPS = [
-        'whitenoise.runserver_nostatic',
-        'corsheaders',
-        'rest_framework_simplejwt',
-        'rest_framework',
-        'django_extensions',
-        'import_export',
-        'drf_spectacular',
-        'nested_inline',
-        'admin_reorder',
-        'django_countries',
-        'django_filters',
-        'rangefilter',
-        'anymail',
+        "whitenoise.runserver_nostatic",
+        "corsheaders",
+        "rest_framework_simplejwt",
+        "rest_framework",
+        "django_extensions",
+        "import_export",
+        "drf_spectacular",
+        "nested_inline",
+        "admin_reorder",
+        "django_countries",
+        "django_filters",
+        "rangefilter",
+        "anymail",
+        "django_otp",
+        "django_otp.plugins.otp_static",
+        "django_otp.plugins.otp_totp",
+        "two_factor",
+        "simple_history",
     ]
     DJANGO_APPS = [
-        'django.contrib.admin',
-        'django.contrib.auth',
-        'django.contrib.contenttypes',
-        'django.contrib.sessions',
-        'django.contrib.messages',
-        'django.contrib.staticfiles',
+        "django.contrib.admin",
+        "django.contrib.auth",
+        "django.contrib.contenttypes",
+        "django.contrib.sessions",
+        "django.contrib.messages",
+        "django.contrib.staticfiles",
     ]
-    CONTRAST_API_APPS = ['approval_process', 'configuration', 'studies', 'users']
+    CONTRAST_API_APPS = ["approval_process", "configuration", "studies", "users"]
     INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + CONTRAST_API_APPS
 
     MIDDLEWARE = [
-        'django.middleware.security.SecurityMiddleware',
-        'whitenoise.middleware.WhiteNoiseMiddleware',
-        'spa.middleware.SPAMiddleware',
-        'django.contrib.sessions.middleware.SessionMiddleware',
-        'corsheaders.middleware.CorsMiddleware',
-        'django.middleware.common.CommonMiddleware',
-        'django.middleware.csrf.CsrfViewMiddleware',
-        'django.contrib.auth.middleware.AuthenticationMiddleware',
-        'django.contrib.messages.middleware.MessageMiddleware',
-        'django.middleware.clickjacking.XFrameOptionsMiddleware',
+        "django.middleware.security.SecurityMiddleware",
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+        "spa.middleware.SPAMiddleware",
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "corsheaders.middleware.CorsMiddleware",
+        "django.middleware.common.CommonMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django_otp.middleware.OTPMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
         "contrast_api.middleware.TimezoneMiddleware",
-        'querycount.middleware.QueryCountMiddleware',
-        'admin_reorder.middleware.ModelAdminReorder'
-
+        "querycount.middleware.QueryCountMiddleware",
+        "admin_reorder.middleware.ModelAdminReorder",
+        "simple_history.middleware.HistoryRequestMiddleware",
     ]
     ANYMAIL_MAILGUN_SENDER_DOMAIN = values.Value(environ_prefix=None, environ_name="MAILGUN_SENDER_DOMAIN")
     ANYMAIL_MAILGUN_API_KEY = values.Value(environ_prefix=None, environ_name="MAILGUN_API_KEY")
-    ANYMAIL_MAILGUN_API_URL = values.Value(environ_prefix=None, environ_name="MAILGUN_API_URL",
-                                           default="https://api.eu.mailgun.net/v3")
+    ANYMAIL_MAILGUN_API_URL = values.Value(
+        environ_prefix=None, environ_name="MAILGUN_API_URL", default="https://api.eu.mailgun.net/v3"
+    )
 
     EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
     DEFAULT_FROM_EMAIL = values.EmailValue()
     SITE_MANAGER_ADDRESS = values.EmailValue(default=DEFAULT_FROM_EMAIL)
 
     QUERYCOUNT = {
-        'THRESHOLDS': {
-            'MEDIUM': 50,
-            'HIGH': 200,
-            'MIN_TIME_TO_LOG': 0,
-            'MIN_QUERY_COUNT_TO_LOG': 5
-        },
-        'IGNORE_REQUEST_PATTERNS': [],
-        'IGNORE_SQL_PATTERNS': [],
-        'DISPLAY_DUPLICATES': None,
-        'RESPONSE_HEADER': None
+        "THRESHOLDS": {"MEDIUM": 50, "HIGH": 200, "MIN_TIME_TO_LOG": 0, "MIN_QUERY_COUNT_TO_LOG": 5},
+        "IGNORE_REQUEST_PATTERNS": [],
+        "IGNORE_SQL_PATTERNS": [],
+        "DISPLAY_DUPLICATES": None,
+        "RESPONSE_HEADER": None,
     }
-
     ADMIN_REORDER = (
-        {'app': 'studies', 'label': "studies", 'models': (
-            'studies.Study', 'studies.Author'
-        )},
-        {'app': 'studies', 'label': "experiments data", 'models': (
-            'studies.Experiment', 'studies.Stimulus', 'studies.FindingTag', 'studies.Interpretation', 'studies.Task',
-            'studies.Measure', 'studies.ConsciousnessMeasure', 'studies.Sample'
 
-        )},
-        {'app': 'studies', 'label': 'parameters configuration', 'models': (
-            'studies.StimulusCategory', 'studies.StimulusSubCategory', 'studies.ModalityType',
-            'studies.Technique', 'studies.Paradigm', 'studies.FindingTagFamily', 'studies.FindingTagType',
-            'studies.Theory', 'studies.TaskType', 'studies.MeasureType', 'studies.ConsciousnessMeasureType',
-            'studies.ConsciousnessMeasurePhaseType'
-        )},
-        {'app': 'configuration', 'label': 'general graphs and forms related configuration'},
+        {"app": "studies", "label": "studies", "models": ("studies.Study", "studies.Author")},
+        {
+            "app": "studies",
+            "label": "experiments data",
+            "models": (
+                "studies.Experiment",
+                "studies.Stimulus",
+                "studies.FindingTag",
+                "studies.Interpretation",
+                "studies.Task",
+                "studies.Measure",
+                "studies.ConsciousnessMeasure",
+                "studies.Sample",
+            ),
+        },
+        {
+            "app": "studies",
+            "label": "parameters configuration",
+            "models": (
+                "studies.StimulusCategory",
+                "studies.StimulusSubCategory",
+                "studies.ModalityType",
+                "studies.Technique",
+                "studies.Paradigm",
+                "studies.FindingTagFamily",
+                "studies.FindingTagType",
+                "studies.Theory",
+                "studies.TaskType",
+                "studies.MeasureType",
+                "studies.ConsciousnessMeasureType",
+                "studies.ConsciousnessMeasurePhaseType",
+            ),
+        },
+        {"app": "configuration", "label": "general graphs and forms related configuration"},
+        {
+            "app": "auth",
+            "label": "user management and authorization",
+            "models": ("auth.Group", "auth.User", "users.Profile", ""),
+        },
+        {"app": "studies", "label": "aggregates", "models": ("studies.AggregatedInterpretation",)},
+        {"app": "approval_process"},
+        {"app": 'otp_totp', "label": "two factor auth config"}
 
-        {'app': 'auth', 'label': 'user management and authorization', 'models': (
-            'auth.Group', 'auth.User', 'users.Profile'
-        )},
-        {'app': 'studies', 'label': 'aggregates', 'models': (
-            'studies.AggregatedInterpretation',
-        )},
-        {'app': 'approval_process'},
     )
+    # Device
 
     ROOT_URLCONF = "contrast_api.urls"
     EMAIL_SERVICE = "contrast_api.technical_services.email.EmailService"
     TEMPLATES = [
         {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [os.path.join(BASE_DIR, 'templates'), ],
-            'APP_DIRS': True,
-            'OPTIONS': {
-                'context_processors': [
-                    'django.template.context_processors.debug',
-                    'django.template.context_processors.request',
-                    'django.contrib.auth.context_processors.auth',
-                    'django.contrib.messages.context_processors.messages',
+            "BACKEND": "django.template.backends.django.DjangoTemplates",
+            "DIRS": [
+                os.path.join(BASE_DIR, "templates"),
+            ],
+            "APP_DIRS": True,
+            "OPTIONS": {
+                "context_processors": [
+                    "django.template.context_processors.debug",
+                    "django.template.context_processors.request",
+                    "django.contrib.auth.context_processors.auth",
+                    "django.contrib.messages.context_processors.messages",
                 ],
             },
         },
@@ -159,41 +186,40 @@ class Base(Configuration):
     # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
     DATABASES = values.DatabaseURLValue(
-        "postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5432/contrast_api_db")
+        "postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5432/contrast_api_db"
+    )
 
     # Password validation
     # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
     AUTH_PASSWORD_VALIDATORS = [
         {
-            'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
         },
         {
-            'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
         },
         {
-            'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+            "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
         },
         {
-            'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+            "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
         },
     ]
 
     REST_FRAMEWORK = {
-        'DEFAULT_PERMISSION_CLASSES': [
-            'rest_framework.permissions.IsAuthenticated',
+        "DEFAULT_PERMISSION_CLASSES": [
+            "rest_framework.permissions.IsAuthenticated",
         ],
-        'DEFAULT_AUTHENTICATION_CLASSES': (
-            'rest_framework_simplejwt.authentication.JWTAuthentication',
+        "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+        "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+        "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+        "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+        "DEFAULT_RENDERER_CLASSES": (
+            "rest_framework.renderers.JSONRenderer",
+            "rest_framework.renderers.BrowsableAPIRenderer",
         ),
-        'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
-        'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-        'DEFAULT_RENDERER_CLASSES': (
-            'rest_framework.renderers.JSONRenderer',
-            'rest_framework.renderers.BrowsableAPIRenderer'
-        ),
-        'PAGE_SIZE': 30
+        "PAGE_SIZE": 30,
     }
 
     SIMPLE_JWT = {
@@ -204,9 +230,9 @@ class Base(Configuration):
     # Internationalization
     # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-    LANGUAGE_CODE = 'en-us'
+    LANGUAGE_CODE = "en-us"
 
-    TIME_ZONE = 'UTC'
+    TIME_ZONE = "UTC"
 
     USE_I18N = True
 
@@ -218,23 +244,22 @@ class Base(Configuration):
 
     # Static files (CSS, JavaScript, Images)
     # https://docs.djangoproject.com/en/4.1/howto/static-files/
-    STATIC_ROOT = BASE_DIR / 'static'
-    STATIC_URL = '/static/'
+    STATIC_ROOT = BASE_DIR / "static"
+    STATIC_URL = "/static/"
 
     STORAGES = {
-        "default":
-            {"BACKEND": 'storages.backends.s3boto3.S3Boto3Storage'},
-        "staticfiles":
-            {"BACKEND": 'spa.storage.SPAStaticFilesStorage'}
+        "default": {"BACKEND": "storages.backends.s3boto3.S3Boto3Storage"},
+        "staticfiles": {"BACKEND": "spa.storage.SPAStaticFilesStorage"},
     }
 
-    MEDIA_ROOT = values.Value(BASE_DIR / 'media')
-    MEDIA_URL = '/media/'
+    MEDIA_ROOT = values.Value(BASE_DIR / "media")
+    MEDIA_URL = "/media/"
 
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, "frontapp")
-    ]
+    STATICFILES_DIRS = [os.path.join(BASE_DIR, "frontapp")]
     SWAGGER_ENABLED = values.BooleanValue(default=False)
+
+    LOGIN_URL = "two_factor:login"
+    TWO_FACTOR_REMEMBER_COOKIE_AGE = 600
 
 
 class Development(Base):
@@ -243,11 +268,8 @@ class Development(Base):
     ALLOWED_HOSTS = values.ListValue(["web", "localhost", "127.0.0.1"])
 
     STORAGES = {
-        "default":
-            {"BACKEND": 'django.core.files.storage.FileSystemStorage'},
-        "staticfiles":
-            {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'}
-
+        "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     }
 
     DEFAULT_FROM_EMAIL = values.EmailValue(default="localdev@test.com")
@@ -256,17 +278,15 @@ class Development(Base):
 
 class Testing(Development):
     PASSWORD_HASHERS = [
-        'django.contrib.auth.hashers.MD5PasswordHasher',
+        "django.contrib.auth.hashers.MD5PasswordHasher",
     ]
     DATABASES = values.DatabaseURLValue(
-        "postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5433/contrast_api_db")
+        "postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5433/contrast_api_db"
+    )
 
     STORAGES = {
-        "default":
-            {"BACKEND": 'django.core.files.storage.InMemoryStorage'},
-        "staticfiles":
-            {"BACKEND": 'django.contrib.staticfiles.storage.StaticFilesStorage'},
-
+        "default": {"BACKEND": "django.core.files.storage.InMemoryStorage"},
+        "staticfiles": {"BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage"},
     }
 
     EMAIL_BACKEND = "anymail.backends.test.EmailBackend"
@@ -287,7 +307,7 @@ class Production(Base):
     AWS_ACCESS_KEY_ID = values.Value(environ_prefix="BUCKETEER")
     AWS_REGION = values.Value(environ_prefix="BUCKETEER")
     AWS_SECRET_ACCESS_KEY = values.Value(environ_prefix="BUCKETEER")
-    SENTRY_DSN = values.Value(environ_prefix='')
+    SENTRY_DSN = values.Value(environ_prefix="")
 
     @classmethod
     def post_setup(cls):
@@ -304,8 +324,7 @@ class Production(Base):
             # of transactions for performance monitoring.
             # We recommend adjusting this value in production.
             traces_sample_rate=0.2,
-
             # If you wish to associate users to errors (assuming you are using
             # django.contrib.auth) you may enable sending PII data.
-            send_default_pii=True
+            send_default_pii=True,
         )

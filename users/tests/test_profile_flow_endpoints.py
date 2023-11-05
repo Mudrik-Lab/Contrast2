@@ -36,8 +36,9 @@ class UserRegistrationTestCase(BaseTestCase):
 
         # Now update the academic stage
 
-        self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
-                                          email="my_new_email@test.com")
+        self.when_user_updates_data(
+            profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC, email="my_new_email@test.com"
+        )
 
         # verify the change
         home_res = self.when_user_access_home()
@@ -69,7 +70,8 @@ class UserRegistrationTestCase(BaseTestCase):
         res = self.when_user_profile_is_registered(
             date_of_birth=user_birthdate,
             academic_stage=AcademicStageChoices.UNDERGRADUATE,
-            self_identified_gender=GenderChoices.NOT_REPORTING)
+            self_identified_gender=GenderChoices.NOT_REPORTING,
+        )
 
         # Should now show the username does exists
         res = self.when_user_does_username_check(username)
@@ -97,7 +99,8 @@ class UserRegistrationTestCase(BaseTestCase):
         self.when_user_profile_is_registered(
             date_of_birth=user_birthdate,
             academic_stage=AcademicStageChoices.UNDERGRADUATE,
-            self_identified_gender=GenderChoices.NOT_REPORTING)
+            self_identified_gender=GenderChoices.NOT_REPORTING,
+        )
 
         # Supports home endpoint
         home_res = self.when_user_access_home()
@@ -106,8 +109,9 @@ class UserRegistrationTestCase(BaseTestCase):
 
         # Now update the academic stage
 
-        self.when_user_updates_data(profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC,
-                                          email="my_new_email@test.com")
+        self.when_user_updates_data(
+            profile_id=home_res.data["id"], academic_stage=AcademicStageChoices.POSTDOC, email="my_new_email@test.com"
+        )
 
         # verify the change
         home_res = self.when_user_access_home()
@@ -122,11 +126,14 @@ class UserRegistrationTestCase(BaseTestCase):
         return res.data
 
     def when_user_updates_data(self, profile_id, **kwargs):
-        res = self.client.patch(reverse("profiles-detail", args=[profile_id]), data=json.dumps(dict(**kwargs)),
-                                content_type="application/json")
+        res = self.client.patch(
+            reverse("profiles-detail", args=[profile_id]),
+            data=json.dumps(dict(**kwargs)),
+            content_type="application/json",
+        )
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
     def given_user_authenticated_with_access_token(self, res):
         access_token = res.data["access"]
-        self.client.credentials(HTTP_AUTHORIZATION='Bearer ' + access_token)
+        self.client.credentials(HTTP_AUTHORIZATION="Bearer " + access_token)

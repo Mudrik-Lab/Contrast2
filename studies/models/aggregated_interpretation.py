@@ -18,18 +18,24 @@ class AggregatedInterpretation(models.Model):
     @transaction.atomic
     def setup_aggregate_interpretations(experiment_id):
         from studies.models import Interpretation
+
         current_interpretations = Interpretation.objects.filter(experiment_id=experiment_id).select_related()
         serialized_interpretations = [
-            AggregatedInterpretationDTO(parent_theory_names=item.theory.parent.name,
-                                        type=item.type,
-                                        parent_theory_acronyms=item.theory.parent.acronym) for item in
-            current_interpretations]
+            AggregatedInterpretationDTO(
+                parent_theory_names=item.theory.parent.name,
+                type=item.type,
+                parent_theory_acronyms=item.theory.parent.acronym,
+            )
+            for item in current_interpretations
+        ]
         service = AggregatedInterpretationService(serialized_interpretations)
         updated_aggregated_interpretations = service.resolve()
         # remove current ones. any way, because there might not be new ones and it's ok
         AggregatedInterpretation.objects.filter(experiment_id=experiment_id).delete()
         for aggregated_interpretation in updated_aggregated_interpretations:
-            AggregatedInterpretation.objects.create(experiment_id=experiment_id,
-                                                    type=aggregated_interpretation.type,
-                                                    parent_theory_acronyms=aggregated_interpretation.parent_theory_acronyms,
-                                                    parent_theory_names=aggregated_interpretation.parent_theory_names)
+            AggregatedInterpretation.objects.create(
+                experiment_id=experiment_id,
+                type=aggregated_interpretation.type,
+                parent_theory_acronyms=aggregated_interpretation.parent_theory_acronyms,
+                parent_theory_names=aggregated_interpretation.parent_theory_names,
+            )

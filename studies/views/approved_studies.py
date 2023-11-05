@@ -7,13 +7,13 @@ from studies.models import Study
 from studies.serializers import StudySerializer
 
 
-class ApprovedStudiesViewSet(
-    mixins.RetrieveModelMixin,
-    mixins.ListModelMixin,
-    GenericViewSet):
+class ApprovedStudiesViewSet(mixins.RetrieveModelMixin, mixins.ListModelMixin, GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = StudySerializer
 
     # TODO: handle creation
-    queryset = Study.objects.select_related("approval_process").prefetch_related("authors").filter(
-        approval_status=ApprovalChoices.APPROVED)  # TODO migrate this to custom manager
+    queryset = (
+        Study.objects.select_related("approval_process")
+        .prefetch_related("authors")
+        .filter(approval_status=ApprovalChoices.APPROVED)
+    )  # TODO migrate this to custom manager

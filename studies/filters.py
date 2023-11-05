@@ -13,13 +13,11 @@ class BothSupportingChoiceFilter(django_filters.ChoiceFilter):
         self.lookup_expr = "in"
 
     def filter(self, qs, value):
-        if value is None or value == '' or (isinstance(value, str) and value.lower() == "either"):
+        if value is None or value == "" or (isinstance(value, str) and value.lower() == "either"):
             return qs
 
         fields_values = [value, self.both_value]
-        qs = self.get_method(qs)(
-            **{"%s__%s" % (self.field_name, self.lookup_expr): fields_values}
-        )
+        qs = self.get_method(qs)(**{"%s__%s" % (self.field_name, self.lookup_expr): fields_values})
         return qs.distinct() if self.distinct else qs
 
 
@@ -35,22 +33,23 @@ class ChoicesSupportingEitherFilter(django_filters.ChoiceFilter):
         if value != self.null_value:
             return super().filter(qs, value)
 
-        qs = self.get_method(qs)(
-            **{"%s__%s" % (self.field_name, self.lookup_expr): None}
-        )
+        qs = self.get_method(qs)(**{"%s__%s" % (self.field_name, self.lookup_expr): None})
         return qs.distinct() if self.distinct else qs
 
 
 class ExperimentFilter(filters.FilterSet):
-    is_reporting = BothSupportingChoiceFilter(field_name="is_reporting",
-                                              choices=include_either_choices(ReportingChoices.choices),
-                                              empty_label="either")
-    type_of_consciousness = BothSupportingChoiceFilter(field_name="type_of_consciousness",
-                                                       choices=include_either_choices(
-                                                           TypeOfConsciousnessChoices.choices), empty_label="either")
-    theory_driven = ChoicesSupportingEitherFilter(field_name="theory_driven",
-                                                  choices=include_either_choices(TheoryDrivenChoices.choices),
-                                                  )
+    is_reporting = BothSupportingChoiceFilter(
+        field_name="is_reporting", choices=include_either_choices(ReportingChoices.choices), empty_label="either"
+    )
+    type_of_consciousness = BothSupportingChoiceFilter(
+        field_name="type_of_consciousness",
+        choices=include_either_choices(TypeOfConsciousnessChoices.choices),
+        empty_label="either",
+    )
+    theory_driven = ChoicesSupportingEitherFilter(
+        field_name="theory_driven",
+        choices=include_either_choices(TheoryDrivenChoices.choices),
+    )
 
     class Meta:
         model = Experiment

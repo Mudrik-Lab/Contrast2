@@ -4,15 +4,34 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0043_auto_20230815_1652'),
+        ("studies", "0043_auto_20230815_1652"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='findingtag',
-            name='analysis_type',
-            field=models.CharField(blank=True, choices=[('power', 'Power'), ('connectivity', 'Connectivity'), ('phi', 'Phi'), ('complexity', 'Complexity'), ('te', 'Te - transfer entropy'), ('pca', 'PCA - principal components analysis'), ('lrtc', 'LRTC - long-range temporal correlations'), ('microstates', 'Microstates'), ('cd', 'CD - correlation dimension'), ('clustering', 'Clustering'), ('mst', 'MST - minimum spanning tree'), ('psd', 'PSD - power spectral density'), ('ersp', 'ERSP - event-related spectral perturbations')], default='power', max_length=100, null=True),
+            model_name="findingtag",
+            name="analysis_type",
+            field=models.CharField(
+                blank=True,
+                choices=[
+                    ("power", "Power"),
+                    ("connectivity", "Connectivity"),
+                    ("phi", "Phi"),
+                    ("complexity", "Complexity"),
+                    ("te", "Te - transfer entropy"),
+                    ("pca", "PCA - principal components analysis"),
+                    ("lrtc", "LRTC - long-range temporal correlations"),
+                    ("microstates", "Microstates"),
+                    ("cd", "CD - correlation dimension"),
+                    ("clustering", "Clustering"),
+                    ("mst", "MST - minimum spanning tree"),
+                    ("psd", "PSD - power spectral density"),
+                    ("ersp", "ERSP - event-related spectral perturbations"),
+                ],
+                default="power",
+                max_length=100,
+                null=True,
+            ),
         ),
     ]

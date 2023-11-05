@@ -6,10 +6,9 @@ from users.views.feedback import FeedbackView
 
 router = routers.SimpleRouter()
 
-router.register(r'profiles', ProfilesView, basename="profiles")
-router.register(r'feedbacks', FeedbackView, basename="feedback")
+router.register(r"profiles", ProfilesView, basename="profiles")
+router.register(r"feedbacks", FeedbackView, basename="feedback")
 
 urlpatterns = [
-    path('', include(router.urls)),
-
+    path("", include(router.urls)),
 ]

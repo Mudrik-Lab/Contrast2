@@ -1,6 +1,7 @@
 from django.db.models import CASCADE
 
 from django.db import models
+from simple_history.models import HistoricalRecords
 
 
 class Theory(models.Model):
@@ -10,6 +11,7 @@ class Theory(models.Model):
     name = models.CharField(null=False, blank=False, max_length=100)
     parent = models.ForeignKey(null=True, blank=True, to="studies.Theory", on_delete=CASCADE, related_name="children")
     acronym = models.CharField(null=True, blank=True, max_length=10)
+    history = HistoricalRecords()
 
     def __str__(self):
         if self.parent is not None:

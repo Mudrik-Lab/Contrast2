@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0008_auto_20230114_1754'),
+        ("studies", "0008_auto_20230114_1754"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='findingtagfamily',
-            name='name',
+            model_name="findingtagfamily",
+            name="name",
             field=models.CharField(max_length=250),
         ),
         migrations.AlterField(
-            model_name='findingtagtype',
-            name='name',
+            model_name="findingtagtype",
+            name="name",
             field=models.CharField(max_length=250),
         ),
     ]

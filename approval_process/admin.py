@@ -6,6 +6,7 @@ from approval_process.models import ApprovalProcess, ApprovalComment
 
 # Register your models here.
 
+
 class ApprovalCommentInline(admin.TabularInline):
     fields = ("text", "reviewer", "created_at")
     model = ApprovalComment
@@ -20,9 +21,7 @@ class ApprovalProcessAdmin(ImportExportModelAdmin):
     def get_queryset(self, request):
         return super().get_queryset(request=request).prefetch_related("comments")
 
-    inlines = [
-        ApprovalCommentInline
-    ]
+    inlines = [ApprovalCommentInline]
     # TODO: custom action for sending to reviewers
 
 

@@ -4,24 +4,37 @@ import pandas
 from django.core.management import BaseCommand
 from django.db import transaction
 
-from studies.parsers.historic_data_helpers import ProblemInTheoryDrivenExistingDataException, \
-    IncoherentSampleDataError, ProblemInCMExistingDataException, IncoherentStimuliData, \
-    MissingValueInStimuli, StimulusDurationError, SampleTypeError
+from studies.parsers.historic_data_helpers import (
+    ProblemInTheoryDrivenExistingDataException,
+    IncoherentSampleDataError,
+    ProblemInCMExistingDataException,
+    IncoherentStimuliData,
+    MissingValueInStimuli,
+    StimulusDurationError,
+    SampleTypeError,
+)
 from studies.parsers.parsing_findings_Contrast2 import FindingTagDataError
-from studies.parsers.process_row import process_row, create_study, MissingStimulusCategoryError, get_list_from_excel, \
-    ParadigmDataException
+from studies.parsers.process_row import (
+    process_row,
+    create_study,
+    MissingStimulusCategoryError,
+    get_list_from_excel,
+    ParadigmDataException,
+)
 from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataException
 
-logger = logging.getLogger('Contrast2')
+logger = logging.getLogger("Contrast2")
 
 
 class Command(BaseCommand):
-    help = 'Load historic data'
+    help = "Load historic data"
 
     def handle(self, *args, **options):
         # Read .xlsx file and convert to dict
-        historic_data_list = get_list_from_excel('studies/data/Contrast2_Existing_Data.xlsx', sheet_name='sheet1')
-        studies_historic_data_list = get_list_from_excel('studies/data/Contrast2_Existing_Data.xlsx', sheet_name='Included_Metadata')
+        historic_data_list = get_list_from_excel("studies/data/Contrast2_Existing_Data.xlsx", sheet_name="sheet1")
+        studies_historic_data_list = get_list_from_excel(
+            "studies/data/Contrast2_Existing_Data.xlsx", sheet_name="Included_Metadata"
+        )
 
         # iterate over studies
         studies_problematic_data_log = []
@@ -51,57 +64,57 @@ class Command(BaseCommand):
             is_included = bool(item["Should be included?"])
             if not is_included:
                 items_to_exclude.append(item)
-                print(f'row #{index} removed')
+                print(f"row #{index} removed")
                 continue
 
             try:
                 with transaction.atomic():
                     process_row(item)
-                    print(f'row #{index} completed')
+                    print(f"row #{index} completed")
 
             except IncoherentStimuliData:
                 stimuli_incoherent_data_log.append(item)
-                logger.exception(f'row #{index} has incoherent stimuli data')
+                logger.exception(f"row #{index} has incoherent stimuli data")
 
             except ParadigmDataException:
                 paradigms_log.append(item)
-                logger.exception(f'row #{index} has bad paradigm data')
+                logger.exception(f"row #{index} has bad paradigm data")
 
             except MissingValueInStimuli:
                 stimuli_missing_value_data_log.append(item)
-                logger.exception(f'row #{index} is missing 1 or more values in stimuli data')
+                logger.exception(f"row #{index} is missing 1 or more values in stimuli data")
 
             except StimulusDurationError:
                 stimuli_duration_data_log.append(item)
-                logger.exception(f'row #{index} has problematic stimulus duration data')
+                logger.exception(f"row #{index} has problematic stimulus duration data")
 
             except MissingStimulusCategoryError:
                 stimuli_missing_object_data_log.append(item)
-                logger.exception(f'row #{index} did not find matching stimulus category or sub-category')
+                logger.exception(f"row #{index} did not find matching stimulus category or sub-category")
 
             except ProblemInTheoryDrivenExistingDataException:
                 theory_driven_problematic_data_log.append(item)
-                logger.exception(f'row #{index} is problematic regarding to theory driven data')
+                logger.exception(f"row #{index} is problematic regarding to theory driven data")
 
             except IncoherentSampleDataError:
                 sample_incoherent_data_log.append(item)
-                logger.exception(f'row #{index} has incoherent sample data')
+                logger.exception(f"row #{index} has incoherent sample data")
 
             except SampleTypeError:
                 sample_type_errors_log.append(item)
-                logger.exception(f'row #{index} is problematic regarding to sample type')
+                logger.exception(f"row #{index} is problematic regarding to sample type")
 
             except ProblemInStudyExistingDataException:
                 experiment_studies_problematic_data_log.append(item)
-                logger.exception(f'row #{index} is problematic regarding to study data')
+                logger.exception(f"row #{index} is problematic regarding to study data")
 
             except ProblemInCMExistingDataException:
                 consciousness_measure_problematic_data_log.append(item)
-                logger.exception(f'row #{index} is problematic regarding to consciousness measure data')
+                logger.exception(f"row #{index} is problematic regarding to consciousness measure data")
 
             except FindingTagDataError:
                 finding_tags_problematic_data_log.append(item)
-                logger.exception(f'row #{index} is problematic regarding to finding tag data')
+                logger.exception(f"row #{index} is problematic regarding to finding tag data")
 
             # iterate over problematic data and add them to .xlsx file in respective sheets
             df_studies = pandas.DataFrame.from_records(studies_problematic_data_log)
@@ -119,19 +132,19 @@ class Command(BaseCommand):
             df_items_to_exclude = pandas.DataFrame.from_records(items_to_exclude)
 
             try:
-                with pandas.ExcelWriter('studies/data/Contrast2_Problematic_Data.xlsx') as writer:
-                    df_finding_tag.to_excel(writer, sheet_name='FindingTag', index=False)
-                    df_studies.to_excel(writer, sheet_name='StudyData', index=False)
-                    df_paradigms.to_excel(writer, sheet_name='ParadigmData', index=False)
-                    df_incoherent_stimuli.to_excel(writer, sheet_name='IncoherentStimuli', index=False)
-                    df_missing_value_stimuli.to_excel(writer, sheet_name='MissingValueStimuliData', index=False)
-                    df_bad_duration_stimuli.to_excel(writer, sheet_name='StimulusDuration', index=False)
-                    df_missing_category_stimuli.to_excel(writer, sheet_name='StimulusCategory', index=False)
-                    df_theory_driven.to_excel(writer, sheet_name='TheoryDriven', index=False)
-                    df_incoherent_sample.to_excel(writer, sheet_name='IncoherentSample', index=False)
-                    df_sample_type.to_excel(writer, sheet_name='SampleType', index=False)
-                    df_study_in_experiment.to_excel(writer, sheet_name='ExperimentStudyData', index=False)
-                    df_consciousness_measure.to_excel(writer, sheet_name='ConsciousnessMeasureData', index=False)
-                    df_items_to_exclude.to_excel(writer, sheet_name='ExcludedItems', index=False)
+                with pandas.ExcelWriter("studies/data/Contrast2_Problematic_Data.xlsx") as writer:
+                    df_finding_tag.to_excel(writer, sheet_name="FindingTag", index=False)
+                    df_studies.to_excel(writer, sheet_name="StudyData", index=False)
+                    df_paradigms.to_excel(writer, sheet_name="ParadigmData", index=False)
+                    df_incoherent_stimuli.to_excel(writer, sheet_name="IncoherentStimuli", index=False)
+                    df_missing_value_stimuli.to_excel(writer, sheet_name="MissingValueStimuliData", index=False)
+                    df_bad_duration_stimuli.to_excel(writer, sheet_name="StimulusDuration", index=False)
+                    df_missing_category_stimuli.to_excel(writer, sheet_name="StimulusCategory", index=False)
+                    df_theory_driven.to_excel(writer, sheet_name="TheoryDriven", index=False)
+                    df_incoherent_sample.to_excel(writer, sheet_name="IncoherentSample", index=False)
+                    df_sample_type.to_excel(writer, sheet_name="SampleType", index=False)
+                    df_study_in_experiment.to_excel(writer, sheet_name="ExperimentStudyData", index=False)
+                    df_consciousness_measure.to_excel(writer, sheet_name="ConsciousnessMeasureData", index=False)
+                    df_items_to_exclude.to_excel(writer, sheet_name="ExcludedItems", index=False)
             except AttributeError as error:
-                logger.exception(f'{error.name} occurred while writing to excel')
+                logger.exception(f"{error.name} occurred while writing to excel")

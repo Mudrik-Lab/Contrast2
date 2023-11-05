@@ -14,6 +14,7 @@ def setup_aggregated_interpretations_via_add(sender, instance, pk_set, action, *
     if action not in ["post_add", "post_remove", "post_clear"]:
         return
     from studies.models import AggregatedInterpretation, Experiment, Theory
+
     if isinstance(instance, Experiment):
         AggregatedInterpretation.setup_aggregate_interpretations(instance.id)
 
@@ -23,10 +24,11 @@ def setup_aggregated_interpretations_via_add(sender, instance, pk_set, action, *
 
 
 class StudiesConfig(AppConfig):
-    default_auto_field = 'django.db.models.BigAutoField'
-    name = 'studies'
+    default_auto_field = "django.db.models.BigAutoField"
+    name = "studies"
 
     def ready(self):
         from studies.models import Interpretation
+
         post_save.connect(receiver=setup_aggregated_interpretations_via_direct_create, sender=Interpretation)
         m2m_changed.connect(receiver=setup_aggregated_interpretations_via_add, sender=Interpretation)

@@ -5,48 +5,57 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0016_alter_experiment_theory_driven_theories'),
+        ("studies", "0016_alter_experiment_theory_driven_theories"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='findingtagfamily',
-            options={'verbose_name_plural': 'findings tags families'},
+            name="findingtagfamily",
+            options={"verbose_name_plural": "findings tags families"},
         ),
         migrations.AlterModelOptions(
-            name='modalitytype',
-            options={'verbose_name_plural': 'stimulus modalities'},
+            name="modalitytype",
+            options={"verbose_name_plural": "stimulus modalities"},
         ),
         migrations.AlterModelOptions(
-            name='stimulus',
-            options={'verbose_name_plural': 'stimuli'},
+            name="stimulus",
+            options={"verbose_name_plural": "stimuli"},
         ),
         migrations.AlterModelOptions(
-            name='stimuluscategory',
-            options={'verbose_name_plural': 'stimulus categories'},
+            name="stimuluscategory",
+            options={"verbose_name_plural": "stimulus categories"},
         ),
         migrations.AlterModelOptions(
-            name='stimulussubcategory',
-            options={'verbose_name_plural': 'stimulus sub categories'},
+            name="stimulussubcategory",
+            options={"verbose_name_plural": "stimulus sub categories"},
         ),
         migrations.AlterModelOptions(
-            name='study',
-            options={'verbose_name_plural': 'studies'},
+            name="study",
+            options={"verbose_name_plural": "studies"},
         ),
         migrations.AlterModelOptions(
-            name='theory',
-            options={'verbose_name_plural': 'theories'},
+            name="theory",
+            options={"verbose_name_plural": "theories"},
         ),
         migrations.AlterField(
-            model_name='experiment',
-            name='interpretations',
-            field=models.ManyToManyField(limit_choices_to={'theory__parent': None}, related_name='experiments_interpretations', through='studies.Interpretation', to='studies.theory'),
+            model_name="experiment",
+            name="interpretations",
+            field=models.ManyToManyField(
+                limit_choices_to={"theory__parent": None},
+                related_name="experiments_interpretations",
+                through="studies.Interpretation",
+                to="studies.theory",
+            ),
         ),
         migrations.AlterField(
-            model_name='interpretation',
-            name='theory',
-            field=models.ForeignKey(limit_choices_to={'parent': None}, on_delete=django.db.models.deletion.CASCADE, related_name='experiments', to='studies.theory'),
+            model_name="interpretation",
+            name="theory",
+            field=models.ForeignKey(
+                limit_choices_to={"parent": None},
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="experiments",
+                to="studies.theory",
+            ),
         ),
     ]

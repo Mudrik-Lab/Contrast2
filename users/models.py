@@ -10,8 +10,11 @@ from users.choices import AcademicStageChoices, GenderChoices
 # Create your models here.
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
-    date_of_birth = models.DateField(null=True, blank=True, validators=[MinValueValidator(datetime.date(1900, 1, 1)),
-                                                                        MaxValueValidator(datetime.date(2100, 1, 1))])
+    date_of_birth = models.DateField(
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(datetime.date(1900, 1, 1)), MaxValueValidator(datetime.date(2100, 1, 1))],
+    )
     self_identified_gender = models.CharField(max_length=50, null=True, blank=True, choices=GenderChoices.choices)
     academic_affiliation = models.TextField(null=True, blank=True)
     country_of_residence = CountryField(null=True, blank=True)

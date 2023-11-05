@@ -9,7 +9,7 @@ acronyms = {
     ParentTheories.INTEGRATED_INFORMATION: "IIT",
     ParentTheories.HIGHER_ORDER: "HOT",
     ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING: "FOT",
-    ParentTheories.OTHER: "Other"
+    ParentTheories.OTHER: "Other",
 }
 
 
@@ -22,10 +22,7 @@ def update_parent_theories_acronyms(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('studies', '0031_aggregatedinterpretation_parent_theory_acronyms_and_more'),
+        ("studies", "0031_aggregatedinterpretation_parent_theory_acronyms_and_more"),
     ]
 
-    operations = [
-        migrations.RunPython(update_parent_theories_acronyms)
-
-    ]
+    operations = [migrations.RunPython(update_parent_theories_acronyms)]

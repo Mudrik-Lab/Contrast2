@@ -4,15 +4,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0040_rename_correlation_sign_findingtag_direction'),
+        ("studies", "0040_rename_correlation_sign_findingtag_direction"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='experiment',
-            old_name='finding_description',
-            new_name='results_summary',
+            model_name="experiment",
+            old_name="finding_description",
+            new_name="results_summary",
         ),
     ]

@@ -1,0 +1,40 @@
+{% extends "admin/base.html" %}
+{% block extrahead %}
+    {{ block.super }}
+    <style>
+        .selected {
+            background-color: #84B2FF;
+
+        }
+
+        .selected a:visited {
+            color: #fff!important;
+
+        }
+    </style>
+{% endblock %}
+{% load static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} |
+    {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+
+    {#     {{ block.super }}#}
+    <h1 id="site-name">
+        <a href="{% url 'admin:index' %}">
+
+            {{ site_header|default:_('Django administration') }}
+        </a>
+    </h1>
+{% endblock %}
+{% block userlinks %}
+
+
+    <a style="color: #f5dd63; font-size: 1.2em;" href="/account/two_factor/setup/"
+       target="_self">{{ _('Activate 2fa') }}</a>/
+
+    {{ block.super }}
+{% endblock %}
+
+
+{% block nav-global %}{% endblock %}

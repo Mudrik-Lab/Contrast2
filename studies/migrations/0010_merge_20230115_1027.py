@@ -4,10 +4,8 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0009_alter_findingtagfamily_name_and_more'),
+        ("studies", "0009_alter_findingtagfamily_name_and_more"),
     ]
 
-    operations = [
-    ]
+    operations = []

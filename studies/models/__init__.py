@@ -7,33 +7,38 @@ from studies.models.finding_tag import FindingTag, FindingTagFamily, FindingTagT
 from studies.models.interpretation import Interpretation
 from studies.models.theory import Theory
 from studies.models.task import Task, TaskType
-from studies.models.consciousness_measure import ConsciousnessMeasure, ConsciousnessMeasureType, \
-    ConsciousnessMeasurePhaseType
+from studies.models.consciousness_measure import (
+    ConsciousnessMeasure,
+    ConsciousnessMeasureType,
+    ConsciousnessMeasurePhaseType,
+)
 from studies.models.sample import Sample
 from studies.models.paradigm import Paradigm
 from studies.models.measure import Measure, MeasureType
 from studies.models.aggregated_interpretation import AggregatedInterpretation
 
-__all__ = [Experiment,
-           Paradigm,
-           Study,
-           Stimulus,
-           StimulusSubCategory,
-           StimulusCategory,
-           ModalityType,
-           Author,
-           Technique,
-           FindingTag,
-           FindingTagFamily,
-           FindingTagType,
-           Interpretation,
-           Theory,
-           Task,
-           TaskType,
-           Measure,
-           MeasureType,
-           ConsciousnessMeasure,
-           ConsciousnessMeasureType,
-           ConsciousnessMeasurePhaseType,
-           AggregatedInterpretation,
-           Sample]
+__all__ = [
+    Experiment,
+    Paradigm,
+    Study,
+    Stimulus,
+    StimulusSubCategory,
+    StimulusCategory,
+    ModalityType,
+    Author,
+    Technique,
+    FindingTag,
+    FindingTagFamily,
+    FindingTagType,
+    Interpretation,
+    Theory,
+    Task,
+    TaskType,
+    Measure,
+    MeasureType,
+    ConsciousnessMeasure,
+    ConsciousnessMeasureType,
+    ConsciousnessMeasurePhaseType,
+    AggregatedInterpretation,
+    Sample,
+]

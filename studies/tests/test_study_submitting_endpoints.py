@@ -5,8 +5,14 @@ from django.urls import reverse
 from rest_framework import status
 
 from approval_process.choices import ApprovalChoices
-from studies.choices import TypeOfConsciousnessChoices, ExperimentTypeChoices, TheoryDrivenChoices, ReportingChoices, \
-    SampleChoices, InterpretationsChoices
+from studies.choices import (
+    TypeOfConsciousnessChoices,
+    ExperimentTypeChoices,
+    TheoryDrivenChoices,
+    ReportingChoices,
+    SampleChoices,
+    InterpretationsChoices,
+)
 from studies.models import Study, Theory, Paradigm, Technique, TaskType, MeasureType, StimulusCategory, ModalityType
 from contrast_api.tests.base import BaseTestCase
 
@@ -55,8 +61,9 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(len(experiments_res), 1)
 
         experiment_id = res_experiment["id"]
-        parent_paradigm, created = Paradigm.objects.get_or_create(name="Abnormal Contents of Consciousness",
-                                                                  parent=None, sub_type=None)
+        parent_paradigm, created = Paradigm.objects.get_or_create(
+            name="Abnormal Contents of Consciousness", parent=None, sub_type=None
+        )
         paradigm, created = Paradigm.objects.get_or_create(name="Amusia", parent=parent_paradigm, sub_type=None)
         technique, created = Technique.objects.get_or_create(name="fMRI")
         task_type, created = TaskType.objects.get_or_create(name="Discrimination")
@@ -66,26 +73,24 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         paradigms_res = self.when_paradigm_is_added_to_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
         technique_res = self.when_technique_is_added_to_experiment(study_id, experiment_id, technique_id=technique.id)
-        tasks_res = self.when_task_is_added_to_experiment(study_id, experiment_id, task_data=dict(type=task_type.id,
-                                                                                                  description="we did this"))
+        tasks_res = self.when_task_is_added_to_experiment(
+            study_id, experiment_id, task_data=dict(type=task_type.id, description="we did this")
+        )
 
-        measure_res = self.when_measure_is_added_to_experiment(study_id, experiment_id,
-                                                               measure_data=dict(type=measure_type.id,
-                                                                                 notes="this is a measure"))
+        measure_res = self.when_measure_is_added_to_experiment(
+            study_id, experiment_id, measure_data=dict(type=measure_type.id, notes="this is a measure")
+        )
 
         # check with stimulus without subcategory
 
-        stimulus_res = self.when_stimulus_is_added_to_experiment(study_id, experiment_id,
-                                                                 stimulus_data=dict(category=stimulus_category.id,
-                                                                                    modality=stimulus_modality.id
-                                                                                    ))
+        stimulus_res = self.when_stimulus_is_added_to_experiment(
+            study_id, experiment_id, stimulus_data=dict(category=stimulus_category.id, modality=stimulus_modality.id)
+        )
         relevant_theories = Theory.objects.filter(parent__isnull=False)
         for theory in relevant_theories:
-            interpretations_res = self.when_interpretation_is_added_to_experiment(study_id, experiment_id,
-                                                                                  interpretation_data=dict(
-                                                                                      theory=theory.id,
-                                                                                      type=InterpretationsChoices.PRO)
-                                                                                  )
+            interpretations_res = self.when_interpretation_is_added_to_experiment(
+                study_id, experiment_id, interpretation_data=dict(theory=theory.id, type=InterpretationsChoices.PRO)
+            )
         task_id = tasks_res["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         first_experiment = experiments_res[0]
@@ -96,11 +101,11 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(first_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
 
         # Now replace it
-        interpretations_res = self.when_interpretation_is_added_to_experiment(study_id, experiment_id,
-                                                                              interpretation_data=dict(
-                                                                                  theory=relevant_theories[0].id,
-                                                                                  type=InterpretationsChoices.CHALLENGES)
-                                                                              )
+        interpretations_res = self.when_interpretation_is_added_to_experiment(
+            study_id,
+            experiment_id,
+            interpretation_data=dict(theory=relevant_theories[0].id, type=InterpretationsChoices.CHALLENGES),
+        )
 
         experiments_res = self.get_experiments_for_study(study_id)
         first_experiment = experiments_res[0]
@@ -108,13 +113,15 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
         for interpretation in first_experiment["interpretations"]:
             if interpretation["theory"] == relevant_theories[0].id:
-                self.assertEqual(first_experiment["interpretations"][0]["type"],
-                                 InterpretationsChoices.CHALLENGES)  # data has been updated
+                self.assertEqual(
+                    first_experiment["interpretations"][0]["type"], InterpretationsChoices.CHALLENGES
+                )  # data has been updated
                 break
 
         paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
-        technique_res = self.when_technique_is_removed_from_experiment(study_id, experiment_id,
-                                                                       technique_id=technique.id)
+        technique_res = self.when_technique_is_removed_from_experiment(
+            study_id, experiment_id, technique_id=technique.id
+        )
         tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertListEqual(experiments_res[0]["paradigms"], [])
@@ -143,8 +150,9 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 1)
         self.assertListEqual(experiments_res[0]["theory_driven_theories"], ["GNW"])
-        self.add_results_summary_to_experiment(study_id=study_id, experiment_id=experiment_id,
-                                               results_summary="the results are here")
+        self.add_results_summary_to_experiment(
+            study_id=study_id, experiment_id=experiment_id, results_summary="the results are here"
+        )
         # trying with empty
         self.add_sample_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="bla notes")
         experiments_res = self.get_experiments_for_study(study_id)
@@ -194,11 +202,16 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res[0]["approval_status"], ApprovalChoices.AWAITING_REVIEW)
 
     def when_study_created_by_user_via_api(self, **kwargs):
-        default_study = dict(DOI="10.1016/j.cortex.2017.07.010", title="a study", year=1990,
-                             corresponding_author_email="test@example.com",
-                             authors=[],
-                             authors_key_words=["key", "word"],
-                             affiliations="some affiliations", countries=["IL"])
+        default_study = dict(
+            DOI="10.1016/j.cortex.2017.07.010",
+            title="a study",
+            year=1990,
+            corresponding_author_email="test@example.com",
+            authors=[],
+            authors_key_words=["key", "word"],
+            affiliations="some affiliations",
+            countries=["IL"],
+        )
         study_params = {**default_study, **kwargs}
 
         target_url = reverse("studies-submitted-list")
@@ -214,7 +227,8 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
             theory_driven=TheoryDrivenChoices.POST_HOC,
             type=ExperimentTypeChoices.NEUROSCIENTIFIC,
             theory_driven_theories=["GNW"],
-            type_of_consciousness=TypeOfConsciousnessChoices.CONTENT)
+            type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
+        )
         experiment_params = {**default_experiment, **kwargs}
         res = self.client.post(target_url, data=json.dumps(experiment_params), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)

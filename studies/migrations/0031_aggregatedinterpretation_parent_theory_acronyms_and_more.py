@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0030_auto_20230429_2134'),
+        ("studies", "0030_auto_20230429_2134"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='aggregatedinterpretation',
-            name='parent_theory_acronyms',
+            model_name="aggregatedinterpretation",
+            name="parent_theory_acronyms",
             field=models.CharField(blank=True, max_length=100, null=True),
         ),
         migrations.AddField(
-            model_name='theory',
-            name='acronym',
+            model_name="theory",
+            name="acronym",
             field=models.CharField(blank=True, max_length=10, null=True),
         ),
     ]

@@ -35,8 +35,9 @@ class StudiesViewSetTestCase(BaseTestCase):
         data = res.json()
         self.assertEqual(data["count"], 0)
 
-        self.given_study_exists(title="better_title", approval_status=ApprovalChoices.APPROVED,
-                                                 DOI="10.1017/j.cortex.2017.07.010")
+        self.given_study_exists(
+            title="better_title", approval_status=ApprovalChoices.APPROVED, DOI="10.1017/j.cortex.2017.07.010"
+        )
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
@@ -57,15 +58,17 @@ class StudiesViewSetTestCase(BaseTestCase):
         data = res.json()
         self.assertEqual(data["count"], 0)
 
-        self.given_study_exists(title="better_title", approval_status=ApprovalChoices.PENDING,
-                                                DOI="10.1017/j.cortex.2017.07.010")
+        self.given_study_exists(
+            title="better_title", approval_status=ApprovalChoices.PENDING, DOI="10.1017/j.cortex.2017.07.010"
+        )
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         data = res.json()
         self.assertEqual(data["count"], 0)
 
-        rejected_study = self.given_study_exists(title="rejected_title", approval_status=ApprovalChoices.PENDING,
-                                                 DOI="10.1018/j.cortex.2017.07.010")
+        rejected_study = self.given_study_exists(
+            title="rejected_title", approval_status=ApprovalChoices.PENDING, DOI="10.1018/j.cortex.2017.07.010"
+        )
         self.given_study_rejected_with_reason(rejected_study, "irrelevant")
 
         res = self.client.get(target_url)

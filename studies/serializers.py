@@ -3,9 +3,27 @@ from drf_spectacular.utils import extend_schema, extend_schema_field
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
-from studies.models import Experiment, Study, Theory, Interpretation, Technique, Author, Paradigm, ConsciousnessMeasure, \
-    Measure, FindingTag, Sample, Stimulus, Task, TaskType, ConsciousnessMeasurePhaseType, ConsciousnessMeasureType, \
-    FindingTagType, FindingTagFamily, MeasureType
+from studies.models import (
+    Experiment,
+    Study,
+    Theory,
+    Interpretation,
+    Technique,
+    Author,
+    Paradigm,
+    ConsciousnessMeasure,
+    Measure,
+    FindingTag,
+    Sample,
+    Stimulus,
+    Task,
+    TaskType,
+    ConsciousnessMeasurePhaseType,
+    ConsciousnessMeasureType,
+    FindingTagType,
+    FindingTagFamily,
+    MeasureType,
+)
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, ModalityType
 
 
@@ -13,7 +31,7 @@ class TheorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Theory
         depth = 2
-        fields = ('id', 'name', 'parent')
+        fields = ("id", "name", "parent")
 
 
 class MeasureSerializer(serializers.ModelSerializer):
@@ -31,20 +49,22 @@ class FindingTagSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = FindingTag
-        fields = ("experiment",
-                  "id",
-                  "family",
-                  "type",
-                  "onset",
-                  "offset",
-                  "band_lower_bound",
-                  "band_higher_bound",
-                  "AAL_atlas_tag",
-                  "notes",
-                  "analysis_type",
-                  "is_NCC",
-                  "technique",
-                  "direction")
+        fields = (
+            "experiment",
+            "id",
+            "family",
+            "type",
+            "onset",
+            "offset",
+            "band_lower_bound",
+            "band_higher_bound",
+            "AAL_atlas_tag",
+            "notes",
+            "analysis_type",
+            "is_NCC",
+            "technique",
+            "direction",
+        )
 
 
 class InterpretationSerializer(serializers.ModelSerializer):
@@ -133,29 +153,30 @@ class FullExperimentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Experiment
         depth = 2
-        fields = ("id",
-                  "study",
-                  "interpretations",
-                  "results_summary",
-                  "techniques",
-                  "paradigms",
-                  "type_of_consciousness",
-                  "is_reporting",
-                  "theory_driven",
-                  "theory_driven_theories",
-                  "type",
-                  "finding_tags",
-                  "measures",
-                  "consciousness_measures",
-                  "samples",
-                  "stimuli",
-                  "tasks",
-                  "tasks_notes",
-                  "stimuli_notes",
-                  "consciousness_measures_notes",
-                  "paradigms_notes",
-                  "sample_notes"
-                  )
+        fields = (
+            "id",
+            "study",
+            "interpretations",
+            "results_summary",
+            "techniques",
+            "paradigms",
+            "type_of_consciousness",
+            "is_reporting",
+            "theory_driven",
+            "theory_driven_theories",
+            "type",
+            "finding_tags",
+            "measures",
+            "consciousness_measures",
+            "samples",
+            "stimuli",
+            "tasks",
+            "tasks_notes",
+            "stimuli_notes",
+            "consciousness_measures_notes",
+            "paradigms_notes",
+            "sample_notes",
+        )
 
     @extend_schema_field(InterpretationSerializer(many=True))
     def get_interpretations(self, obj: Experiment):
@@ -170,21 +191,22 @@ class ExperimentSerializer(FullExperimentSerializer):
 
     class Meta:
         model = Experiment
-        fields = ("id",
-                  "study",
-                  "results_summary",
-                  "techniques",
-                  "paradigms",
-                  "is_reporting",
-                  "theory_driven",
-                  "theory_driven_theories",
-                  "type",
-                  "tasks_notes",
-                  "stimuli_notes",
-                  "consciousness_measures_notes",
-                  "paradigms_notes",
-                  "sample_notes"
-                  )
+        fields = (
+            "id",
+            "study",
+            "results_summary",
+            "techniques",
+            "paradigms",
+            "is_reporting",
+            "theory_driven",
+            "theory_driven_theories",
+            "type",
+            "tasks_notes",
+            "stimuli_notes",
+            "consciousness_measures_notes",
+            "paradigms_notes",
+            "sample_notes",
+        )
 
 
 class ThinExperimentSerializer(ExperimentSerializer):
@@ -192,15 +214,16 @@ class ThinExperimentSerializer(ExperimentSerializer):
 
     class Meta:
         model = Experiment
-        fields = ("id",
-                  "study",
-                  "results_summary",
-                  "type_of_consciousness",
-                  "is_reporting",
-                  "theory_driven",
-                  "type",
-                  "theory_driven_theories"
-                  )
+        fields = (
+            "id",
+            "study",
+            "results_summary",
+            "type_of_consciousness",
+            "is_reporting",
+            "theory_driven",
+            "type",
+            "theory_driven_theories",
+        )
 
 
 class AuthorSerializer(serializers.ModelSerializer):
@@ -214,20 +237,21 @@ class StudySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ["authors",
-                  "DOI",
-                  "title",
-                  "year",
-                  "corresponding_author_email",
-                  "approval_status",
-                  "authors_key_words",
-                  "funding",
-                  "source_title",
-                  "abbreviated_source_title",
-                  "countries",
-                  "affiliations",
-                  "submitter"
-                  ]
+        fields = [
+            "authors",
+            "DOI",
+            "title",
+            "year",
+            "corresponding_author_email",
+            "approval_status",
+            "authors_key_words",
+            "funding",
+            "source_title",
+            "abbreviated_source_title",
+            "countries",
+            "affiliations",
+            "submitter",
+        ]
 
 
 class StudyWithExperimentsSerializer(serializers.ModelSerializer):
@@ -237,23 +261,24 @@ class StudyWithExperimentsSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Study
-        fields = ["id",
-                  "authors",
-                  "DOI",
-                  "title",
-                  "year",
-                  "corresponding_author_email",
-                  "approval_process",
-                  "approval_status",
-                  "authors_key_words",
-                  "funding",
-                  "source_title",
-                  "abbreviated_source_title",
-                  "countries",
-                  "affiliations",
-                  "submitter",
-                  "experiments"
-                  ]
+        fields = [
+            "id",
+            "authors",
+            "DOI",
+            "title",
+            "year",
+            "corresponding_author_email",
+            "approval_process",
+            "approval_status",
+            "authors_key_words",
+            "funding",
+            "source_title",
+            "abbreviated_source_title",
+            "countries",
+            "affiliations",
+            "submitter",
+            "experiments",
+        ]
 
 
 class StudyWithExperimentsCreateSerializer(StudyWithExperimentsSerializer):

@@ -5,20 +5,27 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0027_alter_sample_type_alter_stimulus_category_and_more'),
+        ("studies", "0027_alter_sample_type_alter_stimulus_category_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='consciousnessmeasure',
-            name='phase',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='consciousness_measures', to='studies.consciousnessmeasurephasetype'),
+            model_name="consciousnessmeasure",
+            name="phase",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="consciousness_measures",
+                to="studies.consciousnessmeasurephasetype",
+            ),
         ),
         migrations.AlterField(
-            model_name='consciousnessmeasure',
-            name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='consciousness_measures', to='studies.consciousnessmeasuretype'),
+            model_name="consciousnessmeasure",
+            name="type",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="consciousness_measures",
+                to="studies.consciousnessmeasuretype",
+            ),
         ),
     ]

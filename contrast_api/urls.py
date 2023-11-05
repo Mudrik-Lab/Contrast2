@@ -19,27 +19,34 @@ from django.conf.urls.static import static
 from django.conf import settings
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from two_factor.urls import urlpatterns as tf_urls
 from contrast_api import views
 
-admin.site.site_header = "contrast2  admin site"
+
+admin.site.site_header = "contrast admin site"
+admin.site.site_title = "Contrast admin management site"
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('health_check', views.healthcheck, name='healthcheck'),
-    path('api/api-token-auth/', TokenObtainPairView.as_view(), name='api-token-obtain-pair'),
-    path('api/api-token-refresh/', TokenRefreshView.as_view(), name='api-token-refresh'),
-    path('api/studies/', include('studies.urls')),
-    path('api/configuration/', include('configuration.urls')),
-    path('api/profiles/', include('users.urls'))
+    path("admin/", admin.site.urls),
+    path("", include(tf_urls)),
+    path("health_check", views.healthcheck, name="healthcheck"),
+    path("api/api-token-auth/", TokenObtainPairView.as_view(), name="api-token-obtain-pair"),
+    path("api/api-token-refresh/", TokenRefreshView.as_view(), name="api-token-refresh"),
+    path("api/studies/", include("studies.urls")),
+    path("api/configuration/", include("configuration.urls")),
+    path("api/profiles/", include("users.urls")),
 ]
 
 
 if settings.SWAGGER_ENABLED:
-    urlpatterns.extend([path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
-                        # Optional UI:
-                        path('api/schema/swagger-ui/', SpectacularSwaggerView.as_view(url_name='schema'),
-                             name='swagger-ui'),
-                        path('api/schema/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc')])
+    urlpatterns.extend(
+        [
+            path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+            # Optional UI:
+            path("api/schema/swagger-ui/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+            path("api/schema/redoc/", SpectacularRedocView.as_view(url_name="schema"), name="redoc"),
+        ]
+    )
 
     if settings.DEBUG:
         urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

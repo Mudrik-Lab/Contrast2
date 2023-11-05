@@ -4,22 +4,21 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0041_rename_finding_description_experiment_results_summary'),
+        ("studies", "0041_rename_finding_description_experiment_results_summary"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='consciousnessmeasure',
-            name='description',
+            model_name="consciousnessmeasure",
+            name="description",
         ),
         migrations.RemoveField(
-            model_name='stimulus',
-            name='description',
+            model_name="stimulus",
+            name="description",
         ),
         migrations.RemoveField(
-            model_name='task',
-            name='description',
+            model_name="task",
+            name="description",
         ),
     ]

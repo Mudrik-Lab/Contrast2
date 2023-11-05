@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0024_alter_findingtag_aal_atlas_tag'),
+        ("studies", "0024_alter_findingtag_aal_atlas_tag"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='findingtag',
-            name='offset',
+            model_name="findingtag",
+            name="offset",
             field=models.IntegerField(blank=True, null=True),
         ),
         migrations.AlterField(
-            model_name='findingtag',
-            name='onset',
+            model_name="findingtag",
+            name="onset",
             field=models.IntegerField(blank=True, null=True),
         ),
     ]

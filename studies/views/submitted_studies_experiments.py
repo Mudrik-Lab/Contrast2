@@ -10,15 +10,20 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from approval_process.choices import ApprovalChoices
 from studies.models import Experiment, Paradigm, Technique
 from studies.permissions import SubmitterOnlyPermission
-from studies.serializers import FullExperimentSerializer, ParadigmSerializer, ParadigmAddRemoveSerializer, \
-    TechniqueAddRemoveSerializer, TechniqueSerializer, ThinExperimentSerializer, NoteUpdateSerializer, \
-    OptionalNoteUpdateSerializer
+from studies.serializers import (
+    FullExperimentSerializer,
+    ParadigmSerializer,
+    ParadigmAddRemoveSerializer,
+    TechniqueAddRemoveSerializer,
+    TechniqueSerializer,
+    ThinExperimentSerializer,
+    NoteUpdateSerializer,
+    OptionalNoteUpdateSerializer,
+)
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 
 
-class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
-                                ModelViewSet,
-                                GenericViewSet):
+class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin, ModelViewSet, GenericViewSet):
     # TODO handle permissions, so delete/patch can't be done for non draft studies, or none mine
     permission_classes = [SubmitterOnlyPermission]
     pagination_class = None
@@ -26,9 +31,7 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
     queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
 
     def get_queryset(self):
-        qs = super().get_queryset() \
-            .filter(study=self.kwargs.get("study_pk")) \
-            .filter(study__submitter=self.request.user)
+        qs = super().get_queryset().filter(study=self.kwargs.get("study_pk")).filter(study__submitter=self.request.user)
         if self.action in ["create", "update", "partial_update", "delete"]:
             qs = qs.filter(study__approval_status=ApprovalChoices.PENDING)
         return qs
@@ -101,13 +104,13 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin,
 
     @extend_schema(request=ThinExperimentSerializer())
     def update(self, request, *args, **kwargs):
-        partial = kwargs.pop('partial', False)
+        partial = kwargs.pop("partial", False)
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=partial)
         serializer.is_valid(raise_exception=True)
         experiment = serializer.save()
 
-        if getattr(instance, '_prefetched_objects_cache', None):
+        if getattr(instance, "_prefetched_objects_cache", None):
             # If 'prefetch_related' has been applied to a queryset, we need to
             # forcibly invalidate the prefetch cache on the instance.
             instance._prefetched_objects_cache = {}

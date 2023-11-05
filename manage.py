@@ -3,17 +3,18 @@
 import os
 import sys
 
-os.environ.setdefault('DJANGO_CONFIGURATION', 'Development')
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'contrast_api.settings')
+os.environ.setdefault("DJANGO_CONFIGURATION", "Development")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "contrast_api.settings")
 
-if sys.argv[0] and sys.argv[0].find('django_test_manage.py'):
+if sys.argv[0] and sys.argv[0].find("django_test_manage.py"):
     import configurations
+
     configurations.setup()
 
 
 def main():
     """Run administrative tasks."""
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'contrast_api.settings')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "contrast_api.settings")
     try:
         from configurations.management import execute_from_command_line
     except ImportError as exc:
@@ -25,5 +26,5 @@ def main():
     execute_from_command_line(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

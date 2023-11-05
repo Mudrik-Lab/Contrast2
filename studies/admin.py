@@ -210,7 +210,7 @@ class CountryFilter(admin.SimpleListFilter):
             return queryset.filter(countries__contains=[self.value()])
 
 
-class StudyAdmin(ImportExportModelAdmin):
+class StudyAdmin(BaseContrastAdmin):
     model = Study
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title")
@@ -226,11 +226,11 @@ class StudyAdmin(ImportExportModelAdmin):
         return super().get_queryset(request).prefetch_related("authors")
 
 
-class AuthorAdmin(ImportExportModelAdmin):
+class AuthorAdmin(BaseContrastAdmin):
     model = Author
 
 
-class ConsciousnessMeasureAdmin(ImportExportModelAdmin):
+class ConsciousnessMeasureAdmin(BaseContrastAdmin):
     list_display = ("phase", "type", "experiment_id")
     model = ConsciousnessMeasure
     list_filter = ("phase", "type", TheoryInterpretationFilter)
@@ -255,7 +255,7 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
     model = FindingTagType
 
 
-class FindingTagAdmin(ImportExportModelAdmin):
+class FindingTagAdmin(BaseContrastAdmin):
     model = FindingTag
     search_fields = ("notes",)
     list_display = (
@@ -305,7 +305,7 @@ class MeasureTypeAdmin(ImportExportModelAdmin):
     model = MeasureType
 
 
-class MeasureAdmin(ImportExportModelAdmin):
+class MeasureAdmin(BaseContrastAdmin):
     model = Measure
     search_fields = ("notes",)
     list_display = ("id", "type", "notes", "experiment_id")
@@ -332,7 +332,7 @@ class IsParentFilter(admin.SimpleListFilter):
             return queryset.filter(parent__isnull=False)
 
 
-class ParadigmAdmin(ImportExportModelAdmin):
+class ParadigmAdmin(BaseContrastAdmin):
     model = Paradigm
     list_filter = (IsParentFilter, ("parent", admin.RelatedOnlyFieldListFilter))
 
@@ -340,7 +340,7 @@ class ParadigmAdmin(ImportExportModelAdmin):
         return super().get_queryset(request).select_related("parent", "parent__parent")
 
 
-class SampleAdmin(ImportExportModelAdmin):
+class SampleAdmin(BaseContrastAdmin):
     model = Sample
     list_filter = ("type", TheoryInterpretationFilter)
     list_display = ("type", "total_size", "size_included", "experiment")
@@ -359,7 +359,7 @@ class StimulusSubCategoryAdmin(ImportExportModelAdmin):
     model = StimulusSubCategory
 
 
-class StimulusAdmin(ImportExportModelAdmin):
+class StimulusAdmin(BaseContrastAdmin):
     list_display = ("id", "category", "sub_category", "modality", "duration", "experiment_id")
     model = Stimulus
     list_filter = (
@@ -379,18 +379,18 @@ class TaskTypeAdmin(ImportExportModelAdmin):
     model = TaskType
 
 
-class TaskAdmin(ImportExportModelAdmin):
+class TaskAdmin(BaseContrastAdmin):
     list_display = ("id", "type", "experiment_id")
     model = Task
     list_filter = (("type", admin.RelatedOnlyFieldListFilter), TheoryInterpretationFilter)
 
 
-class TechniqueAdmin(ImportExportModelAdmin):
+class TechniqueAdmin(BaseContrastAdmin):
     list_display = ("id", "name")
     model = Technique
 
 
-class TheoryAdmin(ImportExportModelAdmin):
+class TheoryAdmin(BaseContrastAdmin):
     model = Theory
     list_display = ("name", "parent_theory")
 

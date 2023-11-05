@@ -113,7 +113,6 @@ class Base(Configuration):
         "RESPONSE_HEADER": None,
     }
     ADMIN_REORDER = (
-
         {"app": "studies", "label": "studies", "models": ("studies.Study", "studies.Author")},
         {
             "app": "studies",
@@ -155,8 +154,7 @@ class Base(Configuration):
         },
         {"app": "studies", "label": "aggregates", "models": ("studies.AggregatedInterpretation",)},
         {"app": "approval_process"},
-        {"app": 'otp_totp', "label": "two factor auth config"}
-
+        {"app": "otp_totp", "label": "two factor auth config"},
     )
     # Device
 

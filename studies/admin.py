@@ -35,8 +35,10 @@ from rangefilter.filters import NumericRangeFilter
 
 from studies.resources.full_experiment import FullExperimentResource
 
+
 class BaseContrastAdmin(ImportExportMixin, SimpleHistoryAdmin):
     pass
+
 
 # Register your models here.
 class ExperimentRelatedInline:

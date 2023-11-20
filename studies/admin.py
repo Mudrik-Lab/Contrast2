@@ -2,7 +2,7 @@ from typing import List
 
 from django.contrib import admin
 from django.db.models import Prefetch
-from import_export.admin import ImportExportModelAdmin, ImportExportMixin
+from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 from simple_history.admin import SimpleHistoryAdmin
@@ -210,14 +210,35 @@ class CountryFilter(admin.SimpleListFilter):
             return queryset.filter(countries__contains=[self.value()])
 
 
-class StudyAdmin(BaseContrastAdmin):
+class JournalFilter(admin.SimpleListFilter):
+    title = "Journal"
+    parameter_name = "journal"
+
+    def lookups(self, request, model_admin):
+        # Get a list of all distinct countries that exist in the database
+        existing_journals = model_admin.get_queryset(request).values_list("abbreviated_source_title",
+                                                                          flat=True).distinct()
+
+        # Create a list of tuples for the filter dropdown
+        # Each tuple contains the country code and name
+        return [(journal, journal.capitalize()) for journal in existing_journals]
+
+    def queryset(self, request, queryset):
+        # If a country code is selected in the filter,
+        # return only the studies that have that country
+        if self.value():
+            return queryset.filter(abbreviated_source_title__in=[self.value()])
+
+
+class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
     filter_horizontal = ("authors",)
-    list_display = ("id", "DOI", "title")
+    list_display = ("id", "DOI", "title", "abbreviated_source_title")
     search_fields = ("title", "DOI")
     list_filter = (
         "approval_status",
         CountryFilter,
+        JournalFilter,
         ("year", NumericRangeFilter),
     )
     inlines = [ExperimentInline]
@@ -228,6 +249,8 @@ class StudyAdmin(BaseContrastAdmin):
 
 class AuthorAdmin(BaseContrastAdmin):
     model = Author
+    list_display = ("id", "name")
+    search_fields = ("id", "name",)
 
 
 class ConsciousnessMeasureAdmin(BaseContrastAdmin):
@@ -241,18 +264,23 @@ class ConsciousnessMeasureAdmin(BaseContrastAdmin):
 
 class ConsciousnessMeasureTypeAdmin(ImportExportModelAdmin):
     model = ConsciousnessMeasureType
+    list_display = ("id", "name")
 
 
 class ConsciousnessMeasurePhaseTypeAdmin(ImportExportModelAdmin):
     model = ConsciousnessMeasurePhaseType
+    list_display = ("id", "name")
 
 
 class FindingTagFamilyAdmin(ImportExportModelAdmin):
     model = FindingTagFamily
+    list_display = ("id", "name")
 
 
 class FindingTagTypeAdmin(ImportExportModelAdmin):
     model = FindingTagType
+    list_display = ("id", "name", "family")
+    list_filter = ("family",)
 
 
 class FindingTagAdmin(BaseContrastAdmin):
@@ -348,15 +376,18 @@ class SampleAdmin(BaseContrastAdmin):
 
 class ModalityTypeAdmin(ImportExportModelAdmin):
     model = ModalityType
+    list_display = ("id", "name")
 
 
 class StimulusCategoryAdmin(ImportExportModelAdmin):
     model = StimulusCategory
+    list_display = ("id", "name")
 
 
 class StimulusSubCategoryAdmin(ImportExportModelAdmin):
     list_display = ("id", "name", "parent")
     model = StimulusSubCategory
+    list_filter = ("parent",)
 
 
 class StimulusAdmin(BaseContrastAdmin):
@@ -377,6 +408,7 @@ class StimulusAdmin(BaseContrastAdmin):
 
 class TaskTypeAdmin(ImportExportModelAdmin):
     model = TaskType
+    list_display = ("id", "name")
 
 
 class TaskAdmin(BaseContrastAdmin):

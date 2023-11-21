@@ -81,25 +81,25 @@ class FindingTag(models.Model):
         # validating properties by family
         if self.family in self.available_properties_by_family.keys():
             available_props_for_type = self.available_properties_by_family[self.family]
-        else:
-            available_props_for_type = self.available_properties_by_family["general"]
-        for possible_property in self.variable_properties:
-            # First we check if the property is assigned
-            if getattr(self, possible_property) is not None:
-                if possible_property not in available_props_for_type:
-                    # if it wasn't expected raise
-                    raise ValidationError(
-                        {
-                            possible_property: f"finding type for type {self.type} of family {self.family} was assigned  {possible_property} and doesn't support it"
-                        }
-                    )
-            else:  # if it's not assigned
-                if possible_property in available_props_for_type:  # check if it's expected
-                    raise ValidationError(
-                        {
-                            possible_property: f"finding type for type {self.type} of family {self.family} was not assigned {possible_property} and expects it"
-                        }
-                    )
+
+            for possible_property in self.variable_properties:
+                # First we check if the property is assigned
+                if getattr(self, possible_property) is not None:
+                    # check if it exists and it shouldn't
+                    if possible_property not in available_props_for_type:
+                        # if it wasn't expected raise
+                        raise ValidationError(
+                            {
+                                possible_property: f"finding type for type {self.type} of family {self.family} was assigned  {possible_property} and doesn't support it"
+                            }
+                        )
+                else:  # if it's not assigned
+                    if possible_property in available_props_for_type:  # check if it's expected
+                        raise ValidationError(
+                            {
+                                possible_property: f"finding type for type {self.type} of family {self.family} was not assigned {possible_property} and expects it"
+                            }
+                        )
 
     def __str__(self):
         return f"experiment: {self.experiment_id} family {self.family}, type {self.type}"

@@ -42,5 +42,15 @@ class NotifierService:
             subject=subject, recipient=recipient, from_email=self.default_from_email, html_text=message
         )
 
-    def notify_study_status_change(self, request, recipient, **kwargs):
-        pass
+    def notify_recipient(self, recipient, subject, message, **kwargs):
+        logger.info(f"Recipient notification with subject: {subject}")
+        self.email_service.send_email(
+            subject=subject, recipient=recipient, from_email=self.default_from_email, html_text=message
+        )
+
+    def notify_site_manager(self, message, subject):
+        recipient = settings.SITE_MANAGER_ADDRESS
+        logger.info(f"Site manager notification with subject: {subject}")
+        self.email_service.send_email(
+            subject=subject, recipient=recipient, from_email=self.default_from_email, html_text=message
+        )

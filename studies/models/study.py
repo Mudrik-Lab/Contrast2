@@ -34,6 +34,7 @@ class Study(models.Model):
     submitter = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL
     )  # Optional submitter
+    is_author_submitter = models.BooleanField(null=True, blank=True)
     history = HistoricalRecords()
 
     def __str__(self):

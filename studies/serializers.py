@@ -278,6 +278,7 @@ class StudyWithExperimentsSerializer(serializers.ModelSerializer):
             "affiliations",
             "submitter",
             "experiments",
+            "is_author_submitter"
         ]
 
 

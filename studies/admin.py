@@ -1,12 +1,13 @@
 from typing import List
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import Prefetch
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 from simple_history.admin import SimpleHistoryAdmin
 
+from contrast_api.application_services.study_lifecycle import StudyLifeCycleService
 from studies.choices import InterpretationsChoices
 from studies.models import (
     Study,
@@ -102,7 +103,6 @@ class ExperimentAdmin(BaseContrastAdmin):
         "type_of_consciousness",
         "is_reporting",
         "theory_driven",
-        "study__title",
     )
     model = Experiment
     fields = (
@@ -118,6 +118,8 @@ class ExperimentAdmin(BaseContrastAdmin):
         "paradigms",
     )
     search_fields = (
+        "study__DOI",
+        "study__title",
         "results_summary",
         "paradigms_notes",
         "tasks_notes",
@@ -230,6 +232,20 @@ class JournalFilter(admin.SimpleListFilter):
             return queryset.filter(abbreviated_source_title__in=[self.value()])
 
 
+@admin.action(description="rejecting a pending study")
+def reject_study(modeladmin, request, queryset):
+    service = StudyLifeCycleService()
+    service.rejected(queryset)
+    messages.info(request, "Rejected studies")
+
+
+@admin.action(description="approving a pending study")
+def approve_study(modeladmin, request, queryset):
+    service = StudyLifeCycleService()
+    service.approved(queryset)
+    messages.info(request, "Approved studies")
+
+
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
     filter_horizontal = ("authors",)
@@ -237,10 +253,12 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     search_fields = ("title", "DOI")
     list_filter = (
         "approval_status",
+        "is_author_submitter",
         CountryFilter,
         JournalFilter,
         ("year", NumericRangeFilter),
     )
+    actions = (approve_study, reject_study)
     inlines = [ExperimentInline]
 
     def get_queryset(self, request):

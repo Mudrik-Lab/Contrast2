@@ -366,10 +366,3 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         target_url = reverse("studies-experiments-set-samples-notes", args=[study_id, experiment_id])
         res = self.client.post(target_url, json.dumps(dict(note=notes)), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
-
-    def verify_mailbox_emails_count_by_predicate(self, predicate: Callable, expected_email_count: int):
-        found_count = 0
-        for message in mail.outbox:
-            if predicate(message):
-                found_count += 1
-        self.assertEqual(found_count, expected_email_count)

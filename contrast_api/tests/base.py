@@ -5,7 +5,7 @@ from django.core import mail
 from rest_framework import status
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
-from typing import Optional
+from typing import Optional, Callable
 from approval_process.choices import ApprovalChoices
 from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.models import (
@@ -208,3 +208,10 @@ class BaseTestCase(APITestCase):
     def when_a_user_searches_for_author(self, part_name: str):
         res = self.client.get(self.reverse_with_query_params("authors-list", search=part_name))
         return res
+
+    def verify_mailbox_emails_count_by_predicate(self, predicate: Callable, expected_email_count: int):
+        found_count = 0
+        for message in mail.outbox:
+            if predicate(message):
+                found_count += 1
+        self.assertEqual(found_count, expected_email_count)

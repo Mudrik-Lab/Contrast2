@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django_countries import countries
 from simple_history.admin import SimpleHistoryAdmin
 
-from contrast_api.application_services.study_lifecycle import StudyLifeCycleService
+from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
 from studies.choices import InterpretationsChoices
 from studies.models import (
     Study,

@@ -13,13 +13,15 @@ class StudyLifeCycleService:
         self.notifier = NotifierService()
 
     def submitted(self, submitter, study: Study):
-        submitter_subject = "your submission was received"
+        study.approval_status = ApprovalChoices.AWAITING_REVIEW
+        study.save()
+        submitter_subject = "Your submission was received"
 
         data = dict(study=study, username=study.submitter.username)
-        message = render_to_string("approval_process/received_submission.html", data)
+        message = render_to_string("received_submission.html", data)
         self.notifier.notify_recipient(subject=submitter_subject, recipient=submitter.email, message=message)
         site_manager_subject = "A submission was received"
-        message = render_to_string("approval_process/study_submitted.html", data)
+        message = render_to_string("study_submitted.html", data)
         self.notifier.notify_site_manager(subject=site_manager_subject, message=message)
 
     def approved(self, reviewer, studies: QuerySet[Study]):
@@ -34,7 +36,7 @@ class StudyLifeCycleService:
                                        text="Submission approved")
         data = dict(study=study, username=study.submitter.username)
         subject = "your submission was approved"
-        message = render_to_string("approval_process/submission_approved.html", data)
+        message = render_to_string("submission_approved.html", data)
         self.notifier.notify_recipient(subject=subject, recipient=study.submitter.email, message=message)
 
     def rejected(self, reviewer, studies: QuerySet[Study]):
@@ -48,5 +50,5 @@ class StudyLifeCycleService:
         ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer, text="Submission rejected")
         data = dict(study=study, username=study.submitter.username)
         subject = "your submission was rejected"
-        message = render_to_string("approval_process/submission_rejected.html", data)
+        message = render_to_string("submission_rejected.html", data)
         self.notifier.notify_recipient(subject=subject, recipient=study.submitter.email, message=message)

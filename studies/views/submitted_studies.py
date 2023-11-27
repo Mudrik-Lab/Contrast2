@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from approval_process.choices import ApprovalChoices
+from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
 from studies.models import Study, Measure, FindingTag, Task, ConsciousnessMeasure, Stimulus, Paradigm
 from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import (
@@ -85,8 +86,9 @@ class SubmitStudiesViewSet(ModelViewSet):
         Endpoint to change the study status
         """
         instance: Study = self.get_object()
-        instance.approval_status = ApprovalChoices.AWAITING_REVIEW
-        instance.save()
+
+        service = StudyLifeCycleService()
+        service.submitted(instance.submitter, instance)
         return Response(status=status.HTTP_201_CREATED)
 
     @action(detail=False, methods=["GET"])

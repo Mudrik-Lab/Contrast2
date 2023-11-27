@@ -1,5 +1,6 @@
 import datetime
 import json
+from typing import Callable
 
 from django.urls import reverse
 from rest_framework import status
@@ -15,6 +16,7 @@ from studies.choices import (
 )
 from studies.models import Study, Theory, Paradigm, Technique, TaskType, MeasureType, StimulusCategory, ModalityType
 from contrast_api.tests.base import BaseTestCase
+from django.core import mail
 
 
 # Create your tests here.
@@ -177,7 +179,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         test approval status is pending and approval process is created
         test submitter gets study back, but other user don't
         """
-        self.given_user_exists(username="submitting_user")
+        self.given_user_exists(username="submitting_user", email="submitting_user@test.com")
         self.given_user_authenticated("submitting_user", "12345")
         author1 = self.given_an_author_exists("author1")
         study_res = self.when_study_created_by_user_via_api(authors_key_words=[], authors=[author1.id])
@@ -195,11 +197,30 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         res = self.get_pending_studies()
         self.assertEqual(len(res["results"]), 1)
-
         self.when_study_is_submitted_to_review(study_id)
         res = self.when_user_fetches_their_studies()
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0]["approval_status"], ApprovalChoices.AWAITING_REVIEW)
+
+    def test_study_submission_behavior(self):
+        """
+        test study is created with 201
+        test approval status is pending and approval process is created
+        """
+        self.given_user_exists(username="submitting_user", email="submitting_user@test.com")
+        self.given_user_authenticated("submitting_user", "12345")
+        author1 = self.given_an_author_exists("author1")
+        study_res = self.when_study_created_by_user_via_api(authors_key_words=[], authors=[author1.id])
+        study_id = study_res["id"]
+
+        # one email for site manager and one for recipient
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'your submission was received',
+                                                      0)
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'a submission was received', 0)
+        self.when_study_is_submitted_to_review(study_id)
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'your submission was received',
+                                                      1)
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'a submission was received', 1)
 
     def when_study_created_by_user_via_api(self, **kwargs):
         default_study = dict(
@@ -345,3 +366,10 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         target_url = reverse("studies-experiments-set-samples-notes", args=[study_id, experiment_id])
         res = self.client.post(target_url, json.dumps(dict(note=notes)), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+
+    def verify_mailbox_emails_count_by_predicate(self, predicate: Callable, expected_email_count: int):
+        found_count = 0
+        for message in mail.outbox:
+            if predicate(message):
+                found_count += 1
+        self.assertEqual(found_count, expected_email_count)

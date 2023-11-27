@@ -148,9 +148,9 @@ class BaseTestCase(APITestCase):
         task, created = Task.objects.get_or_create(**params)
         return task
 
-    def given_user_exists(self, username, password="12345", is_staff=False, is_superuser=False):
+    def given_user_exists(self, username, password="12345", is_staff=False, is_superuser=False, **kwargs):
         obj = get_user_model().objects.create_user(
-            username=username, password=password, is_staff=is_staff, is_superuser=is_superuser
+            username=username, password=password, is_staff=is_staff, is_superuser=is_superuser, **kwargs
         )
 
         return obj

@@ -20,7 +20,7 @@ class Study(models.Model):
     )
     corresponding_author_email = models.EmailField(null=True, blank=True)
     approval_process = models.OneToOneField(
-        null=True, blank=True, to="approval_process.ApprovalProcess", on_delete=SET_NULL
+        null=True, blank=True, to="approval_process.ApprovalProcess", on_delete=SET_NULL, related_name="study"
     )
     approval_status = models.IntegerField(
         choices=ApprovalChoices.choices, null=False, blank=False, default=ApprovalChoices.PENDING
@@ -34,6 +34,7 @@ class Study(models.Model):
     submitter = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL
     )  # Optional submitter
+    is_author_submitter = models.BooleanField(null=True, blank=True)
     history = HistoricalRecords()
 
     def __str__(self):

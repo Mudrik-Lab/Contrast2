@@ -2,7 +2,7 @@ from import_export import resources
 from import_export.fields import Field
 
 from studies.choices import ExperimentTypeChoices
-from studies.models import Experiment
+from studies.models import Experiment, Study
 
 
 class FullExperimentResource(resources.ModelResource):
@@ -78,7 +78,7 @@ class FullExperimentResource(resources.ModelResource):
 
     def dehydrate_stimuli(self, experiment: Experiment):
         return "|".join(
-            f"{st.category.name} {'('+ st.sub_category.name +')' if st.sub_category else ''} - {st.modality.name} "
+            f"{st.category.name} {'(' + st.sub_category.name + ')' if st.sub_category else ''} - {st.modality.name} "
             for st in experiment.stimuli.all()
         )
 
@@ -93,3 +93,23 @@ class FullExperimentResource(resources.ModelResource):
 
     def dehydrate_type(self, experiment: Experiment):
         return next(label for value, label in ExperimentTypeChoices.choices if value == experiment.type)
+
+
+class FullStudyResource(resources.ModelResource):
+    authors = Field()
+
+    class Meta:
+        model = Study
+        fields = (
+            "id"
+            "title",
+            "authors",
+            "year",
+            "funding",
+            "source_title",
+            "countries",
+            "affiliations",
+        )
+
+    def dehydrate_authors(self, experiment: Experiment):
+        return "|".join(author.name for author in experiment.study.authors.all())

@@ -1,6 +1,6 @@
 from django.template.loader import render_to_string
 
-from contrast_api.application_services.notifer import NotifierService
+from contrast_api.application_services.notifier import NotifierService
 
 
 class FeedbackService:

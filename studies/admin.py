@@ -223,26 +223,28 @@ class JournalFilter(admin.SimpleListFilter):
 
         # Create a list of tuples for the filter dropdown
         # Each tuple contains the country code and name
-        return [(journal, journal.capitalize()) for journal in existing_journals]
+        return [(journal, journal.capitalize()) for journal in existing_journals if journal is not None] + [("None", "None")]
 
     def queryset(self, request, queryset):
         # If a country code is selected in the filter,
         # return only the studies that have that country
-        if self.value():
+        if self.value() == "None":
+            return queryset.filter(abbreviated_source_title__isnull=True)
+        elif self.value():
             return queryset.filter(abbreviated_source_title__in=[self.value()])
 
 
 @admin.action(description="rejecting a pending study")
 def reject_study(modeladmin, request, queryset):
     service = StudyLifeCycleService()
-    service.rejected(queryset)
+    service.rejected(request.user, queryset)
     messages.info(request, "Rejected studies")
 
 
 @admin.action(description="approving a pending study")
 def approve_study(modeladmin, request, queryset):
     service = StudyLifeCycleService()
-    service.approved(queryset)
+    service.approved(request.user, queryset)
     messages.info(request, "Approved studies")
 
 

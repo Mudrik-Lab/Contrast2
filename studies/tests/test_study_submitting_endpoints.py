@@ -236,10 +236,17 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.when_admin_approves_study(study_id)
 
         self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'your submission was approved', 1)
+        study = Study.objects.get(id=study_id)
+        self.assertEqual(study.approval_status, ApprovalChoices.APPROVED)
+        self.assertEqual(study.approval_process.comments.last().text, "Submission approved")
 
         self.when_admin_rejects_study(study_id)
 
         self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'your submission was rejected', 1)
+        study = Study.objects.get(id=study_id)
+        self.assertEqual(study.approval_status, ApprovalChoices.REJECTED)
+        self.assertEqual(study.approval_process.comments.last().text, "Submission rejected")
+        self.assertEqual(len(study.approval_process.comments.all()), 2)
 
     def when_study_created_by_user_via_api(self, **kwargs):
         default_study = dict(

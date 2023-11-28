@@ -4,7 +4,7 @@ from django.template.loader import render_to_string
 
 from approval_process.choices import ApprovalChoices
 from approval_process.models import ApprovalProcess, ApprovalComment
-from contrast_api.application_services.notifer import NotifierService
+from contrast_api.application_services.notifier import NotifierService
 from studies.models import Study
 
 
@@ -30,7 +30,7 @@ class StudyLifeCycleService:
 
     @transaction.atomic
     def _approve_study(self, reviewer, study: Study):
-        study.approval_status = ApprovalChoices.REJECTED
+        study.approval_status = ApprovalChoices.APPROVED
         study.save()
         ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer,
                                        text="Submission approved")

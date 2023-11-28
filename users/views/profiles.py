@@ -12,7 +12,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from rest_framework.viewsets import mixins
 
-from contrast_api.application_services.notifer import NotifierService
+from contrast_api.application_services.notifier import NotifierService
 from studies.permissions import SelfOnlyProfilePermission
 from users.models import Profile
 from users.serializers import (

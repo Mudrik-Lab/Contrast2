@@ -222,6 +222,25 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
                                                       1)
         self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'a submission was received', 1)
 
+    def test_study_approve_reject_flow(self):
+        self.given_user_exists(username="submitting_user", email="submitting_user@test.com")
+        self.given_user_authenticated("submitting_user", "12345")
+        author1 = self.given_an_author_exists("author1")
+        study_res = self.when_study_created_by_user_via_api(authors_key_words=[], authors=[author1.id])
+        study_id = study_res["id"]
+
+        self.when_study_is_submitted_to_review(study_id)
+
+        self.given_user_exists(username="admin_user", is_staff=True, is_superuser=True)
+        self.given_admin_user_authenticated("admin_user", "12345")
+        self.when_admin_approves_study(study_id)
+
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'your submission was approved', 1)
+
+        self.when_admin_rejects_study(study_id)
+
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'your submission was rejected', 1)
+
     def when_study_created_by_user_via_api(self, **kwargs):
         default_study = dict(
             DOI="10.1016/j.cortex.2017.07.010",

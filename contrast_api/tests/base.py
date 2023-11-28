@@ -47,6 +47,10 @@ class BaseTestCase(APITestCase):
         access_token = res.data["access"]
         self.client.credentials(HTTP_AUTHORIZATION="Bearer " + access_token)
 
+    def given_admin_user_authenticated(self, username, password):
+        res = self.client.login(username=username, password=password)
+        self.assertTrue(res)
+
     def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
         default_experiment = dict(
             study=study,
@@ -208,6 +212,15 @@ class BaseTestCase(APITestCase):
     def when_a_user_searches_for_author(self, part_name: str):
         res = self.client.get(self.reverse_with_query_params("authors-list", search=part_name))
         return res
+
+    def when_admin_approves_study(self, study_id:int):
+        res = self.client.post(reverse("admin:studies_study_changelist"), data=dict(action="approve_study", _selected_action=study_id))
+        self.assertEqual(res.status_code, status.HTTP_302_FOUND)
+
+    def when_admin_rejects_study(self, study_id: int):
+        res = self.client.post(reverse("admin:studies_study_changelist"),
+                               data=dict(action="reject_study", _selected_action=study_id))
+        self.assertEqual(res.status_code, status.HTTP_302_FOUND)
 
     def verify_mailbox_emails_count_by_predicate(self, predicate: Callable, expected_email_count: int):
         found_count = 0

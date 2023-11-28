@@ -35,7 +35,7 @@ class StudyLifeCycleService:
         ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer,
                                        text="Submission approved")
         data = dict(study=study, username=study.submitter.username)
-        subject = "your submission was approved"
+        subject = "Your submission was approved"
         message = render_to_string("submission_approved.html", data)
         self.notifier.notify_recipient(subject=subject, recipient=study.submitter.email, message=message)
 
@@ -49,6 +49,6 @@ class StudyLifeCycleService:
         study.save()
         ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer, text="Submission rejected")
         data = dict(study=study, username=study.submitter.username)
-        subject = "your submission was rejected"
+        subject = "Your submission was rejected"
         message = render_to_string("submission_rejected.html", data)
         self.notifier.notify_recipient(subject=subject, recipient=study.submitter.email, message=message)

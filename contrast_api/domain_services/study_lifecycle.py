@@ -15,7 +15,7 @@ class StudyLifeCycleService:
     def submitted(self, submitter, study: Study):
         study.approval_status = ApprovalChoices.AWAITING_REVIEW
         study.save()
-        submitter_subject = "Your submission was received"
+        submitter_subject = "regarding your submission to ConTraSt database"
 
         data = dict(study=study, username=study.submitter.username)
         message = render_to_string("received_submission.html", data)
@@ -35,7 +35,7 @@ class StudyLifeCycleService:
         ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer,
                                        text="Submission approved")
         data = dict(study=study, username=study.submitter.username)
-        subject = "Your submission was approved"
+        subject = "regarding your submission to ConTraSt database"
         message = render_to_string("submission_approved.html", data)
         self.notifier.notify_recipient(subject=subject, recipient=study.submitter.email, message=message)
 
@@ -49,6 +49,6 @@ class StudyLifeCycleService:
         study.save()
         ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer, text="Submission rejected")
         data = dict(study=study, username=study.submitter.username)
-        subject = "Your submission was rejected"
+        subject = "regarding your submission to ConTraSt database"
         message = render_to_string("submission_rejected.html", data)
         self.notifier.notify_recipient(subject=subject, recipient=study.submitter.email, message=message)

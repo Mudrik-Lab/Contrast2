@@ -6,5 +6,8 @@ class Author(models.Model):
     name = models.CharField(null=False, blank=False, max_length=100)
     history = HistoricalRecords()
 
+    class Meta:
+        ordering = ('name', )
+
     def __str__(self):
         return f"{self.name}"

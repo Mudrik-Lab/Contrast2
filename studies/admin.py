@@ -223,7 +223,8 @@ class JournalFilter(admin.SimpleListFilter):
 
         # Create a list of tuples for the filter dropdown
         # Each tuple contains the country code and name
-        return [(journal, journal.capitalize()) for journal in existing_journals if journal is not None] + [("None", "None")]
+        return [(journal, journal.capitalize()) for journal in existing_journals if journal is not None] + [
+            ("None", "None")]
 
     def queryset(self, request, queryset):
         # If a country code is selected in the filter,
@@ -248,11 +249,18 @@ def approve_study(modeladmin, request, queryset):
     messages.info(request, "Approved studies")
 
 
+@admin.action(description="moving a study to review")
+def review_study(modeladmin, request, queryset):
+    service = StudyLifeCycleService()
+    service.reviewed(request.user, queryset)
+    messages.info(request, "Reviewing studies")
+
+
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
     filter_horizontal = ("authors",)
-    list_display = ("id", "DOI", "title", "abbreviated_source_title")
-    search_fields = ("title", "DOI")
+    list_display = ("id", "DOI", "title", "abbreviated_source_title", "is_author_submitter", "submitter_name")
+    search_fields = ("title", "DOI", "submitter__email")
     list_filter = (
         "approval_status",
         "is_author_submitter",
@@ -260,11 +268,14 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
         JournalFilter,
         ("year", NumericRangeFilter),
     )
-    actions = (approve_study, reject_study)
+    actions = (approve_study, reject_study, review_study)
     inlines = [ExperimentInline]
 
     def get_queryset(self, request):
-        return super().get_queryset(request).prefetch_related("authors")
+        return super().get_queryset(request).select_related("submitter").prefetch_related("authors")
+
+    def submitter_name(self, obj):
+        return obj.submitter and obj.submitter.username
 
 
 class AuthorAdmin(BaseContrastAdmin):

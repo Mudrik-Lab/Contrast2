@@ -29,6 +29,13 @@ class StudyLifeCycleService:
             self._approve_study(reviewer, study)
 
     @transaction.atomic
+    def _review_study(self, reviewer, study: Study):
+        study.approval_status = ApprovalChoices.AWAITING_REVIEW
+        study.save()
+        ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer,
+                                       text="Submission moved to review")
+
+    @transaction.atomic
     def _approve_study(self, reviewer, study: Study):
         study.approval_status = ApprovalChoices.APPROVED
         study.save()
@@ -42,6 +49,10 @@ class StudyLifeCycleService:
     def rejected(self, reviewer, studies: QuerySet[Study]):
         for study in studies:
             self._reject_study(reviewer, study)
+
+    def reviewed(self, reviewer, studies: QuerySet[Study]):
+        for study in studies:
+            self._review_study(reviewer, study)
 
     @transaction.atomic
     def _reject_study(self, reviewer, study: Study):

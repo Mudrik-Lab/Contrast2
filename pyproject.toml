@@ -21,7 +21,7 @@ gunicorn = "^21.2.0"
 djangorestframework-simplejwt = "^5.3.1"
 psycopg2 = "^2.9.9"
 drf-nested-routers = "^0.93.4"
-drf-spectacular = "^0.26.5"
+drf-spectacular = "^0.27.0"
 boto3 = ">=1.26.109"
 django-nested-inline = "^0.4.6"
 django-modeladmin-reorder = {git = "https://github.com/bloodwithmilk25/django-modeladmin-reorder.git", rev = "master"}

@@ -258,6 +258,7 @@ def review_study(modeladmin, request, queryset):
 
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
+    resource_classes = [FullExperimentResource]  # Note: we're return experiments, not studies
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title", "abbreviated_source_title", "is_author_submitter", "submitter_name")
     search_fields = ("title", "DOI", "submitter__email")
@@ -270,6 +271,10 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     )
     actions = (approve_study, reject_study, review_study)
     inlines = [ExperimentInline]
+
+    def get_export_data(self, file_format, queryset, *args, **kwargs):
+        experiments_qs = Experiment.objects.related().filter(study__in=queryset)
+        return super().get_export_data(file_format, queryset=experiments_qs, *args, **kwargs)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("submitter").prefetch_related("authors")

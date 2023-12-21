@@ -22,8 +22,10 @@ class FullExperimentResource(resources.ModelResource):
     class Meta:
         model = Experiment
         fields = (
+            "study__DOI",
             "study__title",
             "authors",
+            "study__corresponding_author_email",
             "study__year",
             "study__funding",
             "study__source_title",
@@ -45,8 +47,14 @@ class FullExperimentResource(resources.ModelResource):
             "samples",
             "stimuli",
             "tasks",
-            "notes",
+            "tasks_notes",
+            "consciousness_measures_notes",
+            "stimuli_notes",
+            "paradigms_notes",
+            "sample_notes",
         )
+
+        export_order = fields
 
     def dehydrate_authors(self, experiment: Experiment):
         return "|".join(author.name for author in experiment.study.authors.all())
@@ -93,23 +101,3 @@ class FullExperimentResource(resources.ModelResource):
 
     def dehydrate_type(self, experiment: Experiment):
         return next(label for value, label in ExperimentTypeChoices.choices if value == experiment.type)
-
-
-class FullStudyResource(resources.ModelResource):
-    authors = Field()
-
-    class Meta:
-        model = Study
-        fields = (
-            "id"
-            "title",
-            "authors",
-            "year",
-            "funding",
-            "source_title",
-            "countries",
-            "affiliations",
-        )
-
-    def dehydrate_authors(self, experiment: Experiment):
-        return "|".join(author.name for author in experiment.study.authors.all())

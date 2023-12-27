@@ -1,3 +1,4 @@
+from django_countries import countries
 from import_export import resources
 from import_export.fields import Field
 
@@ -8,55 +9,71 @@ SEPERATOR = " || "
 
 
 class FullExperimentResource(resources.ModelResource):
-    experiment_id = Field(attribute="id")
-    journal = Field(attribute="study__source_title")
-    authors = Field()
-    interpretations = Field()
-    techniques = Field()
-    paradigms = Field()
-    measures = Field()
-    samples = Field()
-    consciousness_measures = Field()
-    stimuli = Field()
-    tasks = Field()
-    finding_tags = Field()
-    theory_driven_theories = Field()
-    type = Field()
+    Experiment_id = Field(attribute="id")
+    DOI = Field(attribute="study__DOI")
+    Journal = Field(attribute="study__source_title")
+    Title = Field(attribute="study__title")
+    Authors = Field(dehydrate_method="dehydrate_authors")
+    Is_the_author_the_submitter = Field(attribute="study__is_author_submitter")
+    Year = Field(attribute="study__year")
+    Countries_of_affiliation = Field(dehydrate_method="dehydrate_countries")
+    Type_of_experiment = Field(dehydrate_method="dehydrate_type")
+    NCC_results_summary = Field(attribute="results_summary")
+    Support_or_Challenges_interpretations = Field(dehydrate_method="dehydrate_interpretations")
+    Type_of_consciousness = Field(attribute="type_of_consciousness")
+    Techniques = Field(dehydrate_method="dehydrate_techniques")
+    Experiment_paradigm = Field(dehydrate_method="dehydrate_paradigms")
+    Measures = Field(dehydrate_method="dehydrate_measures")
+    Samples = Field(dehydrate_method="dehydrate_samples")
+    Consciousness_measures = Field(dehydrate_method="dehydrate_consciousness_measures")
+    Stimuli = Field(dehydrate_method="dehydrate_stimuli")
+    Tasks = Field(dehydrate_method="dehydrate_tasks")
+    NCC_findings = Field(dehydrate_method="dehydrate_finding_tags")
+    Driven_by_theories = Field(attribute="theory_driven_theories")
+    Is_the_experiment_theory_driven = Field(attribute="theory_driven")
+    Sample_notes = Field(attribute="sample_notes")
+    Tasks_notes = Field(attribute="tasks_notes")
+    Stimuli_notes = Field(attribute="stimuli_notes")
+    Paradigms_notes = Field(attribute="paradigms_notes")
+    Consciousness_measures_notes = Field(attribute="consciousness_measures_notes")
 
     class Meta:
         model = Experiment
         fields = (
-            "study__DOI",
-            "study__title",
-            "authors",
-            "study__is_author_submitter",
-            "study__year",
-            "journal",
-            "study__countries",
-            "experiment_id",
-            "results_summary",
-            "type",
-            "theory_driven",
-            "theory_driven_theories",
-            "interpretations",
-            "type_of_consciousness",
+            "DOI",
+            "Title",
+            "Authors",
+            "Is_the_author_the_submitter",
+            "Year",
+            "Journal",
+            "Countries_of_affiliation",
+            "Experiment_id",
+            "NCC_results_summary",
+            "Type_of_experiment",
+            "Is_the_experiment_theory_driven",
+            "Driven_by_theories",
+            "Support_or_Challenges_interpretations",
+            "Type_of_consciousness",
             "is_reporting",
-            "paradigms",
-            "paradigms_notes",
-            "samples",
-            "sample_notes",
-            "tasks",
-            "tasks_notes",
-            "stimuli",
-            "stimuli_notes",
-            "consciousness_measures",
-            "consciousness_measures_notes",
-            "techniques",
-            "measures",
-            "finding_tags",
+            "Experiment_paradigm",
+            "Paradigms_notes",
+            "Samples",
+            "Sample_notes",
+            "Tasks",
+            "Tasks_notes",
+            "Stimuli",
+            "Stimuli_notes",
+            "Consciousness_measures",
+            "Consciousness_measures_notes",
+            "Techniques",
+            "Measures",
+            "NCC_findings",
         )
 
         export_order = fields
+
+    def dehydrate_countries(self, experiment: Experiment):
+        return SEPERATOR.join(countries.name(country) for country in experiment.study.countries)
 
     def dehydrate_authors(self, experiment: Experiment):
         return SEPERATOR.join(author.name for author in experiment.study.authors.all())
@@ -98,7 +115,8 @@ class FullExperimentResource(resources.ModelResource):
         return SEPERATOR.join(task.type.name for task in experiment.tasks.all())
 
     def dehydrate_finding_tags(self, experiment: Experiment):
-        return SEPERATOR.join(self.resolve_finding_tag_description(finding) for finding in experiment.finding_tags.all())
+        return SEPERATOR.join(
+            self.resolve_finding_tag_description(finding) for finding in experiment.finding_tags.all())
 
     def resolve_finding_tag_description(self, finding):
         return f"type: {finding.type.name} family: {finding.family.name} is_NCC: {finding.is_NCC}"

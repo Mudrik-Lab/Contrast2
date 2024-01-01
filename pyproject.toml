@@ -6,7 +6,7 @@ authors = []
 
 [tool.poetry.dependencies]
 python = ">3.10,<3.11"
-Django = "^4.2"
+Django = "^5.0"
 django-configurations = "^2.5"
 dj-database-url = "^2.1.0"
 djangorestframework = "^3.14.0"

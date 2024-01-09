@@ -325,24 +325,28 @@ Django = ">=3.2"
 
 [[package]]
 name = "django-countries"
-version = "7.5.1"
+version = "7.6.dev0"
 description = "Provides a country field for Django models."
 optional = false
 python-versions = "*"
-files = [
-    {file = "django-countries-7.5.1.tar.gz", hash = "sha256:22915d9b9403932b731622619940a54894a3eb0da9a374e7249c8fc453c122d7"},
-    {file = "django_countries-7.5.1-py3-none-any.whl", hash = "sha256:2df707aca7a5e677254bed116cf6021a136ebaccd5c2f46860abd6452bb45521"},
-]
+files = []
+develop = false
 
 [package.dependencies]
 asgiref = "*"
-typing-extensions = "*"
+typing_extensions = "*"
 
 [package.extras]
 dev = ["black", "django", "djangorestframework", "graphene-django", "pytest", "pytest-django", "tox"]
 maintainer = ["django", "transifex-client", "zest.releaser[recommended]"]
 pyuca = ["pyuca"]
 test = ["djangorestframework", "graphene-django", "pytest", "pytest-cov", "pytest-django"]
+
+[package.source]
+type = "git"
+url = "https://github.com/SmileyChris/django-countries"
+reference = "58f258402072a18756a15daa81325428382bd946"
+resolved_reference = "58f258402072a18756a15daa81325428382bd946"
 
 [[package]]
 name = "django-extensions"
@@ -1576,4 +1580,4 @@ files = [
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.10,<3.11"
-content-hash = "afdf99dc685da316f583922720599a17fe9f324d757a798a0939f8334529ed1b"
+content-hash = "872e9b91dfca0a9bf12a58675dd12d88e7da2174155f400f763434edeec8a6c7"

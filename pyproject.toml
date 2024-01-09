@@ -6,7 +6,7 @@ authors = []
 
 [tool.poetry.dependencies]
 python = ">3.10,<3.11"
-Django = "^5.0"
+Django = "^5.0.1"
 django-configurations = "^2.5"
 dj-database-url = "^2.1.0"
 djangorestframework = "^3.14.0"
@@ -26,7 +26,7 @@ boto3 = ">=1.26.109"
 django-nested-inline = "^0.4.6"
 django-modeladmin-reorder = {git = "https://github.com/bloodwithmilk25/django-modeladmin-reorder.git", rev = "master"}
 django-spa = {git = "https://github.com/VBobCat/django-spa.git", rev = "master"}
-django-countries = "^7.5.1"
+django-countries = {git = "https://github.com/SmileyChris/django-countries", rev="58f258402072a18756a15daa81325428382bd946"}
 numpy = "^1.26.2"
 pandas = "^1.5.3"
 whitenoise = "6.2.0"

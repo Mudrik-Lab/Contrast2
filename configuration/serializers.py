@@ -141,6 +141,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_stimulus_sub_category_type = StimulusSubCategorySerializer(many=True)
     available_authors = ConfigurationAuthorSerializer(many=True)
     existing_journals = serializers.ListSerializer(child=serializers.CharField())
+    approved_studies_count = serializers.IntegerField()
 
 
 class GraphImageSerializer(serializers.ModelSerializer):

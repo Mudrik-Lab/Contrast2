@@ -4,6 +4,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
+from approval_process.choices import ApprovalChoices
 from configuration.models import GraphImage
 from configuration.serializers import (
     StudiesConfigurationSerializer,
@@ -82,6 +83,7 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_category_type = StimulusCategory.objects.all()
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
         available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
+        approved_studies_count = Study.objects.filter(approval_status=ApprovalChoices.APPROVED).count()
         configuration_data = dict(
             existing_journals=existing_journals,
             available_techniques=techniques,
@@ -105,6 +107,7 @@ class ConfigurationView(GenericViewSet):
             available_stimulus_category_type=available_stimulus_category_type,
             available_stimulus_sub_category_type=available_stimulus_sub_category_type,
             available_tasks_types=available_tasks_types,
+            approved_studies_count=approved_studies_count
         )
 
         serializer = self.get_serializer(instance=configuration_data)

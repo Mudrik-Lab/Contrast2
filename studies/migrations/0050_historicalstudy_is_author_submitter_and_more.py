@@ -4,20 +4,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0049_alter_findingtag_aal_atlas_tag_and_more'),
+        ("studies", "0049_alter_findingtag_aal_atlas_tag_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='historicalstudy',
-            name='is_author_submitter',
+            model_name="historicalstudy",
+            name="is_author_submitter",
             field=models.BooleanField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='study',
-            name='is_author_submitter',
+            model_name="study",
+            name="is_author_submitter",
             field=models.BooleanField(blank=True, null=True),
         ),
     ]

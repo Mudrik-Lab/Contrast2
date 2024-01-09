@@ -215,14 +215,14 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         # one email for site manager and one for recipient
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == 'regarding your submission to contrast database',
-            0)
-        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'a submission was received', 0)
+            lambda x: x.subject.lower() == "regarding your submission to contrast database", 0
+        )
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == "a submission was received", 0)
         self.when_study_is_submitted_to_review(study_id)
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == 'regarding your submission to contrast database',
-            1)
-        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == 'a submission was received', 1)
+            lambda x: x.subject.lower() == "regarding your submission to contrast database", 1
+        )
+        self.verify_mailbox_emails_count_by_predicate(lambda x: x.subject.lower() == "a submission was received", 1)
 
     def test_study_approve_reject_flow(self):
         self.given_user_exists(username="submitting_user", email="submitting_user@test.com")
@@ -237,9 +237,11 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.given_admin_user_authenticated("admin_user", "12345")
         self.when_admin_approves_study(study_id)
 
-        self.verify_mailbox_emails_count_by_predicate(lambda
-                                                          x: x.subject.lower() == 'regarding your submission to contrast database' and 'We are glad to notify you that following review by a member' in x.body,
-                                                      1)
+        self.verify_mailbox_emails_count_by_predicate(
+            lambda x: x.subject.lower() == "regarding your submission to contrast database"
+            and "We are glad to notify you that following review by a member" in x.body,
+            1,
+        )
         study = Study.objects.get(id=study_id)
         self.assertEqual(study.approval_status, ApprovalChoices.APPROVED)
         self.assertEqual(study.approval_process.comments.last().text, "Submission approved")
@@ -247,7 +249,10 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.when_admin_rejects_study(study_id)
 
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == 'regarding your submission to contrast database' and 'decided that it is outside the scope of our database' in x.body, 1)
+            lambda x: x.subject.lower() == "regarding your submission to contrast database"
+            and "decided that it is outside the scope of our database" in x.body,
+            1,
+        )
         study = Study.objects.get(id=study_id)
         self.assertEqual(study.approval_status, ApprovalChoices.REJECTED)
         self.assertEqual(study.approval_process.comments.last().text, "Submission rejected")

@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('approval_process', '0003_alter_approvalprocess_status'),
+        ("approval_process", "0003_alter_approvalprocess_status"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='approvalcomment',
-            options={'ordering': ('created_at',)},
+            name="approvalcomment",
+            options={"ordering": ("created_at",)},
         ),
     ]

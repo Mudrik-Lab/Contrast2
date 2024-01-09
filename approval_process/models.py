@@ -10,7 +10,8 @@ from approval_process.choices import ApprovalChoices
 
 class ApprovalComment(models.Model):
     class Meta:
-        ordering = ('created_at',)
+        ordering = ("created_at",)
+
     text = models.TextField(blank=False, null=False)
     reviewer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)

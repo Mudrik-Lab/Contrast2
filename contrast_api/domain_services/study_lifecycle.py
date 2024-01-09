@@ -32,15 +32,15 @@ class StudyLifeCycleService:
     def _review_study(self, reviewer, study: Study):
         study.approval_status = ApprovalChoices.AWAITING_REVIEW
         study.save()
-        ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer,
-                                       text="Submission moved to review")
+        ApprovalComment.objects.create(
+            process=study.approval_process, reviewer=reviewer, text="Submission moved to review"
+        )
 
     @transaction.atomic
     def _approve_study(self, reviewer, study: Study):
         study.approval_status = ApprovalChoices.APPROVED
         study.save()
-        ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer,
-                                       text="Submission approved")
+        ApprovalComment.objects.create(process=study.approval_process, reviewer=reviewer, text="Submission approved")
         data = dict(study=study, username=study.submitter.username)
         subject = "Regarding your submission to ConTraSt database"
         message = render_to_string("submission_approved.html", data)

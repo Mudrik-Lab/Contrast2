@@ -213,13 +213,16 @@ class BaseTestCase(APITestCase):
         res = self.client.get(self.reverse_with_query_params("authors-list", search=part_name))
         return res
 
-    def when_admin_approves_study(self, study_id:int):
-        res = self.client.post(reverse("admin:studies_study_changelist"), data=dict(action="approve_study", _selected_action=study_id))
+    def when_admin_approves_study(self, study_id: int):
+        res = self.client.post(
+            reverse("admin:studies_study_changelist"), data=dict(action="approve_study", _selected_action=study_id)
+        )
         self.assertEqual(res.status_code, status.HTTP_302_FOUND)
 
     def when_admin_rejects_study(self, study_id: int):
-        res = self.client.post(reverse("admin:studies_study_changelist"),
-                               data=dict(action="reject_study", _selected_action=study_id))
+        res = self.client.post(
+            reverse("admin:studies_study_changelist"), data=dict(action="reject_study", _selected_action=study_id)
+        )
         self.assertEqual(res.status_code, status.HTTP_302_FOUND)
 
     def verify_mailbox_emails_count_by_predicate(self, predicate: Callable, expected_email_count: int):

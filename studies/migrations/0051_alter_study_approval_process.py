@@ -5,16 +5,21 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('approval_process', '0004_alter_approvalcomment_options'),
-        ('studies', '0050_historicalstudy_is_author_submitter_and_more'),
+        ("approval_process", "0004_alter_approvalcomment_options"),
+        ("studies", "0050_historicalstudy_is_author_submitter_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='study',
-            name='approval_process',
-            field=models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='study', to='approval_process.approvalprocess'),
+            model_name="study",
+            name="approval_process",
+            field=models.OneToOneField(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                related_name="study",
+                to="approval_process.approvalprocess",
+            ),
         ),
     ]

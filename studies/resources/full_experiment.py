@@ -97,13 +97,14 @@ class FullExperimentResource(resources.ModelResource):
 
     def dehydrate_samples(self, experiment: Experiment):
         return SEPERATOR.join(
-            f"{sample.type} -total: {sample.total_size} -included: {sample.size_included}" for sample in
-            experiment.samples.all()
+            f"{sample.type} -total: {sample.total_size} -included: {sample.size_included}"
+            for sample in experiment.samples.all()
         )
 
     def dehydrate_consciousness_measures(self, experiment: Experiment):
         return SEPERATOR.join(
-            f"{cm.type.name} - phase: {cm.phase.name}" for cm in experiment.consciousness_measures.all())
+            f"{cm.type.name} - phase: {cm.phase.name}" for cm in experiment.consciousness_measures.all()
+        )
 
     def dehydrate_stimuli(self, experiment: Experiment):
         return SEPERATOR.join(
@@ -116,7 +117,8 @@ class FullExperimentResource(resources.ModelResource):
 
     def dehydrate_finding_tags(self, experiment: Experiment):
         return SEPERATOR.join(
-            self.resolve_finding_tag_description(finding) for finding in experiment.finding_tags.all())
+            self.resolve_finding_tag_description(finding) for finding in experiment.finding_tags.all()
+        )
 
     def resolve_finding_tag_description(self, finding):
         return f"type: {finding.type.name} family: {finding.family.name} is_NCC: {finding.is_NCC}"

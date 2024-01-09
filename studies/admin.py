@@ -218,13 +218,15 @@ class JournalFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         # Get a list of all distinct countries that exist in the database
-        existing_journals = model_admin.get_queryset(request).values_list("abbreviated_source_title",
-                                                                          flat=True).distinct()
+        existing_journals = (
+            model_admin.get_queryset(request).values_list("abbreviated_source_title", flat=True).distinct()
+        )
 
         # Create a list of tuples for the filter dropdown
         # Each tuple contains the country code and name
         return [(journal, journal.capitalize()) for journal in existing_journals if journal is not None] + [
-            ("None", "None")]
+            ("None", "None")
+        ]
 
     def queryset(self, request, queryset):
         # If a country code is selected in the filter,
@@ -286,7 +288,10 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
 class AuthorAdmin(BaseContrastAdmin):
     model = Author
     list_display = ("id", "name")
-    search_fields = ("id", "name",)
+    search_fields = (
+        "id",
+        "name",
+    )
 
 
 class ConsciousnessMeasureAdmin(BaseContrastAdmin):

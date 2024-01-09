@@ -7,7 +7,7 @@ class Author(models.Model):
     history = HistoricalRecords()
 
     class Meta:
-        ordering = ('name', )
+        ordering = ("name",)
 
     def __str__(self):
         return f"{self.name}"

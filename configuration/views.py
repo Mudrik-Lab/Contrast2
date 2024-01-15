@@ -107,7 +107,7 @@ class ConfigurationView(GenericViewSet):
             available_stimulus_category_type=available_stimulus_category_type,
             available_stimulus_sub_category_type=available_stimulus_sub_category_type,
             available_tasks_types=available_tasks_types,
-            approved_studies_count=approved_studies_count
+            approved_studies_count=approved_studies_count,
         )
 
         serializer = self.get_serializer(instance=configuration_data)

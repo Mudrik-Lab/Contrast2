@@ -20,6 +20,7 @@ class Profile(models.Model):
     country_of_residence = CountryField(null=True, blank=True)
     academic_stage = models.CharField(max_length=50, null=True, blank=True, choices=AcademicStageChoices.choices)
     has_ASSC_membership = models.BooleanField(null=True, blank=True)
+    has_opted_for_contrast_updates = models.BooleanField(null=False, blank=False, default=True)
 
     @staticmethod
     def create_profile(user, **kwargs):

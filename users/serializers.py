@@ -50,6 +50,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             "country_of_residence",
             "academic_stage",
             "has_ASSC_membership",
+            "has_opted_for_contrast_updates",
             "username",
             "email",
         )
@@ -106,6 +107,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "country_of_residence",
             "academic_stage",
             "has_ASSC_membership",
+            "has_opted_for_contrast_updates",
             "username",
             "email",
         )

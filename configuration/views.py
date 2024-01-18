@@ -84,6 +84,7 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
         available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
         approved_studies_count = Study.objects.filter(approval_status=ApprovalChoices.APPROVED).count()
+        approved_experiments_count = Experiment.objects.filter(study__approval_status=ApprovalChoices.APPROVED).count()
         configuration_data = dict(
             existing_journals=existing_journals,
             available_techniques=techniques,
@@ -108,6 +109,7 @@ class ConfigurationView(GenericViewSet):
             available_stimulus_sub_category_type=available_stimulus_sub_category_type,
             available_tasks_types=available_tasks_types,
             approved_studies_count=approved_studies_count,
+            approved_experiments_count=approved_experiments_count,
         )
 
         serializer = self.get_serializer(instance=configuration_data)

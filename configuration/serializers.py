@@ -142,6 +142,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_authors = ConfigurationAuthorSerializer(many=True)
     existing_journals = serializers.ListSerializer(child=serializers.CharField())
     approved_studies_count = serializers.IntegerField()
+    approved_experiments_count = serializers.IntegerField()
 
 
 class GraphImageSerializer(serializers.ModelSerializer):

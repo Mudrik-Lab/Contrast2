@@ -5,8 +5,9 @@ from django.db.models import Prefetch
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
-from simple_history.admin import SimpleHistoryAdmin
+# from simple_history.admin import SimpleHistoryAdmin
 
+from contrast_api.admin_utils import SimpleHistoryWithDeletedAdmin
 from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
 from studies.choices import InterpretationsChoices
 from studies.models import (
@@ -37,7 +38,7 @@ from rangefilter.filters import NumericRangeFilter
 from studies.resources.full_experiment import FullExperimentResource
 
 
-class BaseContrastAdmin(ImportExportMixin, SimpleHistoryAdmin):
+class BaseContrastAdmin(ImportExportMixin, SimpleHistoryWithDeletedAdmin):
     pass
 
 
@@ -403,7 +404,9 @@ class IsParentFilter(admin.SimpleListFilter):
 
 class ParadigmAdmin(BaseContrastAdmin):
     model = Paradigm
+    list_display = ("name", "sub_type")
     list_filter = (IsParentFilter, ("parent", admin.RelatedOnlyFieldListFilter))
+    search_field = ("name", "sub_type")
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("parent", "parent__parent")

@@ -1,11 +1,11 @@
 from django.db import models
-from django.db.models import SET_NULL
+from django.db.models import PROTECT
 from simple_history.models import HistoricalRecords
 
 
 class Paradigm(models.Model):
     parent = models.ForeignKey(
-        null=True, blank=True, related_name="child_paradigm", to="studies.Paradigm", on_delete=SET_NULL
+        null=True, blank=True, related_name="child_paradigm", to="studies.Paradigm", on_delete=PROTECT
     )
     name = models.CharField(null=False, blank=False, max_length=100)
     sub_type = models.CharField(null=True, blank=True, max_length=100)

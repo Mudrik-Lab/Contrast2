@@ -1,6 +1,6 @@
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models import SET_NULL, CASCADE
+from django.db.models import CASCADE
 from simple_history.models import HistoricalRecords
 
 from studies.choices import AnalysisTypeChoices, DirectionChoices, AALAtlasTagChoices
@@ -70,7 +70,7 @@ class FindingTag(models.Model):
         null=True, blank=True, max_length=10, choices=DirectionChoices.choices, default=DirectionChoices.POSITIVE
     )
     technique = models.ForeignKey(
-        null=True, blank=True, to="studies.Technique", related_name="findings_tags", on_delete=SET_NULL
+        null=True, blank=True, to="studies.Technique", related_name="findings_tags", on_delete=CASCADE
     )
     is_NCC = models.BooleanField(null=False, blank=False, default=True)  # later remove the default
     history = HistoricalRecords()

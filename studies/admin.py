@@ -323,6 +323,7 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
     model = FindingTagType
     list_display = ("id", "name", "family")
     list_filter = ("family",)
+    search_fields = ("name",)
 
 
 class FindingTagAdmin(BaseContrastAdmin):
@@ -406,7 +407,7 @@ class ParadigmAdmin(BaseContrastAdmin):
     model = Paradigm
     list_display = ("name", "sub_type")
     list_filter = (IsParentFilter, ("parent", admin.RelatedOnlyFieldListFilter))
-    search_field = ("name", "sub_type")
+    search_fields = ("name", "sub_type")
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("parent", "parent__parent")
@@ -414,7 +415,10 @@ class ParadigmAdmin(BaseContrastAdmin):
 
 class SampleAdmin(BaseContrastAdmin):
     model = Sample
-    list_filter = ("type", TheoryInterpretationFilter)
+    list_filter = ("type", TheoryInterpretationFilter,
+                   ("total_size", NumericRangeFilter),
+                   ("size_included", NumericRangeFilter)
+                   )
     list_display = ("type", "total_size", "size_included", "experiment")
 
 
@@ -426,12 +430,16 @@ class ModalityTypeAdmin(ImportExportModelAdmin):
 class StimulusCategoryAdmin(ImportExportModelAdmin):
     model = StimulusCategory
     list_display = ("id", "name")
+    search_fields = ("name", )
+
 
 
 class StimulusSubCategoryAdmin(ImportExportModelAdmin):
     list_display = ("id", "name", "parent")
     model = StimulusSubCategory
     list_filter = ("parent",)
+    search_fields = ("name", )
+
 
 
 class StimulusAdmin(BaseContrastAdmin):
@@ -453,6 +461,7 @@ class StimulusAdmin(BaseContrastAdmin):
 class TaskTypeAdmin(ImportExportModelAdmin):
     model = TaskType
     list_display = ("id", "name")
+    search_fields = ("name",)
 
 
 class TaskAdmin(BaseContrastAdmin):
@@ -463,6 +472,7 @@ class TaskAdmin(BaseContrastAdmin):
 
 class TechniqueAdmin(BaseContrastAdmin):
     list_display = ("id", "name")
+    search_fields = ("name",)
     model = Technique
 
 

@@ -37,6 +37,7 @@ from studies.open_api_parameters import (
     interpretations,
     is_csv,
 )
+from studies.processors.theories_support_matrix import TheorySupportMatrixGraphDataProcessor
 from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
 from studies.processors.journals import JournalsGraphDataProcessor
@@ -83,6 +84,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_theories_comparison": PieChartSerializer,
         "parameters_distribution_free_queries": BarGraphSerializer,
         "theory_driven_distribution_pie": NestedPieChartSerializer,
+        "theory_support_matrix_bar": StackedBarGraphSerializer
     }
 
     graph_processors = {
@@ -97,6 +99,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "frequencies": FrequenciesGraphDataProcessor,
         "timings": TimingsGraphDataProcessor,
         "theory_driven_distribution_pie": TheoryDrivenDistributionPieGraphDataProcessor,
+        "theory_support_matrix_bar": TheorySupportMatrixGraphDataProcessor
     }
 
     @extend_schema(
@@ -217,6 +220,20 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)
     def trends_over_years(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(
+        responses=StackedBarGraphSerializer(many=True),
+        parameters=[
+            number_of_experiments_parameter,
+            is_reporting_filter_parameter,
+            theory_driven_filter_parameter,
+            type_of_consciousness_filter_parameter,
+            is_csv,
+        ],
+    )
+    @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
+    def theory_support_matrix_bar(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(

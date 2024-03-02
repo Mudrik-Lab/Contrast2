@@ -23,8 +23,6 @@ class JournalsGraphDataProcessor(BaseProcessor):
                 theory = Theory.objects.get(id=theory_reference)
             self.theory = theory
 
-        super().__init__(experiments=experiments, **kwargs)
-
     def process(self):
         relevant_experiments = self.get_queryset()
 

@@ -9,10 +9,8 @@ from studies.models import Experiment, Interpretation, Theory
 from studies.processors.base import BaseProcessor
 
 
-class TheorySupportMatrixGraphDataProcessor(BaseProcessor):
-    """
-
-    """
+class TheoryGrandOverviewGraphDataProcessor(BaseProcessor):
+    """ """
 
     def __init__(self, experiments: QuerySet[Experiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
@@ -20,8 +18,6 @@ class TheorySupportMatrixGraphDataProcessor(BaseProcessor):
     def process(self):
         process_func = getattr(self, f"process_theory_family")
         return process_func()
-
-
 
     def process_theory_family(self):
         experiments_subquery_by_breakdown = (
@@ -31,13 +27,12 @@ class TheorySupportMatrixGraphDataProcessor(BaseProcessor):
             .values("experiment", "relation_type")
         )
 
-        breakdown_query = (Theory.objects.filter(parent__isnull=True).values("name").distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = (
+            Theory.objects.filter(parent__isnull=True).values("name").distinct().annotate(series_name=F("name"))
+        )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
-
-
 
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
@@ -72,6 +67,7 @@ class TheorySupportMatrixGraphDataProcessor(BaseProcessor):
         )
         # Note we're filtering out empty timeseries with the cardinality option
         return qs
+
     # def process(self):
     #     relevant_experiments = self.get_queryset()
     #

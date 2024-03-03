@@ -415,10 +415,12 @@ class ParadigmAdmin(BaseContrastAdmin):
 
 class SampleAdmin(BaseContrastAdmin):
     model = Sample
-    list_filter = ("type", TheoryInterpretationFilter,
-                   ("total_size", NumericRangeFilter),
-                   ("size_included", NumericRangeFilter)
-                   )
+    list_filter = (
+        "type",
+        TheoryInterpretationFilter,
+        ("total_size", NumericRangeFilter),
+        ("size_included", NumericRangeFilter),
+    )
     list_display = ("type", "total_size", "size_included", "experiment")
 
 
@@ -430,16 +432,14 @@ class ModalityTypeAdmin(ImportExportModelAdmin):
 class StimulusCategoryAdmin(ImportExportModelAdmin):
     model = StimulusCategory
     list_display = ("id", "name")
-    search_fields = ("name", )
-
+    search_fields = ("name",)
 
 
 class StimulusSubCategoryAdmin(ImportExportModelAdmin):
     list_display = ("id", "name", "parent")
     model = StimulusSubCategory
     list_filter = ("parent",)
-    search_fields = ("name", )
-
+    search_fields = ("name",)
 
 
 class StimulusAdmin(BaseContrastAdmin):

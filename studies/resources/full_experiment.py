@@ -29,7 +29,7 @@ class FullExperimentResource(resources.ModelResource):
     Stimuli = Field(dehydrate_method="dehydrate_stimuli")
     Tasks = Field(dehydrate_method="dehydrate_tasks")
     NCC_findings = Field(dehydrate_method="dehydrate_finding_tags")
-    Driven_by_theories = Field(attribute="theory_driven_theories")
+    Driven_by_theories = Field(dehydrate_method="dehydrate_theory_driven_theories")
     Is_the_experiment_theory_driven = Field(attribute="theory_driven")
     Sample_notes = Field(attribute="sample_notes")
     Tasks_notes = Field(attribute="tasks_notes")

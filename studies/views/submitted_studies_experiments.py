@@ -33,8 +33,10 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin, ModelViewSet, 
     def get_queryset(self):
         qs = super().get_queryset().filter(study=self.kwargs.get("study_pk"))
         if not (hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer):
-              qs = qs.filter(study__submitter=self.request.user)
+            # if not a reviewer we do an extra filter here just to be on the safe sid
+            qs = qs.filter(study__submitter=self.request.user)
         if self.action in ["create", "update", "partial_update", "delete"]:
+            # we can update only non approved studies
             qs = qs.filter(study__approval_status=ApprovalChoices.PENDING)
         return qs
 

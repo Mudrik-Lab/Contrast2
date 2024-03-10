@@ -31,7 +31,9 @@ class SubmittedStudyExperiments(StudyRelatedPermissionsViewMixin, ModelViewSet, 
     queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
 
     def get_queryset(self):
-        qs = super().get_queryset().filter(study=self.kwargs.get("study_pk")).filter(study__submitter=self.request.user)
+        qs = super().get_queryset().filter(study=self.kwargs.get("study_pk"))
+        if not (hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer):
+              qs = qs.filter(study__submitter=self.request.user)
         if self.action in ["create", "update", "partial_update", "delete"]:
             qs = qs.filter(study__approval_status=ApprovalChoices.PENDING)
         return qs

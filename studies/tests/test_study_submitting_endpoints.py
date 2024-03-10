@@ -18,6 +18,8 @@ from studies.models import Study, Theory, Paradigm, Technique, TaskType, Measure
 from contrast_api.tests.base import BaseTestCase
 from django.core import mail
 
+from users.models import Profile
+
 
 # Create your tests here.
 
@@ -162,6 +164,57 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.add_sample_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="")
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res[0]["sample_notes"], "")
+
+        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(len(experiments_res), 0)
+
+        delete_study_res = self.when_study_is_removed(study_id)
+
+        studies_res = self.get_pending_studies()
+        self.assertEqual(studies_res["count"], 0)
+
+    def test_study_and_experiment_deletion_by_reviewer_user(self):
+        """
+        test study is created with 201
+        test approval status is pending and approval process is created
+        test submitter gets study back, but other user don't
+        """
+        self.given_user_exists(username="submitting_user")
+
+        registration_res = self.when_user_is_registered(username="reviewer_user", password="12345", email="test@email.com")
+
+        reviewer_profile = Profile.objects.get(user__username="reviewer_user")
+        # create experiment and study by a regular user
+        self.given_user_authenticated("submitting_user", "12345")
+        study_res = self.when_study_created_by_user_via_api()
+
+        study_id = study_res["id"]
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(len(experiments_res), 0)
+        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=study_id)
+        experiment_id = res_experiment["id"]
+
+        self.given_user_authenticated("reviewer_user", "12345")
+
+        # verify this would fail with permission error
+        self.add_results_summary_to_experiment(
+            study_id=study_id, experiment_id=experiment_id, results_summary="the results are here",
+            expected_result_code=status.HTTP_403_FORBIDDEN)
+
+        # Now we move the user to be a reviewer
+        reviewer_profile.is_reviewer = True
+        reviewer_profile.save()
+
+        # Now should work
+
+        self.add_results_summary_to_experiment(
+            study_id=study_id, experiment_id=experiment_id, results_summary="the results are here"
+        )
+        # trying with empty
+
 
         delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
 
@@ -393,10 +446,10 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         return res.data
 
-    def add_results_summary_to_experiment(self, study_id: int, experiment_id: int, results_summary):
+    def add_results_summary_to_experiment(self, study_id: int, experiment_id: int, results_summary, expected_result_code=status.HTTP_201_CREATED):
         target_url = reverse("studies-experiments-set-results-summary-notes", args=[study_id, experiment_id])
         res = self.client.post(target_url, json.dumps(dict(note=results_summary)), content_type="application/json")
-        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(res.status_code, expected_result_code)
 
     def add_sample_notes_to_experiment(self, study_id: int, experiment_id: int, notes):
         target_url = reverse("studies-experiments-set-samples-notes", args=[study_id, experiment_id])

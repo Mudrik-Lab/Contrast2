@@ -110,6 +110,7 @@ class ExperimentAdmin(BaseContrastAdmin):
         "type_of_consciousness",
         "is_reporting",
         "theory_driven",
+        "theory_driven_theories",
         "results_summary",
         "paradigms_notes",
         "tasks_notes",

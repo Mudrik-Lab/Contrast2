@@ -1,6 +1,6 @@
 import copy
 
-from django.db.models import Prefetch
+from django.db.models import Prefetch, Q
 from drf_spectacular.utils import extend_schema
 from rest_framework import mixins, status, filters
 from rest_framework.decorators import action
@@ -65,11 +65,19 @@ class SubmitStudiesViewSet(ModelViewSet):
     def get_queryset(self):
         qs = super().get_queryset()
         if self.action in ["my_studies"]:
-            # for my studies we need to limit that
-            qs = qs.filter(submitter=self.request.user)
+            # for my studies we need to limit only for studies submitted by the user
+            # Unless it's a reviewer user and in this case we add everything pending
+            if hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer:
+                qs = qs.filter(Q(approval_status=ApprovalChoices.PENDING) | Q(submitter=self.request.user))
+            else:
+                qs = qs.filter(submitter=self.request.user)
         if self.action in ["update", "partial_update", "delete", "submit_to_review"]:
             # we can update only items still in pending status and that are 'mine"
-            qs = qs.filter(approval_status=ApprovalChoices.PENDING).filter(submitter=self.request.user)
+            pending_approval_qs = qs.filter(approval_status=ApprovalChoices.PENDING)
+
+            if not (hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer):
+                # because reviewers can update all items, this extra filter is just for non reviewers
+                qs = pending_approval_qs.filter(submitter=self.request.user)
         return qs
 
     @extend_schema(responses=ThinStudyWithExperimentsSerializer)

@@ -6,7 +6,8 @@ class SubmitterOnlyPermission(permissions.IsAuthenticated):
         # We're verifying that the user editing is only adding experiments, editing etc for studies he submitted
         if not obj:
             return False
-        elif not obj.submitter == request.user:
+
+        elif (not obj.submitter == request.user) and (not request.user.profile.is_reviewer):
             return False
         else:
             return super().has_object_permission(request, view, obj)

@@ -64,20 +64,30 @@ class SubmitStudiesViewSet(ModelViewSet):
 
     def get_queryset(self):
         qs = super().get_queryset()
+        is_reviewer = hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer
         if self.action in ["my_studies"]:
             # for my studies we need to limit only for studies submitted by the user
             # Unless it's a reviewer user and in this case we add everything pending
-            if hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer:
-                qs = qs.filter(Q(approval_status=ApprovalChoices.PENDING) | Q(submitter=self.request.user))
+            if is_reviewer:
+                qs = qs.filter(
+                    Q(approval_status__in=[ApprovalChoices.PENDING, ApprovalChoices.AWAITING_REVIEW])
+                    | Q(submitter=self.request.user)
+                )
             else:
                 qs = qs.filter(submitter=self.request.user)
         if self.action in ["update", "partial_update", "delete", "submit_to_review"]:
             # we can update only items still in pending status and that are 'mine"
-            pending_approval_qs = qs.filter(approval_status=ApprovalChoices.PENDING)
 
-            if not (hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer):
-                # because reviewers can update all items, this extra filter is just for non reviewers
+            if is_reviewer:
+                # Reviewers can update all items, in both statuses
+
+                qs = qs.filter(approval_status__in=[ApprovalChoices.PENDING, ApprovalChoices.AWAITING_REVIEW])
+
+            else:
+                # this extra filter is just for non reviewers
+                pending_approval_qs = qs.filter(approval_status=ApprovalChoices.PENDING)
                 qs = pending_approval_qs.filter(submitter=self.request.user)
+
         return qs
 
     @extend_schema(responses=ThinStudyWithExperimentsSerializer)

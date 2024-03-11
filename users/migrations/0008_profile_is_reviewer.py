@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0007_profile_has_opted_for_contrast_updates'),
+        ("users", "0007_profile_has_opted_for_contrast_updates"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='is_reviewer',
+            model_name="profile",
+            name="is_reviewer",
             field=models.BooleanField(default=False),
         ),
     ]

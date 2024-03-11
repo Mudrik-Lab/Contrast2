@@ -132,3 +132,8 @@ class AALAtlasTagChoices(TextChoices):
     THAL_PUL = "Thal_PuL", _("Thal_PuL")
     THAL_PUI = "Thal_PuI", _("Thal_PuI")
     NOT_SPECIFIED = "Not Specified", _("Not specified")
+
+
+class StudyTypeChoices(TextChoices):
+    CONSCIOUSNESS = _("Consciousness")
+    UNCONSCIOUSNESS = _("UnConsciousness")

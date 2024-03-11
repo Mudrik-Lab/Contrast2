@@ -34,80 +34,16 @@ class StimulusSubCategory(models.Model):
         return self.name
 
 
-class Stimulus(models.Model):
-    allowed_categories_by_modality = {
-        "Auditory": [
-            "Animals",
-            "Bodies",
-            "Contours",
-            "Digits",
-            "Drawings",
-            "Electric Stimulation",
-            "Letters",
-            "Motion",
-            "Music",
-            "Noise",
-            "Numbers",
-            "Objects",
-            "Patterns",
-            "Real Objects",
-            "Sounds",
-            "Speech",
-            "Videos",
-            "Words",
-        ],
-        "None": ["None"],
-        "Olfactory": ["Animals", "Objects"],
-        "Tactile": [
-            "Animals",
-            "Bodies",
-            "Checkerboard",
-            "Electric Stimulation",
-            "Faces",
-            "Geometric Shapes",
-            "Letters",
-            "Motion",
-            "Objects",
-            "Pacman",
-            "Patterns",
-            "Real Objects",
-            "Symbols",
-            "Textures",
-        ],
-        "Visual": [
-            "Animals",
-            "Artificial Scenes",
-            "Bodies",
-            "Checkerboard",
-            "Color",
-            "Contours" "Digits",
-            "Drawings",
-            "Faces",
-            "Figure-Ground",
-            "Geometric Shapes",
-            "Gratings/Kanizsa",
-            "Letters",
-            "Light Flashes",
-            "Motion",
-            "Natural Scenes",
-            "Numbers",
-            "Objects",
-            "Pacman",
-            "Patterns",
-            "Real Objects",
-            "Sexual Images",
-            "Symbols",
-            "Videos",
-            "Virtual Reality Objects",
-            "Words",
-        ],
-    }
+class UnConStimulus(models.Model):
+    # TODO: understand if this is one model for suppressed and unsuppressed?
+    #  is it used as the same "graph breakdown"?
+    # To add novel primes, soa, duration, (size? might be another sub model) or just height/width
 
     class Meta:
         verbose_name_plural = "stimuli"
 
     experiment = models.ForeignKey(
-        null=False, blank=False, to="studies.Experiment", on_delete=CASCADE, related_name="stimuli"
+        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="stimuli"
     )
 
     category = models.ForeignKey(

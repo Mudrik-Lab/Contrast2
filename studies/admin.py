@@ -279,7 +279,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
         JournalFilter,
         ("year", NumericRangeFilter),
     )
-    actions = (approve_study, reject_study, review_study)
+    actions = (approve_study, reject_study, review_study, pending_study)
     inlines = [ExperimentInline]
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):

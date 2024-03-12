@@ -28,6 +28,10 @@ class StudyLifeCycleService:
         for study in studies:
             self._approve_study(reviewer, study)
 
+    def pending(self, reviewer, studies: QuerySet[Study]):
+        for study in studies:
+            self._pending_study(reviewer, study)
+
     @transaction.atomic
     def _review_study(self, reviewer, study: Study):
         study.approval_status = ApprovalChoices.AWAITING_REVIEW
@@ -35,6 +39,11 @@ class StudyLifeCycleService:
         ApprovalComment.objects.create(
             process=study.approval_process, reviewer=reviewer, text="Submission moved to review"
         )
+
+    @transaction.atomic
+    def _pending_study(self, reviewer, study: Study):
+        study.approval_status = ApprovalChoices.PENDING
+        study.save()
 
     @transaction.atomic
     def _approve_study(self, reviewer, study: Study):

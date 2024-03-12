@@ -245,6 +245,12 @@ def reject_study(modeladmin, request, queryset):
     service.rejected(request.user, queryset)
     messages.info(request, "Rejected studies")
 
+@admin.action(description="Returning studies to pending status")
+def pending_study(modeladmin, request, queryset):
+    service = StudyLifeCycleService()
+    service.pending(request.user, queryset)
+    messages.info(request, "pending studies")
+
 
 @admin.action(description="approving a pending study")
 def approve_study(modeladmin, request, queryset):

@@ -1,5 +1,5 @@
 from contrast_api.tests.base import BaseTestCase
-from studies.choices import InterpretationsChoices, AggregatedInterpretationsChoices
+from contrast_api.choices import InterpretationsChoices, AggregatedInterpretationsChoices
 from studies.services.aggregated_Interpretations_svc import AggregatedInterpretationService, AggregatedInterpretationDTO
 
 

@@ -7,7 +7,7 @@ from django.conf import settings
 from approval_process.choices import ApprovalChoices
 from simple_history.models import HistoricalRecords
 
-from studies.choices import StudyTypeChoices
+from contrast_api.choices import StudyTypeChoices
 
 
 class Study(models.Model):

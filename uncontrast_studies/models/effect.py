@@ -1,9 +1,6 @@
-from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models import CASCADE
 from simple_history.models import HistoricalRecords
-
-from studies.choices import AnalysisTypeChoices, DirectionChoices, AALAtlasTagChoices
 
 
 class UnConEffectOutcome(models.Model):
@@ -17,7 +14,7 @@ class UnConEffect(models.Model):
     experiment = models.ForeignKey(
         null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="findings"
     )
-    outcome = models.ManyToManyField(null=False, blank=False, on_delete=CASCADE, to=UnConEffectOutcome)
+    outcome = models.ManyToManyField(null=False, blank=False, to=UnConEffectOutcome)
     significance = models.BooleanField(null=False, blank=False)
 
     reported_statistic = models.CharField(null=True, blank=True, max_length=250)

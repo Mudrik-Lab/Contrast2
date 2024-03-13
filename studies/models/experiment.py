@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import CASCADE, Q
 from simple_history.models import HistoricalRecords
 
-from studies.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
+from contrast_api.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
 from studies.managers import ExperimentManager
 
 

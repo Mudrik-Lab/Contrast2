@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from contrast_api.tests.base import BaseTestCase
-from studies.choices import ReportingChoices, InterpretationsChoices
+from contrast_api.choices import ReportingChoices, InterpretationsChoices
 from studies.models import FindingTagFamily, FindingTagType
 
 

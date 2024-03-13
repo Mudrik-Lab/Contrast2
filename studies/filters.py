@@ -1,7 +1,7 @@
 from django_filters import rest_framework as filters
 import django_filters
 
-from studies.choices import ReportingChoices, TypeOfConsciousnessChoices, TheoryDrivenChoices
+from contrast_api.choices import ReportingChoices, TypeOfConsciousnessChoices, TheoryDrivenChoices
 from studies.models import Experiment
 
 

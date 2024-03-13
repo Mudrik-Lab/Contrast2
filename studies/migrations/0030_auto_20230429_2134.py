@@ -2,7 +2,7 @@
 
 from django.db import migrations
 
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 from studies.services.aggregated_Interpretations_svc import AggregatedInterpretationDTO, AggregatedInterpretationService
 
 

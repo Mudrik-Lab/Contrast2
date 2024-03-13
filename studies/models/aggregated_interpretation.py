@@ -1,7 +1,7 @@
 from django.db import models, transaction
 from django.db.models import CASCADE
 
-from studies.choices import AggregatedInterpretationsChoices
+from contrast_api.choices import AggregatedInterpretationsChoices
 from studies.services.aggregated_Interpretations_svc import AggregatedInterpretationService, AggregatedInterpretationDTO
 
 

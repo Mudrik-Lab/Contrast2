@@ -3,7 +3,7 @@ from django.db import models
 from django.db.models import CASCADE
 from simple_history.models import HistoricalRecords
 
-from studies.choices import AnalysisTypeChoices, DirectionChoices, AALAtlasTagChoices
+from contrast_api.choices import AnalysisTypeChoices, DirectionChoices, AALAtlasTagChoices
 
 
 class FindingTagFamily(models.Model):

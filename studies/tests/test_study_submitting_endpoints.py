@@ -6,7 +6,7 @@ from django.urls import reverse
 from rest_framework import status
 
 from approval_process.choices import ApprovalChoices
-from studies.choices import (
+from contrast_api.choices import (
     TypeOfConsciousnessChoices,
     ExperimentTypeChoices,
     TheoryDrivenChoices,

@@ -2,7 +2,7 @@
 
 from django.db import migrations
 from studies.services.aggregated_Interpretations_svc import AggregatedInterpretationDTO, AggregatedInterpretationService
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 
 
 def update_aggregate_interpretations(apps, schema_editor):

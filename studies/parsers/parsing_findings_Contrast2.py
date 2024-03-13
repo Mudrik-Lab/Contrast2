@@ -1,6 +1,6 @@
 import re
 
-from studies.choices import AnalysisTypeChoices, DirectionChoices
+from contrast_api.choices import AnalysisTypeChoices, DirectionChoices
 
 # constants
 ITEM_SEP = "+"

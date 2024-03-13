@@ -3,8 +3,6 @@ from django.db.models import CASCADE
 from simple_history.models import HistoricalRecords
 
 from contrast_api.choices import ExperimentTypeChoices
-from uncontrast_studies.models.attention_type import UnConAttentionType
-from uncontrast_studies.models.evidence_type import UnConEvidenceType
 
 
 class UnConExperiment(models.Model):
@@ -18,8 +16,8 @@ class UnConExperiment(models.Model):
     study = models.ForeignKey(to="studies.Study", on_delete=CASCADE, related_name="uncon_experiments")
     techniques = models.ManyToManyField(to="uncontrast_studies.UnConTechnique", related_name="uncon_experiments")  # validator at least one
     processing_domains = models.ManyToManyField(to="uncontrast_studies.UnConProcessingDomain", related_name="uncon_experiments")  # validator at least one
-    type_of_evidence = models.ManyToManyField(null=False, blank=False, to=UnConEvidenceType, related_name="uncon_experiments")
-    type_of_attention = models.ManyToManyField(null=True, blank=True, to=UnConAttentionType, related_name="uncon_experiments")
+    type_of_evidence = models.ManyToManyField(null=False, blank=False, to="uncontrast_studies.UnConEvidenceType", related_name="uncon_experiments")
+    type_of_attention = models.ManyToManyField(null=True, blank=True, to="uncontrast_studies.UnConAttentionType", related_name="uncon_experiments")
     type = models.PositiveIntegerField(
         null=False, blank=False, choices=ExperimentTypeChoices.choices, default=ExperimentTypeChoices.NEUROSCIENTIFIC
     )

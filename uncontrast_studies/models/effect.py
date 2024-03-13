@@ -14,8 +14,8 @@ class UnConEffect(models.Model):
     experiment = models.ForeignKey(
         null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="findings"
     )
-    outcome = models.ManyToManyField(null=False, blank=False, to=UnConEffectOutcome)
-    significance = models.BooleanField(null=False, blank=False)
+    outcome = models.ManyToManyField(to=UnConEffectOutcome)
+    is_significant = models.BooleanField(null=False, blank=False)
 
     reported_statistic = models.CharField(null=True, blank=True, max_length=250)
     p_value = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)
@@ -46,4 +46,4 @@ class UnConEffect(models.Model):
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"experiment: {self.experiment_id}, outcome: {self.outcome}, significance: {self.significance}"
+        return f"experiment: {self.experiment_id}, outcome: {self.outcome}, significance: {self.is_significant}"

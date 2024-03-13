@@ -191,7 +191,7 @@ class Migration(migrations.Migration):
             name='UnConEffect',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('significance', models.BooleanField()),
+                ('is_significant', models.BooleanField()),
                 ('reported_statistic', models.CharField(blank=True, max_length=250, null=True)),
                 ('p_value', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
                 ('mean1', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Mean for 1st condition')),
@@ -230,7 +230,7 @@ class Migration(migrations.Migration):
             name='HistoricalUnConEffect',
             fields=[
                 ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('significance', models.BooleanField()),
+                ('is_significant', models.BooleanField()),
                 ('reported_statistic', models.CharField(blank=True, max_length=250, null=True)),
                 ('p_value', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
                 ('mean1', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Mean for 1st condition')),

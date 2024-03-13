@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 from contrast_api.tests.base import BaseTestCase
 
 

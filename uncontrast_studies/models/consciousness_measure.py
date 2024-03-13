@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import CASCADE
 
 
-class UnConsciousnessMeasurePhaseType(models.Model):
+class UnConsciousnessMeasurePhase(models.Model):
     name = models.CharField(blank=False, null=False, max_length=30)
 
     def __str__(self):
@@ -22,7 +22,7 @@ class UnConsciousnessMeasure(models.Model):
         blank=False,
         null=False,
         on_delete=CASCADE,
-        to=UnConsciousnessMeasurePhaseType,
+        to=UnConsciousnessMeasurePhase,
         related_name="unconsciousness_measures",
     )
     type = models.ForeignKey(

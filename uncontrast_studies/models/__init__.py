@@ -1,4 +1,4 @@
-from uncontrast_studies.models.consciousness_measure import UnConsciousnessMeasure, UnConsciousnessMeasurePhaseType, UnConsciousnessMeasureType
+from uncontrast_studies.models.consciousness_measure import UnConsciousnessMeasure, UnConsciousnessMeasurePhase, UnConsciousnessMeasureType
 from uncontrast_studies.models.effect import UnConEffect, UnConEffectOutcome
 from uncontrast_studies.models.experiment import UnConExperiment
 from uncontrast_studies.models.processing_domain import UnConProcessingDomain
@@ -18,7 +18,7 @@ __all__ = [UnConExperiment,
            UnConTask,
            UnConTechnique,
            UnConsciousnessMeasure,
-           UnConsciousnessMeasurePhaseType,
+           UnConsciousnessMeasurePhase,
            UnConsciousnessMeasureType,
            UnConProcessingDomain,
            UnConEffect,

@@ -1,6 +1,6 @@
 from rest_framework import status
 
-from studies.choices import ReportingChoices, InterpretationsChoices, SampleChoices
+from contrast_api.choices import ReportingChoices, InterpretationsChoices, SampleChoices
 from contrast_api.tests.base import BaseTestCase
 from studies.open_api_parameters import BREAKDOWN_OPTIONS
 

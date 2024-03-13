@@ -1,6 +1,6 @@
 from django.db.models import Func, F, Count, QuerySet
 
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 from studies.models import Interpretation, Theory, Experiment
 from studies.processors.base import BaseProcessor
 

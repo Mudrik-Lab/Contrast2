@@ -2,7 +2,7 @@ from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, Subquery, OuterRef, F, Func
 from django.db.models.functions import JSONObject
 
-from studies.choices import TheoryDrivenChoices, InterpretationsChoices
+from contrast_api.choices import TheoryDrivenChoices, InterpretationsChoices
 from studies.models import Experiment, FindingTag, Interpretation, Theory
 from studies.processors.base import BaseProcessor
 

@@ -11,7 +11,7 @@ from configuration.serializers import (
     GraphsConfigurationSerializer,
     RegistrationConfigurationSerializer,
 )
-from studies.choices import (
+from contrast_api.choices import (
     SampleChoices,
     TheoryDrivenChoices,
     ExperimentTypeChoices,

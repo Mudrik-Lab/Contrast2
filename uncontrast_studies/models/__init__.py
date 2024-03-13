@@ -1,5 +1,7 @@
+from uncontrast_studies.models.attention_type import UnConAttentionType
 from uncontrast_studies.models.consciousness_measure import UnConsciousnessMeasure, UnConsciousnessMeasurePhase, UnConsciousnessMeasureType
 from uncontrast_studies.models.effect import UnConEffect, UnConEffectOutcome
+from uncontrast_studies.models.evidence_type import UnConEvidenceType
 from uncontrast_studies.models.experiment import UnConExperiment
 from uncontrast_studies.models.processing_domain import UnConProcessingDomain
 from uncontrast_studies.models.sample import UnConSample
@@ -22,7 +24,9 @@ __all__ = [UnConExperiment,
            UnConsciousnessMeasureType,
            UnConProcessingDomain,
            UnConEffect,
-           UnConEffectOutcome]
+           UnConEffectOutcome,
+           UnConAttentionType,
+           UnConEvidenceType]
 
 
 

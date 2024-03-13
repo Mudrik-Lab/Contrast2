@@ -6,7 +6,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
 from configuration.initial_setup import current_child_theories, techniques, finding_tags_map
-from studies.choices import (
+from contrast_api.choices import (
     InterpretationsChoices,
     ExperimentTypeChoices,
     TypeOfConsciousnessChoices,

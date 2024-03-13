@@ -1,7 +1,7 @@
 from collections import namedtuple
 from typing import List
 
-from studies.choices import InterpretationsChoices, AggregatedInterpretationsChoices
+from contrast_api.choices import InterpretationsChoices, AggregatedInterpretationsChoices
 
 AggregatedInterpretationDTO = namedtuple(
     "AggregatedInterpretationDTO", ["parent_theory_names", "parent_theory_acronyms", "type"]

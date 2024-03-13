@@ -4,7 +4,7 @@ from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Func, Count
 from django.db.models.functions import JSONObject
 
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 from studies.models import (
     Experiment,
     Paradigm,

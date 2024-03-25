@@ -19,8 +19,22 @@ class TimezoneMiddleware:
 
 
 class MultiSPAMiddleware(SPAMiddleware):
+    SPA_ROOT_MAPPING = {}
 
-    def resolve_spa_root(self):
+    def populate_spa_root_mapping(self):
+        for domain, app in settings.SPA_APPS_MAPPING.items():
+            index_page_suffix = "/" + app + "/" + self.index_name
+            for url, static_file in self.files.items():
+                if url.endswith(index_page_suffix):
+                    # to be frontend-routed
+                    self.SPA_ROOT_MAPPING[app] = static_file
+
+    def update_files_dictionary(self, *args):
+        super(MultiSPAMiddleware, self).update_files_dictionary(*args)
+        # I just need a place to hook in and call populate on start
+        self.populate_spa_root_mapping()
+
+    def resolve_spa_root(self, request):
         """
         Resolve spa root, by request domain or hard coded in settings for local
         """
@@ -45,18 +59,21 @@ class MultiSPAMiddleware(SPAMiddleware):
             # (e.g. a template or the Djangoadmin)
             # so we'll let Django handle this
             # (just return and let the normal middleware take its course)
-            urlconf = getattr(request, 'urlconf', None)
+            urlconf = getattr(request, "urlconf", None)
             if is_valid_path(request.path_info, urlconf):
                 return
-            if (settings.APPEND_SLASH and not request.path_info.endswith('/') and
-                    is_valid_path('%s/' % request.path_info, urlconf)):
+            if (
+                settings.APPEND_SLASH
+                and not request.path_info.endswith("/")
+                and is_valid_path("%s/" % request.path_info, urlconf)
+            ):
                 return
 
             # 2) the url is handled by frontend routing
             # redirect all unknown files to the SPA root
             try:
-                return self.serve(self.resolve_spa_root(), request)
+                return self.serve(self.resolve_spa_root(request), request)
             except AttributeError:  # no SPA page stored yet
-                self.manual_set_spa_root(self.find_file('/'))
+                self.manual_set_spa_root(self.find_file("/"))
                 if self.spa_root:
-                    return self.serve(self.resolve_spa_root(), request)
+                    return self.serve(self.resolve_spa_root(request), request)

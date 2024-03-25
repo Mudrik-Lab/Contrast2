@@ -85,16 +85,8 @@ jobs:
       - run: npm run build
         working-directory: ./ContrastFront
 
-#      - run: npm ci
-#        working-directory: ./UnContrastFront
-#      - run: npm run build
-#        working-directory: ./UnContrastFront
-
       - name: adding front code to django
-        run: cp -r ./ContrastFront/dist/* frontapp
-
-#      - name: adding front code to django
-#        run: cp -r ./UnContrastFront/dist/* frontapp/uncontrast
+        run: cp -r ./ContrastFront/dist/* frontapp # TODO replace this to new setup
 
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)

@@ -82,7 +82,7 @@ class Base(Configuration):
     MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
-        "spa.middleware.SPAMiddleware",
+        "contrast_api.middleware.MultiSPAMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "corsheaders.middleware.CorsMiddleware",
         "django.middleware.common.CommonMiddleware",
@@ -292,6 +292,7 @@ class Base(Configuration):
 
 
 class Development(Base):
+    DEBUG = False
     SWAGGER_ENABLED = values.BooleanValue(default=True)
     CORS_ALLOW_ALL_ORIGINS = True
     ALLOWED_HOSTS = values.ListValue(["web", "localhost", "127.0.0.1"])

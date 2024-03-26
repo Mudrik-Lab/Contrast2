@@ -7,313 +7,664 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('studies', '0057_alter_stimulus_category_alter_stimulus_modality_and_more'),
+        ("studies", "0057_alter_stimulus_category_alter_stimulus_modality_and_more"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='UnConAttentionType',
+            name="UnConAttentionType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConEffectOutcome',
+            name="UnConEffectOutcome",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(max_length=250)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("type", models.CharField(max_length=250)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConEvidenceType',
+            name="UnConEvidenceType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConProcessingDomain',
+            name="UnConProcessingDomain",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConsciousnessMeasurePhase',
+            name="UnConsciousnessMeasurePhase",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=30)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConsciousnessMeasureType',
+            name="UnConsciousnessMeasureType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=30)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConTaskType',
+            name="UnConTaskType",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=30)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=30)),
             ],
         ),
         migrations.CreateModel(
-            name='UnConTechnique',
+            name="UnConTechnique",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
             ],
         ),
         migrations.CreateModel(
-            name='HistoricalUnConAttentionType',
+            name="HistoricalUnConAttentionType",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con attention type',
-                'verbose_name_plural': 'historical un con attention types',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con attention type",
+                "verbose_name_plural": "historical un con attention types",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalUnConEvidenceType',
+            name="HistoricalUnConEvidenceType",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con evidence type',
-                'verbose_name_plural': 'historical un con evidence types',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con evidence type",
+                "verbose_name_plural": "historical un con evidence types",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalUnConExperiment',
+            name="HistoricalUnConExperiment",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('type', models.PositiveIntegerField(choices=[(1, 'Neuroscientific'), (2, 'Behavioral'), (3, 'Both')], default=1)),
-                ('consciousness_measures_notes', models.TextField(blank=True, null=True)),
-                ('experiment_findings_notes', models.TextField(blank=True, null=True)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('study', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='studies.study')),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                (
+                    "type",
+                    models.PositiveIntegerField(
+                        choices=[(1, "Neuroscientific"), (2, "Behavioral"), (3, "Both")], default=1
+                    ),
+                ),
+                ("consciousness_measures_notes", models.TextField(blank=True, null=True)),
+                ("experiment_findings_notes", models.TextField(blank=True, null=True)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "study",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="studies.study",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con experiment',
-                'verbose_name_plural': 'historical un con experiments',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con experiment",
+                "verbose_name_plural": "historical un con experiments",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalUnConProcessingDomain',
+            name="HistoricalUnConProcessingDomain",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con processing domain',
-                'verbose_name_plural': 'historical un con processing domains',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con processing domain",
+                "verbose_name_plural": "historical un con processing domains",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalUnConTechnique',
+            name="HistoricalUnConTechnique",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con technique',
-                'verbose_name_plural': 'historical un con techniques',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con technique",
+                "verbose_name_plural": "historical un con techniques",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='UnConExperiment',
+            name="UnConExperiment",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.PositiveIntegerField(choices=[(1, 'Neuroscientific'), (2, 'Behavioral'), (3, 'Both')], default=1)),
-                ('consciousness_measures_notes', models.TextField(blank=True, null=True)),
-                ('experiment_findings_notes', models.TextField(blank=True, null=True)),
-                ('study', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='uncon_experiments', to='studies.study')),
-                ('type_of_attention', models.ManyToManyField(blank=True, null=True, related_name='uncon_experiments', to='uncontrast_studies.unconattentiontype')),
-                ('type_of_evidence', models.ManyToManyField(related_name='uncon_experiments', to='uncontrast_studies.unconevidencetype')),
-                ('processing_domains', models.ManyToManyField(related_name='uncon_experiments', to='uncontrast_studies.unconprocessingdomain')),
-                ('techniques', models.ManyToManyField(related_name='uncon_experiments', to='uncontrast_studies.uncontechnique')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "type",
+                    models.PositiveIntegerField(
+                        choices=[(1, "Neuroscientific"), (2, "Behavioral"), (3, "Both")], default=1
+                    ),
+                ),
+                ("consciousness_measures_notes", models.TextField(blank=True, null=True)),
+                ("experiment_findings_notes", models.TextField(blank=True, null=True)),
+                (
+                    "study",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="uncon_experiments",
+                        to="studies.study",
+                    ),
+                ),
+                (
+                    "type_of_attention",
+                    models.ManyToManyField(
+                        blank=True,
+                        null=True,
+                        related_name="uncon_experiments",
+                        to="uncontrast_studies.unconattentiontype",
+                    ),
+                ),
+                (
+                    "type_of_evidence",
+                    models.ManyToManyField(related_name="uncon_experiments", to="uncontrast_studies.unconevidencetype"),
+                ),
+                (
+                    "processing_domains",
+                    models.ManyToManyField(
+                        related_name="uncon_experiments", to="uncontrast_studies.unconprocessingdomain"
+                    ),
+                ),
+                (
+                    "techniques",
+                    models.ManyToManyField(related_name="uncon_experiments", to="uncontrast_studies.uncontechnique"),
+                ),
             ],
             options={
-                'ordering': ['id'],
+                "ordering": ["id"],
             },
         ),
         migrations.CreateModel(
-            name='UnConEffect',
+            name="UnConEffect",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_significant', models.BooleanField()),
-                ('reported_statistic', models.CharField(blank=True, max_length=250, null=True)),
-                ('p_value', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
-                ('mean1', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Mean for 1st condition')),
-                ('mean2', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Mean for 2nd condition')),
-                ('sd1', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Standard deviation for 1st condition')),
-                ('sd2', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Standard deviation for 2nd condition')),
-                ('sd_difference', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='SD of the difference between conditions')),
-                ('trials', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Number of trials per condition')),
-                ('outcome', models.ManyToManyField(to='uncontrast_studies.unconeffectoutcome')),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='findings', to='uncontrast_studies.unconexperiment')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("is_significant", models.BooleanField()),
+                ("reported_statistic", models.CharField(blank=True, max_length=250, null=True)),
+                ("p_value", models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
+                (
+                    "mean1",
+                    models.DecimalField(
+                        blank=True, decimal_places=3, max_digits=10, null=True, verbose_name="Mean for 1st condition"
+                    ),
+                ),
+                (
+                    "mean2",
+                    models.DecimalField(
+                        blank=True, decimal_places=3, max_digits=10, null=True, verbose_name="Mean for 2nd condition"
+                    ),
+                ),
+                (
+                    "sd1",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=3,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="Standard deviation for 1st condition",
+                    ),
+                ),
+                (
+                    "sd2",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=3,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="Standard deviation for 2nd condition",
+                    ),
+                ),
+                (
+                    "sd_difference",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=3,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="SD of the difference between conditions",
+                    ),
+                ),
+                (
+                    "trials",
+                    models.PositiveSmallIntegerField(
+                        blank=True, null=True, verbose_name="Number of trials per condition"
+                    ),
+                ),
+                ("outcome", models.ManyToManyField(to="uncontrast_studies.unconeffectoutcome")),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="findings",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='HistoricalUnConSample',
+            name="HistoricalUnConSample",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('type', models.CharField(choices=[('healthy_adults', 'Healthy_adults'), ('Healthy_college_students', 'Healthy_college_students'), ('children', 'Children'), ('patients', 'Patients'), ('non_human', 'Non_human'), ('computer', 'Computer'), ('Young_patients_(children)', 'Young_patients_(children)')], max_length=30)),
-                ('total_size', models.IntegerField()),
-                ('size_included', models.IntegerField()),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('experiment', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='uncontrast_studies.unconexperiment')),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("healthy_adults", "Healthy_adults"),
+                            ("Healthy_college_students", "Healthy_college_students"),
+                            ("children", "Children"),
+                            ("patients", "Patients"),
+                            ("non_human", "Non_human"),
+                            ("computer", "Computer"),
+                            ("Young_patients_(children)", "Young_patients_(children)"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("total_size", models.IntegerField()),
+                ("size_included", models.IntegerField()),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con sample',
-                'verbose_name_plural': 'historical un con samples',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con sample",
+                "verbose_name_plural": "historical un con samples",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='HistoricalUnConEffect',
+            name="HistoricalUnConEffect",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('is_significant', models.BooleanField()),
-                ('reported_statistic', models.CharField(blank=True, max_length=250, null=True)),
-                ('p_value', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
-                ('mean1', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Mean for 1st condition')),
-                ('mean2', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Mean for 2nd condition')),
-                ('sd1', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Standard deviation for 1st condition')),
-                ('sd2', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='Standard deviation for 2nd condition')),
-                ('sd_difference', models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True, verbose_name='SD of the difference between conditions')),
-                ('trials', models.PositiveSmallIntegerField(blank=True, null=True, verbose_name='Number of trials per condition')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('experiment', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='uncontrast_studies.unconexperiment')),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                ("is_significant", models.BooleanField()),
+                ("reported_statistic", models.CharField(blank=True, max_length=250, null=True)),
+                ("p_value", models.DecimalField(blank=True, decimal_places=3, max_digits=10, null=True)),
+                (
+                    "mean1",
+                    models.DecimalField(
+                        blank=True, decimal_places=3, max_digits=10, null=True, verbose_name="Mean for 1st condition"
+                    ),
+                ),
+                (
+                    "mean2",
+                    models.DecimalField(
+                        blank=True, decimal_places=3, max_digits=10, null=True, verbose_name="Mean for 2nd condition"
+                    ),
+                ),
+                (
+                    "sd1",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=3,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="Standard deviation for 1st condition",
+                    ),
+                ),
+                (
+                    "sd2",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=3,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="Standard deviation for 2nd condition",
+                    ),
+                ),
+                (
+                    "sd_difference",
+                    models.DecimalField(
+                        blank=True,
+                        decimal_places=3,
+                        max_digits=10,
+                        null=True,
+                        verbose_name="SD of the difference between conditions",
+                    ),
+                ),
+                (
+                    "trials",
+                    models.PositiveSmallIntegerField(
+                        blank=True, null=True, verbose_name="Number of trials per condition"
+                    ),
+                ),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con effect',
-                'verbose_name_plural': 'historical un con effects',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con effect",
+                "verbose_name_plural": "historical un con effects",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),
         migrations.CreateModel(
-            name='UnConParadigm',
+            name="UnConParadigm",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('main', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.PROTECT, related_name='specific_paradigm', to='uncontrast_studies.unconparadigm')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "main",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.PROTECT,
+                        related_name="specific_paradigm",
+                        to="uncontrast_studies.unconparadigm",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UnConSample',
+            name="UnConSample",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('type', models.CharField(choices=[('healthy_adults', 'Healthy_adults'), ('Healthy_college_students', 'Healthy_college_students'), ('children', 'Children'), ('patients', 'Patients'), ('non_human', 'Non_human'), ('computer', 'Computer'), ('Young_patients_(children)', 'Young_patients_(children)')], max_length=30)),
-                ('total_size', models.IntegerField()),
-                ('size_included', models.IntegerField()),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='samples', to='uncontrast_studies.unconexperiment')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[
+                            ("healthy_adults", "Healthy_adults"),
+                            ("Healthy_college_students", "Healthy_college_students"),
+                            ("children", "Children"),
+                            ("patients", "Patients"),
+                            ("non_human", "Non_human"),
+                            ("computer", "Computer"),
+                            ("Young_patients_(children)", "Young_patients_(children)"),
+                        ],
+                        max_length=30,
+                    ),
+                ),
+                ("total_size", models.IntegerField()),
+                ("size_included", models.IntegerField()),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="samples",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UnConsciousnessMeasure',
+            name="UnConsciousnessMeasure",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='unconsciousness_measures', to='uncontrast_studies.unconexperiment')),
-                ('phase', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='unconsciousness_measures', to='uncontrast_studies.unconsciousnessmeasurephase')),
-                ('type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='unconsciousness_measures', to='uncontrast_studies.unconsciousnessmeasuretype')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="unconsciousness_measures",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
+                (
+                    "phase",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="unconsciousness_measures",
+                        to="uncontrast_studies.unconsciousnessmeasurephase",
+                    ),
+                ),
+                (
+                    "type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="unconsciousness_measures",
+                        to="uncontrast_studies.unconsciousnessmeasuretype",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UnConSuppressionMethod',
+            name="UnConSuppressionMethod",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='suppression_methods', to='uncontrast_studies.unconexperiment')),
-                ('paradigms', models.ManyToManyField(related_name='suppression_methods', to='uncontrast_studies.unconparadigm')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="suppression_methods",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
+                (
+                    "paradigms",
+                    models.ManyToManyField(related_name="suppression_methods", to="uncontrast_studies.unconparadigm"),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='UnConTask',
+            name="UnConTask",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('experiment', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='uncontrast_studies.unconexperiment')),
-                ('type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='uncontrast_studies.uncontasktype')),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="tasks",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
+                (
+                    "type",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE, to="uncontrast_studies.uncontasktype"
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='HistoricalUnConTask',
+            name="HistoricalUnConTask",
             fields=[
-                ('id', models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name='ID')),
-                ('history_id', models.AutoField(primary_key=True, serialize=False)),
-                ('history_date', models.DateTimeField(db_index=True)),
-                ('history_change_reason', models.CharField(max_length=100, null=True)),
-                ('history_type', models.CharField(choices=[('+', 'Created'), ('~', 'Changed'), ('-', 'Deleted')], max_length=1)),
-                ('history_user', models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to=settings.AUTH_USER_MODEL)),
-                ('experiment', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='uncontrast_studies.unconexperiment')),
-                ('type', models.ForeignKey(blank=True, db_constraint=False, null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='uncontrast_studies.uncontasktype')),
+                ("id", models.BigIntegerField(auto_created=True, blank=True, db_index=True, verbose_name="ID")),
+                ("history_id", models.AutoField(primary_key=True, serialize=False)),
+                ("history_date", models.DateTimeField(db_index=True)),
+                ("history_change_reason", models.CharField(max_length=100, null=True)),
+                (
+                    "history_type",
+                    models.CharField(choices=[("+", "Created"), ("~", "Changed"), ("-", "Deleted")], max_length=1),
+                ),
+                (
+                    "history_user",
+                    models.ForeignKey(
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="+",
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                (
+                    "experiment",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="uncontrast_studies.unconexperiment",
+                    ),
+                ),
+                (
+                    "type",
+                    models.ForeignKey(
+                        blank=True,
+                        db_constraint=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.DO_NOTHING,
+                        related_name="+",
+                        to="uncontrast_studies.uncontasktype",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'historical un con task',
-                'verbose_name_plural': 'historical un con tasks',
-                'ordering': ('-history_date', '-history_id'),
-                'get_latest_by': ('history_date', 'history_id'),
+                "verbose_name": "historical un con task",
+                "verbose_name_plural": "historical un con tasks",
+                "ordering": ("-history_date", "-history_id"),
+                "get_latest_by": ("history_date", "history_id"),
             },
             bases=(simple_history.models.HistoricalChanges, models.Model),
         ),

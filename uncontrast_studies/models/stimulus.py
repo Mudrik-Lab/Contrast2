@@ -37,12 +37,15 @@ class UnConStimulusSubCategory(models.Model):
 
 
 class UnConSuppressedStimulus(models.Model):
-
     class Meta:
         verbose_name_plural = "suppressed stimuli"
 
     experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="suppressed stimuli"
+        null=False,
+        blank=False,
+        to="uncontrast_studies.UnConExperiment",
+        on_delete=CASCADE,
+        related_name="suppressed stimuli",
     )
 
     category = models.ForeignKey(
@@ -54,7 +57,9 @@ class UnConSuppressedStimulus(models.Model):
     modality = models.ForeignKey(
         null=False, blank=False, on_delete=PROTECT, to=UnConModalityType, related_name="suppressed stimuli"
     )  # TODO validators from config
-    mode_of_presentation = models.CharField(null=False, blank=False, choices=PresentationModeChoices.choices, max_length=30)
+    mode_of_presentation = models.CharField(
+        null=False, blank=False, choices=PresentationModeChoices.choices, max_length=30
+    )
     duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
     soa = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
     number_of_stimuli = models.PositiveSmallIntegerField(null=True, blank=True)
@@ -67,12 +72,15 @@ class UnConSuppressedStimulus(models.Model):
 
 
 class UnConTargetStimulus(models.Model):
-
     class Meta:
         verbose_name_plural = "target stimuli"
 
     experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="target stimuli"
+        null=False,
+        blank=False,
+        to="uncontrast_studies.UnConExperiment",
+        on_delete=CASCADE,
+        related_name="target stimuli",
     )
 
     category = models.ForeignKey(
@@ -84,7 +92,6 @@ class UnConTargetStimulus(models.Model):
     modality = models.ForeignKey(
         null=False, blank=False, on_delete=PROTECT, to=UnConModalityType, related_name="target stimuli"
     )  # TODO validators from config
-    duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
     number_of_stimuli = models.PositiveSmallIntegerField(null=True, blank=True)
     history = HistoricalRecords()
 

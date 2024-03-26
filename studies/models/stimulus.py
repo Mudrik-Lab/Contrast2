@@ -126,4 +126,3 @@ class Stimulus(models.Model):
         if self.sub_category is None:
             return f"experiment: {self.experiment_id}, category: {self.category}, modality: {self.modality}"
         return f"experiment: {self.experiment_id}, category: {self.category} ({self.sub_category}), modality: {self.modality}"
-

@@ -1,6 +1,11 @@
 from drf_spectacular.utils import OpenApiParameter
 
-from contrast_api.choices import TheoryDrivenChoices, ReportingChoices, TypeOfConsciousnessChoices, InterpretationsChoices
+from contrast_api.choices import (
+    TheoryDrivenChoices,
+    ReportingChoices,
+    TypeOfConsciousnessChoices,
+    InterpretationsChoices,
+)
 
 BREAKDOWN_OPTIONS = [
     "paradigm_family",

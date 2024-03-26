@@ -7,7 +7,12 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 from typing import Optional, Callable
 from approval_process.choices import ApprovalChoices
-from contrast_api.choices import TypeOfConsciousnessChoices, ReportingChoices, TheoryDrivenChoices, ExperimentTypeChoices
+from contrast_api.choices import (
+    TypeOfConsciousnessChoices,
+    ReportingChoices,
+    TheoryDrivenChoices,
+    ExperimentTypeChoices,
+)
 from studies.models import (
     Experiment,
     Theory,

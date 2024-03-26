@@ -16,11 +16,11 @@ class UnConProcessingDomain(models.Model):
         blank=False,
         to="uncontrast_studies.UnConExperiment",
         on_delete=CASCADE,
-        related_name="processing domains",
+        related_name="processing_domains",
     )
     name = models.CharField(null=False, blank=False, max_length=50)
     sub_domain = models.ForeignKey(
-        null=False, blank=False, to=UnConProcessingSubDomain, on_delete=CASCADE, related_name="main processing domain"
+        null=False, blank=False, to=UnConProcessingSubDomain, on_delete=CASCADE, related_name="main_processing_domain"
     )
     history = HistoricalRecords()
 

@@ -45,17 +45,17 @@ class UnConSuppressedStimulus(models.Model):
         blank=False,
         to="uncontrast_studies.UnConExperiment",
         on_delete=CASCADE,
-        related_name="suppressed stimuli",
+        related_name="suppressed_stimuli",
     )
 
     category = models.ForeignKey(
-        null=False, blank=False, on_delete=PROTECT, to=UnConStimulusCategory, related_name="suppressed stimuli"
+        null=False, blank=False, on_delete=PROTECT, to=UnConStimulusCategory, related_name="suppressed_stimuli"
     )
     sub_category = models.ForeignKey(
-        null=True, blank=True, on_delete=PROTECT, to=UnConStimulusSubCategory, related_name="suppressed stimuli"
+        null=True, blank=True, on_delete=PROTECT, to=UnConStimulusSubCategory, related_name="suppressed_stimuli"
     )  # TODO validators from config
     modality = models.ForeignKey(
-        null=False, blank=False, on_delete=PROTECT, to=UnConModalityType, related_name="suppressed stimuli"
+        null=False, blank=False, on_delete=PROTECT, to=UnConModalityType, related_name="suppressed_stimuli"
     )  # TODO validators from config
     mode_of_presentation = models.CharField(
         null=False, blank=False, choices=PresentationModeChoices.choices, max_length=30
@@ -80,17 +80,17 @@ class UnConTargetStimulus(models.Model):
         blank=False,
         to="uncontrast_studies.UnConExperiment",
         on_delete=CASCADE,
-        related_name="target stimuli",
+        related_name="target_stimuli",
     )
 
     category = models.ForeignKey(
-        null=False, blank=False, on_delete=PROTECT, to=UnConStimulusCategory, related_name="target stimuli"
+        null=False, blank=False, on_delete=PROTECT, to=UnConStimulusCategory, related_name="target_stimuli"
     )
     sub_category = models.ForeignKey(
-        null=True, blank=True, on_delete=PROTECT, to=UnConStimulusSubCategory, related_name="target stimuli"
+        null=True, blank=True, on_delete=PROTECT, to=UnConStimulusSubCategory, related_name="target_stimuli"
     )  # TODO validators from config
     modality = models.ForeignKey(
-        null=False, blank=False, on_delete=PROTECT, to=UnConModalityType, related_name="target stimuli"
+        null=False, blank=False, on_delete=PROTECT, to=UnConModalityType, related_name="target_stimuli"
     )  # TODO validators from config
     number_of_stimuli = models.PositiveSmallIntegerField(null=True, blank=True)
     history = HistoricalRecords()

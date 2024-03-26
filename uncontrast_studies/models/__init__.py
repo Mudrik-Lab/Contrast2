@@ -6,7 +6,7 @@ from uncontrast_studies.models.consciousness_measure import (
 )
 from uncontrast_studies.models.finding import UnConFinding
 from uncontrast_studies.models.experiment import UnConExperiment
-from uncontrast_studies.models.paradigm import UnConParadigm
+from uncontrast_studies.models.paradigm import UnConParadigm, UnConSpecificParadigm, UnConMainParadigm
 from uncontrast_studies.models.processing_domain import UnConProcessingDomain, UnConProcessingSubDomain
 from uncontrast_studies.models.sample import UnConSample
 from uncontrast_studies.models.stimulus import (
@@ -23,11 +23,12 @@ from uncontrast_studies.models.suppression_method import (
 )
 from uncontrast_studies.models.task import UnConTaskType, UnConTask
 
-
 __all__ = [
     UnConExperiment,
     UnConSample,
     UnConParadigm,
+    UnConSpecificParadigm,
+    UnConMainParadigm,
     UnConSuppressionMethod,
     UnConSuppressionMethodSubType,
     UnConSuppressionMethodType,

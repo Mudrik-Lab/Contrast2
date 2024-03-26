@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import CASCADE
 from simple_history.models import HistoricalRecords
 
-from contrast_api.choices import ExperimentTypeChoices, ExperimentSuppressedStimuliChoices
+from contrast_api.choices import ExperimentTypeChoices
 
 
 class UnConExperiment(models.Model):
@@ -20,10 +20,13 @@ class UnConExperiment(models.Model):
 
     # Stimuli metadata
     is_target_stimulus = models.BooleanField(
-        null=False, blank=False, verbose_name="are there also non-suppressed stimuli"
+        null=False, blank=False, verbose_name="are there also non-suppressed stimuli", default=False
     )
     is_target_same_as_suppressed_stimulus = models.BooleanField(
-        null=False, blank=False, verbose_name="is the non-suppressed stimulus the same as the suppressed stimulus"
+        null=False,
+        blank=False,
+        verbose_name="is the non-suppressed stimulus the same as the suppressed stimulus",
+        default=False,
     )
 
     # notes

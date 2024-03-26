@@ -12,7 +12,7 @@ class UnConSuppressionMethodType(models.Model):
 class UnConSuppressionMethodSubType(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
     parent = models.ForeignKey(
-        null=False, blank=False, related_name="subtypes", to=UnConSuppressionMethodType, on_delete=CASCADE
+        null=False, blank=False, related_name="sub_types", to=UnConSuppressionMethodType, on_delete=CASCADE
     )
 
     def __str__(self):

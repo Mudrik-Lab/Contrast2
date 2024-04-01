@@ -289,13 +289,13 @@ resend = ["svix"]
 
 [[package]]
 name = "django-configurations"
-version = "2.5"
+version = "2.5.1"
 description = "A helper for organizing Django settings."
 optional = false
-python-versions = ">=3.8, <4.0"
+python-versions = "<4.0,>=3.8"
 files = [
-    {file = "django-configurations-2.5.tar.gz", hash = "sha256:63fa252c40dc88ea17b8b90f5f4a31a2726e586acb1ff0edc74c228c61f19e5d"},
-    {file = "django_configurations-2.5-py3-none-any.whl", hash = "sha256:cf063b99ad30013df49eaa971bd8543deffb008ff080cf3a92955dbccfe81a5c"},
+    {file = "django-configurations-2.5.1.tar.gz", hash = "sha256:6e5083757e2bbdf9bb7850567536b96a93515f6b17503d74928ff628db2e0e94"},
+    {file = "django_configurations-2.5.1-py3-none-any.whl", hash = "sha256:ceb84858da2dac846b15e715c2fd936cfc4c7917c074aff8d31700564093955e"},
 ]
 
 [package.dependencies]

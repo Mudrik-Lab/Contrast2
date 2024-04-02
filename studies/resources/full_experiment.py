@@ -2,7 +2,7 @@ from django_countries import countries
 from import_export import resources
 from import_export.fields import Field
 
-from studies.choices import ExperimentTypeChoices
+from contrast_api.choices import ExperimentTypeChoices
 from studies.models import Experiment, Study
 
 SEPERATOR = " || "

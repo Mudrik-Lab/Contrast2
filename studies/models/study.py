@@ -7,6 +7,8 @@ from django.conf import settings
 from approval_process.choices import ApprovalChoices
 from simple_history.models import HistoricalRecords
 
+from contrast_api.choices import StudyTypeChoices
+
 
 class Study(models.Model):
     class Meta:
@@ -35,6 +37,9 @@ class Study(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL
     )  # Optional submitter
     is_author_submitter = models.BooleanField(null=True, blank=True)
+    type = models.CharField(
+        max_length=20, choices=StudyTypeChoices.choices, null=False, blank=False, default=StudyTypeChoices.CONSCIOUSNESS
+    )
     history = HistoricalRecords()
 
     def __str__(self):

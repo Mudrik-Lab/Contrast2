@@ -5,15 +5,17 @@ from simple_history.models import HistoricalRecords
 from contrast_api.choices import SampleChoices
 
 
-class Sample(models.Model):
+class UnConSample(models.Model):
     experiment = models.ForeignKey(
-        null=False, blank=False, to="studies.Experiment", on_delete=CASCADE, related_name="samples"
+        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="samples"
     )
-
     type = models.CharField(null=False, blank=False, choices=SampleChoices.choices, max_length=30)
-    total_size = models.IntegerField(null=False, blank=False)
     size_included = models.IntegerField(null=False, blank=False)
+    size_excluded = models.IntegerField(null=True, blank=True)
+
     history = HistoricalRecords()
 
     def __str__(self):
-        return f"{self.type}, total: {self.total_size}, included: {self.size_included}"
+        if self.size_excluded is None:
+            return f"{self.type}, included: {self.size_included}"
+        return f"{self.type}, included: {self.size_included}, excluded: {self.size_excluded}"

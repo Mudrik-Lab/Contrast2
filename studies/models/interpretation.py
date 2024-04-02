@@ -1,7 +1,7 @@
 from django.db import models
 from django.db.models import CASCADE, Q
 
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 
 
 class Interpretation(models.Model):

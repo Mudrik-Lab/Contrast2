@@ -12,6 +12,11 @@ class SampleChoices(TextChoices):
     YOUNG_PATIENTS = "Young_patients_(children)", _("Young_patients_(children)")
 
 
+class PresentationModeChoices(TextChoices):
+    LIMINAL = "liminal", _("Liminal")
+    SUBLIMINAL = "subliminal", _("Subliminal")
+
+
 class InterpretationsChoices(TextChoices):
     PRO = "pro", _("Pro")
     CHALLENGES = "challenges", _("Challenges")
@@ -132,3 +137,8 @@ class AALAtlasTagChoices(TextChoices):
     THAL_PUL = "Thal_PuL", _("Thal_PuL")
     THAL_PUI = "Thal_PuI", _("Thal_PuI")
     NOT_SPECIFIED = "Not Specified", _("Not specified")
+
+
+class StudyTypeChoices(TextChoices):
+    CONSCIOUSNESS = _("Consciousness")
+    UNCONSCIOUSNESS = _("UnConsciousness")

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CASCADE
+from django.db.models import CASCADE, PROTECT
 from simple_history.models import HistoricalRecords
 
 
@@ -111,13 +111,13 @@ class Stimulus(models.Model):
     )
 
     category = models.ForeignKey(
-        null=False, blank=False, on_delete=CASCADE, to=StimulusCategory, related_name="stimuli"
+        null=False, blank=False, on_delete=PROTECT, to=StimulusCategory, related_name="stimuli"
     )
     sub_category = models.ForeignKey(
-        null=True, blank=True, on_delete=CASCADE, to=StimulusSubCategory, related_name="stimuli"
+        null=True, blank=True, on_delete=PROTECT, to=StimulusSubCategory, related_name="stimuli"
     )  # TODO validators from config
     modality = models.ForeignKey(
-        null=False, blank=False, on_delete=CASCADE, to=ModalityType, related_name="stimuli"
+        null=False, blank=False, on_delete=PROTECT, to=ModalityType, related_name="stimuli"
     )  # TODO validators from config
     duration = models.DecimalField(null=True, blank=True, max_digits=10, decimal_places=3)  # ms
     history = HistoricalRecords()
@@ -126,10 +126,3 @@ class Stimulus(models.Model):
         if self.sub_category is None:
             return f"experiment: {self.experiment_id}, category: {self.category}, modality: {self.modality}"
         return f"experiment: {self.experiment_id}, category: {self.category} ({self.sub_category}), modality: {self.modality}"
-
-    def clean(self):
-        # validating category by modality
-        if self.category not in self.allowed_categories_by_modality[self.modality]:
-            # raise ValidationError({"category": f"Stimulus category {self.category} isn't allowed for Stimulus modality "
-            #                                    f"{self.modality}"})
-            pass

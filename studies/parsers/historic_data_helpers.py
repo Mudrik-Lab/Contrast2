@@ -16,7 +16,7 @@ from configuration.initial_setup import (
     paradigm_sub_types,
     only_child_paradigms,
 )
-from studies.choices import TheoryDrivenChoices, SampleChoices
+from contrast_api.choices import TheoryDrivenChoices, SampleChoices
 
 logger = logging.getLogger("Contrast2")
 

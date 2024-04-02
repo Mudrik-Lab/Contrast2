@@ -9,7 +9,7 @@ from django_countries import countries
 
 from contrast_api.admin_utils import SimpleHistoryWithDeletedAdmin
 from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
-from studies.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices
 from studies.models import (
     Study,
     Experiment,

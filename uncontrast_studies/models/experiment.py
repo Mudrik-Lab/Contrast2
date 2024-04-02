@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CASCADE
+from django.db.models import CASCADE, PROTECT
 from simple_history.models import HistoricalRecords
 
 from contrast_api.choices import ExperimentTypeChoices
@@ -15,8 +15,11 @@ class UnConExperiment(models.Model):
 
     study = models.ForeignKey(to="studies.Study", on_delete=CASCADE, related_name="uncon_experiments")
     type = models.PositiveIntegerField(
-        null=False, blank=False, choices=ExperimentTypeChoices.choices, default=ExperimentTypeChoices.NEUROSCIENTIFIC
+        null=False, blank=False, choices=ExperimentTypeChoices.choices, default=ExperimentTypeChoices.BEHAVIORAL
     )
+    paradigm = models.ForeignKey(
+        to="uncontrast_studies.UnConSpecificParadigm", on_delete=PROTECT, related_name="experiments"
+    )  # TODO: possibly turn into many-to-many field
 
     # Stimuli metadata
     is_target_stimulus = models.BooleanField(

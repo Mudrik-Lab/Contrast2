@@ -10,9 +10,12 @@ class UnConMainParadigm(models.Model):
 
 
 class UnConSpecificParadigm(models.Model):
+    experiment = models.ForeignKey(
+        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="paradigms"
+    )
     main = models.ForeignKey(
-        null=True,
-        blank=True,
+        null=False,
+        blank=False,
         related_name="specific_paradigm",
         to=UnConMainParadigm,
         on_delete=CASCADE,
@@ -20,23 +23,4 @@ class UnConSpecificParadigm(models.Model):
     name = models.CharField(null=False, blank=False, max_length=100)
 
     def __str__(self):
-        return self.name
-
-
-class UnConParadigm(models.Model):
-    experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="paradigms"
-    )
-    main = models.ForeignKey(
-        null=True,
-        blank=True,
-        related_name="paradigms",
-        to=UnConMainParadigm,
-        on_delete=PROTECT,
-    )
-    specific = models.ForeignKey(
-        null=True, blank=True, related_name="paradigms", to=UnConSpecificParadigm, on_delete=PROTECT
-    )
-
-    def __str__(self):
-        return f"{self.main}; {self.specific}"
+        return f"{self.main}; {self.name}"

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CASCADE
+from django.db.models import CASCADE, PROTECT
 
 
 class UnConsciousnessMeasurePhase(models.Model):
@@ -37,21 +37,21 @@ class UnConsciousnessMeasure(models.Model):
     phase = models.ForeignKey(
         blank=False,
         null=False,
-        on_delete=CASCADE,
+        on_delete=PROTECT,
         to=UnConsciousnessMeasurePhase,
         related_name="unconsciousness_measures",
     )
     type = models.ForeignKey(
         blank=False,
         null=False,
-        on_delete=CASCADE,
+        on_delete=PROTECT,
         to=UnConsciousnessMeasureType,
         related_name="unconsciousness_measures",
     )
     sub_type = models.ForeignKey(
         blank=False,
         null=False,
-        on_delete=CASCADE,
+        on_delete=PROTECT,
         to=UnConsciousnessMeasureSubType,
         related_name="unconsciousness_measures",
     )
@@ -63,7 +63,7 @@ class UnConsciousnessMeasure(models.Model):
     is_cm_same_participants_as_task = models.BooleanField(
         null=False,
         blank=False,
-        verbose_name="is consciousness measure taken from the same participants as the main task",
+        verbose_name="was consciousness measure taken from the same participants as the main task",
     )
     is_performance_above_chance = models.BooleanField(null=False, blank=False)
     is_trial_excluded_based_on_measure = models.BooleanField(

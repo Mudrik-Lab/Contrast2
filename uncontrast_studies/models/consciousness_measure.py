@@ -3,14 +3,14 @@ from django.db.models import CASCADE, PROTECT
 
 
 class UnConsciousnessMeasurePhase(models.Model):
-    name = models.CharField(blank=False, null=False, max_length=30)
+    name = models.CharField(blank=False, null=False, max_length=50)
 
     def __str__(self):
         return self.name
 
 
 class UnConsciousnessMeasureType(models.Model):
-    name = models.CharField(blank=False, null=False, max_length=30)
+    name = models.CharField(blank=False, null=False, max_length=50)
 
     def __str__(self):
         return self.name

@@ -70,8 +70,9 @@ def bootstrap_type_uncon_models(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
+
     dependencies = [
-        ('uncontrast_studies', '0001_initial'),
+        ('uncontrast_studies', '0002_alter_historicalunconsample_type_and_more'),
     ]
 
     operations = [migrations.RunPython(bootstrap_type_uncon_models, reverse_code=migrations.RunPython.noop)]

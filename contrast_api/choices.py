@@ -12,6 +12,16 @@ class SampleChoices(TextChoices):
     YOUNG_PATIENTS = "Young_patients_(children)", _("Young_patients_(children)")
 
 
+class UnConSampleChoices(TextChoices):
+    HEALTHY_ADULTS = "healthy_adults", _("Healthy adults")
+    HEALTHY_COLLEGE_STUDENTS = "Healthy_college_students", _("Healthy college students")
+    CHILDREN = "children", _("Children")
+    PATIENTS_ADULTS = "patients_adults", _("Patients (adults)")
+    PATIENTS_CHIDREN = "patients_children", _("Patients (children)")
+    NON_HUMAN = "non_human", _("Non-human")
+    COMPUTER = "computer", _("Computer")
+
+
 class PresentationModeChoices(TextChoices):
     LIMINAL = "liminal", _("Liminal")
     SUBLIMINAL = "subliminal", _("Subliminal")

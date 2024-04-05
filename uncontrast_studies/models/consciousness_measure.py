@@ -17,7 +17,7 @@ class UnConsciousnessMeasureType(models.Model):
 
 
 class UnConsciousnessMeasureSubType(models.Model):
-    name = models.CharField(blank=False, null=False, max_length=30)
+    name = models.CharField(blank=False, null=False, max_length=50)
     type = models.ForeignKey(
         blank=False,
         null=False,

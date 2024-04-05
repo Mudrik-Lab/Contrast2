@@ -1,17 +1,4 @@
-main_paradigms = [
-    "Priming",
-    "Emergence to awareness",
-    "Attention allocation",
-    "Change Blindness",
-    "Learning",
-    "Cognitive Tasks",
-    "Computational modeling",
-    "Illusions",
-    "Sperling Like",
-    "Visual search"
-]
-
-specific_paradigms = {
+uncon_paradigms = {
     "Priming": [
         "Semantic",
         "Affective",
@@ -22,6 +9,8 @@ specific_paradigms = {
         "B-CFS",
         "Mooney images"
     ],
+    "Attention allocation": [],
+    "Change blindness": [],
     "Learning": [
         "Instrumental conditioning",
         "Evaluative conditioning",
@@ -35,10 +24,14 @@ specific_paradigms = {
         "Task switching",
         "Memory",
         "Language"
-    ]
+    ],
+    "Computational modeling": [],
+    "Illusions": [],
+    "Sperling like": [],
+    "Visual search": []
 }
 
-tasks = [
+uncon_tasks = [
     "Numerical categorization",
     "Lexical categorization",
     "Semantic categorization",
@@ -54,16 +47,7 @@ tasks = [
     "Task is irrelevant to the effect"
 ]
 
-stimulus_categories = [
-    "Lingual",
-    "Numerical",
-    "Pictures",
-    "Shapes",
-    "Line Drawings",
-    "Tactile Stimuli"
-]
-
-stimulus_sub_categories = {
+uncon_stimulus_categories = {
     "Lingual": [
         "Words",
         "Letters",
@@ -99,10 +83,11 @@ stimulus_sub_categories = {
         "Logos",
         "Hands",
         "Other"
-    ]
+    ],
+    "Tactile Stimuli": []
 }
 
-stimulus_modalities = [
+uncon_stimulus_modalities = [
     "Auditory",
     "Olfactory",
     "Tactile",
@@ -110,23 +95,7 @@ stimulus_modalities = [
     "None"
 ]
 
-main_suppression_methods = [
-    "Masking",
-    "Dichoptic masking",
-    "CFS",
-    "Crowding",
-    "Sub-threshold stimuli",
-    "Attentional Blink",
-    "Parafoveal display",
-    "Stimulus degradation",
-    "Inattentional blindness",
-    "Binocular rivalry",
-    "Change blindness",
-    "Flickering",
-    "Dichotic fusion"
-]
-
-specific_suppression_methods = {
+uncon_suppression_methods = {
     "Masking": [
         "Backward target Masking",
         "Backward pattern masking",
@@ -137,10 +106,24 @@ specific_suppression_methods = {
         "Sandwich target masking",
         "Sandwich pattern masking"
     ],
-    "Sub-threshold stimuli": "Mooney Images"
+    "Dichoptic masking": [],
+    "Dichotic fusion": [],
+    "CFS": [],
+    "Crowding": [],
+    "Sub-threshold stimuli": [
+        "Mooney Images",
+        "Other"
+    ],
+    "Attentional Blink": [],
+    "Parafoveal display": [],
+    "Stimulus degradation": [],
+    "Inattentional blindness": [],
+    "Binocular rivalry": [],
+    "Change blindness": [],
+    "Flickering": []
 }
 
-processing_domains = [
+uncon_processing_domains = [
     "Lingual",
     "Visual discrimination",
     "Numerical",
@@ -151,15 +134,7 @@ processing_domains = [
     "Attention allocation"
 ]
 
-consciousness_measures_main_types = [
-    "Objective",
-    "Subjective",
-    "Verbal Debriefing",
-    "None",
-    "Other"
-]
-
-consciousness_measures_specific_types = {
+uncon_consciousness_measures_types = {
     "Objective": [
         "High-level discrimination",
         "Low-level discrimination",
@@ -175,10 +150,13 @@ consciousness_measures_specific_types = {
         "Continuous scale",
         "Likert Scale",
         "Other"
-    ]
+    ],
+    "Verbal Debriefing": [],
+    "None": [],
+    "Other": []
 }
 
-consciousness_measures_phases = [
+uncon_consciousness_measures_phases = [
     "Post-experiment",
     "Pre-experiment",
     "Separate sample",
@@ -187,10 +165,9 @@ consciousness_measures_phases = [
     "None"
 ]
 
-finding_outcomes = [
+uncon_finding_outcomes = [
     "Reaction times",
     "Accuracy",
     "Eye movements",
     "Other"
 ]
-

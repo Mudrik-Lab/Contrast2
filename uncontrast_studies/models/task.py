@@ -4,7 +4,7 @@ from simple_history.models import HistoricalRecords
 
 
 class UnConTaskType(models.Model):
-    name = models.CharField(null=False, blank=False, max_length=30)
+    name = models.CharField(null=False, blank=False, max_length=50)
 
     def __str__(self):
         return self.name
@@ -12,7 +12,7 @@ class UnConTaskType(models.Model):
 
 class UnConTask(models.Model):
     experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="tasks"
+        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="uncon_tasks"
     )
 
     type = models.ForeignKey(

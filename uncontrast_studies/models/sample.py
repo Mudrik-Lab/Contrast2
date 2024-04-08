@@ -2,14 +2,14 @@ from django.db import models
 from django.db.models import CASCADE
 from simple_history.models import HistoricalRecords
 
-from contrast_api.choices import SampleChoices
+from contrast_api.choices import UnConSampleChoices
 
 
 class UnConSample(models.Model):
     experiment = models.ForeignKey(
         null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="samples"
     )
-    type = models.CharField(null=False, blank=False, choices=SampleChoices.choices, max_length=30)
+    type = models.CharField(null=False, blank=False, choices=UnConSampleChoices.choices, max_length=30)
     size_included = models.IntegerField(null=False, blank=False)
     size_excluded = models.IntegerField(null=True, blank=True)
 

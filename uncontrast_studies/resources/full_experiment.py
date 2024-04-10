@@ -55,7 +55,6 @@ class FullUncontrastExperimentResource(resources.ModelResource):
             "findings",
             "Experiment_findings_notes",
             "Processing_domains",
-            "Suppression_methods"
             "Suppression_methods",
         )
 

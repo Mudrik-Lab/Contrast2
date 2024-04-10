@@ -1,8 +1,8 @@
 from django.contrib import admin
-from import_export.admin import ImportExportModelAdmin, ImportExportMixin
+from import_export.admin import ImportExportModelAdmin
 from rangefilter.filters import NumericRangeFilter
 
-from contrast_api.admin_utils import SimpleHistoryWithDeletedAdmin
+from studies.admin import BaseContrastAdmin
 from uncontrast_studies.models import (
     UnConsciousnessMeasure,
     UnConsciousnessMeasureType,
@@ -24,20 +24,10 @@ from uncontrast_studies.models import (
     UnConSuppressionMethod,
     UnConSuppressionMethodType,
     UnConSuppressionMethodSubType,
-    UnConExperiment,
 )
 
 
-class BaseUnContrastAdmin(ImportExportMixin, SimpleHistoryWithDeletedAdmin):
-    pass
-
-
-class UnConExperimentAdmin(BaseUnContrastAdmin):
-    model = UnConExperiment
-    list_display = ("id", "is_target_stimulus", "is_target_same_as_suppressed_stimulus")
-
-
-class UnConsciousnessMeasureAdmin(BaseUnContrastAdmin):
+class UnConsciousnessMeasureAdmin(BaseContrastAdmin):
     list_display = ("phase", "type", "experiment_id")
     model = UnConsciousnessMeasure
     list_filter = ("phase", "type")
@@ -79,7 +69,7 @@ class UnConStimulusSubCategoryAdmin(ImportExportModelAdmin):
     search_fields = ("name",)
 
 
-class UnConTargetStimulusAdmin(BaseUnContrastAdmin):
+class UnConTargetStimulusAdmin(BaseContrastAdmin):
     list_display = ("id", "category", "sub_category", "modality", "number_of_stimuli")
     model = UnConTargetStimulus
 
@@ -90,7 +80,7 @@ class UnConTargetStimulusAdmin(BaseUnContrastAdmin):
     )
 
 
-class UnConSuppressedStimulusAdmin(BaseUnContrastAdmin):
+class UnConSuppressedStimulusAdmin(BaseContrastAdmin):
     list_display = (
         "id",
         "category",
@@ -121,31 +111,31 @@ class UnConTaskTypeAdmin(ImportExportModelAdmin):
     search_fields = ("name",)
 
 
-class UnConTaskAdmin(BaseUnContrastAdmin):
+class UnConTaskAdmin(BaseContrastAdmin):
     list_display = ("id", "type", "experiment_id")
     model = UnConTask
     list_filter = ("type", admin.RelatedOnlyFieldListFilter)
 
 
-class UnConMainParadigmAdmin(BaseUnContrastAdmin):
+class UnConMainParadigmAdmin(BaseContrastAdmin):
     model = UnConMainParadigm
     list_display = (
         "id",
         "name",
     )
-    search_fields = ("name",)
+    search_fields = "name"
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("parent", "parent__parent")
 
 
-class UnConSpecificParadigmAdmin(BaseUnContrastAdmin):
+class UnConSpecificParadigmAdmin(BaseContrastAdmin):
     model = UnConSpecificParadigm
     list_display = ("id", "name")
-    search_fields = ("name",)
+    search_fields = "name"
 
 
-class UnConSampleAdmin(BaseUnContrastAdmin):
+class UnConSampleAdmin(BaseContrastAdmin):
     model = UnConSample
     list_filter = (
         "type",
@@ -155,32 +145,32 @@ class UnConSampleAdmin(BaseUnContrastAdmin):
     list_display = ("type", "size_excluded", "size_included", "experiment_id")
 
 
-class UnConProcessingDomainMainTypeAdmin(ImportExportModelAdmin):
+class UnConProcessingDomainMainTypeAdmin(BaseContrastAdmin):
     model = UnConProcessingMainDomain
     list_display = ("id", "name")
 
 
-class UnConProcessingDomainSubDomainTypeAdmin(ImportExportModelAdmin):
+class UnConProcessingDomainSubDomainTypeAdmin(BaseContrastAdmin):
     model = UnConProcessingSubDomain
     list_display = ("id", "name")
 
 
-class UnConProcessingDomainAdmin(BaseUnContrastAdmin):
+class UnConProcessingDomainAdmin(BaseContrastAdmin):
     model = UnConProcessingDomain
     list_display = ("main", "sub_domain", "experiment_id")
 
 
-class UnConSuppressionMethodTypeAdmin(ImportExportModelAdmin):
+class UnConSuppressionMethodTypeAdmin(BaseContrastAdmin):
     model = UnConSuppressionMethodType
     list_display = ("id", "name")
 
 
-class UnConSuppressionMethodSubTypeAdmin(BaseUnContrastAdmin):
+class UnConSuppressionMethodSubTypeAdmin(BaseContrastAdmin):
     model = UnConSuppressionMethodSubType
     list_display = ("id", "name")
 
 
-class UnConSuppressionMethodAdmin(BaseUnContrastAdmin):
+class UnConSuppressionMethodAdmin(BaseContrastAdmin):
     model = UnConSuppressionMethod
     list_display = ("id", "type", "sub_type")
     list_filter = (
@@ -195,15 +185,13 @@ admin.site.register(UnConsciousnessMeasureSubType, UnConsciousnessMeasureSubType
 admin.site.register(UnConsciousnessMeasurePhase, UnConsciousnessMeasurePhaseTypeAdmin)
 admin.site.register(UnConSuppressedStimulus, UnConSuppressedStimulusAdmin)
 admin.site.register(UnConTargetStimulus, UnConTargetStimulusAdmin)
-admin.site.register(UnConStimulusCategory, UnConStimulusCategoryAdmin)
+admin.site.register(UnConStimulusCategoryAdmin, UnConStimulusCategoryAdmin)
 admin.site.register(UnConStimulusSubCategory, UnConStimulusSubCategoryAdmin)
-admin.site.register(UnConModalityType, UnConModalityTypeAdmin)
 admin.site.register(UnConMainParadigm, UnConMainParadigmAdmin)
 admin.site.register(UnConSpecificParadigm, UnConSpecificParadigmAdmin)
 admin.site.register(UnConProcessingMainDomain, UnConProcessingDomainMainTypeAdmin)
 admin.site.register(UnConProcessingSubDomain, UnConProcessingDomainSubDomainTypeAdmin)
 admin.site.register(UnConProcessingDomain, UnConProcessingDomainAdmin)
-admin.site.register(UnConSuppressionMethod, UnConSuppressionMethodAdmin)
+admin.site.register(UnConProcessingDomain, UnConSuppressionMethodAdmin)
 admin.site.register(UnConSuppressionMethodSubType, UnConSuppressionMethodSubTypeAdmin)
 admin.site.register(UnConSuppressionMethodType, UnConSuppressionMethodTypeAdmin)
-admin.site.register(UnConExperiment, UnConExperimentAdmin)

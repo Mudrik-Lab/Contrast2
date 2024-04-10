@@ -23,10 +23,17 @@ from uncontrast_studies.models import (
     UnConProcessingDomain,
     UnConSuppressionMethod,
     UnConSuppressionMethodType,
-    UnConSuppressionMethodSubType,
+    UnConSuppressionMethodSubType, UnConExperiment,
 )
 
+class UnConExperimentAdmin(BaseContrastAdmin):
+    model = UnConExperiment
+    list_display = (
+        "id",
+        "is_target_stimulus",
+        "is_target_same_as_suppressed_stimulus"
 
+    )
 class UnConsciousnessMeasureAdmin(BaseContrastAdmin):
     list_display = ("phase", "type", "experiment_id")
     model = UnConsciousnessMeasure
@@ -123,7 +130,7 @@ class UnConMainParadigmAdmin(BaseContrastAdmin):
         "id",
         "name",
     )
-    search_fields = "name"
+    search_fields = ("name", )
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("parent", "parent__parent")
@@ -132,7 +139,7 @@ class UnConMainParadigmAdmin(BaseContrastAdmin):
 class UnConSpecificParadigmAdmin(BaseContrastAdmin):
     model = UnConSpecificParadigm
     list_display = ("id", "name")
-    search_fields = "name"
+    search_fields = ("name", )
 
 
 class UnConSampleAdmin(BaseContrastAdmin):
@@ -185,13 +192,15 @@ admin.site.register(UnConsciousnessMeasureSubType, UnConsciousnessMeasureSubType
 admin.site.register(UnConsciousnessMeasurePhase, UnConsciousnessMeasurePhaseTypeAdmin)
 admin.site.register(UnConSuppressedStimulus, UnConSuppressedStimulusAdmin)
 admin.site.register(UnConTargetStimulus, UnConTargetStimulusAdmin)
-admin.site.register(UnConStimulusCategoryAdmin, UnConStimulusCategoryAdmin)
+admin.site.register(UnConStimulusCategory, UnConStimulusCategoryAdmin)
 admin.site.register(UnConStimulusSubCategory, UnConStimulusSubCategoryAdmin)
+admin.site.register(UnConModalityType, UnConModalityTypeAdmin)
 admin.site.register(UnConMainParadigm, UnConMainParadigmAdmin)
 admin.site.register(UnConSpecificParadigm, UnConSpecificParadigmAdmin)
 admin.site.register(UnConProcessingMainDomain, UnConProcessingDomainMainTypeAdmin)
 admin.site.register(UnConProcessingSubDomain, UnConProcessingDomainSubDomainTypeAdmin)
 admin.site.register(UnConProcessingDomain, UnConProcessingDomainAdmin)
-admin.site.register(UnConProcessingDomain, UnConSuppressionMethodAdmin)
+admin.site.register(UnConSuppressionMethod, UnConSuppressionMethodAdmin)
 admin.site.register(UnConSuppressionMethodSubType, UnConSuppressionMethodSubTypeAdmin)
 admin.site.register(UnConSuppressionMethodType, UnConSuppressionMethodTypeAdmin)
+admin.site.register(UnConExperiment, UnConExperimentAdmin)

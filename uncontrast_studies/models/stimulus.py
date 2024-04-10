@@ -30,7 +30,9 @@ class UnConStimulusSubCategory(models.Model):
         verbose_name_plural = "stimulus sub categories"
 
     name = models.CharField(null=False, blank=False, max_length=50)
-    parent = models.ForeignKey(null=False, blank=False, on_delete=CASCADE, related_name="sub_categories", to=UnConStimulusCategory)
+    parent = models.ForeignKey(
+        null=False, blank=False, on_delete=CASCADE, related_name="sub_categories", to=UnConStimulusCategory
+    )
 
     def __str__(self):
         return self.name

@@ -273,10 +273,7 @@ def review_study(modeladmin, request, queryset):
 
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
-    resource_classes = [
-        FullExperimentResource,
-        FullUncontrastExperimentResource,
-    ]  # Note: we're return experiments, not studies
+    resource_classes = [FullExperimentResource, FullUncontrastExperimentResource]  # Note: we're return experiments, not studies
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title", "abbreviated_source_title", "is_author_submitter", "submitter_name")
     search_fields = ("title", "DOI", "submitter__email")
@@ -294,7 +291,6 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     we both customize it to export not studies but experiments, and now we need to adapt it
     to uncontrast experiments also
     """
-
     def export_uncontrast_admin_action(self, request, queryset):
         """
         Exports the selected rows using file_format.
@@ -335,22 +331,23 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
             js=super_media._js + ["studies/action_formats.js"],
             css=super_media._css,
         )
-
     def get_data_for_export(self, request, queryset, *args, **kwargs):
         export_form = kwargs.get("export_form")
-        if request.POST.get("action") == "export_uncontrast_admin_action":
+        if request.POST.get('action') == 'export_uncontrast_admin_action':
             export_class = self.resource_classes[1]
         else:
             export_class = self.choose_export_resource_class(export_form)
-        export_resource_kwargs = self.get_export_resource_kwargs(request, *args, **kwargs)
+        export_resource_kwargs = self.get_export_resource_kwargs(
+            request, *args, **kwargs
+        )
         cls = export_class(**export_resource_kwargs)
         export_data = cls.export(*args, queryset=queryset, **kwargs)
         return export_data
-
     def get_uncontrast_export_data(self, file_format, queryset, *args, **kwargs):
         # TODO: build a "related" manager
         uncontrast_experiments_qs = UnConExperiment.objects.all().filter(study__in=queryset)
         return super().get_export_data(file_format, queryset=uncontrast_experiments_qs, *args, **kwargs)
+
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):
         experiments_qs = Experiment.objects.related().filter(study__in=queryset)

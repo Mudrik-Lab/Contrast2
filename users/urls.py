@@ -8,6 +8,7 @@ router = routers.SimpleRouter()
 
 router.register(r"profiles", ProfilesView, basename="profiles")
 router.register(r"feedbacks", FeedbackView, basename="feedback")
+router.register(r"feedbacks_uncontrast", FeedbackView, basename="feedback_uncontrast")
 
 urlpatterns = [
     path("", include(router.urls)),

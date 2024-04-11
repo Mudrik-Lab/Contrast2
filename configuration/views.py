@@ -10,6 +10,7 @@ from configuration.serializers import (
     StudiesConfigurationSerializer,
     GraphsConfigurationSerializer,
     RegistrationConfigurationSerializer,
+    UnConStudiesConfigurationSerializer,
 )
 from contrast_api.choices import (
     SampleChoices,
@@ -18,6 +19,7 @@ from contrast_api.choices import (
     AALAtlasTagChoices,
     AnalysisTypeChoices,
     DirectionChoices,
+    UnConSampleChoices,
 )
 from studies.models import (
     Study,
@@ -35,6 +37,20 @@ from studies.models import (
     Experiment,
 )
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
+from uncontrast_studies.models import (
+    UnConSpecificParadigm,
+    UnConsciousnessMeasurePhase,
+    UnConsciousnessMeasureType,
+    UnConsciousnessMeasureSubType,
+    UnConTaskType,
+    UnConModalityType,
+    UnConStimulusCategory,
+    UnConStimulusSubCategory,
+    UnConExperiment,
+    UnConProcessingSubDomain,
+    UnConProcessingMainDomain,
+    UnConMainParadigm,
+)
 from users.choices import GenderChoices, AcademicStageChoices
 
 
@@ -52,6 +68,58 @@ class ConfigurationView(GenericViewSet):
             return GraphsConfigurationSerializer
         else:
             return super().get_serializer_class()
+
+    @action(
+        detail=False,
+        methods=["GET"],
+        serializer_class=UnConStudiesConfigurationSerializer,
+        permission_classes=[AllowAny],
+    )
+    def uncon_studies_form(self, request, **kwargs):
+        existing_journals = (
+            Study.objects.values("abbreviated_source_title")
+            .order_by("abbreviated_source_title")
+            .distinct()
+            .values_list("abbreviated_source_title", flat=True)
+        )
+        available_populations_types = UnConSampleChoices.values
+
+        available_consciousness_measure_phase_type = UnConsciousnessMeasurePhase.objects.all()
+        available_consciousness_measure_type = UnConsciousnessMeasureType.objects.all()
+        available_consciousness_measure_sub_type = UnConsciousnessMeasureSubType.objects.all()
+        available_tasks_types = UnConTaskType.objects.all()
+        available_processing_sub_domain_types = UnConProcessingSubDomain.objects.all()
+        available_processing_main_domain_types = UnConProcessingMainDomain.objects.all()
+        available_main_paradigm_type = UnConMainParadigm.objects.all()
+        available_authors = Author.objects.all()
+        available_stimulus_modality_type = UnConModalityType.objects.all()
+        available_stimulus_category_type = UnConStimulusCategory.objects.all()
+        available_stimulus_sub_category_type = UnConStimulusSubCategory.objects.all()
+        available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
+        approved_experiments_count = UnConExperiment.objects.filter(
+            study__approval_status=ApprovalChoices.APPROVED
+        ).count()
+
+        configuration_data = dict(
+            existing_journals=existing_journals,
+            available_populations_types=available_populations_types,
+            available_experiment_types=available_experiment_types,
+            available_consciousness_measure_phase_type=available_consciousness_measure_phase_type,
+            available_consciousness_measure_type=available_consciousness_measure_type,
+            available_consciousness_measure_sub_type=available_consciousness_measure_sub_type,
+            available_authors=available_authors,
+            available_stimulus_modality_type=available_stimulus_modality_type,
+            available_stimulus_category_type=available_stimulus_category_type,
+            available_stimulus_sub_category_type=available_stimulus_sub_category_type,
+            available_tasks_types=available_tasks_types,
+            available_processing_sub_domain_types=available_processing_sub_domain_types,
+            available_processing_main_domain_types=available_processing_main_domain_types,
+            available_main_paradigm_type=available_main_paradigm_type,
+            approved_experiments_count=approved_experiments_count,
+        )
+
+        serializer = self.get_serializer(instance=configuration_data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     @action(
         detail=False, methods=["GET"], serializer_class=StudiesConfigurationSerializer, permission_classes=[AllowAny]
@@ -83,7 +151,6 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_category_type = StimulusCategory.objects.all()
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
         available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
-        approved_studies_count = Study.objects.filter(approval_status=ApprovalChoices.APPROVED).count()
         approved_experiments_count = Experiment.objects.filter(study__approval_status=ApprovalChoices.APPROVED).count()
         configuration_data = dict(
             existing_journals=existing_journals,
@@ -108,7 +175,6 @@ class ConfigurationView(GenericViewSet):
             available_stimulus_category_type=available_stimulus_category_type,
             available_stimulus_sub_category_type=available_stimulus_sub_category_type,
             available_tasks_types=available_tasks_types,
-            approved_studies_count=approved_studies_count,
             approved_experiments_count=approved_experiments_count,
         )
 

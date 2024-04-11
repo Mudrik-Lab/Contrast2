@@ -14,9 +14,6 @@ from users.serializers import (
 )
 
 
-
-
-
 class FeedbackView(GenericViewSet):
     permission_classes = (permissions.AllowAny,)
 

@@ -12,7 +12,7 @@ class UnConTaskType(models.Model):
 
 class UnConTask(models.Model):
     experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="uncon_tasks"
+        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="tasks"
     )
 
     type = models.ForeignKey(

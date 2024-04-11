@@ -31,7 +31,7 @@ class UnConStimulusSubCategory(models.Model):
 
     name = models.CharField(null=False, blank=False, max_length=50)
     parent = models.ForeignKey(
-        null=False, blank=False, on_delete=CASCADE, related_name="sub_categories", to=UnConStimulusCategory
+        null=False, blank=False, on_delete=PROTECT, related_name="sub_categories", to=UnConStimulusCategory
     )
 
     def __str__(self):

@@ -1,4 +1,6 @@
 from django.db.models import Prefetch, Q
+
+from contrast_api.choices import StudyTypeChoices
 from studies.models import Study, Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
 
 from studies.views.base_submitted_studies import BaseSubmitStudiesViewSert
@@ -12,7 +14,7 @@ class SubmitStudiesViewSet(BaseSubmitStudiesViewSert):
     """
 
     def filter_and_prefetch_queryset(self, queryset):
-        return queryset.prefetch_related(
+        return queryset.filter(type=StudyTypeChoices.CONSCIOUSNESS).prefetch_related(
             "experiments",
             "authors",
             "experiments__techniques",

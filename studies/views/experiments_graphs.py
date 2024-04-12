@@ -35,8 +35,8 @@ from studies.open_api_parameters import (
     techniques_multiple_optional_parameter_id_based,
     interpretation_theories,
     interpretations,
-    is_csv,
 )
+from contrast_api.open_api_parameters import is_csv
 from studies.processors.theories_support_matrix import TheoryGrandOverviewGraphDataProcessor
 from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
@@ -53,6 +53,8 @@ from studies.processors.timings import TimingsGraphDataProcessor
 from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import (
     FullExperimentSerializer,
+)
+from contrast_api.serializers import (
     NationOfConsciousnessGraphSerializer,
     TrendsOverYearsGraphSerializer,
     BarGraphSerializer,

@@ -5,15 +5,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0006_historicalunconsuppressionmethod'),
+        ("uncontrast_studies", "0006_historicalunconsuppressionmethod"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='uncontask',
-            name='experiment',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='tasks', to='uncontrast_studies.unconexperiment'),
+            model_name="uncontask",
+            name="experiment",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="tasks",
+                to="uncontrast_studies.unconexperiment",
+            ),
         ),
     ]

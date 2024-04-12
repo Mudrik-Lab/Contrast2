@@ -1,4 +1,5 @@
 from django.db.models import Prefetch, Q
+from drf_spectacular.utils import extend_schema
 
 from contrast_api.choices import StudyTypeChoices
 from studies.models import Study, Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
@@ -11,6 +12,12 @@ from uncontrast_studies.models import (
     UnConFinding,
     UnConTargetStimulus,
     UnConSuppressedStimulus,
+    UnConSuppressionMethod,
+)
+from uncontrast_studies.serializers import (
+    StudyWithUnConExperimentsSerializer,
+    ThinStudyWithUnConExperimentsSerializer,
+    StudyWithExperimentsUnConCreateSerializer,
 )
 
 
@@ -20,6 +27,16 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
     Also allows single link of a specific study (as result of search perhaps)
     And searching for studies by title/DOI
     """
+
+    serializer_class = StudyWithUnConExperimentsSerializer
+
+    def get_serializer_class(self):
+        if self.action in ["list", "my_studies"]:
+            return ThinStudyWithUnConExperimentsSerializer
+        elif self.action in ["create", "update", "partial_update"]:
+            return StudyWithExperimentsUnConCreateSerializer
+        else:
+            return super().get_serializer_class()
 
     def filter_and_prefetch_queryset(self, queryset):
         return queryset.filter(type=StudyTypeChoices.UNCONSCIOUSNESS).prefetch_related(
@@ -41,7 +58,15 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
             ),
             Prefetch(
                 "uncon_experiments__paradigms",
-                queryset=UnConSpecificParadigm.objects.select_related("parent", "parent__parent"),
+                queryset=UnConSpecificParadigm.objects.select_related("main"),
+            ),
+            Prefetch(
+                "uncon_experiments__suppression_methods",
+                queryset=UnConSuppressionMethod.objects.select_related("type", "sub_type"),
             ),
             "uncon_experiments__samples",
         )
+
+    @extend_schema(request=StudyWithExperimentsUnConCreateSerializer, responses=StudyWithUnConExperimentsSerializer)
+    def create(self, request, *args, **kwargs):
+        return super().create(request, *args, **kwargs)

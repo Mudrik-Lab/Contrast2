@@ -1,7 +1,7 @@
 from django.db.models import Prefetch, Q
 
 from contrast_api.choices import StudyTypeChoices
-from studies.models import Study, Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
+from studies.models import Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
 
 from studies.views.base_submitted_studies import BaseSubmitStudiesViewSert
 

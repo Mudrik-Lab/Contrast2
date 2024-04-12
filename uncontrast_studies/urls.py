@@ -10,7 +10,7 @@ router = routers.SimpleRouter()
 router.register(r"authors", AuthorsViewSet, basename="authors")
 
 studies_router = routers.SimpleRouter()
-studies_router.register("submitted_studies", SubmitUnContrastStudiesViewSet, basename="studies-submitted")
+studies_router.register("submitted_studies", SubmitUnContrastStudiesViewSet, basename="uncontrast-studies-submitted")
 
 # studies_experiments_router = routers.NestedSimpleRouter(studies_router, r"submitted_studies", lookup="study")
 # studies_experiments_router.register("experiments", SubmittedStudyExperiments, basename="studies-experiments")

@@ -1,8 +1,7 @@
 from django.db.models import QuerySet, Count, F
 
-from contrast_api.choices import InterpretationsChoices
-from studies.models import Experiment, Interpretation, Theory
-from studies.processors.base import BaseProcessor
+from uncontrast_studies.models import UnConExperiment
+from uncontrast_studies.processors.base import BaseProcessor
 
 
 class JournalsGraphDataProcessor(BaseProcessor):
@@ -10,18 +9,8 @@ class JournalsGraphDataProcessor(BaseProcessor):
     This expects as input the ID of the parent theory..
     """
 
-    def __init__(self, experiments: QuerySet[Experiment], **kwargs):
+    def __init__(self, experiments: QuerySet[UnConExperiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
-
-        theory = kwargs.pop("theory", [])
-        self.theory = None
-        if len(theory):
-            theory_reference = theory[0]
-            try:
-                theory = Theory.objects.get(name__iexact=theory_reference)
-            except Theory.DoesNotExist:
-                theory = Theory.objects.get(id=theory_reference)
-            self.theory = theory
 
     def process(self):
         relevant_experiments = self.get_queryset()
@@ -32,12 +21,12 @@ class JournalsGraphDataProcessor(BaseProcessor):
 
     def get_queryset(self):
         queryset = self.experiments
-        experiments_by_theory = (
+        experiments = (
             queryset.select_related("study")
             .values("id", "study")
             .annotate(journal=F("study__abbreviated_source_title"))
         )
-        return experiments_by_theory
+        return experiments
 
     def aggregate(self, queryset):
         if self.is_csv:

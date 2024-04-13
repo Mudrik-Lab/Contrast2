@@ -4,10 +4,12 @@ from rest_framework_nested import routers
 
 from studies.views.authors import AuthorsViewSet
 from uncontrast_studies.views import SubmitUnContrastStudiesViewSet
+from uncontrast_studies.views.experiments_graphs import UnConExperimentsGraphsViewSet
 
 router = routers.SimpleRouter()
 
 router.register(r"authors", AuthorsViewSet, basename="authors")
+router.register(r"experiments_graphs", UnConExperimentsGraphsViewSet, basename="uncontrast-experiments-graphs")
 
 studies_router = routers.SimpleRouter()
 studies_router.register("submitted_studies", SubmitUnContrastStudiesViewSet, basename="uncontrast-studies-submitted")

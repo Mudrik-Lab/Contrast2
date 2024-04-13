@@ -13,6 +13,8 @@ from uncontrast_studies.models import (
     UnConTargetStimulus,
     UnConSuppressedStimulus,
     UnConSuppressionMethod,
+    UnConProcessingDomain,
+    UnConExperiment,
 )
 from uncontrast_studies.serializers import (
     StudyWithUnConExperimentsSerializer,
@@ -40,7 +42,7 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
 
     def filter_and_prefetch_queryset(self, queryset):
         return queryset.filter(type=StudyTypeChoices.UNCONSCIOUSNESS).prefetch_related(
-            "uncon_experiments",
+            Prefetch("uncon_experiments", queryset=UnConExperiment.objects.select_related("paradigm")),
             "authors",
             Prefetch("uncon_experiments__tasks", queryset=UnConTask.objects.select_related("type")),
             Prefetch("uncon_experiments__findings", queryset=UnConFinding.objects.select_related("type")),
@@ -57,12 +59,12 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
                 queryset=UnConTargetStimulus.objects.select_related("category", "sub_category", "modality"),
             ),
             Prefetch(
-                "uncon_experiments__paradigms",
-                queryset=UnConSpecificParadigm.objects.select_related("main"),
-            ),
-            Prefetch(
                 "uncon_experiments__suppression_methods",
                 queryset=UnConSuppressionMethod.objects.select_related("type", "sub_type"),
+            ),
+            Prefetch(
+                "uncon_experiments__processing_domains",
+                queryset=UnConProcessingDomain.objects.select_related("main", "sub_domain"),
             ),
             "uncon_experiments__samples",
         )

@@ -1,7 +1,7 @@
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
-from studies.models import Study, Author
+from studies.models import Study, Author, ConsciousnessMeasureType, TaskType
 from studies.serializers import AuthorSerializer
 from uncontrast_studies.models import (
     UnConExperiment,
@@ -13,47 +13,99 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConFinding,
     UnConSample,
+    UnConSuppressionMethod,
+    UnConStimulusCategory,
+    UnConStimulusSubCategory,
+    UnConModalityType,
+    UnConsciousnessMeasurePhase,
+    UnConsciousnessMeasureType,
+    UnConTaskType,
+    UnConMainParadigm,
 )
 
 
 class UnConSpecificParadigmSerializer(serializers.ModelSerializer):
+    main = serializers.PrimaryKeyRelatedField(queryset=UnConMainParadigm.objects.all())
+
     class Meta:
         model = UnConSpecificParadigm
+        fields = ("id", "main", "name")
 
 
 class UnConTaskSerializer(serializers.ModelSerializer):
+    type = serializers.PrimaryKeyRelatedField(queryset=UnConTaskType.objects.all())
+
     class Meta:
         model = UnConTask
+        fields = ("experiment", "id", "type")
 
 
 class UnConsciousnessMeasureSerializer(serializers.ModelSerializer):
+    phase = serializers.PrimaryKeyRelatedField(queryset=UnConsciousnessMeasurePhase.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=UnConsciousnessMeasureType.objects.all())
+
     class Meta:
         model = UnConsciousnessMeasure
+        fields = ("experiment", "id", "phase", "type")
 
 
 class UnConTargetStimulusSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusCategory.objects.all())
+    sub_category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusSubCategory.objects.all(), required=False)
+    modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
+
     class Meta:
         model = UnConTargetStimulus
+        fields = ("experiment", "id", "category", "sub_category", "modality", "number_of_stimuli")
 
 
 class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
+    category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusCategory.objects.all())
+    sub_category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusSubCategory.objects.all(), required=False)
+    modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
+
     class Meta:
         model = UnConSuppressedStimulus
+        fields = (
+            "experiment",
+            "id",
+            "category",
+            "sub_category",
+            "modality",
+            "duration",
+            "mode_of_presentation",
+            "duration",
+            "soa",
+            "number_of_stimuli",
+        )
+
+    class Meta:
+        model = UnConSuppressedStimulus
+        fields = ("experiment", "id", "category", "sub_category", "modality", "duration")
 
 
 class UnConFindingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnConFinding
+        fields = ("experiment", "id", "outcome", "is_significant")
 
 
 class UnConProcessingDomainSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnConProcessingDomain
+        fields = ("experiment", "id", "main", "sub_domain")
+
+
+class UnConSuppressionMethodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnConSuppressionMethod
+        fields = ("experiment", "id", "type", "sub_type")
 
 
 class UnConSampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnConSample
+        fields = ("experiment", "id", "type", "size_excluded", "size_included")
 
 
 class FullUnConExperimentSerializer(serializers.ModelSerializer):
@@ -63,9 +115,10 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
     suppressed_stimuli = UnConSuppressedStimulusSerializer(many=True, read_only=True)
     target_stimuli = UnConTargetStimulusSerializer(many=True, read_only=True)
     processing_domains = UnConProcessingDomainSerializer(many=True, read_only=True)
+    suppression_methods = UnConSuppressionMethodSerializer(many=True, read_only=True)
     tasks = UnConTaskSerializer(many=True, read_only=True)
     consciousness_measures = UnConsciousnessMeasureSerializer(many=True, read_only=True)
-    paradigms = UnConSpecificParadigmSerializer(many=True, read_only=True)
+    paradigm = UnConSpecificParadigmSerializer(read_only=True)
 
     class Meta:
         model = UnConExperiment
@@ -74,7 +127,7 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
             "id",
             "study",
             "experiment_findings_notes",
-            "paradigms",
+            "paradigm",
             "type",
             "findings",
             "consciousness_measures",
@@ -85,6 +138,8 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
             "is_target_same_as_suppressed_stimulus",
             "is_target_stimulus",
             "consciousness_measures_notes",
+            "processing_domains",
+            "suppression_methods",
         )
 
 

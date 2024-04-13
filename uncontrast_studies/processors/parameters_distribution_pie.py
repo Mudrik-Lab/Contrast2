@@ -20,11 +20,12 @@ from studies.models import (
     AggregatedInterpretation,
 )
 from studies.models.stimulus import StimulusCategory
-from studies.processors.base import BaseProcessor
+from uncontrast_studies.models import UnConExperiment
+from uncontrast_studies.processors.base import BaseProcessor
 
 
 class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
-    def __init__(self, experiments: QuerySet[Experiment], **kwargs):
+    def __init__(self, experiments: QuerySet[UnConExperiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]

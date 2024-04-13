@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from contrast_api.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices, StudyTypeChoices
 from studies.filters import ExperimentFilter
 from studies.models import Experiment
 from studies.open_api_parameters import (
@@ -69,8 +69,10 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = FullExperimentSerializer
     pagination_class = None
-    queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter").filter(
-        study__approval_status=ApprovalChoices.APPROVED
+    queryset = (
+        Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
+        .filter(study__approval_status=ApprovalChoices.APPROVED)
+        .filter(study__type=StudyTypeChoices.CONSCIOUSNESS)
     )
 
     filterset_class = ExperimentFilter

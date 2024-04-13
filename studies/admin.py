@@ -39,7 +39,7 @@ from rangefilter.filters import NumericRangeFilter
 
 from studies.resources.full_experiment import FullExperimentResource
 from uncontrast_studies.models import UnConExperiment
-from uncontrast_studies.resources.full_experiment import FullUncontrastExperimentResource
+from uncontrast_studies.resources.full_experiment import FullUnConExperimentResource
 
 
 class BaseContrastAdmin(ImportExportMixin, SimpleHistoryWithDeletedAdmin):
@@ -275,7 +275,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
     resource_classes = [
         FullExperimentResource,
-        FullUncontrastExperimentResource,
+        FullUnConExperimentResource,
     ]  # Note: we're return experiments, not studies
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title", "abbreviated_source_title", "is_author_submitter", "submitter_name")
@@ -349,7 +349,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
 
     def get_uncontrast_export_data(self, file_format, queryset, *args, **kwargs):
         # TODO: build a "related" manager
-        uncontrast_experiments_qs = UnConExperiment.objects.all().filter(study__in=queryset)
+        uncontrast_experiments_qs = UnConExperiment.objects.related().filter(study__in=queryset)
         return super().get_export_data(file_format, queryset=uncontrast_experiments_qs, *args, **kwargs)
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):

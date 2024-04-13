@@ -55,10 +55,8 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         queryset = self.experiments
 
         # we need to support that but there is mess with modeling paradigms now
-        # if len(self.paradigms):
-        #     queryset = queryset.filter(paradigms__id__in=self.paradigms)
-        #
-        #
+        if len(self.paradigms):
+            queryset = queryset.filter(paradigm__main__id__in=self.paradigms)
 
         if len(self.suppressed_stimuli_categories):
             queryset = queryset.filter(stimuli__category__id__in=self.suppressed_stimuli_categories)
@@ -76,10 +74,10 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             queryset = queryset.filter(samples__type__in=self.populations)
 
         if len(self.consciousness_measure_phases):
-            queryset = queryset.filter(consciousness_measures__phase__id__in=self.consciousness_measure_phases)
+            queryset = queryset.filter(unconsciousness_measures__phase__id__in=self.consciousness_measure_phases)
 
         if len(self.consciousness_measure_types):
-            queryset = queryset.filter(consciousness_measures__type__id__in=self.consciousness_measure_types)
+            queryset = queryset.filter(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
 
         if len(self.processing_domain_main_types):
             queryset = queryset.filter(processing_domains__main__id__in=self.processing_domain_main_types)
@@ -96,9 +94,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         return queryset
 
     def process_paradigm(self):
-        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            paradigms=OuterRef("pk")
-        ).values("id")  # TODO: adapt this one according to the final modeling
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(paradigm__main=OuterRef("pk")).values("id")
 
         breakdown_query = UnConMainParadigm.objects.values("name").distinct().annotate(series_name=F("name"))
 
@@ -179,7 +175,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_consciousness_measure_phase(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            consciousness_measures__phase=OuterRef("pk")
+            unconsciousness_measures__phase=OuterRef("pk")
         ).values("id")
 
         breakdown_query = UnConsciousnessMeasurePhase.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -189,7 +185,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_consciousness_measure_type(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            consciousness_measures__type=OuterRef("pk")
+            unconsciousness_measures__type=OuterRef("pk")
         ).values("id")
 
         breakdown_query = UnConsciousnessMeasureType.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -229,7 +225,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         annotated_subquery = filtered_subquery.annotate(experiment_count=Count("id", distinct=True))
 
         # todo check if need to change
-        ids_subquery = annotated_subquery.order_by("experiment").values_list("experiment")
+        ids_subquery = annotated_subquery.order_by("id").values_list("id")
 
         qs = (
             queryset.values("series_name")

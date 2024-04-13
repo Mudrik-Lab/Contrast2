@@ -70,6 +70,17 @@ populations_multiple_optional_parameter = OpenApiParameter(
     name="populations", description="populations optional for", type=str, many=True, required=False
 )
 
+processing_domain_multiple_optional_parameter = OpenApiParameter(
+    name="processing_domain_types", description="processing domains optional for", type=str, many=True, required=False
+)
+suppression_methods_multiple_optional_parameter = OpenApiParameter(
+    name="suppression_methods_types",
+    description="suppression methods optional for",
+    type=str,
+    many=True,
+    required=False,
+)
+
 
 consciousness_measure_phases_multiple_optional_parameter = OpenApiParameter(
     name="consciousness_measure_phases",
@@ -94,4 +105,8 @@ tasks_multiple_optional_parameter = OpenApiParameter(
 
 types_multiple_optional_parameter = OpenApiParameter(
     name="types", description="types optional", type=str, many=True, required=False
+)
+
+is_target_same_as_suppressed_stimulus_optional_parameter = OpenApiParameter(
+    name="is_target_same_as_suppressed_stimulus", type=bool, required=False, many=False
 )

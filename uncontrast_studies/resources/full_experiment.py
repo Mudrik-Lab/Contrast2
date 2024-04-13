@@ -8,7 +8,7 @@ from uncontrast_studies.models import UnConExperiment
 SEPERATOR = " || "
 
 
-class FullUncontrastExperimentResource(resources.ModelResource):
+class FullUnConExperimentResource(resources.ModelResource):
     Experiment_id = Field(attribute="id")
     DOI = Field(attribute="study__DOI")
     Journal = Field(attribute="study__source_title")

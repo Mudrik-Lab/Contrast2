@@ -3,6 +3,7 @@ from django.db.models import CASCADE, PROTECT
 from simple_history.models import HistoricalRecords
 
 from contrast_api.choices import ExperimentTypeChoices
+from uncontrast_studies.managers import UnConExperimentManager
 
 
 class UnConExperiment(models.Model):
@@ -37,7 +38,7 @@ class UnConExperiment(models.Model):
     experiment_findings_notes = models.TextField(null=True, blank=True)
 
     history = HistoricalRecords()
-    # objects = ExperimentManager()
+    objects = UnConExperimentManager()
 
     def clean(self):
         super().clean()

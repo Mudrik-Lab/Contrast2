@@ -1,12 +1,11 @@
 from django.db.models import Func, F, Count, QuerySet
 
-from contrast_api.choices import InterpretationsChoices
-from studies.models import Interpretation, Theory, Experiment
-from studies.processors.base import BaseProcessor
+from uncontrast_studies.models import UnConExperiment
+from uncontrast_studies.processors.base import BaseProcessor
 
 
 class NationOfConsciousnessDataProcessor(BaseProcessor):
-    def __init__(self, experiments: QuerySet[Experiment], **kwargs):
+    def __init__(self, experiments: QuerySet[UnConExperiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
 
     def process(self):

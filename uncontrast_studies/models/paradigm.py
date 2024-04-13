@@ -11,9 +11,6 @@ class UnConMainParadigm(models.Model):
 
 
 class UnConSpecificParadigm(models.Model):
-    experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="paradigms"
-    )
     main = models.ForeignKey(
         null=False,
         blank=False,

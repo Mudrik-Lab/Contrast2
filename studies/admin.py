@@ -2,6 +2,8 @@ from typing import List
 
 from django.contrib import admin, messages
 from django.db.models import Prefetch
+from django.forms import forms
+from django.http import HttpResponse
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
@@ -36,6 +38,8 @@ from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimu
 from rangefilter.filters import NumericRangeFilter
 
 from studies.resources.full_experiment import FullExperimentResource
+from uncontrast_studies.models import UnConExperiment
+from uncontrast_studies.resources.full_experiment import FullUncontrastExperimentResource
 
 
 class BaseContrastAdmin(ImportExportMixin, SimpleHistoryWithDeletedAdmin):
@@ -245,6 +249,7 @@ def reject_study(modeladmin, request, queryset):
     service.rejected(request.user, queryset)
     messages.info(request, "Rejected studies")
 
+
 @admin.action(description="Returning studies to pending status")
 def pending_study(modeladmin, request, queryset):
     service = StudyLifeCycleService()
@@ -268,7 +273,10 @@ def review_study(modeladmin, request, queryset):
 
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     model = Study
-    resource_classes = [FullExperimentResource]  # Note: we're return experiments, not studies
+    resource_classes = [
+        FullExperimentResource,
+        FullUncontrastExperimentResource,
+    ]  # Note: we're return experiments, not studies
     filter_horizontal = ("authors",)
     list_display = ("id", "DOI", "title", "abbreviated_source_title", "is_author_submitter", "submitter_name")
     search_fields = ("title", "DOI", "submitter__email")
@@ -281,6 +289,68 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     )
     actions = (approve_study, reject_study, review_study, pending_study)
     inlines = [ExperimentInline]
+    """
+    Note: a lot of methods here are inherited from the base export action because 
+    we both customize it to export not studies but experiments, and now we need to adapt it
+    to uncontrast experiments also
+    """
+
+    def export_uncontrast_admin_action(self, request, queryset):
+        """
+        Exports the selected rows using file_format.
+        """
+        export_format = request.POST.get("file_format")
+
+        if not export_format:
+            messages.warning(request, _("You must select an export format."))
+        else:
+            formats = self.get_export_formats()
+            file_format = formats[int(export_format)]()
+
+            export_data = self.get_uncontrast_export_data(
+                file_format, queryset, request=request, encoding=self.to_encoding
+            )
+            content_type = file_format.get_content_type()
+            response = HttpResponse(export_data, content_type=content_type)
+            response["Content-Disposition"] = 'attachment; filename="%s"' % (
+                self.get_export_filename(request, queryset, file_format),
+            )
+            return response
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        actions.update(
+            export_uncontrast_admin_action=(
+                type(self).export_uncontrast_admin_action,
+                "export_uncontrast_admin_action",
+                _("Export selected uncontrast %(verbose_name_plural)s"),
+            )
+        )
+        return actions
+
+    @property
+    def media(self):
+        super_media = super().media
+        return forms.Media(
+            js=super_media._js + ["studies/action_formats.js"],
+            css=super_media._css,
+        )
+
+    def get_data_for_export(self, request, queryset, *args, **kwargs):
+        export_form = kwargs.get("export_form")
+        if request.POST.get("action") == "export_uncontrast_admin_action":
+            export_class = self.resource_classes[1]
+        else:
+            export_class = self.choose_export_resource_class(export_form)
+        export_resource_kwargs = self.get_export_resource_kwargs(request, *args, **kwargs)
+        cls = export_class(**export_resource_kwargs)
+        export_data = cls.export(*args, queryset=queryset, **kwargs)
+        return export_data
+
+    def get_uncontrast_export_data(self, file_format, queryset, *args, **kwargs):
+        # TODO: build a "related" manager
+        uncontrast_experiments_qs = UnConExperiment.objects.all().filter(study__in=queryset)
+        return super().get_export_data(file_format, queryset=uncontrast_experiments_qs, *args, **kwargs)
 
     def get_export_data(self, file_format, queryset, *args, **kwargs):
         experiments_qs = Experiment.objects.related().filter(study__in=queryset)

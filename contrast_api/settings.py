@@ -117,7 +117,7 @@ class Base(Configuration):
         {"app": "studies", "label": "studies", "models": ("studies.Study", "studies.Author")},
         {
             "app": "studies",
-            "label": "experiments data",
+            "label": "contrast experiments data",
             "models": (
                 "studies.Experiment",
                 "studies.Stimulus",
@@ -131,7 +131,7 @@ class Base(Configuration):
         },
         {
             "app": "studies",
-            "label": "parameters configuration",
+            "label": "contrast parameters configuration",
             "models": (
                 "studies.StimulusCategory",
                 "studies.StimulusSubCategory",
@@ -146,6 +146,38 @@ class Base(Configuration):
                 "studies.ConsciousnessMeasureType",
                 "studies.ConsciousnessMeasurePhaseType",
             ),
+        },
+        {
+            "app": "uncontrast_studies",
+            "label": "uncontrast parameters configuration",
+            "models": (
+                "uncontrast_studies.UnConsciousnessMeasureType",
+                "uncontrast_studies.UnConsciousnessMeasureSubType",
+                "uncontrast_studies.UnConsciousnessMeasurePhase",
+                "uncontrast_studies.UnConStimulusCategory",
+                "uncontrast_studies.UnConStimulusSubCategory",
+                "uncontrast_studies.UnConModalityType",
+                "uncontrast_studies.UnConMainParadigm",
+                "uncontrast_studies.UnConProcessingMainDomain",
+                "uncontrast_studies.UnConProcessingSubDomain",
+                "uncontrast_studies.UnConSuppressionMethodType",
+                "uncontrast_studies.UnConSuppressionMethodSubType",
+            )
+        },
+        {
+            "app": "uncontrast_studies",
+            "label": "uncontrast experiments data",
+            "models":(
+                "uncontrast_studies.UnConExperiment",
+                "uncontrast_studies.UnConsciousnessMeasure",
+                "uncontrast_studies.UnConSuppressedStimulus",
+                "uncontrast_studies.UnConTargetStimulus",
+                "uncontrast_studies.UnConSpecificParadigm",
+                "uncontrast_studies.UnConProcessingDomain",
+                "uncontrast_studies.UnConSuppressionMethod",
+
+            )
+
         },
         {"app": "configuration", "label": "general graphs and forms related configuration"},
         {

@@ -5,10 +5,7 @@ uncon_paradigms = {
         "Perceptual",
         "Action",
     ],
-    "Emergence to awareness": [
-        "B-CFS",
-        "Mooney images"
-    ],
+    "Emergence to awareness": ["B-CFS", "Mooney images"],
     "Attention allocation": [],
     "Change blindness": [],
     "Learning": [
@@ -16,19 +13,13 @@ uncon_paradigms = {
         "Evaluative conditioning",
         "Eyeblink conditioning",
         "Conflict adaptation",
-        "Associative learning"
+        "Associative learning",
     ],
-    "Cognitive Tasks": [
-        "Executive control",
-        "Working memory",
-        "Task switching",
-        "Memory",
-        "Language"
-    ],
+    "Cognitive Tasks": ["Executive control", "Working memory", "Task switching", "Memory", "Language"],
     "Computational modeling": [],
     "Illusions": [],
     "Sperling like": [],
-    "Visual search": []
+    "Visual search": [],
 }
 
 uncon_tasks = [
@@ -44,56 +35,19 @@ uncon_tasks = [
     "Free viewing",
     "Discrimination",
     "Detection",
-    "Task is irrelevant to the effect"
+    "Task is irrelevant to the effect",
 ]
 
 uncon_stimulus_categories = {
-    "Lingual": [
-        "Words",
-        "Letters",
-        "Sentences"
-    ],
-    "Numerical": [
-        "Digits",
-        "Numbers",
-        "Mathematical exercise"
-    ],
-    "Pictures": [
-        "Faces",
-        "Objects",
-        "Scenes",
-        "Animals",
-        "Vehicles",
-        "Logos",
-        "Hands",
-        "Other"
-    ],
-    "Shapes": [
-        "Arrows",
-        "Gratings",
-        "Simple shapes",
-        "Other"
-    ],
-    "Line Drawings": [
-        "Faces",
-        "Objects",
-        "Scenes",
-        "Animals",
-        "Vehicles",
-        "Logos",
-        "Hands",
-        "Other"
-    ],
-    "Tactile Stimuli": []
+    "Lingual": ["Words", "Letters", "Sentences"],
+    "Numerical": ["Digits", "Numbers", "Mathematical exercise"],
+    "Pictures": ["Faces", "Objects", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Other"],
+    "Shapes": ["Arrows", "Gratings", "Simple shapes", "Other"],
+    "Line Drawings": ["Faces", "Objects", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Other"],
+    "Tactile Stimuli": [],
 }
 
-uncon_stimulus_modalities = [
-    "Auditory",
-    "Olfactory",
-    "Tactile",
-    "Visual",
-    "None"
-]
+uncon_stimulus_modalities = ["Auditory", "Olfactory", "Tactile", "Visual", "None"]
 
 uncon_suppression_methods = {
     "Masking": [
@@ -104,23 +58,20 @@ uncon_suppression_methods = {
         "Object Substitution masking",
         "Paracontrast masking",
         "Sandwich target masking",
-        "Sandwich pattern masking"
+        "Sandwich pattern masking",
     ],
     "Dichoptic masking": [],
     "Dichotic fusion": [],
     "CFS": [],
     "Crowding": [],
-    "Sub-threshold stimuli": [
-        "Mooney Images",
-        "Other"
-    ],
+    "Sub-threshold stimuli": ["Mooney Images", "Other"],
     "Attentional Blink": [],
     "Parafoveal display": [],
     "Stimulus degradation": [],
     "Inattentional blindness": [],
     "Binocular rivalry": [],
     "Change blindness": [],
-    "Flickering": []
+    "Flickering": [],
 }
 
 uncon_processing_domains = [
@@ -131,7 +82,7 @@ uncon_processing_domains = [
     "Action priming",
     "Executive functions",
     "Working memory",
-    "Attention allocation"
+    "Attention allocation",
 ]
 
 uncon_consciousness_measures_types = {
@@ -140,7 +91,7 @@ uncon_consciousness_measures_types = {
         "Low-level discrimination",
         "Location",
         "Detection (presence/absence)",
-        "Other"
+        "Other",
     ],
     "Subjective": [
         "Dichotomous",
@@ -149,11 +100,11 @@ uncon_consciousness_measures_types = {
         "Confidence ratings",
         "Continuous scale",
         "Likert Scale",
-        "Other"
+        "Other",
     ],
     "Verbal Debriefing": [],
     "None": [],
-    "Other": []
+    "Other": [],
 }
 
 uncon_consciousness_measures_phases = [
@@ -162,12 +113,7 @@ uncon_consciousness_measures_phases = [
     "Separate sample",
     "During the experiment, in alternating blocks",
     "Trial-by-trial",
-    "None"
+    "None",
 ]
 
-uncon_finding_outcomes = [
-    "Reaction times",
-    "Accuracy",
-    "Eye movements",
-    "Other"
-]
+uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Other"]

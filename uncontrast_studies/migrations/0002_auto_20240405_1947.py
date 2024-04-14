@@ -10,7 +10,7 @@ from configuration.uncontrast_initial_data_types import (
     uncon_suppression_methods,
     uncon_processing_domains,
     uncon_consciousness_measures_phases,
-    uncon_consciousness_measures_types
+    uncon_consciousness_measures_types,
 )
 
 
@@ -61,10 +61,8 @@ def bootstrap_type_uncon_models(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0001_initial'),
+        ("uncontrast_studies", "0001_initial"),
     ]
 
     operations = [migrations.RunPython(bootstrap_type_uncon_models, reverse_code=migrations.RunPython.noop)]
-

@@ -4,14 +4,18 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0057_alter_stimulus_category_alter_stimulus_modality_and_more'),
+        ("studies", "0057_alter_stimulus_category_alter_stimulus_modality_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='historicaltask',
-            options={'get_latest_by': ('history_date', 'history_id'), 'ordering': ('-history_date', '-history_id'), 'verbose_name': 'historical task', 'verbose_name_plural': 'historical tasks'},
+            name="historicaltask",
+            options={
+                "get_latest_by": ("history_date", "history_id"),
+                "ordering": ("-history_date", "-history_id"),
+                "verbose_name": "historical task",
+                "verbose_name_plural": "historical tasks",
+            },
         ),
     ]

@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CASCADE, PROTECT
+from simple_history.models import HistoricalRecords
 
 
 class UnConSuppressionMethodType(models.Model):
@@ -33,6 +34,7 @@ class UnConSuppressionMethod(models.Model):
     sub_type = models.ForeignKey(
         null=True, blank=True, related_name="suppression_method", to=UnConSuppressionMethodSubType, on_delete=PROTECT
     )  # TODO: add validation for masking
+    history = HistoricalRecords()
 
     def __str__(self):
         if self.sub_type is None:

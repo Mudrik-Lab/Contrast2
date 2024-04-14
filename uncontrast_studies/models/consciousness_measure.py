@@ -1,5 +1,6 @@
 from django.db import models
 from django.db.models import CASCADE, PROTECT
+from simple_history.models import HistoricalRecords
 
 
 class UnConsciousnessMeasurePhase(models.Model):
@@ -21,7 +22,7 @@ class UnConsciousnessMeasureSubType(models.Model):
     type = models.ForeignKey(
         blank=False,
         null=False,
-        on_delete=CASCADE,
+        on_delete=PROTECT,
         to=UnConsciousnessMeasureType,
         related_name="unconsciousness_measure_sub_types",
     )
@@ -69,6 +70,8 @@ class UnConsciousnessMeasure(models.Model):
     is_trial_excluded_based_on_measure = models.BooleanField(
         null=False, blank=False, verbose_name="were trials excluded from the analysis based on the measure"
     )
+
+    history = HistoricalRecords()
 
     def __str__(self):
         return f"experiment: {self.experiment_id} phase {self.phase}, type {self.type} ({self.sub_type})"

@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CASCADE
+from django.db.models import CASCADE, PROTECT
 from simple_history.models import HistoricalRecords
 
 
@@ -12,11 +12,11 @@ class UnConTaskType(models.Model):
 
 class UnConTask(models.Model):
     experiment = models.ForeignKey(
-        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="uncon_tasks"
+        null=False, blank=False, to="uncontrast_studies.UnConExperiment", on_delete=CASCADE, related_name="tasks"
     )
 
     type = models.ForeignKey(
-        null=False, blank=False, on_delete=CASCADE, to=UnConTaskType
+        null=False, blank=False, on_delete=PROTECT, to=UnConTaskType
     )  # TODO validators from configuration
     history = HistoricalRecords()
 

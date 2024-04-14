@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from contrast_api.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices, StudyTypeChoices
 from studies.filters import ExperimentFilter
 from studies.models import Experiment
 from studies.open_api_parameters import (
@@ -35,8 +35,8 @@ from studies.open_api_parameters import (
     techniques_multiple_optional_parameter_id_based,
     interpretation_theories,
     interpretations,
-    is_csv,
 )
+from contrast_api.open_api_parameters import is_csv
 from studies.processors.theories_support_matrix import TheoryGrandOverviewGraphDataProcessor
 from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
@@ -53,6 +53,8 @@ from studies.processors.timings import TimingsGraphDataProcessor
 from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import (
     FullExperimentSerializer,
+)
+from contrast_api.serializers import (
     NationOfConsciousnessGraphSerializer,
     TrendsOverYearsGraphSerializer,
     BarGraphSerializer,
@@ -67,8 +69,10 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = FullExperimentSerializer
     pagination_class = None
-    queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter").filter(
-        study__approval_status=ApprovalChoices.APPROVED
+    queryset = (
+        Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
+        .filter(study__approval_status=ApprovalChoices.APPROVED)
+        .filter(study__type=StudyTypeChoices.CONSCIOUSNESS)
     )
 
     filterset_class = ExperimentFilter

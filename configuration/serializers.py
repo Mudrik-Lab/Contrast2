@@ -16,6 +16,7 @@ from studies.models import (
     Author,
 )
 from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusCategory
+from uncontrast_studies.models import UnConsciousnessMeasureSubType, UnConStimulusSubCategory
 
 
 class TheoryConfigurationSerializer(serializers.ModelSerializer):
@@ -118,6 +119,44 @@ class ExperimentTypeSerializer(serializers.Serializer):
     value = serializers.IntegerField()
 
 
+class GenericTypeSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+
+    class Meta:
+        fields = ("name", "id")
+
+
+class UnConsciousnessMeasureSubTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnConsciousnessMeasureSubType
+        fields = ("name", "type", "id")
+
+
+class UnConStimulusSubCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnConStimulusSubCategory
+        fields = ("name", "id", "parent")
+
+
+class UnConStudiesConfigurationSerializer(serializers.Serializer):
+    available_authors = ConfigurationAuthorSerializer(many=True)
+    existing_journals = serializers.ListSerializer(child=serializers.CharField())
+    approved_experiments_count = serializers.IntegerField()
+    available_populations_types = serializers.ListSerializer(child=serializers.CharField())
+    available_consciousness_measure_phase_type = GenericTypeSerializer(many=True)
+    available_consciousness_measure_type = GenericTypeSerializer(many=True)
+    available_consciousness_measure_sub_type = UnConsciousnessMeasureSubTypeSerializer(many=True)
+    available_tasks_types = GenericTypeSerializer(many=True)
+    available_processing_sub_domain_types = GenericTypeSerializer(many=True)
+    available_processing_main_domain_types = GenericTypeSerializer(many=True)
+    available_main_paradigm_type = GenericTypeSerializer(many=True)
+    available_experiment_types = ExperimentTypeSerializer(many=True)
+    available_stimulus_modality_type = GenericTypeSerializer(many=True)
+    available_stimulus_category_type = GenericTypeSerializer(many=True)
+    available_stimulus_sub_category_type = UnConStimulusSubCategorySerializer(many=True)
+
+
 class StudiesConfigurationSerializer(serializers.Serializer):
     available_techniques = TechniqueConfigurationSerializer(many=True)
     available_finding_tags_types = FindingTagTypeSerializer(many=True)
@@ -141,7 +180,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_stimulus_sub_category_type = StimulusSubCategorySerializer(many=True)
     available_authors = ConfigurationAuthorSerializer(many=True)
     existing_journals = serializers.ListSerializer(child=serializers.CharField())
-    approved_studies_count = serializers.IntegerField()
+    approved_studies_count = serializers.IntegerField(default=0)
     approved_experiments_count = serializers.IntegerField()
 
 

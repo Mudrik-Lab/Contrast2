@@ -1,0 +1,3 @@
+from uncontrast_studies.views.submitted_studies import SubmitUnContrastStudiesViewSet
+
+__all__ = [SubmitUnContrastStudiesViewSet]

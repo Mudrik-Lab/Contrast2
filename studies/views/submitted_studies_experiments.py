@@ -8,8 +8,8 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet, ModelViewSet
 
 from approval_process.choices import ApprovalChoices
+from contrast_api.studies.permissions import SubmitterOnlyPermission
 from studies.models import Experiment, Paradigm, Technique
-from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import (
     FullExperimentSerializer,
     ParadigmSerializer,
@@ -17,9 +17,8 @@ from studies.serializers import (
     TechniqueAddRemoveSerializer,
     TechniqueSerializer,
     ThinExperimentSerializer,
-    NoteUpdateSerializer,
-    OptionalNoteUpdateSerializer,
 )
+from contrast_api.serializers import NoteUpdateSerializer, OptionalNoteUpdateSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 
 

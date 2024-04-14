@@ -1,12 +1,11 @@
 import copy
 
 from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiParameter
-from rest_framework import status
-from rest_framework.response import Response
+
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
+from contrast_api.studies.permissions import SubmitterOnlyPermission
 from studies.models import Task, Sample, Stimulus, Measure, Interpretation, FindingTag, ConsciousnessMeasure
-from studies.permissions import SubmitterOnlyPermission
 from studies.serializers import (
     TaskSerializer,
     SampleSerializer,

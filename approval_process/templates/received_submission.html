@@ -1,18 +1,18 @@
 DEAR {{ username }},
 
-<p>We have received your submission of the paper titled: <em>“{{ study.title }}”</em> [{{ study.DOI }}] for the ConTraSt
+<p>We have received your submission of the paper titled: <em>“{{ study.title }}”</em> [{{ study.DOI }}] for the {{ site_name }}
     database.
 </p>
 <p>
     We thank you for contributing to our database. Our team will review your submission, process it, and add it to the
     database. If we have any questions about the submission, we will contact you by e-mail. You can also see the status
-    of your submission on the website using this <a href="https://contrastdb.tau.ac.il/upload-new-paper" target="_blank"
+    of your submission on the website using this <a href="https://{{ site_name | lower }}db.tau.ac.il/upload-new-paper" target="_blank"
                                                     a> link </a>.
 
 </p>
 Sincerely yours,
 <br/>
 
-The ConTraSt team.
+The {{ site_name }} team.
 
 

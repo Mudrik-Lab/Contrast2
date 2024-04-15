@@ -3,7 +3,9 @@ import os
 import unittest
 from typing import Any
 
-from studies.parsers.process_row import process_row, create_study, get_list_from_excel
+from studies.parsers.process_row import process_row
+from contrast_api.data_migration_functionality.create_study import create_study
+from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.tests.base import BaseTestCase
 
 test_file_path = "studies/data/test_data.xlsx"

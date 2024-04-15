@@ -1,10 +1,9 @@
-import json
-
 from configuration.initial_setup import consciousness_measure_types
-from studies.parsers.historic_data_helpers import find_in_list, get_paradigms_from_data
+from studies.parsers.historic_data_helpers import get_paradigms_from_data
+from contrast_api.data_migration_functionality.helpers import find_in_list
 from studies.parsers.parsing_findings_Contrast2 import parse
-from studies.parsers.studies_parsing_helpers import (
-    parse_authors_from_authors_text,
+from contrast_api.data_migration_functionality.studies_parsing_helpers import (
+    resolve_authors_from_authors_text,
     resolve_country_from_affiliation_text,
 )
 from contrast_api.tests.base import BaseTestCase
@@ -13,7 +12,7 @@ from contrast_api.tests.base import BaseTestCase
 class StudyParserHelpersTestCase(BaseTestCase):
     def test_parsing_authors_from_affiliation_text(self):
         text = "Zhou S., Zou G., Xu J., Su Z., Zhu H., Zou Q., Gao J.-H."
-        res = parse_authors_from_authors_text(text)
+        res = resolve_authors_from_authors_text(text)
         self.assertEqual(res, ["Zhou S.", "Zou G.", "Xu J.", "Su Z.", "Zhu H.", "Zou Q.", "Gao J.-H."])
 
     def test_resolving_countries_from_affiliation_text(self):

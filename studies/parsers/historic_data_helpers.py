@@ -17,63 +17,18 @@ from configuration.initial_setup import (
     only_child_paradigms,
 )
 from contrast_api.choices import TheoryDrivenChoices, SampleChoices
+from contrast_api.data_migration_functionality.errors import ProblemInTheoryDrivenExistingDataException, \
+    IncoherentSampleDataError, SampleTypeError, IncoherentStimuliData, MissingValueInStimuli, StimulusDurationError, \
+    ParadigmError
+from contrast_api.data_migration_functionality.helpers import add_to_notes, find_in_list, clean_text
 
 logger = logging.getLogger("Contrast2")
-
-
-class ProblemInTheoryDrivenExistingDataException(Exception):
-    pass
-
-
-class IncoherentSampleDataError(Exception):
-    pass
-
-
-class SampleTypeError(Exception):
-    pass
-
-
-class ProblemInCMExistingDataException(Exception):
-    pass
-
-
-class IncoherentStimuliData(Exception):
-    pass
-
-
-class MissingValueInStimuli(Exception):
-    pass
-
-
-class StimulusDurationError(Exception):
-    pass
-
-
-class ParadigmError(Exception):
-    pass
-
 
 ConsciousnessMeasureFromData = namedtuple("ConsciousnessMeasureFromData", ["type", "phase"])
 ParadigmFromData = namedtuple("ParadigmFromData", ["parent", "name", "sub_type"])
 MeasureFromData = namedtuple("MeasureFromData", ["measure_type", "measure_notes"])
 StimulusFromData = namedtuple("StimulusFromData", ["category", "sub_category", "modality", "duration"])
 SampleFromData = namedtuple("SampleFromData", ["sample_type", "total_size", "included_size", "note"])
-
-
-def add_to_notes(prefix, text: str):
-    note = f"{prefix} notes: {text}; "
-    return note
-
-
-def find_in_list(items_to_compare: list, compared_items_list: list):
-    clean_items_to_compare = [item.split("(")[0].strip() if "(" in item else item.strip() for item in items_to_compare]
-    resolved_list = []
-    for lookup_item in clean_items_to_compare:
-        for item in compared_items_list:
-            if item.lower() == lookup_item.lower():
-                resolved_list.append(item)
-
-    return resolved_list
 
 
 def get_consciousness_measure_type_and_phase_from_data(item: dict) -> List[ConsciousnessMeasureFromData]:
@@ -270,11 +225,6 @@ def get_measures_from_data(item: dict) -> List[MeasureFromData]:
                     measures_from_data.append(MeasureFromData(measure_type, notes))
 
     return measures_from_data
-
-
-def clean_text(text):
-    cleaned_text = "".join(char for char in text if char.isprintable()).strip()
-    return cleaned_text
 
 
 def clean_duration_text(text):

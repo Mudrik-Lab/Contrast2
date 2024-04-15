@@ -4,24 +4,16 @@ import pandas
 from django.core.management import BaseCommand
 from django.db import transaction
 
-from studies.parsers.historic_data_helpers import (
-    ProblemInTheoryDrivenExistingDataException,
-    IncoherentSampleDataError,
-    ProblemInCMExistingDataException,
-    IncoherentStimuliData,
-    MissingValueInStimuli,
-    StimulusDurationError,
-    SampleTypeError,
-)
 from studies.parsers.parsing_findings_Contrast2 import FindingTagDataError
 from studies.parsers.process_row import (
     process_row,
-    create_study,
-    MissingStimulusCategoryError,
-    get_list_from_excel,
-    ParadigmDataException,
 )
-from studies.parsers.studies_parsing_helpers import ProblemInStudyExistingDataException
+from contrast_api.data_migration_functionality.create_study import create_study
+from contrast_api.data_migration_functionality.errors import MissingStimulusCategoryError, ParadigmDataException, \
+    ProblemInTheoryDrivenExistingDataException, IncoherentSampleDataError, SampleTypeError, \
+    ProblemInCMExistingDataException, IncoherentStimuliData, MissingValueInStimuli, StimulusDurationError
+from contrast_api.data_migration_functionality.helpers import get_list_from_excel
+from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
 
 logger = logging.getLogger("Contrast2")
 

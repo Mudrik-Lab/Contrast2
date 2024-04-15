@@ -1,7 +1,5 @@
 import logging
 
-import numpy
-import pandas
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 
@@ -13,6 +11,8 @@ from contrast_api.choices import (
     ReportingChoices,
     DirectionChoices,
 )
+from contrast_api.data_migration_functionality.errors import MissingStimulusCategoryError, ParadigmDataException, \
+    IncoherentSampleDataError, ProblemInCMExistingDataException, ParadigmError
 from studies.models import (
     Theory,
     Technique,
@@ -31,20 +31,16 @@ from studies.models import (
     FindingTag,
     Study,
     Experiment,
-    Author,
 )
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from studies.parsers.historic_data_helpers import (
     get_paradigms_from_data,
     get_consciousness_measure_type_and_phase_from_data,
-    ProblemInCMExistingDataException,
     get_measures_from_data,
     get_sample_from_data,
-    IncoherentSampleDataError,
     parse_task_types,
     get_stimuli_from_data,
     parse_theory_driven_from_data,
-    ParadigmError,
 )
 from studies.parsers.parsing_findings_Contrast2 import (
     parse,
@@ -53,32 +49,11 @@ from studies.parsers.parsing_findings_Contrast2 import (
     SpatialFinding,
     FindingTagDataError,
 )
-from studies.parsers.studies_parsing_helpers import (
+from contrast_api.data_migration_functionality.studies_parsing_helpers import (
     ProblemInStudyExistingDataException,
-    parse_authors_keywords_from_text,
-    resolve_country_from_affiliation_text,
-    validate_year,
-    parse_authors_from_authors_text,
-    parse_country_names_to_codes,
 )
 
 logger = logging.getLogger("Contrast2")
-
-
-class MissingStimulusCategoryError(Exception):
-    pass
-
-
-class ParadigmDataException(Exception):
-    pass
-
-
-def get_list_from_excel(path: str, sheet_name: str) -> list:
-    read_excel = pandas.read_excel(path, sheet_name=sheet_name)
-    remove_nan = read_excel.replace(numpy.nan, "")
-    list_from_excel = remove_nan.to_dict("records")
-
-    return list_from_excel
 
 
 def create_experiment(item: dict):
@@ -132,44 +107,6 @@ def create_experiment(item: dict):
     logger.info(f"experiment {experiment.id} for study {study.DOI} created")
 
     return experiment, theory_driven_theories
-
-
-def create_study(item: dict):
-    # parse author keywords and countries from text
-    text = item["Author.Keywords"]
-    if text:
-        author_keywords = parse_authors_keywords_from_text(text)
-    else:
-        author_keywords = [""]
-    country_names = list(resolve_country_from_affiliation_text(item["Affiliations"]))
-    country_codes = parse_country_names_to_codes(country_names)
-    year = int(validate_year(item["Year"]))
-    funding = str(item["Funding.Details"])
-
-    study, created = Study.objects.get_or_create(
-        DOI=item["DOI"],
-        title=item["Title"],
-        year=year,
-        corresponding_author_email="placeholder@email",
-        approval_status=1,
-        authors_key_words=author_keywords,
-        funding=funding,
-        source_title=item["Source.Title"],
-        abbreviated_source_title=item["Abbreviated.Source.Title"],
-        countries=country_codes,
-        affiliations=item["Affiliations"],
-    )
-    # parse authors and add to study
-    authors = []
-    authors_names = parse_authors_from_authors_text(item["Authors"])
-    for author_name in authors_names:
-        author, created = Author.objects.get_or_create(name=author_name)
-        authors.append(author)
-    for author in authors:
-        study.authors.add(author)
-
-    logger.info(f"study {study.DOI} created")
-    return study
 
 
 def process_row(item: dict):

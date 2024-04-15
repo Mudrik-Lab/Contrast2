@@ -3,15 +3,18 @@ from django.db.models import CASCADE, PROTECT
 from simple_history.models import HistoricalRecords
 
 
-class UnConProcessingSubDomain(models.Model):
+class UnConProcessingMainDomain(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
 
     def __str__(self):
         return self.name
 
 
-class UnConProcessingMainDomain(models.Model):
+class UnConProcessingSubDomain(models.Model):
     name = models.CharField(null=False, blank=False, max_length=50)
+    main = models.ForeignKey(
+        null=False, blank=False, to=UnConProcessingMainDomain, on_delete=PROTECT, related_name="processing_sub_domains"
+    )
 
     def __str__(self):
         return self.name

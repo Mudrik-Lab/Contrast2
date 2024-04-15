@@ -19,3 +19,7 @@ studies/data/*.csv
 studies/data/*.xls
 studies/data/*.xlsx
 .DS_Store
+
+uncontrast_studies/data/*.csv
+uncontrast_studies/data/*.xls
+uncontrast_studies/data/*.xlsx

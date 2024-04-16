@@ -1,6 +1,4 @@
-from studies.models.author import Author
 from studies.models.stimulus import Stimulus, ModalityType, StimulusCategory, StimulusSubCategory
-from studies.models.study import Study
 from studies.models.experiment import Experiment
 from studies.models.technique import Technique
 from studies.models.finding_tag import FindingTag, FindingTagFamily, FindingTagType
@@ -20,12 +18,10 @@ from studies.models.aggregated_interpretation import AggregatedInterpretation
 __all__ = [
     Experiment,
     Paradigm,
-    Study,
     Stimulus,
     StimulusSubCategory,
     StimulusCategory,
     ModalityType,
-    Author,
     Technique,
     FindingTag,
     FindingTagFamily,

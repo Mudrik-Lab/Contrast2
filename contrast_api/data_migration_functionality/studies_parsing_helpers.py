@@ -9,6 +9,11 @@ def resolve_authors_from_authors_text(text: str):
     return authors_list
 
 
+def resolve_countries(text: str):
+    countries_list = text.split(", ")
+    return countries_list
+
+
 def resolve_country_from_affiliation_text(text: str):
     affiliations_list = text.split("; ")
     resolved_countries = []

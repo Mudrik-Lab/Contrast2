@@ -265,7 +265,7 @@ class ProcessRowImplementationTestCase(BaseTestCase):
         studies_data = []
         for study_item in test_studies:
             try:
-                study = create_study(item=study_item)
+                study = create_study(item=study_item, unconsciousness=False)
                 studies_data.append(study)
             except Exception:
                 print(json.dumps(study_item))

@@ -33,7 +33,7 @@ class Command(BaseCommand):
         for study_item in studies_historic_data_list:
             try:
                 with transaction.atomic():
-                    create_study(item=study_item)
+                    create_study(item=study_item, unconsciousness=True)
             except ProblemInStudyExistingDataException:
                 studies_problematic_data_log.append(study_item)
 

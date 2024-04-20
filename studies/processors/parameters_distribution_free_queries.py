@@ -120,12 +120,12 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
     def process_paradigm_family(self):
         experiments_subquery_by_breakdown = (
             Interpretation.objects.filter(experiment__in=self.filtered_experiments)
-            .filter(experiment__paradigms__parent__name=OuterRef("name"))
+            .filter(experiment__paradigms__parent=OuterRef("pk"))
             .values("experiment")
         )
 
         breakdown_query = (
-            Paradigm.objects.filter(parent__isnull=True).order_by("name").values("name").distinct("name").annotate(series_name=F("name"))
+            Paradigm.objects.filter(parent__isnull=True).order_by("name").values("name").distinct().annotate(series_name=F("name"))
 
         )
 
@@ -135,12 +135,12 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
     def process_paradigm(self):
         experiments_subquery_by_breakdown = (
             Interpretation.objects.filter(experiment__in=self.filtered_experiments)
-            .filter(experiment__paradigms__name=OuterRef("name"))
+            .filter(experiment__paradigms__name=OuterRef("series_name"))
             .values("experiment")
         )
 
         breakdown_query = (
-            Paradigm.objects.filter(parent__isnull=False).order_by("name").values("name").distinct("name").annotate(series_name=F("name"))
+            Paradigm.objects.filter(parent__isnull=False).order_by("name").values("name").distinct().annotate(series_name=F("name"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

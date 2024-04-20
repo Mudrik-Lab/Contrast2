@@ -2,6 +2,7 @@ from rest_framework import status
 
 from contrast_api.choices import ReportingChoices, InterpretationsChoices, SampleChoices
 from contrast_api.tests.base import BaseTestCase
+from studies.models import Study, Experiment, Paradigm
 from studies.open_api_parameters import BREAKDOWN_OPTIONS
 
 
@@ -180,6 +181,50 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
 
         self.assertEqual(first_series["value"], 1)
         self.assertEqual(second_series["value"], 1)
+
+    def test_parameters_distribution_breakdown_paradigm_with_sub_type(self):
+        (
+            another_different_child_paradigm,
+            different_child_paradigm,
+            different_parent_paradigm,
+            first_measure,
+            first_technique,
+            fourth_measure,
+            masking_child_paradigm,
+            masking_parent_paradigm,
+            second_measure,
+            second_technique,
+            third_measure_with_second_type,
+        ) = self._given_world_setup()
+
+        israeli_study = Study.objects.get(title='Israeli study')
+        israel_study_experiment:Experiment = israeli_study.experiments.first()
+        # add multiple types of oddball
+        oddball_paradigms = Paradigm.objects.filter(name='Oddball', sub_type__in=["Local-Global", "Deviant detection"])
+        for paradigm in oddball_paradigms:
+            israel_study_experiment.paradigms.add(paradigm)
+
+        target_url = self.reverse_with_query_params(
+            "experiments-graphs-parameters-distribution-free-queries", breakdown="paradigm"
+        )
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(len(res.data), 4)  # as gnw child interpretation to three paradigms including odd ball
+        """
+        masking parent paradigm 
+         gnw -pro: 2 against: 1
+         rpt pro:  1 against: 1
+        different parent paradigm - 
+         gnw - pro: 1 against: 1
+         rpt - pro:1  against: """
+        self.assertIn('Oddball', [series["key"] for series in res.data])
+        for series in res.data:
+            if series['key'] == 'Oddball':
+                self.assertEqual(series['value'], 1)
+
+
+
 
     def test_sample_breakdown(self):
         (

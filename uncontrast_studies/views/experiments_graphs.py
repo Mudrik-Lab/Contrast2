@@ -41,14 +41,15 @@ from uncontrast_studies.processors.parameters_distribution_pie import Parameters
 
 
 from contrast_api.serializers import (
-    NationOfConsciousnessGraphSerializer,
     TrendsOverYearsGraphSerializer,
+
     BarGraphSerializer,
     StackedBarGraphSerializer,
     DurationGraphSerializer,
     NestedPieChartSerializer,
     PieChartSerializer,
 )
+from uncontrast_studies.serializers import NationOfConsciousnessBySignificanceGraphSerializer
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.resources.full_experiment import FullUnConExperimentResource
 from uncontrast_studies.serializers import FullUnConExperimentSerializer
@@ -66,7 +67,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
 
     # filterset_class = ExperimentFilter
     graph_serializers = {
-        "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
+        "nations_of_consciousness": NationOfConsciousnessBySignificanceGraphSerializer,
         "across_the_years": TrendsOverYearsGraphSerializer,
         "trends_over_years": TrendsOverYearsGraphSerializer,
         "journals": BarGraphSerializer,
@@ -88,7 +89,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     }
 
     @extend_schema(
-        responses=NationOfConsciousnessGraphSerializer(many=True),
+        responses=NationOfConsciousnessBySignificanceGraphSerializer(many=True),
         parameters=[
             OpenApiParameter(
                 name="theory", type=str, required=False, many=True, description="theory filter - supports multiple"
@@ -97,7 +98,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
             is_csv,
         ],
     )
-    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessBySignificanceGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 

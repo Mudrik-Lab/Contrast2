@@ -52,10 +52,9 @@ from studies.processors.theory_driven_distribution_pie import TheoryDrivenDistri
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import (
-    FullExperimentSerializer,
+    FullExperimentSerializer, NationOfConsciousnessByTheoryGraphSerializer,
 )
 from contrast_api.serializers import (
-    NationOfConsciousnessGraphSerializer,
     TrendsOverYearsGraphSerializer,
     BarGraphSerializer,
     StackedBarGraphSerializer,
@@ -77,7 +76,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
     filterset_class = ExperimentFilter
     graph_serializers = {
-        "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
+        "nations_of_consciousness": NationOfConsciousnessByTheoryGraphSerializer,
         "across_the_years": TrendsOverYearsGraphSerializer,
         "trends_over_years": TrendsOverYearsGraphSerializer,
         "journals": BarGraphSerializer,
@@ -128,7 +127,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(
-        responses=NationOfConsciousnessGraphSerializer(many=True),
+        responses=NationOfConsciousnessByTheoryGraphSerializer(many=True),
         parameters=[
             OpenApiParameter(
                 name="theory", type=str, required=False, many=True, description="theory filter - supports multiple"
@@ -140,7 +139,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
             is_csv,
         ],
     )
-    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessByTheoryGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 

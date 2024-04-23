@@ -1,6 +1,8 @@
+from django_countries import countries
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
+from contrast_api.choices import SignificanceChoices
 from studies.models import Study, Author, ConsciousnessMeasureType, TaskType
 from studies.serializers import AuthorSerializer
 from uncontrast_studies.models import (
@@ -225,3 +227,17 @@ class StudyWithExperimentsUnConCreateSerializer(StudyWithUnConExperimentsSeriali
             instance.authors.add(author)
 
         return instance
+
+class NationOfConsciousnessBySignificanceGraphSerializer(serializers.Serializer):
+    country = serializers.SerializerMethodField()
+    country_name = serializers.SerializerMethodField()
+    value = serializers.IntegerField()
+    total = serializers.IntegerField()
+    significance = serializers.CharField(source="get_significance_display")
+
+    def get_country(self, obj) -> str:
+        return countries.alpha3(obj["country"])
+
+    def get_country_name(self, obj) -> str:
+        return countries.name(obj["country"])
+

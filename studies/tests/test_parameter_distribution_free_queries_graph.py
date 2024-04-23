@@ -197,10 +197,10 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
             third_measure_with_second_type,
         ) = self._given_world_setup()
 
-        israeli_study = Study.objects.get(title='Israeli study')
-        israel_study_experiment:Experiment = israeli_study.experiments.first()
+        israeli_study = Study.objects.get(title="Israeli study")
+        israel_study_experiment: Experiment = israeli_study.experiments.first()
         # add multiple types of oddball
-        oddball_paradigms = Paradigm.objects.filter(name='Oddball', sub_type__in=["Local-Global", "Deviant detection"])
+        oddball_paradigms = Paradigm.objects.filter(name="Oddball", sub_type__in=["Local-Global", "Deviant detection"])
         for paradigm in oddball_paradigms:
             israel_study_experiment.paradigms.add(paradigm)
 
@@ -218,13 +218,10 @@ class ParameterDistributionFreeQueriesGraphTestCase(BaseTestCase):
         different parent paradigm - 
          gnw - pro: 1 against: 1
          rpt - pro:1  against: """
-        self.assertIn('Oddball', [series["key"] for series in res.data])
+        self.assertIn("Oddball", [series["key"] for series in res.data])
         for series in res.data:
-            if series['key'] == 'Oddball':
-                self.assertEqual(series['value'], 1)
-
-
-
+            if series["key"] == "Oddball":
+                self.assertEqual(series["value"], 1)
 
     def test_sample_breakdown(self):
         (

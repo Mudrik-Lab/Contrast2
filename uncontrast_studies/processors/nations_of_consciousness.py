@@ -27,7 +27,7 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
 
         experiments_by_countries_and_theories = (
             filtered_qs.select_related("study")
-            .values("id", "study")
+            .values("id", "study", "significance")
             .annotate(country=Func(F("study__countries"), function="unnest"))
         )
         return experiments_by_countries_and_theories
@@ -47,7 +47,7 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
         countries_total_dict = {item["country"]: item["value"] for item in list(countries_total)}
 
         aggregated_qs = (
-            queryset.values("country")
+            queryset.values("country", "significance")
             .annotate(value=Count("id"))
             .filter(value__gt=self.min_number_of_experiments)
             .order_by("-value", "country")

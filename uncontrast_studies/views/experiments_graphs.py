@@ -189,6 +189,19 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     def parameters_distribution_free_queries(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
+    @extend_schema(
+        responses=StackedBarGraphSerializer(many=True),
+        parameters=[
+            number_of_experiments_parameter,
+            breakdown_parameter,
+            is_csv,
+        ],
+    )
+    @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
+    def parameters_distribution_bar(self, request, *args, **kwargs):
+
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
     def get_serializer_by_graph_type(self, graph_type, data, *args, **kwargs):
         """
         Return the serializer instance that should be used for validating and

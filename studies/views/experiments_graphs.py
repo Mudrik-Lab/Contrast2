@@ -254,8 +254,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
-        # TODO make theory required in swagger, change to support text and id
-        # TODO , why is no info
+
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(

@@ -23,8 +23,13 @@ from uncontrast_studies.open_api_parameters import (
     types_multiple_optional_parameter,
     processing_domain_multiple_optional_parameter,
     suppression_methods_multiple_optional_parameter,
+    is_target_same_as_suppressed_stimulus_optional_parameter,
+    is_cm_same_participants_as_task_optional_parameter,
+    is_trial_excluded_based_on_measure_optional_parameter,
+    mode_of_presentation_optional_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
+from uncontrast_studies.processors.experiments_comparison import ComparisonParametersDistributionPieGraphDataProcessor
 from uncontrast_studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from uncontrast_studies.processors.journals import JournalsGraphDataProcessor
 from uncontrast_studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
@@ -68,6 +73,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_bar": StackedBarGraphSerializer,
         "parameters_distribution_pie": NestedPieChartSerializer,
         "parameters_distribution_free_queries": BarGraphSerializer,
+        "parameters_distribution_experiments_comparison":PieChartSerializer
     }
 
     graph_processors = {
@@ -78,6 +84,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
         "parameters_distribution_pie": ParametersDistributionPieGraphDataProcessor,
         "parameters_distribution_free_queries": ParametersDistributionFreeQueriesDataProcessor,
+        "parameters_distribution_experiments_comparison": ComparisonParametersDistributionPieGraphDataProcessor
     }
 
     @extend_schema(
@@ -106,7 +113,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(
-        responses=BarGraphSerializer(many=True),
+        responses=NestedPieChartSerializer(many=False),
         parameters=[
             breakdown_parameter,
             number_of_experiments_parameter,
@@ -141,18 +148,18 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     def trends_over_years(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
-    # TODO: implement this - when dependent
-    # @extend_schema(
-    #     responses=StackedBarGraphSerializer(many=True),
-    #     parameters=[
-    #         number_of_experiments_parameter,
-    #         breakdown_parameter,
-    #         is_csv,
-    #     ],
-    # )
-    # @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
-    # def parameters_distribution_bar(self, request, *args, **kwargs):
-    #     return self.graph(request, graph_type=self.action, *args, **kwargs)
+    @extend_schema(
+        responses=PieChartSerializer(many=True),
+        parameters=[
+            breakdown_parameter,
+            number_of_experiments_parameter,
+            is_csv,
+
+        ],
+    )
+    @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
+    def parameters_distribution_experiments_comparison(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(
         responses=BarGraphSerializer(many=True),
@@ -170,6 +177,10 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
             consciousness_measure_types_multiple_optional_parameter,
             tasks_multiple_optional_parameter,
             types_multiple_optional_parameter,
+            # is_target_same_as_suppressed_stimulus_optional_parameter,
+            # is_cm_same_participants_as_task_optional_parameter,
+            # is_trial_excluded_based_on_measure_optional_parameter,
+            mode_of_presentation_optional_parameter,
             number_of_experiments_parameter,
             is_csv,
         ],

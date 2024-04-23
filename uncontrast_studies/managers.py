@@ -28,18 +28,29 @@ class UnConExperimentManager(models.Manager):
                 )
             )
             .prefetch_related(
+                Prefetch(
                 "suppressed_stimuli",
-                queryset=UnConSuppressedStimulus.objects.select_related("category", "sub_category", "modality"),
+                queryset=UnConSuppressedStimulus.objects.select_related("category", "sub_category", "modality")
+                ),
             )
             .prefetch_related(
-                "target_stimuli",
+                Prefetch(
+
+                    "target_stimuli",
                 queryset=UnConTargetStimulus.objects.select_related("category", "sub_category", "modality"),
+                )
             )
             .prefetch_related("samples")
             .prefetch_related(
-                "suppression_methods", queryset=UnConSuppressionMethod.objects.select_related("type", "sub_type")
+                Prefetch(
+
+                    "suppression_methods", queryset=UnConSuppressionMethod.objects.select_related("type", "sub_type")
+                )
             )
             .prefetch_related(
-                "processing_domains", queryset=UnConProcessingDomain.objects.select_related("main", "sub_domain")
+                Prefetch(
+
+                    "processing_domains", queryset=UnConProcessingDomain.objects.select_related("main", "sub_domain")
+                )
             )
         )

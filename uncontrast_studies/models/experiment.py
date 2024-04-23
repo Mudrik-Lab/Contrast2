@@ -45,7 +45,9 @@ class UnConExperiment(models.Model):
         # TODO: check what the cleaning needed
 
     def calculate_significance(self):
-        findings_significance = self.findings.all().values_list("is_significant", flat=True)
+        findings_significance = (self.findings.filter(is_important=True)
+                                 .values_list("is_significant", flat=True)
+                                 )
         if all(x is True for x in findings_significance):
             self.significance = SignificanceChoices.POSITIVE
         elif all(x is False for x in findings_significance):

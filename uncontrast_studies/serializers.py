@@ -21,6 +21,10 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConTaskType,
     UnConMainParadigm,
+    UnConsciousnessMeasureSubType,
+    UnConProcessingSubDomain,
+    UnConSuppressionMethodSubType,
+    UnConSuppressionMethodType,
 )
 
 
@@ -43,10 +47,22 @@ class UnConTaskSerializer(serializers.ModelSerializer):
 class UnConsciousnessMeasureSerializer(serializers.ModelSerializer):
     phase = serializers.PrimaryKeyRelatedField(queryset=UnConsciousnessMeasurePhase.objects.all())
     type = serializers.PrimaryKeyRelatedField(queryset=UnConsciousnessMeasureType.objects.all())
+    sub_type = serializers.PrimaryKeyRelatedField(queryset=UnConsciousnessMeasureSubType.objects.all())
 
     class Meta:
         model = UnConsciousnessMeasure
-        fields = ("experiment", "id", "phase", "type")
+        fields = (
+            "experiment",
+            "id",
+            "phase",
+            "type",
+            "sub_type",
+            "number_of_trials",
+            "number_of_participants_in_awareness_test",
+            "is_cm_same_participants_as_task",
+            "is_performance_above_chance",
+            "is_trial_excluded_based_on_measure",
+        )
 
 
 class UnConTargetStimulusSerializer(serializers.ModelSerializer):
@@ -79,24 +95,25 @@ class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
             "number_of_stimuli",
         )
 
-    class Meta:
-        model = UnConSuppressedStimulus
-        fields = ("experiment", "id", "category", "sub_category", "modality", "duration")
-
 
 class UnConFindingSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnConFinding
-        fields = ("experiment", "id", "outcome", "is_significant")
+        fields = ("experiment", "id", "outcome", "is_significant", "is_important")
 
 
 class UnConProcessingDomainSerializer(serializers.ModelSerializer):
+    sub_domain = serializers.PrimaryKeyRelatedField(queryset=UnConProcessingSubDomain.objects.all())
+
     class Meta:
         model = UnConProcessingDomain
         fields = ("experiment", "id", "main", "sub_domain")
 
 
 class UnConSuppressionMethodSerializer(serializers.ModelSerializer):
+    sub_type = serializers.PrimaryKeyRelatedField(queryset=UnConSuppressionMethodSubType.objects.all())
+    type = serializers.PrimaryKeyRelatedField(queryset=UnConSuppressionMethodType.objects.all())
+
     class Meta:
         model = UnConSuppressionMethod
         fields = ("experiment", "id", "type", "sub_type")

@@ -23,21 +23,36 @@ from uncontrast_studies.models import (
     UnConProcessingDomain,
     UnConSuppressionMethod,
     UnConSuppressionMethodType,
-    UnConSuppressionMethodSubType, UnConExperiment,
+    UnConSuppressionMethodSubType,
+    UnConExperiment,
 )
+
 
 class UnConExperimentAdmin(BaseContrastAdmin):
     model = UnConExperiment
-    list_display = (
-        "id",
-        "is_target_stimulus",
-        "is_target_same_as_suppressed_stimulus"
+    list_display = ("id", "is_target_stimulus", "is_target_same_as_suppressed_stimulus", "significance")
+    list_filter = ("is_target_stimulus", "is_target_same_as_suppressed_stimulus", "significance")
 
-    )
+
 class UnConsciousnessMeasureAdmin(BaseContrastAdmin):
-    list_display = ("phase", "type", "experiment_id")
+    list_display = (
+        "phase",
+        "type",
+        "sub_type",
+        "number_of_trials",
+        "number_of_participants_in_awareness_test",
+        "is_trial_excluded_based_on_measure",
+        "experiment_id",
+    )
     model = UnConsciousnessMeasure
-    list_filter = ("phase", "type")
+    list_filter = (
+        "is_cm_same_participants_as_task",
+        "is_performance_above_chance",
+        "is_trial_excluded_based_on_measure",
+        ("phase", admin.RelatedOnlyFieldListFilter),
+        ("type", admin.RelatedOnlyFieldListFilter),
+        ("sub_type", admin.RelatedOnlyFieldListFilter),
+    )
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related()
@@ -50,7 +65,8 @@ class UnConsciousnessMeasureTypeAdmin(ImportExportModelAdmin):
 
 class UnConsciousnessMeasureSubTypeAdmin(ImportExportModelAdmin):
     model = UnConsciousnessMeasureSubType
-    list_display = ("id", "name")
+    list_display = ("id", "name", "type")
+    list_filter = (("type", admin.RelatedOnlyFieldListFilter),)
 
 
 class UnConsciousnessMeasurePhaseTypeAdmin(ImportExportModelAdmin):
@@ -121,7 +137,7 @@ class UnConTaskTypeAdmin(ImportExportModelAdmin):
 class UnConTaskAdmin(BaseContrastAdmin):
     list_display = ("id", "type", "experiment_id")
     model = UnConTask
-    list_filter = ("type", admin.RelatedOnlyFieldListFilter)
+    list_filter = (("type", admin.RelatedOnlyFieldListFilter),)
 
 
 class UnConMainParadigmAdmin(BaseContrastAdmin):
@@ -130,16 +146,16 @@ class UnConMainParadigmAdmin(BaseContrastAdmin):
         "id",
         "name",
     )
-    search_fields = ("name", )
-
-    def get_queryset(self, request):
-        return super().get_queryset(request).select_related("parent", "parent__parent")
+    search_fields = ("name",)
 
 
 class UnConSpecificParadigmAdmin(BaseContrastAdmin):
     model = UnConSpecificParadigm
     list_display = ("id", "name")
-    search_fields = ("name", )
+    search_fields = ("name",)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("main")
 
 
 class UnConSampleAdmin(BaseContrastAdmin):

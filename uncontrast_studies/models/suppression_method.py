@@ -29,10 +29,10 @@ class UnConSuppressionMethod(models.Model):
         related_name="suppression_methods",
     )
     type = models.ForeignKey(
-        null=False, blank=False, related_name="suppression_method", to=UnConSuppressionMethodType, on_delete=PROTECT
+        null=False, blank=False, related_name="suppression_methods", to=UnConSuppressionMethodType, on_delete=PROTECT
     )
     sub_type = models.ForeignKey(
-        null=True, blank=True, related_name="suppression_method", to=UnConSuppressionMethodSubType, on_delete=PROTECT
+        null=True, blank=True, related_name="suppression_methods", to=UnConSuppressionMethodSubType, on_delete=PROTECT
     )  # TODO: add validation for masking
     history = HistoricalRecords()
 

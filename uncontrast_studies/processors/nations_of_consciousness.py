@@ -11,7 +11,7 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
     def process(self):
         """
         do a transpose "experiment per country in study" with unnest on the array field
-        aggregate on country and theory relation
+        aggregate on country and significance
 
 
         """

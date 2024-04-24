@@ -42,12 +42,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.tasks = kwargs.pop("tasks", [])
 
     def process(self):
-        """
-        do a transpose "experiment per country in study" with unnest on the array field
-        aggregate on country and theory relation
-
-
-        """
+        """ """
         # First we'll filter the available experiments
         self.filtered_experiments = self.get_queryset()
 

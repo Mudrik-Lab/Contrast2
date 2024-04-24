@@ -44,7 +44,7 @@ class BaseSubmitStudiesViewSert(ModelViewSet):
                     | Q(submitter=self.request.user)
                 )
             else:
-                if not hasattr(self, "request") or self.request.user.is_anonymous():
+                if not hasattr(self, "request") or self.request.user.is_anonymous:
                     qs = qs.none()
                 else:
                     qs = qs.filter(submitter=self.request.user)

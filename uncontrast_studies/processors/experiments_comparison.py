@@ -200,11 +200,10 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
             experiments_for_option = (
                 self.experiments.filter(significance=sig_option).distinct().values_list("id", flat=True)
             )
-            # Children_experiments is referring from theory to child theory and from their to "experiments"
             if self.is_csv:
-                theory_experiment_ids = experiments_for_option.values_list("id", flat=True)
+                option_experiment_ids = experiments_for_option.values_list("id", flat=True)
 
-                experiment_ids += theory_experiment_ids
+                experiment_ids += option_experiment_ids
             else:
                 subquery = self.get_query(experiments_for_option)
 

@@ -228,6 +228,7 @@ class StudyWithExperimentsUnConCreateSerializer(StudyWithUnConExperimentsSeriali
 
         return instance
 
+
 class NationOfConsciousnessBySignificanceGraphSerializer(serializers.Serializer):
     country = serializers.SerializerMethodField()
     country_name = serializers.SerializerMethodField()
@@ -240,4 +241,3 @@ class NationOfConsciousnessBySignificanceGraphSerializer(serializers.Serializer)
 
     def get_country_name(self, obj) -> str:
         return countries.name(obj["country"])
-

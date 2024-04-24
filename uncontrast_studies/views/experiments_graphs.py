@@ -42,7 +42,6 @@ from uncontrast_studies.processors.parameters_distribution_pie import Parameters
 
 from contrast_api.serializers import (
     TrendsOverYearsGraphSerializer,
-
     BarGraphSerializer,
     StackedBarGraphSerializer,
     DurationGraphSerializer,
@@ -74,7 +73,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_bar": StackedBarGraphSerializer,
         "parameters_distribution_pie": NestedPieChartSerializer,
         "parameters_distribution_free_queries": BarGraphSerializer,
-        "parameters_distribution_experiments_comparison":PieChartSerializer
+        "parameters_distribution_experiments_comparison": PieChartSerializer,
     }
 
     graph_processors = {
@@ -85,7 +84,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
         "parameters_distribution_pie": ParametersDistributionPieGraphDataProcessor,
         "parameters_distribution_free_queries": ParametersDistributionFreeQueriesDataProcessor,
-        "parameters_distribution_experiments_comparison": ComparisonParametersDistributionPieGraphDataProcessor
+        "parameters_distribution_experiments_comparison": ComparisonParametersDistributionPieGraphDataProcessor,
     }
 
     @extend_schema(
@@ -155,7 +154,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
             breakdown_parameter,
             number_of_experiments_parameter,
             is_csv,
-
         ],
     )
     @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
@@ -200,7 +198,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
-
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     def get_serializer_by_graph_type(self, graph_type, data, *args, **kwargs):

@@ -14,7 +14,8 @@ from uncontrast_studies.models import (
     UnConStimulusCategory,
     UnConProcessingMainDomain,
     UnConsciousnessMeasureType,
-    UnConsciousnessMeasurePhase, UnConSuppressedStimulus,
+    UnConsciousnessMeasurePhase,
+    UnConSuppressedStimulus,
 )
 
 
@@ -31,10 +32,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         return process_func()
 
     def process_paradigm(self):
-        experiments_subquery_by_breakdown = self.filtered_experiments.filter(paradigm__main=OuterRef("pk")
-                                                                             ).values("id", "significance")
-
-
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(paradigm__main=OuterRef("pk")).values(
+            "id", "significance"
+        )
 
         breakdown_query = UnConMainParadigm.objects.values("name").distinct().annotate(series_name=F("name"))
 
@@ -66,10 +66,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_task(self):
-        experiments_subquery_by_breakdown = (self.filtered_experiments
-                                             .filter(tasks__type=OuterRef("pk")
-                                                     ).values("id", "significance")
-                                             )
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(tasks__type=OuterRef("pk")).values(
+            "id", "significance"
+        )
 
         breakdown_query = UnConTaskType.objects.values("name").distinct().annotate(series_name=F("name"))
 
@@ -158,16 +157,13 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def process_modes_of_presentation(self):
         experiments_subquery_by_breakdown = (
-            self.filtered_experiments
-            .filter(suppressed_stimuli__mode_of_presentation=OuterRef("series_name"))
+            self.filtered_experiments.filter(suppressed_stimuli__mode_of_presentation=OuterRef("series_name"))
         ).values("id", "significance")
 
         breakdown_query = (
-            UnConSuppressedStimulus.objects
-            .values("mode_of_presentation")
+            UnConSuppressedStimulus.objects.values("mode_of_presentation")
             .distinct()
             .annotate(series_name=F("mode_of_presentation"))
-
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

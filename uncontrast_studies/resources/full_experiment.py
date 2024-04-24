@@ -57,7 +57,7 @@ class FullUnConExperimentResource(resources.ModelResource):
             "Experiment_findings_notes",
             "Processing_domains",
             "Suppression_methods",
-            "Significance"
+            "Significance",
         )
 
         export_order = fields
@@ -125,4 +125,3 @@ class FullUnConExperimentResource(resources.ModelResource):
 
     def dehydrate_significance(self, experiment: UnConExperiment):
         return next(label for value, label in SignificanceChoices.choices if value == experiment.significance)
-

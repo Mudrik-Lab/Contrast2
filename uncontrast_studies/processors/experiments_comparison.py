@@ -12,7 +12,7 @@ from uncontrast_studies.models import (
     UnConTaskType,
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
-    UnConSuppressionMethodType
+    UnConSuppressionMethodType,
 )
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor
@@ -138,6 +138,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         )
 
         return subquery
+
     def process_suppression_method(self, experiments: QuerySet[UnConExperiment]):
         subquery = (
             UnConSuppressionMethodType.objects.filter(suppression_methods__experiment__in=experiments)

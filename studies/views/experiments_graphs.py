@@ -52,7 +52,8 @@ from studies.processors.theory_driven_distribution_pie import TheoryDrivenDistri
 from studies.processors.timings import TimingsGraphDataProcessor
 from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import (
-    FullExperimentSerializer, NationOfConsciousnessByTheoryGraphSerializer,
+    FullExperimentSerializer,
+    NationOfConsciousnessByTheoryGraphSerializer,
 )
 from contrast_api.serializers import (
     TrendsOverYearsGraphSerializer,
@@ -253,7 +254,6 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
-
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(

@@ -15,7 +15,9 @@ from uncontrast_studies.models import (
     UnConTaskType,
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
-    UnConSuppressionMethodType, UnConSpecificParadigm, UnConMainParadigm
+    UnConSuppressionMethodType,
+    UnConSpecificParadigm,
+    UnConMainParadigm,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 
@@ -30,203 +32,132 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func()
 
-
-
     def process_paradigm(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(paradigm__main=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(paradigm__main=OuterRef("pk"))
 
-        breakdown_query = (
-            UnConMainParadigm.objects.values("name").distinct().annotate(series_name=F("name"))
-        )
+        breakdown_query = UnConMainParadigm.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_population(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(samples__type=OuterRef("type"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(samples__type=OuterRef("type"))
 
         breakdown_query = UnConSample.objects.values("type").order_by("type").distinct().annotate(series_name=F("type"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
-
     def process_is_target_same_as_suppressed_stimulus(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(is_target_same_as_suppressed_stimulus=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            is_target_same_as_suppressed_stimulus=OuterRef("series_name")
         )
 
-        breakdown_query = (UnConExperiment.objects
-                           .values("is_target_same_as_suppressed_stimulus")
-                           .distinct()
-                           .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
-                           )
+        breakdown_query = (
+            UnConExperiment.objects.values("is_target_same_as_suppressed_stimulus")
+            .distinct()
+            .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
+        )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_suppression_method(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(suppression_methods__type__name=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            suppression_methods__type__name=OuterRef("series_name")
         )
 
-        breakdown_query = (UnConSuppressionMethodType.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConSuppressionMethodType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
+
     def process_processing_domain(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(processing_domains__main__name=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            processing_domains__main__name=OuterRef("series_name")
         )
 
-        breakdown_query = (UnConProcessingMainDomain.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConProcessingMainDomain.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_task(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(tasks__type=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
 
-        breakdown_query = (UnConTaskType.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConTaskType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_suppressed_stimuli_category(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(suppressed_stimuli__category=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__category=OuterRef("pk"))
 
-        breakdown_query = (UnConStimulusCategory.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConStimulusCategory.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_target_stimuli_category(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(target_stimuli__category=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__category=OuterRef("pk"))
 
-        breakdown_query = (UnConStimulusCategory.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConStimulusCategory.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_suppressed_stimuli_modality(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(suppressed_stimuli__modality=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__modality=OuterRef("pk"))
 
-        breakdown_query = (UnConModalityType.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConModalityType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_target_stimuli_modality(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(target_stimuli__modality=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__modality=OuterRef("pk"))
 
-        breakdown_query = (UnConModalityType.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConModalityType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_consciousness_measure_phase(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(unconsciousness_measures__phase=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(unconsciousness_measures__phase=OuterRef("pk"))
 
-        breakdown_query = (
-            UnConsciousnessMeasurePhase.objects
-            .values("name")
-            .distinct()
-            .annotate(series_name=F("name"))
-        )
+        breakdown_query = UnConsciousnessMeasurePhase.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_modes_of_presentation(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(suppressed_stimuli__mode_of_presentation=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            suppressed_stimuli__mode_of_presentation=OuterRef("series_name")
         )
         breakdown_query = (
-            UnConSuppressedStimulus.objects
-            .values("mode_of_presentation")
+            UnConSuppressedStimulus.objects.values("mode_of_presentation")
             .distinct()
             .annotate(series_name=F("mode_of_presentation"))
-
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_consciousness_measure_type(self):
-        experiments_subquery_by_breakdown = (
-            self.experiments
-            .filter(unconsciousness_measures__type=OuterRef("pk"))
-        )
+        experiments_subquery_by_breakdown = self.experiments.filter(unconsciousness_measures__type=OuterRef("pk"))
 
-        breakdown_query = (UnConsciousnessMeasureType.objects
-                           .values("name")
-                           .distinct()
-                           .annotate(series_name=F("name")))
+        breakdown_query = UnConsciousnessMeasureType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
-
-
-
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
-        option_subquery = filtered_subquery.values("significance").annotate(
-            experiment_count=Count("id", distinct=True)
-        )
+        option_subquery = filtered_subquery.values("significance").annotate(experiment_count=Count("id", distinct=True))
 
         if self.is_csv:
-            ids = queryset.annotate(
-                experiments=ArraySubquery(filtered_subquery.values_list("id"))
-            ).values_list("experiments", flat=True)
+            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("id"))).values_list(
+                "experiments", flat=True
+            )
             return set(list(itertools.chain.from_iterable(ids)))
 
         subquery = (

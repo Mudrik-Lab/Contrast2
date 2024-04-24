@@ -5,9 +5,7 @@ from uncontrast_studies.processors.base import BaseProcessor
 
 
 class JournalsGraphDataProcessor(BaseProcessor):
-    """
-    This expects as input the ID of the parent theory..
-    """
+    """ """
 
     def __init__(self, experiments: QuerySet[UnConExperiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)

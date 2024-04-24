@@ -16,7 +16,7 @@ class UnConTask(models.Model):
     )
 
     type = models.ForeignKey(
-        null=False, blank=False, on_delete=PROTECT, to=UnConTaskType
+        null=False, blank=False, on_delete=PROTECT, to=UnConTaskType, related_name="tasks"
     )  # TODO validators from configuration
     history = HistoricalRecords()
 

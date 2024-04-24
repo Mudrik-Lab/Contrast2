@@ -1,13 +1,7 @@
 from drf_spectacular.utils import OpenApiParameter
 
-from contrast_api.choices import (
-    TheoryDrivenChoices,
-    ReportingChoices,
-    TypeOfConsciousnessChoices,
-    InterpretationsChoices,
-)
 
-BREAKDOWN_OPTIONS = [
+UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS = [
     "paradigm",
     "population",
     "task",
@@ -18,6 +12,9 @@ BREAKDOWN_OPTIONS = [
     "consciousness_measure_phase",
     "consciousness_measure_type",
     "is_target_same_as_suppressed_stimulus",
+    "is_cm_same_participants_as_task",
+    "is_trial_excluded_based_on_measure",
+    "modes_of_presentation",
     "suppression_method",
     "processing_domain",
 ]
@@ -26,7 +23,11 @@ number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experimen
 
 
 breakdown_parameter = OpenApiParameter(
-    name="breakdown", description="breakdown needed for certain graphs", type=str, enum=BREAKDOWN_OPTIONS, required=True
+    name="breakdown",
+    description="breakdown needed for certain graphs",
+    type=str,
+    enum=UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS,
+    required=True,
 )
 
 paradigms_multiple_optional_parameter = OpenApiParameter(
@@ -109,4 +110,15 @@ types_multiple_optional_parameter = OpenApiParameter(
 
 is_target_same_as_suppressed_stimulus_optional_parameter = OpenApiParameter(
     name="is_target_same_as_suppressed_stimulus", type=bool, required=False, many=False
+)
+
+is_cm_same_participants_as_task_optional_parameter = OpenApiParameter(
+    name="is_cm_same_participants_as_task", type=bool, required=False, many=False
+)
+
+is_trial_excluded_based_on_measure_optional_parameter = OpenApiParameter(
+    name="is_trial_excluded_based_on_measure", type=bool, required=False, many=False
+)
+mode_of_presentation_optional_parameter = OpenApiParameter(
+    name="modes_of_presentation", description="modes of presentation optional for", type=str, many=True, required=False
 )

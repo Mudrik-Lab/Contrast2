@@ -20,6 +20,7 @@ from contrast_api.choices import (
     AnalysisTypeChoices,
     DirectionChoices,
     UnConSampleChoices,
+    PresentationModeChoices,
 )
 from studies.models import (
     Study,
@@ -50,6 +51,8 @@ from uncontrast_studies.models import (
     UnConProcessingSubDomain,
     UnConProcessingMainDomain,
     UnConMainParadigm,
+    UnConSuppressionMethodType,
+    UnConSuppressionMethodSubType,
 )
 from users.choices import GenderChoices, AcademicStageChoices
 
@@ -64,6 +67,8 @@ class ConfigurationView(GenericViewSet):
     def get_serializer_class(self):
         if self.action == "studies_form":
             return StudiesConfigurationSerializer
+        elif self.action == "uncon_studies_form":
+            return UnConStudiesConfigurationSerializer
         elif self.action == "graphs":
             return GraphsConfigurationSerializer
         else:
@@ -83,11 +88,13 @@ class ConfigurationView(GenericViewSet):
             .values_list("abbreviated_source_title", flat=True)
         )
         available_populations_types = UnConSampleChoices.values
-
+        available_mode_of_presentation = PresentationModeChoices.values
         available_consciousness_measure_phase_type = UnConsciousnessMeasurePhase.objects.all()
         available_consciousness_measure_type = UnConsciousnessMeasureType.objects.all()
         available_consciousness_measure_sub_type = UnConsciousnessMeasureSubType.objects.all()
         available_tasks_types = UnConTaskType.objects.all()
+        available_suppression_method_types = UnConSuppressionMethodType.objects.all()
+        available_suppression_method_sub_types = UnConSuppressionMethodSubType.objects.all()
         available_processing_sub_domain_types = UnConProcessingSubDomain.objects.all()
         available_processing_main_domain_types = UnConProcessingMainDomain.objects.all()
         available_main_paradigm_type = UnConMainParadigm.objects.all()
@@ -103,6 +110,7 @@ class ConfigurationView(GenericViewSet):
         configuration_data = dict(
             existing_journals=existing_journals,
             available_populations_types=available_populations_types,
+            available_mode_of_presentation=available_mode_of_presentation,
             available_experiment_types=available_experiment_types,
             available_consciousness_measure_phase_type=available_consciousness_measure_phase_type,
             available_consciousness_measure_type=available_consciousness_measure_type,
@@ -112,6 +120,8 @@ class ConfigurationView(GenericViewSet):
             available_stimulus_category_type=available_stimulus_category_type,
             available_stimulus_sub_category_type=available_stimulus_sub_category_type,
             available_tasks_types=available_tasks_types,
+            available_suppression_method_types=available_suppression_method_types,
+            available_suppression_method_sub_types=available_suppression_method_sub_types,
             available_processing_sub_domain_types=available_processing_sub_domain_types,
             available_processing_main_domain_types=available_processing_main_domain_types,
             available_main_paradigm_type=available_main_paradigm_type,

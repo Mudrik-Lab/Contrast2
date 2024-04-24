@@ -20,12 +20,6 @@ from studies.serializers import (
 
 
 class BaseSubmitStudiesViewSert(ModelViewSet):
-    search_fields = ["title", "DOI"]
-    filter_backends = [filters.SearchFilter]
-    serializer_class = StudyWithExperimentsSerializer
-    permission_classes = [SubmitterOnlyPermission]
-    queryset = Study.objects.select_related("approval_process")
-
     def get_serializer_class(self):
         if self.action in ["list", "my_studies"]:
             return ThinStudyWithExperimentsSerializer
@@ -38,7 +32,9 @@ class BaseSubmitStudiesViewSert(ModelViewSet):
         qs = super().get_queryset()
         qs = self.filter_and_prefetch_queryset(qs)
         qs = qs.order_by("-id", "approval_status")
-        is_reviewer = hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer
+        is_reviewer = (
+            hasattr(self, "request") and hasattr(self.request.user, "profile") and self.request.user.profile.is_reviewer
+        )
         if self.action in ["my_studies"]:
             # for my studies we need to limit only for studies submitted by the user
             # Unless it's a reviewer user and in this case we add everything pending
@@ -48,7 +44,10 @@ class BaseSubmitStudiesViewSert(ModelViewSet):
                     | Q(submitter=self.request.user)
                 )
             else:
-                qs = qs.filter(submitter=self.request.user)
+                if not hasattr(self, "request") or self.request.user.is_anonymous:
+                    qs = qs.none()
+                else:
+                    qs = qs.filter(submitter=self.request.user)
         if self.action in ["update", "partial_update", "delete", "submit_to_review"]:
             # we can update only items still in pending status and that are 'mine"
 
@@ -87,7 +86,7 @@ class BaseSubmitStudiesViewSert(ModelViewSet):
     def my_studies(self, request, *args, **kwargs):
         """
         The right endpoint to use when working with "my" submissions.
-        Currently this is unpaginated, as paginating this is tricky from the UI perspective
+        Currently, this is unpaginated, as paginating this is tricky from the UI perspective
         """
         queryset = self.filter_queryset(self.get_queryset())
 

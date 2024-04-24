@@ -162,12 +162,12 @@ class Base(Configuration):
                 "uncontrast_studies.UnConProcessingSubDomain",
                 "uncontrast_studies.UnConSuppressionMethodType",
                 "uncontrast_studies.UnConSuppressionMethodSubType",
-            )
+            ),
         },
         {
             "app": "uncontrast_studies",
             "label": "uncontrast experiments data",
-            "models":(
+            "models": (
                 "uncontrast_studies.UnConExperiment",
                 "uncontrast_studies.UnConsciousnessMeasure",
                 "uncontrast_studies.UnConSuppressedStimulus",
@@ -175,9 +175,7 @@ class Base(Configuration):
                 "uncontrast_studies.UnConSpecificParadigm",
                 "uncontrast_studies.UnConProcessingDomain",
                 "uncontrast_studies.UnConSuppressionMethod",
-
-            )
-
+            ),
         },
         {"app": "configuration", "label": "general graphs and forms related configuration"},
         {

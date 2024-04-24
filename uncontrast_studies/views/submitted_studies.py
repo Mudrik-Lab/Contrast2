@@ -1,7 +1,9 @@
 from django.db.models import Prefetch, Q
 from drf_spectacular.utils import extend_schema
+from rest_framework import filters
 
 from contrast_api.choices import StudyTypeChoices
+from contrast_api.studies.permissions import SubmitterOnlyPermission
 from studies.models import Study, Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
 
 from studies.views.base_submitted_studies import BaseSubmitStudiesViewSert
@@ -29,6 +31,12 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
     Also allows single link of a specific study (as result of search perhaps)
     And searching for studies by title/DOI
     """
+
+    search_fields = ["title", "DOI"]
+    filter_backends = [filters.SearchFilter]
+
+    permission_classes = [SubmitterOnlyPermission]
+    queryset = Study.objects.select_related("approval_process")
 
     serializer_class = StudyWithUnConExperimentsSerializer
 

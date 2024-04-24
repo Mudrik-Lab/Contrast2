@@ -15,6 +15,8 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConProcessingMainDomain,
     UnConMainParadigm,
+    UnConsciousnessMeasure,
+    UnConSuppressedStimulus,
 )
 
 
@@ -24,7 +26,6 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
-
         self.paradigms = kwargs.pop("paradigms", [])
         self.suppressed_stimuli_categories = kwargs.pop("suppressed_stimuli_categories", [])
         self.suppressed_stimuli_modalities = kwargs.pop("suppressed_stimuli_modalities", [])
@@ -35,16 +36,13 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.consciousness_measure_types = kwargs.pop("consciousness_measure_types", [])
         self.processing_domain_main_types = kwargs.pop("processing_domain_types", [])
         self.suppression_methods_types = kwargs.pop("suppression_methods_types", [])
+        self.modes_of_presentation = kwargs.pop("modes_of_presentation", [])
+
         self.types = kwargs.pop("types", [])
         self.tasks = kwargs.pop("tasks", [])
 
     def process(self):
-        """
-        do a transpose "experiment per country in study" with unnest on the array field
-        aggregate on country and theory relation
-
-
-        """
+        """ """
         # First we'll filter the available experiments
         self.filtered_experiments = self.get_queryset()
 
@@ -63,6 +61,9 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
         if len(self.suppressed_stimuli_modalities):
             queryset = queryset.filter(stimuli__modality__id__in=self.suppressed_stimuli_modalities)
+
+        if len(self.modes_of_presentation):
+            queryset = queryset.filter(stimuli__modes_of_presentation__in=self.modes_of_presentation)
 
         if len(self.target_stimuli_categories):
             queryset = queryset.filter(stimuli__category__id__in=self.target_stimuli_categories)
@@ -94,6 +95,9 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         return queryset
 
     def process_paradigm(self):
+        """
+        Note this is main paradigm
+        """
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(paradigm__main=OuterRef("pk")).values("id")
 
         breakdown_query = UnConMainParadigm.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -102,11 +106,29 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         return qs
 
     def process_population(self):
+        """
+        This is about samples, keeping the historic name for parity with contrast
+        """
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             samples__type=OuterRef("series_name")
         ).values("id")
 
         breakdown_query = UnConSample.objects.values("type").distinct().annotate(series_name=F("type"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_modes_of_presentation(self):
+        """ """
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            suppressed_stimuli__mode_of_presentation=OuterRef("series_name")
+        ).values("id")
+
+        breakdown_query = (
+            UnConSuppressedStimulus.objects.values("mode_of_presentation")
+            .distinct()
+            .annotate(series_name=F("mode_of_presentation"))
+        )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -120,6 +142,34 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             UnConExperiment.objects.values("is_target_same_as_suppressed_stimulus")
             .distinct()
             .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_cm_same_participants_as_task_optional_parameter(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            unconsciousness_measures__is_cm_same_participants_as_task=OuterRef("series_name")
+        ).values("id")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_cm_same_participants_as_task")
+            .distinct()
+            .annotate(series_name=F("is_cm_same_participants_as_task"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_trial_excluded_based_on_measure(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            unconsciousness_measures__is_trial_excluded_based_on_measure=OuterRef("series_name")
+        ).values("id")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_trial_excluded_based_on_measure")
+            .distinct()
+            .annotate(series_name=F("is_trial_excluded_based_on_measure"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

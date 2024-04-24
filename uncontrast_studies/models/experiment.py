@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import CASCADE, PROTECT
 from simple_history.models import HistoricalRecords
 
-from contrast_api.choices import ExperimentTypeChoices
+from contrast_api.choices import ExperimentTypeChoices, SignificanceChoices
 from uncontrast_studies.managers import UnConExperimentManager
 
 
@@ -36,13 +36,23 @@ class UnConExperiment(models.Model):
     # notes
     consciousness_measures_notes = models.TextField(null=True, blank=True)
     experiment_findings_notes = models.TextField(null=True, blank=True)
-
+    significance = models.PositiveIntegerField(null=True, blank=True, choices=SignificanceChoices)
     history = HistoricalRecords()
     objects = UnConExperimentManager()
 
     def clean(self):
         super().clean()
         # TODO: check what the cleaning needed
+
+    def calculate_significance(self):
+        findings_significance = self.findings.filter(is_important=True).values_list("is_significant", flat=True)
+        if all(x is True for x in findings_significance):
+            self.significance = SignificanceChoices.POSITIVE
+        elif all(x is False for x in findings_significance):
+            self.significance = SignificanceChoices.POSITIVE
+        else:
+            self.significance = SignificanceChoices.MIXED
+        self.save()
 
     def __str__(self):
         return f"study {self.study_id}, id {self.id}"

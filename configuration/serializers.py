@@ -16,7 +16,11 @@ from studies.models import (
     Author,
 )
 from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusCategory
-from uncontrast_studies.models import UnConsciousnessMeasureSubType, UnConStimulusSubCategory
+from uncontrast_studies.models import (
+    UnConsciousnessMeasureSubType,
+    UnConStimulusSubCategory,
+    UnConSuppressionMethodSubType,
+)
 
 
 class TheoryConfigurationSerializer(serializers.ModelSerializer):
@@ -133,6 +137,12 @@ class UnConsciousnessMeasureSubTypeSerializer(serializers.ModelSerializer):
         fields = ("name", "type", "id")
 
 
+class UnConSuppressionMethodSubTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnConSuppressionMethodSubType
+        fields = ("name", "parent", "id")
+
+
 class UnConStimulusSubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = UnConStimulusSubCategory
@@ -144,10 +154,13 @@ class UnConStudiesConfigurationSerializer(serializers.Serializer):
     existing_journals = serializers.ListSerializer(child=serializers.CharField())
     approved_experiments_count = serializers.IntegerField()
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
+    available_mode_of_presentation = serializers.ListSerializer(child=serializers.CharField())
     available_consciousness_measure_phase_type = GenericTypeSerializer(many=True)
     available_consciousness_measure_type = GenericTypeSerializer(many=True)
     available_consciousness_measure_sub_type = UnConsciousnessMeasureSubTypeSerializer(many=True)
     available_tasks_types = GenericTypeSerializer(many=True)
+    available_suppression_method_types = GenericTypeSerializer(many=True)
+    available_suppression_method_sub_types = UnConSuppressionMethodSubTypeSerializer(many=True)
     available_processing_sub_domain_types = GenericTypeSerializer(many=True)
     available_processing_main_domain_types = GenericTypeSerializer(many=True)
     available_main_paradigm_type = GenericTypeSerializer(many=True)

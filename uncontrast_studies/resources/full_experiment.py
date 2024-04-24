@@ -2,7 +2,7 @@ from django_countries import countries
 from import_export import resources
 from import_export.fields import Field
 
-from contrast_api.choices import ExperimentTypeChoices
+from contrast_api.choices import ExperimentTypeChoices, SignificanceChoices
 from uncontrast_studies.models import UnConExperiment
 
 SEPERATOR = " || "
@@ -28,6 +28,7 @@ class FullUnConExperimentResource(resources.ModelResource):
     Consciousness_measures_notes = Field(attribute="consciousness_measures_notes")
     Is_target_same_as_suppressed_stimulus = Field(attribute="is_target_same_as_suppressed_stimulus")
     Is_target_stimulus = Field(attribute="is_target_stimulus")
+    Significance = Field(attribute="dehydrate_significance")
     Experiment_findings_notes = Field(attribute="experiment_findings_notes")
     Processing_domains = Field(dehydrate_method="dehydrate_processing_domains")
     Suppression_methods = Field(dehydrate_method="dehydrate_suppression_methods")
@@ -56,6 +57,7 @@ class FullUnConExperimentResource(resources.ModelResource):
             "Experiment_findings_notes",
             "Processing_domains",
             "Suppression_methods",
+            "Significance",
         )
 
         export_order = fields
@@ -120,3 +122,6 @@ class FullUnConExperimentResource(resources.ModelResource):
 
     def dehydrate_type(self, experiment: UnConExperiment):
         return next(label for value, label in ExperimentTypeChoices.choices if value == experiment.type)
+
+    def dehydrate_significance(self, experiment: UnConExperiment):
+        return next(label for value, label in SignificanceChoices.choices if value == experiment.significance)

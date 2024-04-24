@@ -1,3 +1,4 @@
+from django_countries import countries
 from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
@@ -314,3 +315,17 @@ class ExcludedStudySerializer(StudySerializer):
     class Meta:
         model = Study
         fields = StudySerializer.Meta.fields + ["exclusion_reason", "research_area", "sub_research_area"]
+
+
+class NationOfConsciousnessByTheoryGraphSerializer(serializers.Serializer):
+    country = serializers.SerializerMethodField()
+    country_name = serializers.SerializerMethodField()
+    value = serializers.IntegerField()
+    total = serializers.IntegerField()
+    theory = serializers.CharField(source="theory__parent__name")
+
+    def get_country(self, obj) -> str:
+        return countries.alpha3(obj["country"])
+
+    def get_country_name(self, obj) -> str:
+        return countries.name(obj["country"])

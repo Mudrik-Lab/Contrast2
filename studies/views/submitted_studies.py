@@ -1,7 +1,10 @@
 from django.db.models import Prefetch, Q
+from rest_framework import filters
 
 from contrast_api.choices import StudyTypeChoices
-from studies.models import Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
+from contrast_api.studies.permissions import SubmitterOnlyPermission
+from studies.models import Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm, Study
+from studies.serializers import StudyWithExperimentsSerializer
 
 from studies.views.base_submitted_studies import BaseSubmitStudiesViewSert
 
@@ -12,6 +15,12 @@ class SubmitStudiesViewSet(BaseSubmitStudiesViewSert):
     Also allows single link of a specific study (as result of search perhaps)
     And searching for studies by title/DOI
     """
+
+    search_fields = ["title", "DOI"]
+    filter_backends = [filters.SearchFilter]
+    serializer_class = StudyWithExperimentsSerializer
+    permission_classes = [SubmitterOnlyPermission]
+    queryset = Study.objects.select_related("approval_process")
 
     def filter_and_prefetch_queryset(self, queryset):
         return queryset.filter(type=StudyTypeChoices.CONSCIOUSNESS).prefetch_related(

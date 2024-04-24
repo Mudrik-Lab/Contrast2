@@ -125,8 +125,11 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         )
 
         breakdown_query = (
-            Paradigm.objects.filter(parent__isnull=True).order_by("name").values("name").distinct().annotate(series_name=F("name"))
-
+            Paradigm.objects.filter(parent__isnull=True)
+            .order_by("name")
+            .values("name")
+            .distinct()
+            .annotate(series_name=F("name"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
@@ -140,7 +143,11 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         )
 
         breakdown_query = (
-            Paradigm.objects.filter(parent__isnull=False).order_by("name").values("name").distinct().annotate(series_name=F("name"))
+            Paradigm.objects.filter(parent__isnull=False)
+            .order_by("name")
+            .values("name")
+            .distinct()
+            .annotate(series_name=F("name"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

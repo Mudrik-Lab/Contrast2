@@ -232,7 +232,7 @@ class NationOfConsciousnessBySignificanceGraphSerializer(serializers.Serializer)
     country_name = serializers.SerializerMethodField()
     value = serializers.IntegerField()
     total = serializers.IntegerField()
-    significance = serializers.CharField()
+    significance = serializers.CharField(source="get_significance_display")
 
     def get_country(self, obj) -> str:
         return countries.alpha3(obj["country"])

@@ -9,7 +9,6 @@ from uncontrast_studies.models import (
     UnConMainParadigm,
     UnConSample,
     UnConProcessingMainDomain,
-    UnConSuppressionMethod,
     UnConTaskType,
     UnConModalityType,
     UnConsciousnessMeasurePhase,
@@ -17,7 +16,6 @@ from uncontrast_studies.models import (
     UnConStimulusCategory,
     UnConSuppressionMethodType,
 )
-from studies.models.stimulus import StimulusCategory
 from uncontrast_studies.processors.base import BaseProcessor
 
 

@@ -53,9 +53,9 @@ from studies.processors.timings import TimingsGraphDataProcessor
 from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import (
     FullExperimentSerializer,
+    NationOfConsciousnessByTheoryGraphSerializer,
 )
 from contrast_api.serializers import (
-    NationOfConsciousnessGraphSerializer,
     TrendsOverYearsGraphSerializer,
     BarGraphSerializer,
     StackedBarGraphSerializer,
@@ -77,7 +77,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
 
     filterset_class = ExperimentFilter
     graph_serializers = {
-        "nations_of_consciousness": NationOfConsciousnessGraphSerializer,
+        "nations_of_consciousness": NationOfConsciousnessByTheoryGraphSerializer,
         "across_the_years": TrendsOverYearsGraphSerializer,
         "trends_over_years": TrendsOverYearsGraphSerializer,
         "journals": BarGraphSerializer,
@@ -128,7 +128,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(
-        responses=NationOfConsciousnessGraphSerializer(many=True),
+        responses=NationOfConsciousnessByTheoryGraphSerializer(many=True),
         parameters=[
             OpenApiParameter(
                 name="theory", type=str, required=False, many=True, description="theory filter - supports multiple"
@@ -140,7 +140,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
             is_csv,
         ],
     )
-    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessGraphSerializer)
+    @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessByTheoryGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
@@ -254,8 +254,6 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
-        # TODO make theory required in swagger, change to support text and id
-        # TODO , why is no info
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(

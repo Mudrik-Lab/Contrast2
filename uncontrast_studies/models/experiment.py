@@ -36,7 +36,7 @@ class UnConExperiment(models.Model):
     # notes
     consciousness_measures_notes = models.TextField(null=True, blank=True)
     experiment_findings_notes = models.TextField(null=True, blank=True)
-    significance = models.PositiveIntegerField(null=True, blank=True, choices=SignificanceChoices)
+    significance = models.PositiveIntegerField(null=True, blank=True, choices=SignificanceChoices.choices)
     history = HistoricalRecords()
     objects = UnConExperimentManager()
 

@@ -8,6 +8,7 @@ from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
 from contrast_api.choices import StudyTypeChoices
+from uncontrast_studies.filters import UnConExperimentFilter
 from uncontrast_studies.open_api_parameters import (
     number_of_experiments_parameter,
     breakdown_parameter,
@@ -64,7 +65,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         .filter(study__type=StudyTypeChoices.UNCONSCIOUSNESS)
     )
 
-    # filterset_class = ExperimentFilter
+    filterset_class = UnConExperimentFilter
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessBySignificanceGraphSerializer,
         "across_the_years": TrendsOverYearsGraphSerializer,

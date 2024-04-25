@@ -19,6 +19,16 @@ class TrendsOverYearsGraphSerializer(serializers.Serializer):
     series = YearlySeriesSerializer(many=True)
 
 
+class HistogramSerializer(serializers.Serializer):
+    key = serializers.DecimalField(max_digits=10, decimal_places=2)
+    value = serializers.IntegerField()
+
+
+class HistogramsGraphSerializer(serializers.Serializer):
+    series_name = serializers.CharField()
+    series = HistogramSerializer(many=True)
+
+
 class BarGraphSerializer(serializers.Serializer):
     value = serializers.IntegerField()
     key = serializers.CharField()

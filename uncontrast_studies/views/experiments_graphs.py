@@ -28,8 +28,12 @@ from uncontrast_studies.open_api_parameters import (
     is_cm_same_participants_as_task_optional_parameter,
     is_trial_excluded_based_on_measure_optional_parameter,
     mode_of_presentation_optional_parameter,
+    continuous_breakdown_options,
 )
 from contrast_api.open_api_parameters import is_csv
+from uncontrast_studies.processors.distribution_of_effects_across_parameters import (
+    DistributionOfEffectsAcrossParametersGraphDataProcessor,
+)
 from uncontrast_studies.processors.experiments_comparison import ComparisonParametersDistributionPieGraphDataProcessor
 from uncontrast_studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from uncontrast_studies.processors.journals import JournalsGraphDataProcessor
@@ -48,6 +52,7 @@ from contrast_api.serializers import (
     DurationGraphSerializer,
     NestedPieChartSerializer,
     PieChartSerializer,
+    HistogramsGraphSerializer,
 )
 from uncontrast_studies.serializers import NationOfConsciousnessBySignificanceGraphSerializer
 from uncontrast_studies.models import UnConExperiment
@@ -75,6 +80,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_pie": NestedPieChartSerializer,
         "parameters_distribution_free_queries": BarGraphSerializer,
         "parameters_distribution_experiments_comparison": PieChartSerializer,
+        "distribution_of_effects_across_parameters": HistogramsGraphSerializer,
     }
 
     graph_processors = {
@@ -86,6 +92,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_pie": ParametersDistributionPieGraphDataProcessor,
         "parameters_distribution_free_queries": ParametersDistributionFreeQueriesDataProcessor,
         "parameters_distribution_experiments_comparison": ComparisonParametersDistributionPieGraphDataProcessor,
+        "distribution_of_effects_across_parameters": DistributionOfEffectsAcrossParametersGraphDataProcessor,
     }
 
     @extend_schema(
@@ -199,6 +206,18 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=StackedBarGraphSerializer)
     def parameters_distribution_bar(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(
+        responses=HistogramsGraphSerializer(many=True),
+        parameters=[
+            continuous_breakdown_options,
+            number_of_experiments_parameter,
+            is_csv,
+        ],
+    )
+    @action(detail=False, methods=["GET"], serializer_class=HistogramsGraphSerializer)
+    def distribution_of_effects_across_parameters(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     def get_serializer_by_graph_type(self, graph_type, data, *args, **kwargs):

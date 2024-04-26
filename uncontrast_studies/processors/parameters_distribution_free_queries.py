@@ -147,7 +147,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
-    def process_is_cm_same_participants_as_task_optional_parameter(self):
+    def process_is_cm_same_participants_as_task(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             unconsciousness_measures__is_cm_same_participants_as_task=OuterRef("series_name")
         ).values("id")
@@ -205,7 +205,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_suppressed_stimuli_modality(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            suppressed__stimuli__modality=OuterRef("pk")
+            suppressed_stimuli__modality=OuterRef("pk")
         ).values("id")
 
         breakdown_query = UnConModalityType.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -215,7 +215,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_target_stimuli_modality(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            suppressed__stimuli__modality=OuterRef("pk")
+            suppressed_stimuli__modality=OuterRef("pk")
         ).values("id")
 
         breakdown_query = UnConModalityType.objects.values("name").distinct().annotate(series_name=F("name"))

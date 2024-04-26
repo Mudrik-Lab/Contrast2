@@ -123,4 +123,4 @@ class TestExperimentsComparisonGraphTestCase(UnContrastBaseTestCase):
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)
             for sub_graph in res.data:
-                self.assertIn(int(sub_graph["series_name"]), SignificanceChoices.values)
+                self.assertIn(sub_graph["series_name"], SignificanceChoices.values)

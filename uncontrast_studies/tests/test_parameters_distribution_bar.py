@@ -128,6 +128,6 @@ class TestParametersDistributionBarGraphTestCase(UnContrastBaseTestCase):
                         len(bar["series"]), 3
                     )  # 3 significance options, but not all might exist for each permutation
                     for series in bar["series"]:
-                        self.assertIn(int(series["key"]), SignificanceChoices.values)
+                        self.assertIn(series["key"], SignificanceChoices.labels)
                 except AssertionError as e:
                     raise AssertionError(f"for series name {bar['series_name']}") from e

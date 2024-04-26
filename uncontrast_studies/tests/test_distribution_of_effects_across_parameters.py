@@ -132,4 +132,4 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             self.assertEqual(res.status_code, status.HTTP_200_OK)
             self.assertEqual(len(res.data), 3)  # historgram for each type
             for histogram in res.data:
-                self.assertIn(int(histogram["series_name"]), SignificanceChoices.values)
+                self.assertIn(histogram["series_name"], SignificanceChoices.values)

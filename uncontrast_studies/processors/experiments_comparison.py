@@ -217,7 +217,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                 if len(subquery_by_breakdown) > 0:
                     series = list(subquery_by_breakdown)
                     total_value = self.accumulate_total_from_series(series)
-                    result = dict(series=series, series_name=sig_option.acronym, value=total_value)
+                    result = dict(series=series, series_name=sig_option, value=total_value)
                     results.append(result)
         if self.is_csv:
             return set(experiment_ids)

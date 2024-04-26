@@ -246,7 +246,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
     def process_suppression_method(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             suppression_methods__type=OuterRef("pk")
-        ).values("experiment")
+        ).values("id")
 
         breakdown_query = UnConProcessingMainDomain.objects.values("name").distinct().annotate(series_name=F("name"))
 
@@ -256,7 +256,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
     def process_processing_domain(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             processing_domains__main=OuterRef("pk")
-        ).values("experiment")
+        ).values("id")
 
         breakdown_query = UnConProcessingMainDomain.objects.values("name").distinct().annotate(series_name=F("name"))
 

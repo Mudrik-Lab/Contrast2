@@ -17,7 +17,8 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConSuppressionMethodType,
     UnConSpecificParadigm,
-    UnConMainParadigm, UnConsciousnessMeasure,
+    UnConMainParadigm,
+    UnConsciousnessMeasure,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 

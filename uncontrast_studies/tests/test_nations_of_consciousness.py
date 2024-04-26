@@ -124,11 +124,9 @@ class TestNationsOfConsciousnessGraphTestCase(UnContrastBaseTestCase):
     def test_sanity_implementation(self):
         self._setup_world()
 
-        target_url = self.reverse_with_query_params(
-            "uncontrast-experiments-graphs-nations-of-consciousness"
-        )
+        target_url = self.reverse_with_query_params("uncontrast-experiments-graphs-nations-of-consciousness")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 6) # number of countries * number of significance
+        self.assertEqual(len(res.data), 6)  # number of countries * number of significance
         for country in res.data:
-            self.assertIn(country['significance'], SignificanceChoices.labels)
+            self.assertIn(country["significance"], SignificanceChoices.labels)

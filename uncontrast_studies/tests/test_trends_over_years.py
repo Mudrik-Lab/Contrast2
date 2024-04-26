@@ -5,22 +5,20 @@ from uncontrast_studies.open_api_parameters import UNCONTRAST_GRAPH_BREAKDOWN_OP
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
 
-class TestJournalsGraphTestCase(UnContrastBaseTestCase):
+class TestTrendsOverYearsGraphTestCase(UnContrastBaseTestCase):
     def _setup_world(self):
         study = self.given_study_exists(
             title="Israeli study",
             countries=["IL"],
             DOI="10.1016/j.cortex.2017.07.011",
-            abbreviated_source_title="the first journal",
             year=2002,
             type=StudyTypeChoices.UNCONSCIOUSNESS,
         )
-        british_study = self.given_study_exists(
-            title="Israeli study",
+        later_study = self.given_study_exists(
+            title="British study",
             countries=["UK"],
             DOI="10.1016/j.cortex.2018.07.011",
-            abbreviated_source_title="the second journal",
-            year=2003,
+            year=2010,
             type=StudyTypeChoices.UNCONSCIOUSNESS,
         )
         main_paradigm = self.given_uncon_main_paradigm_exists("main_paradigm")
@@ -79,7 +77,7 @@ class TestJournalsGraphTestCase(UnContrastBaseTestCase):
         )
 
         experiment_positive_2 = self.given_uncon_experiment_exists_for_study(
-            british_study,
+            later_study,
             significance=SignificanceChoices.POSITIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1, suppressed_stimulus_2],
@@ -88,7 +86,7 @@ class TestJournalsGraphTestCase(UnContrastBaseTestCase):
         )
 
         experiment_negative_1 = self.given_uncon_experiment_exists_for_study(
-            british_study,
+            later_study,
             significance=SignificanceChoices.NEGATIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1],
@@ -115,7 +113,7 @@ class TestJournalsGraphTestCase(UnContrastBaseTestCase):
         )
 
         experiment_mixed_2 = self.given_uncon_experiment_exists_for_study(
-            british_study,
+            later_study,
             significance=SignificanceChoices.MIXED,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1, suppressed_stimulus_2],
@@ -125,8 +123,11 @@ class TestJournalsGraphTestCase(UnContrastBaseTestCase):
 
     def test_sanity_implementation(self):
         self._setup_world()
-
-        target_url = self.reverse_with_query_params("uncontrast-experiments-graphs-journals")
-        res = self.client.get(target_url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data), 2)  # number of journals
+        for breakdown in UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS:
+            target_url = self.reverse_with_query_params(
+                "uncontrast-experiments-graphs-trends-over-years", breakdown=breakdown
+            )
+            res = self.client.get(target_url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)
+            for trend_line in res.data:
+                self.assertEqual(len(trend_line["series"]), 2)

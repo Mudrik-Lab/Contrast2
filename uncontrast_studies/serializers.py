@@ -241,5 +241,3 @@ class NationOfConsciousnessBySignificanceGraphSerializer(serializers.Serializer)
 
     def get_country_name(self, obj) -> str:
         return countries.name(obj["country"])
-
-

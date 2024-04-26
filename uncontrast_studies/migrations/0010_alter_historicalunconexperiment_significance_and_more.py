@@ -4,20 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0009_historicalunconexperiment_significance_and_more'),
+        ("uncontrast_studies", "0009_historicalunconexperiment_significance_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalunconexperiment',
-            name='significance',
-            field=models.CharField(blank=True, choices=[('Negative', 'Negative'), ('Positive', 'Positive'), ('Mixed', 'Mixed')], max_length=10, null=True),
+            model_name="historicalunconexperiment",
+            name="significance",
+            field=models.CharField(
+                blank=True,
+                choices=[("Negative", "Negative"), ("Positive", "Positive"), ("Mixed", "Mixed")],
+                max_length=10,
+                null=True,
+            ),
         ),
         migrations.AlterField(
-            model_name='unconexperiment',
-            name='significance',
-            field=models.CharField(blank=True, choices=[('Negative', 'Negative'), ('Positive', 'Positive'), ('Mixed', 'Mixed')], max_length=10, null=True),
+            model_name="unconexperiment",
+            name="significance",
+            field=models.CharField(
+                blank=True,
+                choices=[("Negative", "Negative"), ("Positive", "Positive"), ("Mixed", "Mixed")],
+                max_length=10,
+                null=True,
+            ),
         ),
     ]

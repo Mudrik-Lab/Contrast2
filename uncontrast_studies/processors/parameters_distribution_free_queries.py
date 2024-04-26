@@ -255,7 +255,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_processing_domain(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            experiment__processing_domains__main=OuterRef("pk")
+            processing_domains__main=OuterRef("pk")
         ).values("experiment")
 
         breakdown_query = UnConProcessingMainDomain.objects.values("name").distinct().annotate(series_name=F("name"))

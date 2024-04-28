@@ -9,7 +9,9 @@ class UnConFinding(models.Model):
     )
     outcome = models.CharField(null=False, blank=False, max_length=30)
     is_significant = models.BooleanField(null=False, blank=False, verbose_name="was the effect significant")
-
+    number_of_trials = models.PositiveSmallIntegerField(
+        null=False, blank=False, default=1, verbose_name="number of trials for the task"
+    )
     history = HistoricalRecords()
 
     def __str__(self):

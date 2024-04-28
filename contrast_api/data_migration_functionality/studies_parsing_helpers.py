@@ -61,6 +61,8 @@ def parse_country_names_to_codes(country_names: List[str]) -> List[str]:
         if len(code) == 0:
             if name in countries_override.keys():
                 code = countries.by_name(countries_override.get(name))
+            elif name == "missing":  # TODO: remove this option after finalizing dataset
+                continue
             else:
                 raise MissingCountryDetectionException(f"Missing country {name}")
         country_codes.append(code)

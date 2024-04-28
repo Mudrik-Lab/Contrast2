@@ -36,3 +36,7 @@ class StimulusDurationError(Exception):
 
 class ParadigmError(Exception):
     pass
+
+
+class StimulusMetadataError(Exception):
+    pass

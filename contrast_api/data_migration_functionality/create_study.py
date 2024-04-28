@@ -1,9 +1,14 @@
 from approval_process.choices import ApprovalChoices
 from contrast_api.choices import StudyTypeChoices
-from contrast_api.data_migration_functionality.studies_parsing_helpers import resolve_authors_keywords_from_text, \
-    resolve_country_from_affiliation_text, parse_country_names_to_codes, validate_year, \
-    resolve_authors_from_authors_text, resolve_countries
-from contrast_api.models import Study, Author
+from contrast_api.data_migration_functionality.studies_parsing_helpers import (
+    resolve_authors_keywords_from_text,
+    resolve_country_from_affiliation_text,
+    parse_country_names_to_codes,
+    validate_year,
+    resolve_authors_from_authors_text,
+    resolve_countries,
+)
+from studies.models import Study, Author
 from studies.parsers.process_row import logger  # TODO: change to shared logger for both sites
 
 
@@ -29,12 +34,15 @@ def create_study(item: dict, unconsciousness):
         else:
             author_keywords = [""]
 
-    approval_status = ApprovalChoices.APPROVED
-    corresponding_author_email = "placeholder@email"
-    DOI = item["DOI"]
+    if item["DOI"] == "missing":
+        DOI = item["StudyID"]
+    else:
+        DOI = item["DOI"]
     title = item["Title"]
-    country_codes = parse_country_names_to_codes(country_names)
     year = int(validate_year(item["Year"]))
+    corresponding_author_email = "placeholder@email"
+    approval_status = ApprovalChoices.APPROVED
+    country_codes = parse_country_names_to_codes(country_names)
 
     study, created = Study.objects.get_or_create(
         DOI=DOI,
@@ -48,7 +56,7 @@ def create_study(item: dict, unconsciousness):
         abbreviated_source_title=abbreviated_source_title,
         countries=country_codes,
         affiliations=affiliations,
-        type=study_type
+        type=study_type,
     )
 
     # parse authors and add to study

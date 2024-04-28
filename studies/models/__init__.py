@@ -16,6 +16,9 @@ from studies.models.sample import Sample
 from studies.models.paradigm import Paradigm
 from studies.models.measure import Measure, MeasureType
 from studies.models.aggregated_interpretation import AggregatedInterpretation
+from studies.models.author import Author
+from studies.models.study import Study
+
 
 __all__ = [
     Author,

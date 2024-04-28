@@ -11,8 +11,13 @@ from contrast_api.choices import (
     ReportingChoices,
     DirectionChoices,
 )
-from contrast_api.data_migration_functionality.errors import MissingStimulusCategoryError, ParadigmDataException, \
-    IncoherentSampleDataError, ProblemInCMExistingDataException, ParadigmError
+from contrast_api.data_migration_functionality.errors import (
+    MissingStimulusCategoryError,
+    ParadigmDataException,
+    IncoherentSampleDataError,
+    ProblemInCMExistingDataException,
+    ParadigmError,
+)
 from studies.models import (
     Theory,
     Technique,

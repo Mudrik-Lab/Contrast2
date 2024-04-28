@@ -17,9 +17,15 @@ from configuration.initial_setup import (
     only_child_paradigms,
 )
 from contrast_api.choices import TheoryDrivenChoices, SampleChoices
-from contrast_api.data_migration_functionality.errors import ProblemInTheoryDrivenExistingDataException, \
-    IncoherentSampleDataError, SampleTypeError, IncoherentStimuliData, MissingValueInStimuli, StimulusDurationError, \
-    ParadigmError
+from contrast_api.data_migration_functionality.errors import (
+    ProblemInTheoryDrivenExistingDataException,
+    IncoherentSampleDataError,
+    SampleTypeError,
+    IncoherentStimuliData,
+    MissingValueInStimuli,
+    StimulusDurationError,
+    ParadigmError,
+)
 from contrast_api.data_migration_functionality.helpers import add_to_notes, find_in_list, clean_text
 
 logger = logging.getLogger("Contrast2")

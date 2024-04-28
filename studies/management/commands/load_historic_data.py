@@ -9,9 +9,17 @@ from studies.parsers.process_row import (
     process_row,
 )
 from contrast_api.data_migration_functionality.create_study import create_study
-from contrast_api.data_migration_functionality.errors import MissingStimulusCategoryError, ParadigmDataException, \
-    ProblemInTheoryDrivenExistingDataException, IncoherentSampleDataError, SampleTypeError, \
-    ProblemInCMExistingDataException, IncoherentStimuliData, MissingValueInStimuli, StimulusDurationError
+from contrast_api.data_migration_functionality.errors import (
+    MissingStimulusCategoryError,
+    ParadigmDataException,
+    ProblemInTheoryDrivenExistingDataException,
+    IncoherentSampleDataError,
+    SampleTypeError,
+    ProblemInCMExistingDataException,
+    IncoherentStimuliData,
+    MissingValueInStimuli,
+    StimulusDurationError,
+)
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
 

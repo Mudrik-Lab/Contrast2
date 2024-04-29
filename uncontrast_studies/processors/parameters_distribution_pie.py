@@ -18,6 +18,7 @@ from uncontrast_studies.models import (
     UnConSuppressionMethodType,
     UnConSpecificParadigm,
     UnConMainParadigm,
+    UnConsciousnessMeasure,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 
@@ -126,6 +127,33 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         experiments_subquery_by_breakdown = self.experiments.filter(unconsciousness_measures__phase=OuterRef("pk"))
 
         breakdown_query = UnConsciousnessMeasurePhase.objects.values("name").distinct().annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_cm_same_participants_as_task(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            unconsciousness_measures__is_cm_same_participants_as_task=OuterRef("series_name")
+        ).values("id", "significance")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_cm_same_participants_as_task")
+            .distinct()
+            .annotate(series_name=F("is_cm_same_participants_as_task"))
+        )
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_trial_excluded_based_on_measure(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            unconsciousness_measures__is_trial_excluded_based_on_measure=OuterRef("series_name")
+        ).values("id")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_trial_excluded_based_on_measure")
+            .distinct()
+            .annotate(series_name=F("is_trial_excluded_based_on_measure"))
+        )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

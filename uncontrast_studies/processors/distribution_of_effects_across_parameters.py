@@ -51,7 +51,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
 
     def process_sample_size_excluded(self):
         subquery = UnConSample.objects.filter(experiment__significance=OuterRef("series_name")).annotate(
-            value=F("sample_size_excluded")
+            value=F("size_excluded")
         )
         return self._aggregate_query_by_breakdown(subquery)
 
@@ -73,7 +73,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             .values("value")
             .order_by("value")
             .annotate(experiment_count=Count("experiment", distinct=True))
-            .annotate(data=JSONObject(year=F("value"), value=F("experiment_count")))
+            .annotate(data=JSONObject(key=F("value"), value=F("experiment_count")))
             .values_list("data")
         )
 

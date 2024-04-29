@@ -73,7 +73,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     filterset_class = UnConExperimentFilter
     graph_serializers = {
         "nations_of_consciousness": NationOfConsciousnessBySignificanceGraphSerializer,
-        "across_the_years": TrendsOverYearsGraphSerializer,
         "trends_over_years": TrendsOverYearsGraphSerializer,
         "journals": BarGraphSerializer,
         "parameters_distribution_bar": StackedBarGraphSerializer,

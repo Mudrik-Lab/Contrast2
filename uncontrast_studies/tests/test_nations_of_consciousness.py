@@ -35,6 +35,7 @@ class TestNationsOfConsciousnessGraphTestCase(UnContrastBaseTestCase):
             modality=stimulus_modality_type,
             duration=10,
             number_of_stimuli=5,
+            soa=100,
             mode_of_presentation=PresentationModeChoices.LIMINAL,
         )
         suppressed_stimulus_2 = dict(
@@ -42,6 +43,7 @@ class TestNationsOfConsciousnessGraphTestCase(UnContrastBaseTestCase):
             modality=stimulus_modality_type,
             duration=20,
             number_of_stimuli=10,
+            soa=100,
             mode_of_presentation=PresentationModeChoices.SUBLIMINAL,
         )
 

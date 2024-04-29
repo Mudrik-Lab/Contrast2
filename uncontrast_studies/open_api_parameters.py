@@ -19,8 +19,25 @@ UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS = [
     "processing_domain",
 ]
 
+UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [
+    "suppressed_stimuli_duration",
+    "number_of_stimuli",
+    "unconsciousness_measure_number_of_trials",
+    "outcome_number_of_trials",
+    "unconsciousness_measure_number_of_participants_in_awareness_test",
+    "sample_size_included",
+    "sample_size_excluded",
+]
+
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)
 
+continuous_breakdown_options = OpenApiParameter(
+    name="continuous_breakdown",
+    description="continuous breakdown needed for histograms",
+    type=str,
+    enum=UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS,
+    required=True,
+)
 
 breakdown_parameter = OpenApiParameter(
     name="breakdown",

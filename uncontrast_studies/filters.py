@@ -6,7 +6,6 @@ from uncontrast_studies.models import UnConExperiment
 
 
 class UnConExperimentFilter(filters.FilterSet):
-
     significance = ChoicesSupportingEitherFilter(
         field_name="significance",
         choices=include_either_choices(SignificanceChoices.choices),

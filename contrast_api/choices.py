@@ -154,7 +154,7 @@ class StudyTypeChoices(TextChoices):
     UNCONSCIOUSNESS = _("UnConsciousness")
 
 
-class SignificanceChoices(IntegerChoices):
-    NEGATIVE = 1
-    POSITIVE = 2
-    MIXED = 3
+class SignificanceChoices(TextChoices):
+    NEGATIVE = "Negative"
+    POSITIVE = "Positive"
+    MIXED = "Mixed"

@@ -12,6 +12,7 @@ from contrast_api.choices import (
     ReportingChoices,
     TheoryDrivenChoices,
     ExperimentTypeChoices,
+    StudyTypeChoices,
 )
 from studies.models import (
     Experiment,
@@ -28,6 +29,7 @@ from studies.models import (
     Sample,
     Author,
 )
+from uncontrast_studies.models import UnConTaskType, UnConTask
 
 
 class BaseTestCase(APITestCase):
@@ -41,6 +43,7 @@ class BaseTestCase(APITestCase):
             authors_key_words=["key", "word"],
             affiliations="some affiliations",
             countries=["IL"],
+            type=StudyTypeChoices.CONSCIOUSNESS,
         )
         study_params = {**default_study, **kwargs}
         study, created = Study.objects.get_or_create(**study_params)
@@ -56,7 +59,7 @@ class BaseTestCase(APITestCase):
         res = self.client.login(username=username, password=password)
         self.assertTrue(res)
 
-    def given_experiment_exists_for_study(self, study, **kwargs) -> Experiment:
+    def given_experiment_exists_for_study(self, study: Study, **kwargs) -> Experiment:
         default_experiment = dict(
             study=study,
             results_summary="look what we found",

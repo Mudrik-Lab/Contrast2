@@ -15,6 +15,8 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConStimulusCategory,
     UnConSuppressionMethodType,
+    UnConsciousnessMeasure,
+    UnConSuppressedStimulus,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 
@@ -68,7 +70,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_processing_domain(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(experiment__processing_domains__main=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.experiments.filter(processing_domains__main=OuterRef("pk"))
 
         breakdown_query = (
             UnConProcessingMainDomain.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -134,6 +136,46 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
 
         breakdown_query = (
             UnConsciousnessMeasureType.objects.values("name").distinct("name").annotate(series_name=F("name"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_cm_same_participants_as_task(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            unconsciousness_measures__is_cm_same_participants_as_task=OuterRef("series_name")
+        ).values("id", "significance")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_cm_same_participants_as_task")
+            .distinct()
+            .annotate(series_name=F("is_cm_same_participants_as_task"))
+        )
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_trial_excluded_based_on_measure(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            unconsciousness_measures__is_trial_excluded_based_on_measure=OuterRef("series_name")
+        ).values("id")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_trial_excluded_based_on_measure")
+            .distinct()
+            .annotate(series_name=F("is_trial_excluded_based_on_measure"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_modes_of_presentation(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            suppressed_stimuli__mode_of_presentation=OuterRef("series_name")
+        )
+        breakdown_query = (
+            UnConSuppressedStimulus.objects.values("mode_of_presentation")
+            .distinct()
+            .annotate(series_name=F("mode_of_presentation"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

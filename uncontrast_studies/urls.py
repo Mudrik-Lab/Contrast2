@@ -33,22 +33,22 @@ studies_experiments_router.register(
 studies_experiments_nested_router = routers.NestedSimpleRouter(
     studies_experiments_router, r"experiments", lookup="experiment"
 )
-studies_experiments_nested_router.register("tasks", StudyExperimentsTasks, basename="tasks")
-studies_experiments_nested_router.register("samples", StudyExperimentsSamples, basename="samples")
+studies_experiments_nested_router.register("tasks", StudyExperimentsTasks, basename="uncontrast-tasks")
+studies_experiments_nested_router.register("samples", StudyExperimentsSamples, basename="uncontrast-samples")
 studies_experiments_nested_router.register(
-    "suppressed_stimuli", StudyExperimentsSuppressedStimuli, basename="suppressed-stimuli"
+    "suppressed_stimuli", StudyExperimentsSuppressedStimuli, basename="uncontrast-suppressed-stimuli"
 )
-studies_experiments_nested_router.register("target_stimuli", StudyExperimentsTargetStimuli, basename="target-stimuli")
+studies_experiments_nested_router.register("target_stimuli", StudyExperimentsTargetStimuli, basename="uncontrast-target-stimuli")
 #
-studies_experiments_nested_router.register("findings", StudyExperimentsFinding, basename="findings")
+studies_experiments_nested_router.register("findings", StudyExperimentsFinding, basename="uncontrast-findings")
 studies_experiments_nested_router.register(
-    "processing_domains", StudyExperimentsUnConProcessingDomain, basename="processing_domains"
+    "processing_domains", StudyExperimentsUnConProcessingDomain, basename="uncontrast-processing_domains"
 )
 studies_experiments_nested_router.register(
-    "suppression_methods", StudyExperimentsUnConSuppressionMethod, basename="suppression_methods"
+    "suppression_methods", StudyExperimentsUnConSuppressionMethod, basename="uncontrast-suppression_methods"
 )
 studies_experiments_nested_router.register(
-    "consciousness_measures", StudyExperimentsConsciousnessMeasures, basename="consciousness_measures"
+    "consciousness_measures", StudyExperimentsConsciousnessMeasures, basename="uncontrast-consciousness_measures"
 )
 
 

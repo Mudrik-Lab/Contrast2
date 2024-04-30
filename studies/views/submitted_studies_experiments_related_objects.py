@@ -70,8 +70,6 @@ class StudyExperimentsTasks(BaseStudyExperimentObjectView):
     serializer_class = TaskSerializer
     queryset = Task.objects.all()
 
-    permission_classes = [SubmitterOnlyPermission]
-
 
 class StudyExperimentsSamples(BaseStudyExperimentObjectView):
     serializer_class = SampleSerializer

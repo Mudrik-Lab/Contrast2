@@ -159,6 +159,7 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
             "consciousness_measures_notes",
             "processing_domains",
             "suppression_methods",
+            "significance",
         )
 
 

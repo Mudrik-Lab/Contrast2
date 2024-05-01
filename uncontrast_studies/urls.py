@@ -38,7 +38,9 @@ studies_experiments_nested_router.register("samples", StudyExperimentsSamples, b
 studies_experiments_nested_router.register(
     "suppressed_stimuli", StudyExperimentsSuppressedStimuli, basename="uncontrast-suppressed-stimuli"
 )
-studies_experiments_nested_router.register("target_stimuli", StudyExperimentsTargetStimuli, basename="uncontrast-target-stimuli")
+studies_experiments_nested_router.register(
+    "target_stimuli", StudyExperimentsTargetStimuli, basename="uncontrast-target-stimuli"
+)
 #
 studies_experiments_nested_router.register("findings", StudyExperimentsFinding, basename="uncontrast-findings")
 studies_experiments_nested_router.register(

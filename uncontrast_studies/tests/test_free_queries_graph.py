@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from contrast_api.choices import StudyTypeChoices, PresentationModeChoices, SignificanceChoices, UnConSampleChoices
-from uncontrast_studies.models import UnConSample
+from uncontrast_studies.models import UnConSample, UnConStimulusCategory, UnConModalityType
 from uncontrast_studies.open_api_parameters import UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
@@ -136,16 +136,36 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
 
     def test_sanity_filters_implementation(self):
         self._setup_world()
-        filters = [
-            "populations",
-        ]
-        for filter_name in filters:
-            first_sample = UnConSample.objects.first()
-            filters = {filter_name: first_sample.id}
-            target_url = self.reverse_with_query_params(
-                "uncontrast-experiments-graphs-parameters-distribution-free-queries",
-                breakdown="modes_of_presentation",
-                **filters,
-            )
-            res = self.client.get(target_url)
-            self.assertEqual(res.status_code, status.HTTP_200_OK)
+        filter_name = "populations"
+
+        first_sample = UnConSample.objects.first()
+        filters = {filter_name: first_sample.id}
+        target_url = self.reverse_with_query_params(
+            "uncontrast-experiments-graphs-parameters-distribution-free-queries",
+            breakdown="modes_of_presentation",
+            **filters,
+        )
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        filter_name = "suppressed_stimuli_categories"
+        first_sample = UnConStimulusCategory.objects.first()
+        filters = {filter_name: first_sample.id}
+        target_url = self.reverse_with_query_params(
+            "uncontrast-experiments-graphs-parameters-distribution-free-queries",
+            breakdown="modes_of_presentation",
+            **filters,
+        )
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        filter_name = "target_stimuli_modalities"
+        first_sample = UnConModalityType.objects.first()
+        filters = {filter_name: first_sample.id}
+        target_url = self.reverse_with_query_params(
+            "uncontrast-experiments-graphs-parameters-distribution-free-queries",
+            breakdown="modes_of_presentation",
+            **filters,
+        )
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)

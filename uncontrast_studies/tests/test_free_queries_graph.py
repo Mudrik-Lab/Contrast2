@@ -27,7 +27,7 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
         specific_paradigm = self.given_uncon_specific_paradigm_exists("specific_paradigm", main=main_paradigm)
         stimulus_modality_type = self.given_uncon_stimulus_modality_type_exists("modality_type")
         stimulus_category_type = self.given_uncon_stimulus_category_type_exists("category_type")
-        unconsciousness_measure_phase_type = self.given_unconsciousness_measure_phase_exists("phase_type")
+        unconsciousness_measure_phase = self.given_unconsciousness_measure_phase_exists("phase_type")
         unconsciousness_measure_category_type = self.given_unconsciousness_measure_category_type_exists("category_type")
         unconsciousness_measure_category_sub_type = self.given_unconsciousness_measure_category_sub_type_exists(
             "category_sub_type", category_type=unconsciousness_measure_category_type
@@ -52,7 +52,7 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
         sample_1 = dict(type=UnConSampleChoices.CHILDREN, size_included=10, size_excluded=6)
         sample_2 = dict(type=UnConSampleChoices.HEALTHY_ADULTS, size_included=20, size_excluded=8)
         unconsciousness_measure_1 = dict(
-            phase=unconsciousness_measure_phase_type,
+            phase=unconsciousness_measure_phase,
             type=unconsciousness_measure_category_type,
             sub_type=unconsciousness_measure_category_sub_type,
             number_of_trials=5,
@@ -62,7 +62,7 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
             is_trial_excluded_based_on_measure=False,
         )
         unconsciousness_measure_2 = dict(
-            phase=unconsciousness_measure_phase_type,
+            phase=unconsciousness_measure_phase,
             type=unconsciousness_measure_category_type,
             sub_type=unconsciousness_measure_category_sub_type,
             number_of_trials=8,
@@ -125,7 +125,6 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
             unconsciousness_measures=[unconsciousness_measure_1],
         )
 
-
     def test_sanity_breakdown_implementation(self):
         self._setup_world()
         for breakdown in UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS:
@@ -134,20 +133,19 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
             )
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)
+
     def test_sanity_filters_implementation(self):
         self._setup_world()
         filters = [
-
             "populations",
-
         ]
         for filter_name in filters:
             first_sample = UnConSample.objects.first()
-            filters = {filter_name:first_sample.id}
+            filters = {filter_name: first_sample.id}
             target_url = self.reverse_with_query_params(
-                "uncontrast-experiments-graphs-parameters-distribution-free-queries", breakdown="modes_of_presentation",
-                **filters
+                "uncontrast-experiments-graphs-parameters-distribution-free-queries",
+                breakdown="modes_of_presentation",
+                **filters,
             )
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)
-

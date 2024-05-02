@@ -57,13 +57,13 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             queryset = queryset.filter(paradigm__main__id__in=self.paradigms)
 
         if len(self.suppressed_stimuli_categories):
-            queryset = queryset.filter(processed_stimuli__category__id__in=self.suppressed_stimuli_categories)
+            queryset = queryset.filter(suppressed_stimuli__category__id__in=self.suppressed_stimuli_categories)
 
         if len(self.suppressed_stimuli_modalities):
-            queryset = queryset.filter(processed_stimuli__modality__id__in=self.suppressed_stimuli_modalities)
+            queryset = queryset.filter(suppressed_stimuli__modality__id__in=self.suppressed_stimuli_modalities)
 
         if len(self.modes_of_presentation):
-            queryset = queryset.filter(processed_stimuli__modes_of_presentation__in=self.modes_of_presentation)
+            queryset = queryset.filter(suppressed_stimuli__modes_of_presentation__in=self.modes_of_presentation)
 
         if len(self.target_stimuli_categories):
             queryset = queryset.filter(target_stimuli__category__id__in=self.target_stimuli_categories)

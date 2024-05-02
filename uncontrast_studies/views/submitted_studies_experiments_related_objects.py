@@ -5,15 +5,25 @@ from drf_spectacular.utils import extend_schema_view, extend_schema, OpenApiPara
 from rest_framework.viewsets import ModelViewSet, GenericViewSet
 
 from contrast_api.studies.permissions import SubmitterOnlyPermission
-from studies.models import Task, Sample, Stimulus, Measure, Interpretation, FindingTag, ConsciousnessMeasure
-from studies.serializers import (
-    TaskSerializer,
-    SampleSerializer,
-    StimulusSerializer,
-    MeasureSerializer,
-    InterpretationCreateSerializer,
-    FindingTagSerializer,
-    ConsciousnessMeasureSerializer,
+from uncontrast_studies.models import (
+    UnConTask,
+    UnConSuppressedStimulus,
+    UnConTargetStimulus,
+    UnConSample,
+    UnConSuppressionMethod,
+    UnConProcessingDomain,
+    UnConFinding,
+    UnConsciousnessMeasure,
+)
+from uncontrast_studies.serializers import (
+    UnConTaskSerializer,
+    UnConSampleSerializer,
+    UnConSuppressedStimulusSerializer,
+    UnConTargetStimulusSerializer,
+    UnConFindingSerializer,
+    UnConsciousnessMeasureSerializer,
+    UnConSuppressionMethodSerializer,
+    UnConProcessingDomainSerializer,
 )
 from studies.views.base_study_related_views_mixins import (
     StudyRelatedPermissionsViewMixin,
@@ -67,51 +77,40 @@ class BaseStudyExperimentObjectView(
 
 
 class StudyExperimentsTasks(BaseStudyExperimentObjectView):
-    serializer_class = TaskSerializer
-    queryset = Task.objects.all()
+    serializer_class = UnConTaskSerializer
+    queryset = UnConTask.objects.all()
 
 
 class StudyExperimentsSamples(BaseStudyExperimentObjectView):
-    serializer_class = SampleSerializer
-    queryset = Sample.objects.all()
+    serializer_class = UnConSampleSerializer
+    queryset = UnConSample.objects.all()
 
 
-class StudyExperimentsStimuli(BaseStudyExperimentObjectView):
-    serializer_class = StimulusSerializer
-    queryset = Stimulus.objects.all()
+class StudyExperimentsSuppressedStimuli(BaseStudyExperimentObjectView):
+    serializer_class = UnConSuppressedStimulusSerializer
+    queryset = UnConSuppressedStimulus.objects.all()
 
 
-class StudyExperimentsMeasures(BaseStudyExperimentObjectView):
-    serializer_class = MeasureSerializer
-    queryset = Measure.objects.all()
+class StudyExperimentsTargetStimuli(BaseStudyExperimentObjectView):
+    serializer_class = UnConTargetStimulusSerializer
+    queryset = UnConTargetStimulus.objects.all()
 
 
-class StudyExperimentsInterpretations(BaseStudyExperimentObjectView):
-    serializer_class = InterpretationCreateSerializer
-    queryset = Interpretation.objects.all()
-
-    @extend_schema(
-        parameters=[
-            OpenApiParameter(location="path", name="study_pk", type=str),
-            OpenApiParameter(location="path", name="experiment_pk", type=str),
-        ]
-    )
-    def create(self, request, *args, **kwargs):
-        """
-        Note: DONT pass explicit experiment id in the creation data, as it's provided by the URI
-        """
-        Interpretation.objects.filter(
-            experiment=int(self.kwargs.get("experiment_pk")), theory=request.data["theory"]
-        ).delete()
-        return super().create(request, *args, **kwargs)
-
-
-class StudyExperimentsFindingTags(BaseStudyExperimentObjectView):
-    serializer_class = FindingTagSerializer
-    queryset = FindingTag.objects.all()
+class StudyExperimentsFinding(BaseStudyExperimentObjectView):
+    serializer_class = UnConFindingSerializer
+    queryset = UnConFinding.objects.all()
 
 
 class StudyExperimentsConsciousnessMeasures(BaseStudyExperimentObjectView):
-    # Formerly StudyExperimentsConsciousnessMeasures
-    serializer_class = ConsciousnessMeasureSerializer
-    queryset = ConsciousnessMeasure.objects.all()
+    serializer_class = UnConsciousnessMeasureSerializer
+    queryset = UnConsciousnessMeasure.objects.all()
+
+
+class StudyExperimentsUnConSuppressionMethod(BaseStudyExperimentObjectView):
+    serializer_class = UnConSuppressionMethodSerializer
+    queryset = UnConSuppressionMethod.objects.all()
+
+
+class StudyExperimentsUnConProcessingDomain(BaseStudyExperimentObjectView):
+    serializer_class = UnConProcessingDomainSerializer
+    queryset = UnConProcessingDomain.objects.all()

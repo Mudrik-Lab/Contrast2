@@ -84,7 +84,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
 
     graph_processors = {
         "nations_of_consciousness": NationOfConsciousnessDataProcessor,
-        "across_the_years": TrendsOverYearsGraphDataProcessor,
         "trends_over_years": TrendsOverYearsGraphDataProcessor,
         "journals": JournalsGraphDataProcessor,
         "parameters_distribution_bar": ParametersDistributionBarGraphDataProcessor,
@@ -129,18 +128,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def parameters_distribution_pie(self, request, *args, **kwargs):
-        return self.graph(request, graph_type=self.action, *args, **kwargs)
-
-    @extend_schema(
-        responses=TrendsOverYearsGraphSerializer(many=True),
-        parameters=[
-            breakdown_parameter,
-            is_csv,
-            number_of_experiments_parameter,
-        ],
-    )
-    @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)
-    def across_the_years(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(

@@ -63,7 +63,9 @@ class UnConSuppressedStimulus(models.Model):
         null=False, blank=False, choices=PresentationModeChoices.choices, max_length=30
     )
     duration = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=3)  # ms
-    soa = models.DecimalField(null=False, blank=False, max_digits=10, decimal_places=3)  # ms Stimulus Onset Asynchrony (which is the time that passes from the onset of the stimulus to the onset of the next stimulus)
+    soa = models.DecimalField(
+        null=False, blank=False, max_digits=10, decimal_places=3
+    )  # ms Stimulus Onset Asynchrony (which is the time that passes from the onset of the stimulus to the onset of the next stimulus)
     number_of_stimuli = models.PositiveSmallIntegerField(null=False, blank=False)
     history = HistoricalRecords()
 

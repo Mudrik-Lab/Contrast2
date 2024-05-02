@@ -4,40 +4,39 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0010_alter_historicalunconexperiment_significance_and_more'),
+        ("uncontrast_studies", "0010_alter_historicalunconexperiment_significance_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalunconsuppressedstimulus',
-            name='duration',
+            model_name="historicalunconsuppressedstimulus",
+            name="duration",
             field=models.DecimalField(decimal_places=3, max_digits=10),
         ),
         migrations.AlterField(
-            model_name='historicalunconsuppressedstimulus',
-            name='number_of_stimuli',
+            model_name="historicalunconsuppressedstimulus",
+            name="number_of_stimuli",
             field=models.PositiveSmallIntegerField(),
         ),
         migrations.AlterField(
-            model_name='historicalunconsuppressedstimulus',
-            name='soa',
+            model_name="historicalunconsuppressedstimulus",
+            name="soa",
             field=models.DecimalField(decimal_places=3, max_digits=10),
         ),
         migrations.AlterField(
-            model_name='unconsuppressedstimulus',
-            name='duration',
+            model_name="unconsuppressedstimulus",
+            name="duration",
             field=models.DecimalField(decimal_places=3, max_digits=10),
         ),
         migrations.AlterField(
-            model_name='unconsuppressedstimulus',
-            name='number_of_stimuli',
+            model_name="unconsuppressedstimulus",
+            name="number_of_stimuli",
             field=models.PositiveSmallIntegerField(),
         ),
         migrations.AlterField(
-            model_name='unconsuppressedstimulus',
-            name='soa',
+            model_name="unconsuppressedstimulus",
+            name="soa",
             field=models.DecimalField(decimal_places=3, max_digits=10),
         ),
     ]

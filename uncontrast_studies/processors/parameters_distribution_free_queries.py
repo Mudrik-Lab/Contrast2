@@ -57,19 +57,19 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             queryset = queryset.filter(paradigm__main__id__in=self.paradigms)
 
         if len(self.suppressed_stimuli_categories):
-            queryset = queryset.filter(stimuli__category__id__in=self.suppressed_stimuli_categories)
+            queryset = queryset.filter(processed_stimuli__category__id__in=self.suppressed_stimuli_categories)
 
         if len(self.suppressed_stimuli_modalities):
-            queryset = queryset.filter(stimuli__modality__id__in=self.suppressed_stimuli_modalities)
+            queryset = queryset.filter(processed_stimuli__modality__id__in=self.suppressed_stimuli_modalities)
 
         if len(self.modes_of_presentation):
-            queryset = queryset.filter(stimuli__modes_of_presentation__in=self.modes_of_presentation)
+            queryset = queryset.filter(processed_stimuli__modes_of_presentation__in=self.modes_of_presentation)
 
         if len(self.target_stimuli_categories):
-            queryset = queryset.filter(stimuli__category__id__in=self.target_stimuli_categories)
+            queryset = queryset.filter(target_stimuli__category__id__in=self.target_stimuli_categories)
 
         if len(self.target_stimuli_modalities):
-            queryset = queryset.filter(stimuli__modality__id__in=self.target_stimuli_modalities)
+            queryset = queryset.filter(target_stimuli__modality__id__in=self.target_stimuli_modalities)
 
         if len(self.populations):
             queryset = queryset.filter(samples__type__in=self.populations)
@@ -215,7 +215,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
     def process_target_stimuli_modality(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            suppressed_stimuli__modality=OuterRef("pk")
+            target_stimuli__modality=OuterRef("pk")
         ).values("id")
 
         breakdown_query = UnConModalityType.objects.values("name").distinct().annotate(series_name=F("name"))

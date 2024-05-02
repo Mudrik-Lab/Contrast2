@@ -40,3 +40,28 @@ class ParadigmError(Exception):
 
 class StimulusMetadataError(Exception):
     pass
+
+
+class TaskTypeError(Exception):
+    pass
+
+
+class StimulusModalityError(Exception):
+    pass
+
+
+class StimulusModeOfPresentationError(Exception):
+    pass
+
+
+class SuppressionMethodError(Exception):
+    pass
+
+
+class SampleSizeError(Exception):
+    pass
+
+
+class ProcessingDomainError(Exception):
+    pass
+

@@ -164,7 +164,7 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
         filters = {filter_name: first_sample.id}
         target_url = self.reverse_with_query_params(
             "uncontrast-experiments-graphs-parameters-distribution-free-queries",
-            breakdown="modes_of_presentation",
+            breakdown="consciousness_measure_phase",
             **filters,
         )
         res = self.client.get(target_url)

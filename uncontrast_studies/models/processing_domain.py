@@ -10,16 +10,6 @@ class UnConProcessingMainDomain(models.Model):
         return self.name
 
 
-class UnConProcessingSubDomain(models.Model):
-    name = models.CharField(null=False, blank=False, max_length=50)
-    main = models.ForeignKey(
-        null=False, blank=False, to=UnConProcessingMainDomain, on_delete=PROTECT, related_name="processing_sub_domains"
-    )
-
-    def __str__(self):
-        return self.name
-
-
 class UnConProcessingDomain(models.Model):
     experiment = models.ForeignKey(
         null=False,
@@ -31,12 +21,8 @@ class UnConProcessingDomain(models.Model):
     main = models.ForeignKey(
         null=False, blank=False, to=UnConProcessingMainDomain, on_delete=PROTECT, related_name="processing_domains"
     )
-    sub_domain = models.ForeignKey(
-        null=True, blank=True, to=UnConProcessingSubDomain, on_delete=PROTECT, related_name="processing_domains"
-    )
     history = HistoricalRecords()
 
     def __str__(self):
-        if self.sub_domain is None:
-            return f"{self.main}"
-        return f"{self.main}; {self.sub_domain}"
+        return f"{self.main}"
+

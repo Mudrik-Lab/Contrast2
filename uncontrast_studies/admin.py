@@ -19,7 +19,6 @@ from uncontrast_studies.models import (
     UnConSpecificParadigm,
     UnConSample,
     UnConProcessingMainDomain,
-    UnConProcessingSubDomain,
     UnConProcessingDomain,
     UnConSuppressionMethod,
     UnConSuppressionMethodType,
@@ -156,14 +155,9 @@ class UnConProcessingDomainMainTypeAdmin(BaseContrastAdmin):
     list_display = ("id", "name")
 
 
-class UnConProcessingDomainSubDomainTypeAdmin(BaseContrastAdmin):
-    model = UnConProcessingSubDomain
-    list_display = ("id", "name")
-
-
 class UnConProcessingDomainAdmin(BaseContrastAdmin):
     model = UnConProcessingDomain
-    list_display = ("main", "sub_domain", "experiment_id")
+    list_display = ("main", "experiment_id")
 
 
 class UnConSuppressionMethodTypeAdmin(BaseContrastAdmin):
@@ -197,7 +191,6 @@ admin.site.register(UnConModalityType, UnConModalityTypeAdmin)
 admin.site.register(UnConMainParadigm, UnConMainParadigmAdmin)
 admin.site.register(UnConSpecificParadigm, UnConSpecificParadigmAdmin)
 admin.site.register(UnConProcessingMainDomain, UnConProcessingDomainMainTypeAdmin)
-admin.site.register(UnConProcessingSubDomain, UnConProcessingDomainSubDomainTypeAdmin)
 admin.site.register(UnConProcessingDomain, UnConProcessingDomainAdmin)
 admin.site.register(UnConSuppressionMethod, UnConSuppressionMethodAdmin)
 admin.site.register(UnConSuppressionMethodSubType, UnConSuppressionMethodSubTypeAdmin)

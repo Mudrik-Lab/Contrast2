@@ -1,11 +1,12 @@
 from collections import namedtuple
 
 from configuration.uncontrast_initial_data_types import uncon_paradigms, uncon_tasks, uncon_stimulus_categories, \
-    uncon_stimulus_modalities, uncon_suppression_methods, uncon_processing_domains
+    uncon_stimulus_modalities, uncon_suppression_methods, uncon_processing_domains, uncon_finding_outcomes
 from contrast_api.choices import PresentationModeChoices, UnConSampleChoices
 from contrast_api.data_migration_functionality.errors import ParadigmError, StimulusMetadataError, TaskTypeError, \
     MissingStimulusCategoryError, StimulusModalityError, StimulusModeOfPresentationError, StimulusDurationError, \
-    SuppressionMethodError, SampleTypeError, SampleSizeError, IncoherentSampleDataError, ProcessingDomainError
+    SuppressionMethodError, SampleTypeError, SampleSizeError, IncoherentSampleDataError, ProcessingDomainError, \
+    FindingError
 
 UnconResolvedParadigmData = namedtuple("UnconParadigmFromData", ["main", "specific"])
 UnconResolvedStimuliMetadata = namedtuple("UnconResolvedStimuliMetadata",
@@ -15,6 +16,7 @@ UnconResolvedStimulusData = namedtuple("UnconResolvedStimulusData",
                                         "duration", "soa", "number_of_stimuli"])
 UnconResolvedSuppressionMethodData = namedtuple("UnconResolvedSuppressionMethodData", ["main", "specific"])
 UnConResolvedSample = namedtuple("UnConResolvedSample", ["sample_type", "total_size", "included_size", "excluded_size"])
+UnConResolvedFinding = namedtuple("UnConResolvedFinding", ["outcome", "is_significant", "is_important", "number_of_trials"])
 
 
 def resolve_uncon_paradigm(item):
@@ -250,22 +252,44 @@ def resolve_uncon_samples(item: dict, index: str):
 
 
 def resolve_uncon_findings(item: dict, index: str):
-    pass
+    # TODO: change to multiple findings per experiment
+    resolved_findings = []
+    outcome_data = str(item["Experiment's Findings Outcome"])
+    significance_data = str(item["Experiment's Findings Is the effect significant?"])
+    number_of_trials_data = item["Experiment's Findings Number of trials"]
+
+    if outcome_data.strip() not in uncon_finding_outcomes:
+        raise FindingError(f"invalid outcome {outcome_data}, index {index}")
+    else:
+        outcome = outcome_data.strip()
+
+    if significance_data.strip().lower() == "yes":
+        is_significant = True
+    elif significance_data.strip().lower() == "no":
+        is_significant = False
+    else:
+        raise FindingError(f"invalid significance {significance_data}, index {index}")
+
+    try:
+        if number_of_trials_data == "" or number_of_trials_data == "missing":
+            number_of_trials = 1
+        number_of_trials = int(number_of_trials_data)
+    except TypeError:
+        raise FindingError(f"invalid number of trials {number_of_trials_data}, index {index}")
+
+    resolved_findings.append(UnConResolvedFinding(outcome=outcome, is_significant=is_significant, is_important=True,
+                                number_of_trials=number_of_trials))
+    return resolved_findings
 
 
-def resolve_uncon_processing_domains(item:dict, index:str):
+def resolve_uncon_processing_domains(item: dict, index: str):
     resolved_processing_domains = []
-    processing_domain_data = str(item["Processing domain"])
-    if ";" in processing_domain_data:
-        main_domain_data = processing_domain_data.split(";")[0].strip()
-        sub_domain_data = processing_domain_data.split(";")[1].strip()
-    else:
+    processing_domain_data = str(item["Processing domain"]).split(";")
+    for processing_domain_data in processing_domain_data:
         main_domain_data = processing_domain_data.strip()
-        sub_domain_data = None
-
-    if main_domain_data in uncon_processing_domains:
-        resolved_processing_domains.append(main_domain_data)
-    else:
-        raise ProcessingDomainError(f"invalid processing domain {main_domain_data}, index: {index}")
+        if main_domain_data in uncon_processing_domains:
+            resolved_processing_domains.append(main_domain_data)
+        else:
+            raise ProcessingDomainError(f"invalid processing domain {main_domain_data}, index: {index}")
 
     return resolved_processing_domains

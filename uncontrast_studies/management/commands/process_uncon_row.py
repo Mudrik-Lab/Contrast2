@@ -6,7 +6,8 @@ from contrast_api.choices import ExperimentTypeChoices
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
 from studies.models import Study
 from uncontrast_studies.models import UnConExperiment, UnConSpecificParadigm, UnConTask, UnConSuppressedStimulus, \
-    UnConTargetStimulus, UnConSuppressionMethodType, UnConSuppressionMethodSubType, UnConSuppressionMethod, UnConSample
+    UnConTargetStimulus, UnConSuppressionMethodType, UnConSuppressionMethodSubType, UnConSuppressionMethod, UnConSample, \
+    UnConProcessingMainDomain, UnConProcessingDomain, UnConFinding
 from uncontrast_studies.parsers.uncon_data_parsers import resolve_uncon_paradigm, resolve_uncon_stimuli_metadata, \
     resolve_uncon_task, resolve_uncon_stimuli, resolve_uncon_suppression_method, resolve_uncon_samples, \
     resolve_uncon_findings, resolve_uncon_processing_domains
@@ -54,7 +55,7 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
         experiment_id = duplicated_experiments[composit_experiment_index]
         experiment = UnConExperiment.objects.get(id=experiment_id)
 
-    # TODO: create experiment-dependent objects: consciousness measures, findings, processing domains.
+    # TODO: create experiment-dependent objects: consciousness measures
     # tasks
     task_type = resolve_uncon_task(item=item, index=composit_experiment_index)
     UnConTask.objects.get_or_create(experiment=experiment, type=task_type)
@@ -92,12 +93,16 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
     # processing domains
     processing_domain_data = resolve_uncon_processing_domains(item=item, index=composit_experiment_index)
     for processing_domain in processing_domain_data:
-        pass
+        main_domain, created = UnConProcessingMainDomain.objects.get_or_create(name=processing_domain)
+        UnConProcessingDomain.objects.create(experiment=experiment, main=main_domain)
 
     # findings
     finding_data = resolve_uncon_findings(item=item, index=composit_experiment_index)
+    for finding in finding_data:
+        UnConFinding.objects.create(experiment=experiment, outcome=finding.outcome, is_significant=finding.is_significant,
+                                    is_important=finding.is_important, number_of_trials=finding.number_of_trials)
 
-
+    # consciousness measures
 
 
 

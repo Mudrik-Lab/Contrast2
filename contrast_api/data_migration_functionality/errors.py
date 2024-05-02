@@ -65,3 +65,6 @@ class SampleSizeError(Exception):
 class ProcessingDomainError(Exception):
     pass
 
+
+class FindingError(Exception):
+    pass

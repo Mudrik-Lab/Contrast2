@@ -46,14 +46,7 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
     experiment_index = item["exp"]
     composit_experiment_index = f"{study_id}, {experiment_index}"
 
-    # first we check for pre-existing experiment data, creating new experiment if non-existing, else fetching existing data
-    if composit_experiment_index not in duplicated_experiments.keys():
-        experiment = create_uncon_experiment(item=item, index=composit_experiment_index)
-        duplicated_experiment = ExperimentDuplicate(key=composit_experiment_index, id=experiment.id)
-    else:
-        duplicated_experiment = None
-        experiment_id = duplicated_experiments[composit_experiment_index]
-        experiment = UnConExperiment.objects.get(id=experiment_id)
+    experiment = create_uncon_experiment(item=item, index=composit_experiment_index)
 
     # TODO: create experiment-dependent objects: consciousness measures
     # tasks
@@ -106,4 +99,4 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
 
 
 
-    return duplicated_experiment
+    return experiment

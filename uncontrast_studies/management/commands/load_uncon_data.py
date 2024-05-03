@@ -1,131 +1,135 @@
 import logging
 
-import pandas
 from django.core.management import BaseCommand
 from django.db import transaction
 
 from contrast_api.data_migration_functionality.create_study import create_study
-from studies.parsers.parsing_findings_Contrast2 import FindingTagDataError
 from contrast_api.data_migration_functionality.errors import (
     MissingStimulusCategoryError,
-    ParadigmDataException,
-    ProblemInTheoryDrivenExistingDataException,
     IncoherentSampleDataError,
     SampleTypeError,
     InvalidConsciousnessMeasureDataError,
-    IncoherentStimuliData,
-    MissingValueInStimuli,
-    StimulusDurationError,
+    StimulusDurationError, ParadigmError, TaskTypeError, ProcessingDomainError, StimulusModalityError,
+    StimulusModeOfPresentationError, StimulusMetadataError, SampleSizeError, SuppressionMethodError, FindingError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
 from uncontrast_studies.management.commands.process_uncon_row import process_uncon_row
+from uncontrast_studies.management.commands.errors_logger import write_errors_to_log
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/__Maors_dataset_for_migration.xlsx"
-
+FILE_PATH = "uncontrast_studies/data/table_for_UnConTrust.xls"
+ERROR_LOG_PATH = "uncontrast_studies/data/UnContrast_Errors_Log.xlsx"
 
 class Command(BaseCommand):
     help = "Load uncon existing data"
 
     def handle(self, *args, **options):
         # Read .xlsx file and convert to dict
-        historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="Experiments")
-        studies_historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="Metadata")
+        experiments_data_list = get_list_from_excel(FILE_PATH, sheet_name="Sheet2")
+        studies_historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="table_for_UnConTrust_metadata")
+
+        logs = {
+            "studies_problematic_data_log": [],
+            "invalid_study_metadata_log": [],
+            "invalid_paradigm_data_log": [],
+            "invalid_task_data_log": [],
+            "invalid_processing_domain_data_log": [],
+            "invalid_suppression_method_data_log": [],
+            "invalid_finding_data_log": [],
+            "invalid_consciousness_measure_data_log": [],
+            "stimuli_missing_object_data_log": [],
+            "invalid_stimuli_modality_data_log": [],
+            "invalid_stimuli_presentation_mode_data_log": [],
+            "stimuli_duration_data_log": [],
+            "invalid_stimuli_metadata_log": [],
+            "sample_incoherent_data_log": [],
+            "sample_type_errors_log": [],
+            "sample_size_errors_log": []
+        }
 
         # iterate over studies
-        studies_problematic_data_log = []
+        created_studies = []
         for study_item in studies_historic_data_list:
-            try:
-                with transaction.atomic():
-                    create_study(item=study_item, unconsciousness=True)
-            except ProblemInStudyExistingDataException:
-                studies_problematic_data_log.append(study_item)
+            study_id = study_item["StudyID"]
+            if study_id in created_studies:
+                continue
+            else:
+                try:
+                    with transaction.atomic():
+                        create_study(item=study_item, unconsciousness=True)
+                        created_studies.append(study_id)
+                except ProblemInStudyExistingDataException:
+                    logs["studies_problematic_data_log"].append(study_item)
 
         # iterate over experiments
-        stimuli_incoherent_data_log = []
-        stimuli_duration_data_log = []
-        stimuli_missing_value_data_log = []
-        stimuli_missing_object_data_log = []
-        paradigms_log = []
-        sample_incoherent_data_log = []
-        sample_type_errors_log = []
-        experiment_studies_problematic_data_log = []
-        consciousness_measure_problematic_data_log = []
-
-        duplicated_experiments = {}
-
-        for item in historic_data_list:
-            index = historic_data_list.index(item)
-
+        for item in experiments_data_list:
+            index = int(item["exp"])
             try:
                 with transaction.atomic():
-                    experiment_duplicate = process_uncon_row(item, duplicated_experiments)
-                    if experiment_duplicate is not None:
-                        duplicated_experiments[experiment_duplicate.key] = experiment_duplicate.id
-
+                    process_uncon_row(item)
                     print(f"row #{index} completed")
 
-            except IncoherentStimuliData:
-                stimuli_incoherent_data_log.append(item)
-                logger.exception(f"row #{index} has incoherent stimuli data")
+            except ParadigmError:
+                logs["invalid_paradigm_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid paradigm data")
 
-            except ParadigmDataException:
-                paradigms_log.append(item)
-                logger.exception(f"row #{index} has bad paradigm data")
+            except TaskTypeError:
+                logs["invalid_task_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid task data")
 
-            except MissingValueInStimuli:
-                stimuli_missing_value_data_log.append(item)
-                logger.exception(f"row #{index} is missing 1 or more values in stimuli data")
+            except ProcessingDomainError:
+                logs["invalid_processing_domain_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid processing domain data")
+
+            except SuppressionMethodError:
+                logs["invalid_suppression_method_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid suppression method data")
+
+            except StimulusModeOfPresentationError:
+                logs["invalid_stimuli_presentation_mode_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid stimulus MoP data")
+
+            except StimulusMetadataError:
+                logs["invalid_stimuli_metadata_log"].append(item)
+                logger.exception(f"row #{index} has invalid stimulus metadata")
 
             except StimulusDurationError:
-                stimuli_duration_data_log.append(item)
-                logger.exception(f"row #{index} has problematic stimulus duration data")
+                logs["stimuli_duration_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid stimulus duration numeric data")
+
+            except StimulusModalityError:
+                logs["invalid_stimuli_modality_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid stimulus modality data")
 
             except MissingStimulusCategoryError:
-                stimuli_missing_object_data_log.append(item)
+                logs["stimuli_missing_object_data_log"].append(item)
                 logger.exception(f"row #{index} did not find matching stimulus category or sub-category")
 
             except IncoherentSampleDataError:
-                sample_incoherent_data_log.append(item)
+                logs["sample_incoherent_data_log"].append(item)
                 logger.exception(f"row #{index} has incoherent sample data")
 
             except SampleTypeError:
-                sample_type_errors_log.append(item)
-                logger.exception(f"row #{index} is problematic regarding to sample type")
+                logs["sample_type_errors_log"].append(item)
+                logger.exception(f"row #{index} has invalid sample type data")
+
+            except SampleSizeError:
+                logs["sample_size_errors_log"].append(item)
+                logger.exception(f"row #{index} has invalid sample size data")
+
+            except FindingError:
+                logs["invalid_finding_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid finding data")
 
             except ProblemInStudyExistingDataException:
-                experiment_studies_problematic_data_log.append(item)
-                logger.exception(f"row #{index} is problematic regarding to study data")
+                logs["invalid_study_metadata_log"].append(item)
+                logger.exception(f"row #{index} has invalid study metadata")
 
             except InvalidConsciousnessMeasureDataError:
-                consciousness_measure_problematic_data_log.append(item)
+                logs["invalid_consciousness_measure_data_log"].append(item)
                 logger.exception(f"row #{index} is problematic regarding to consciousness measure data")
 
-            # iterate over problematic data and add them to .xlsx file in respective sheets
-            df_studies = pandas.DataFrame.from_records(studies_problematic_data_log)
-            df_paradigms = pandas.DataFrame.from_records(paradigms_log)
-            df_incoherent_stimuli = pandas.DataFrame.from_records(stimuli_incoherent_data_log)
-            df_missing_value_stimuli = pandas.DataFrame.from_records(stimuli_missing_value_data_log)
-            df_bad_duration_stimuli = pandas.DataFrame.from_records(stimuli_duration_data_log)
-            df_missing_category_stimuli = pandas.DataFrame.from_records(stimuli_missing_object_data_log)
-            df_incoherent_sample = pandas.DataFrame.from_records(sample_incoherent_data_log)
-            df_sample_type = pandas.DataFrame.from_records(sample_type_errors_log)
-            df_study_in_experiment = pandas.DataFrame.from_records(experiment_studies_problematic_data_log)
-            df_consciousness_measure = pandas.DataFrame.from_records(consciousness_measure_problematic_data_log)
-
-            try:
-                with pandas.ExcelWriter("uncontrast_studies/data/UnContrast_Problematic_Data.xlsx") as writer:
-                    df_studies.to_excel(writer, sheet_name="StudyData", index=False)
-                    df_paradigms.to_excel(writer, sheet_name="ParadigmData", index=False)
-                    df_incoherent_stimuli.to_excel(writer, sheet_name="IncoherentStimuli", index=False)
-                    df_missing_value_stimuli.to_excel(writer, sheet_name="MissingValueStimuliData", index=False)
-                    df_bad_duration_stimuli.to_excel(writer, sheet_name="StimulusDuration", index=False)
-                    df_missing_category_stimuli.to_excel(writer, sheet_name="StimulusCategory", index=False)
-                    df_incoherent_sample.to_excel(writer, sheet_name="IncoherentSample", index=False)
-                    df_sample_type.to_excel(writer, sheet_name="SampleType", index=False)
-                    df_study_in_experiment.to_excel(writer, sheet_name="ExperimentStudyData", index=False)
-                    df_consciousness_measure.to_excel(writer, sheet_name="ConsciousnessMeasureData", index=False)
-            except AttributeError as error:
-                logger.exception(f"{error.name} occurred while writing to excel")
+        # iterate over invalid-data logs and add them to .xlsx file in respective sheets
+        write_errors_to_log(logs, ERROR_LOG_PATH)

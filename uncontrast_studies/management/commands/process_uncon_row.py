@@ -45,26 +45,22 @@ def create_uncon_experiment(item: dict, index):
     return experiment
 
 
-def process_uncon_row(item: dict, duplicated_experiments: dict):
-    study_id = item["StudyID"]
+def process_uncon_row(item: dict):
     experiment_index = item["exp"]
-    composit_experiment_index = f"{study_id}, {experiment_index}"
+    experiment = create_uncon_experiment(item=item, index=experiment_index)
 
-    experiment = create_uncon_experiment(item=item, index=composit_experiment_index)
-
-    # TODO: create experiment-dependent objects: consciousness measures
     # tasks
-    task_type = resolve_uncon_task(item=item, index=composit_experiment_index)
+    task_type = resolve_uncon_task(item=item, index=experiment_index)
     UnConTask.objects.get_or_create(experiment=experiment, type=task_type)
 
     # samples
-    samples = resolve_uncon_samples(item=item, index=composit_experiment_index)
+    samples = resolve_uncon_samples(item=item, index=experiment_index)
     for sample in samples:
         UnConSample.objects.get_or_create(experiment=experiment, type=sample.sample_type, size_included=sample.included_size,
                                           size_total=sample.total_size, size_excluded=sample.excluded_size,)
 
     # stimuli
-    prime_stimuli = resolve_uncon_stimuli(item=item, index=composit_experiment_index, prime=True)
+    prime_stimuli = resolve_uncon_stimuli(item=item, index=experiment_index, prime=True)
     UnConSuppressedStimulus.objects.get_or_create(experiment=experiment, category=prime_stimuli.category, sub_category=prime_stimuli.sub_category,
                                                   modality=prime_stimuli.modality, mode_of_presentation=prime_stimuli.mode_of_presentation,
                                                   duration=prime_stimuli.duration, soa=prime_stimuli.soa, number_of_stimuli=prime_stimuli.number_of_stimuli)
@@ -73,11 +69,11 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
             UnConTargetStimulus.objects.get_or_create(experiment=experiment, category=prime_stimuli.category, sub_category=prime_stimuli.sub_category,
                                                       modality=prime_stimuli.modality, number_of_stimuli=prime_stimuli.number_of_stimuli)
         else:
-            target_stimuli = resolve_uncon_stimuli(item=item, index=composit_experiment_index, prime=False)
+            target_stimuli = resolve_uncon_stimuli(item=item, index=experiment_index, prime=False)
             UnConTargetStimulus.objects.get_or_create(experiment=experiment, category=target_stimuli.category, sub_category=target_stimuli.sub_category,
                                                       modality=target_stimuli.modality, number_of_stimuli=target_stimuli.number_of_stimuli)
     # suppression_methods
-    suppression_method_data = resolve_uncon_suppression_method(item=item, index=composit_experiment_index)
+    suppression_method_data = resolve_uncon_suppression_method(item=item, index=experiment_index)
     for line in suppression_method_data:
         if line.specific:
             main, created = UnConSuppressionMethodType.objects.get_or_create(name=line.main)
@@ -88,13 +84,13 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
             UnConSuppressionMethod.objects.get_or_create(experiment=experiment, type=main, sub_type=None)
 
     # processing domains
-    processing_domain_data = resolve_uncon_processing_domains(item=item, index=composit_experiment_index)
+    processing_domain_data = resolve_uncon_processing_domains(item=item, index=experiment_index)
     for processing_domain in processing_domain_data:
         main_domain, created = UnConProcessingMainDomain.objects.get_or_create(name=processing_domain)
         UnConProcessingDomain.objects.create(experiment=experiment, main=main_domain)
 
     # findings
-    finding_data = resolve_uncon_findings(item=item, index=composit_experiment_index)
+    finding_data = resolve_uncon_findings(item=item, index=experiment_index)
     for finding in finding_data:
         UnConFinding.objects.create(experiment=experiment, outcome=finding.outcome, is_significant=finding.is_significant,
                                     is_important=finding.is_important, number_of_trials=finding.number_of_trials)
@@ -102,7 +98,7 @@ def process_uncon_row(item: dict, duplicated_experiments: dict):
             experiment.experiment_findings_notes.add(f"{finding.notes}; ")
 
     # consciousness measures
-    consciousness_measures_data = resolve_consciousness_measures(item=item, index=composit_experiment_index)
+    consciousness_measures_data = resolve_consciousness_measures(item=item, index=experiment_index)
     for consciousness_measure in consciousness_measures_data:
         phase, created = UnConsciousnessMeasurePhase.objects.get_or_create(name=consciousness_measure.phase)
         main_type, created = UnConsciousnessMeasureType.objects.get_or_create(name=consciousness_measure.type)

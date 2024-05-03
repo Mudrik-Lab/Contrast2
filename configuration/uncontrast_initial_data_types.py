@@ -112,6 +112,7 @@ uncon_consciousness_measures_phases = [
     "Pre-experiment",
     "Separate sample",
     "During the experiment, in alternating blocks",
+    # "During the experiment",
     "Trial-by-trial",
     "None",
 ]

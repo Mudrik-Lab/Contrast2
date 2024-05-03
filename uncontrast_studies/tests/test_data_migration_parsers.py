@@ -1,6 +1,6 @@
 
 from contrast_api.tests.base import BaseTestCase
-from uncontrast_studies.parsers.uncon_data_parsers import resolve_uncon_suppression_method
+from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 
 
 # Create your tests here.

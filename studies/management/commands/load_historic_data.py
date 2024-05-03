@@ -15,7 +15,7 @@ from contrast_api.data_migration_functionality.errors import (
     ProblemInTheoryDrivenExistingDataException,
     IncoherentSampleDataError,
     SampleTypeError,
-    ProblemInCMExistingDataException,
+    InvalidConsciousnessMeasureDataError,
     IncoherentStimuliData,
     MissingValueInStimuli,
     StimulusDurationError,
@@ -108,7 +108,7 @@ class Command(BaseCommand):
                 experiment_studies_problematic_data_log.append(item)
                 logger.exception(f"row #{index} is problematic regarding to study data")
 
-            except ProblemInCMExistingDataException:
+            except InvalidConsciousnessMeasureDataError:
                 consciousness_measure_problematic_data_log.append(item)
                 logger.exception(f"row #{index} is problematic regarding to consciousness measure data")
 

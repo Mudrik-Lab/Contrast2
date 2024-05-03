@@ -15,7 +15,7 @@ from contrast_api.data_migration_functionality.errors import (
     MissingStimulusCategoryError,
     ParadigmDataException,
     IncoherentSampleDataError,
-    ProblemInCMExistingDataException,
+    InvalidConsciousnessMeasureDataError,
     ParadigmError,
 )
 from studies.models import (
@@ -190,7 +190,7 @@ def process_row(item: dict):
                 experiment=experiment, phase=consciousness_measure_phase, type=consciousness_measure_type
             )
     except ObjectDoesNotExist:
-        raise ProblemInCMExistingDataException()
+        raise InvalidConsciousnessMeasureDataError()
 
     # resolve and create finding measures
     measures = get_measures_from_data(item)

@@ -18,7 +18,7 @@ class SampleTypeError(Exception):
     pass
 
 
-class ProblemInCMExistingDataException(Exception):
+class InvalidConsciousnessMeasureDataError(Exception):
     pass
 
 

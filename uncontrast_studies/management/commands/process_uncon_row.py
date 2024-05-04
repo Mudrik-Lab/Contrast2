@@ -8,7 +8,7 @@ from studies.models import Study
 from uncontrast_studies.models import UnConExperiment, UnConSpecificParadigm, UnConTask, UnConSuppressedStimulus, \
     UnConTargetStimulus, UnConSuppressionMethodType, UnConSuppressionMethodSubType, UnConSuppressionMethod, UnConSample, \
     UnConProcessingMainDomain, UnConProcessingDomain, UnConFinding, UnConsciousnessMeasurePhase, \
-    UnConsciousnessMeasureType, UnConsciousnessMeasureSubType, UnConsciousnessMeasure
+    UnConsciousnessMeasureType, UnConsciousnessMeasureSubType, UnConsciousnessMeasure, UnConTaskType
 from uncontrast_studies.parsers.consciousness_measure_parser import resolve_consciousness_measures
 from uncontrast_studies.parsers.uncon_data_parsers import resolve_uncon_paradigm, resolve_uncon_task, resolve_uncon_processing_domains
 from uncontrast_studies.parsers.stimulus_parser import resolve_uncon_stimuli, resolve_uncon_stimuli_metadata
@@ -28,7 +28,7 @@ def create_uncon_experiment(item: dict, index):
     except ObjectDoesNotExist:
         raise ProblemInStudyExistingDataException()
 
-    paradigm_data = resolve_uncon_paradigm(item)
+    paradigm_data = resolve_uncon_paradigm(item, index)
     paradigm, created = UnConSpecificParadigm.objects.get_or_create(
         main=paradigm_data.main, name=paradigm_data.specific
     )
@@ -50,8 +50,10 @@ def process_uncon_row(item: dict):
     experiment = create_uncon_experiment(item=item, index=experiment_index)
 
     # tasks
-    task_type = resolve_uncon_task(item=item, index=experiment_index)
-    UnConTask.objects.get_or_create(experiment=experiment, type=task_type)
+    task_types = resolve_uncon_task(item=item, index=experiment_index)
+    for task_type in task_types:
+        task, created = UnConTaskType.objects.get_or_create(name=task_type)
+        UnConTask.objects.get_or_create(experiment=experiment, type=task)
 
     # samples
     samples = resolve_uncon_samples(item=item, index=experiment_index)

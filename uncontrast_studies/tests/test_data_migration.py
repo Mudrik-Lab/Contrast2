@@ -9,12 +9,11 @@ from uncontrast_studies.management.commands.errors_logger import write_errors_to
 
 
 def test_folder_doesnt_exist():
-    return not (
-        os.path.exists(os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), "data"))
-        or os.path.exists(
-            os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), "../data")
-        )
-    )
+    current_dir = os.path.abspath(os.path.dirname(__file__))
+    data_dir = os.path.join(current_dir, "data")
+    parent_data_dir = os.path.join(current_dir, "../data")
+
+    return not (os.path.exists(data_dir) or os.path.exists(parent_data_dir))
 
 
 class UnContrastDataMigrationTestCase(BaseTestCase):

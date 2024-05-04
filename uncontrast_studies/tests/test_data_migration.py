@@ -1,9 +1,20 @@
+import os
+import unittest
 
 from contrast_api.tests.base import BaseTestCase
 from uncontrast_studies.management.commands.errors_logger import write_errors_to_log
 
 
 # Create your tests here.
+
+
+def test_folder_doesnt_exist():
+    return not (
+        os.path.exists(os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), "data"))
+        or os.path.exists(
+            os.path.join(os.path.dirname(os.path.abspath(os.path.dirname(__file__))), "../data")
+        )
+    )
 
 
 class UnContrastDataMigrationTestCase(BaseTestCase):
@@ -13,6 +24,7 @@ class UnContrastDataMigrationTestCase(BaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
+    @unittest.skipIf(test_folder_doesnt_exist(), "Skipping if test data folder doesn't exist")
     def test_error_logger(self):
         item_1 = {"journal": "invalid journal data", "study_id": "1", "task": "some task", "sample type": "some sample type"}
         item_2 = {"journal": "journal data", "study_id": "missing", "task": "some task", "sample type": "some sample type"}

@@ -65,7 +65,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             "Experimental paradigms.Specific Paradigm": "Bistable percepts (Competition (Monocular))",
         }
         res = get_paradigms_from_data(item_monocular)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 2)
 
     def test_paradigm_competition(self):
@@ -74,7 +74,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             "Experimental paradigms.Specific Paradigm": "Binocular Rivalry (Competition (Binocular))",
         }
         res = get_paradigms_from_data(item_monocular)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 2)
 
     def test_paradigm_psilocybin(self):
@@ -83,7 +83,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             "Experimental paradigms.Specific Paradigm": "Psilocybin (Psychedelic Drugs)",
         }
         res = get_paradigms_from_data(item_monocular)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 4)
 
     def test_paradigm_direct_stimulation(self):
@@ -95,7 +95,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             " + Emergence from MCS (Disorders of Consciousness)",
         }
         res = get_paradigms_from_data(item_monocular)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 6)
 
     def test_paradigm_parser_for_ambiguous_parent_paradigm(self):
@@ -105,7 +105,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
         }
 
         res = get_paradigms_from_data(item_anesthesia)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 4)
 
     def test_paradigm_parser_for_only_child_paradigm(self):
@@ -123,7 +123,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
         }
 
         res = get_paradigms_from_data(item_cueing)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 4)
 
     def test_paradigm_parser_for_multiple_child_paradigms(self):
@@ -133,7 +133,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
         }
 
         res = get_paradigms_from_data(item_doc)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 3)
 
     def test_paradigm_parser_for_multiple_paradigms_with_subtype(self):
@@ -148,7 +148,7 @@ class StudyParserHelpersTestCase(BaseTestCase):
             if (item.name == "Oddball") and (item.sub_type == "Local-Global"):
                 item_exists = True
                 break
-        print(res)
+        # print(res)
         self.assertTrue(item_exists)
         self.assertEqual(len(res), 4)
 
@@ -159,5 +159,5 @@ class StudyParserHelpersTestCase(BaseTestCase):
         }
 
         res = get_paradigms_from_data(item_only_child_and_subtype)
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 6)

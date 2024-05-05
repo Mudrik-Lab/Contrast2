@@ -40,12 +40,15 @@ def resolve_uncon_suppression_method(item: dict, index: str):
         else:
             for resolved_specific_method in specific_methods:
                 if resolved_specific_method in uncon_suppression_methods[resolved_main_method]:
-                    suppression_method = UnconResolvedSuppressionMethodData(main=resolved_main_method,
-                                                                            specific=resolved_specific_method)
+                    suppression_method = UnconResolvedSuppressionMethodData(
+                        main=resolved_main_method, specific=resolved_specific_method
+                    )
                     suppression_methods_list.append(suppression_method)
                 else:
-                    raise SuppressionMethodError(f"specific suppression method {resolved_specific_method} is invalid "
-                                                 f"for main suppression method: {resolved_main_method}, index {index}")
+                    raise SuppressionMethodError(
+                        f"specific suppression method {resolved_specific_method} is invalid "
+                        f"for main suppression method: {resolved_main_method}, index {index}"
+                    )
 
     return suppression_methods_list
 

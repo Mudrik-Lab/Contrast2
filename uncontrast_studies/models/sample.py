@@ -12,7 +12,9 @@ class UnConSample(models.Model):
     type = models.CharField(null=False, blank=False, choices=UnConSampleChoices.choices, max_length=30)
     size_included = models.IntegerField(null=False, blank=False)
     size_total = models.IntegerField(null=False, blank=False)
-    size_excluded = models.IntegerField(null=True, blank=True, verbose_name="how many participants were excluded based on awareness measure?")
+    size_excluded = models.IntegerField(
+        null=True, blank=True, verbose_name="how many participants were excluded based on awareness measure?"
+    )
 
     history = HistoricalRecords()
 

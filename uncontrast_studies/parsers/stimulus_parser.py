@@ -2,8 +2,13 @@ from collections import namedtuple
 
 from configuration.uncontrast_initial_data_types import uncon_stimulus_categories, uncon_stimulus_modalities
 from contrast_api.choices import PresentationModeChoices
-from contrast_api.data_migration_functionality.errors import MissingStimulusCategoryError, StimulusModalityError, \
-    StimulusModeOfPresentationError, StimulusDurationError, StimulusMetadataError
+from contrast_api.data_migration_functionality.errors import (
+    MissingStimulusCategoryError,
+    StimulusModalityError,
+    StimulusModeOfPresentationError,
+    StimulusDurationError,
+    StimulusMetadataError,
+)
 
 
 def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
@@ -32,7 +37,8 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
 
     if stimuli_sub_category_data not in uncon_stimulus_categories[stimuli_category_data]:
         raise MissingStimulusCategoryError(
-            f"{stimuli_sub_category_data} (index {index}) not valid for stimulus category {stimuli_category_data}")
+            f"{stimuli_sub_category_data} (index {index}) not valid for stimulus category {stimuli_category_data}"
+        )
     else:
         stimulus_sub_category = stimuli_sub_category_data
 
@@ -47,7 +53,8 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         mode_of_presentation = PresentationModeChoices.SUBLIMINAL
     else:
         raise StimulusModeOfPresentationError(
-            f"{stimuli_mode_of_presentation_data} (index {index}) not valid for stimulus mode of presentation")
+            f"{stimuli_mode_of_presentation_data} (index {index}) not valid for stimulus mode of presentation"
+        )
 
     try:
         if stimuli_duration_data in NULL_VALUES:
@@ -68,18 +75,22 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
     except TypeError:
         raise StimulusDurationError(f"invalid stimulus numeric data, {index}")
 
-    return UnconResolvedStimulusData(category=stimulus_category, sub_category=stimulus_sub_category,
-                                     modality=stimulus_modality,
-                                     mode_of_presentation=mode_of_presentation, duration=stimulus_duration,
-                                     soa=stimulus_soa,
-                                     number_of_stimuli=stimulus_number_of_stimuli)
+    return UnconResolvedStimulusData(
+        category=stimulus_category,
+        sub_category=stimulus_sub_category,
+        modality=stimulus_modality,
+        mode_of_presentation=mode_of_presentation,
+        duration=stimulus_duration,
+        soa=stimulus_soa,
+        number_of_stimuli=stimulus_number_of_stimuli,
+    )
 
 
 def resolve_uncon_stimuli_metadata(item, index):
     is_target_stimuli_data = str(item["Stimuli Are there also non-suppressed stimuli?"]).lower().strip()
-    is_target_stimuli_same_as_prime_data = str(
-        item["Stimuli Is the non-suppressed stimulus the same as prime?"]
-    ).lower().strip()
+    is_target_stimuli_same_as_prime_data = (
+        str(item["Stimuli Is the non-suppressed stimulus the same as prime?"]).lower().strip()
+    )
 
     if is_target_stimuli_data == "yes":
         is_target_stimuli = True
@@ -100,8 +111,10 @@ def resolve_uncon_stimuli_metadata(item, index):
     )
 
 
-UnconResolvedStimulusData = namedtuple("UnconResolvedStimulusData",
-                                       ["category", "sub_category", "modality", "mode_of_presentation",
-                                        "duration", "soa", "number_of_stimuli"])
-UnconResolvedStimuliMetadata = namedtuple("UnconResolvedStimuliMetadata",
-                                          ["is_target_stimuli", "is_target_same_as_prime"])
+UnconResolvedStimulusData = namedtuple(
+    "UnconResolvedStimulusData",
+    ["category", "sub_category", "modality", "mode_of_presentation", "duration", "soa", "number_of_stimuli"],
+)
+UnconResolvedStimuliMetadata = namedtuple(
+    "UnconResolvedStimuliMetadata", ["is_target_stimuli", "is_target_same_as_prime"]
+)

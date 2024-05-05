@@ -104,7 +104,6 @@ class UnConFindingSerializer(serializers.ModelSerializer):
 
 
 class UnConProcessingDomainSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = UnConProcessingDomain
         fields = ("experiment", "id", "main")

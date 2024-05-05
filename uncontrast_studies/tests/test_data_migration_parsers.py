@@ -1,4 +1,5 @@
 from contrast_api.tests.base import BaseTestCase
+from uncontrast_studies.parsers.consciousness_measure_parser import resolve_consciousness_measures
 from uncontrast_studies.parsers.finding_parser import resolve_uncon_findings
 from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
@@ -106,19 +107,46 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         }
 
         res = resolve_uncon_findings(item=item_1, index="1")
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 5)
 
         res = resolve_uncon_findings(item=item_2, index="2")
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 1)
 
         res = resolve_uncon_findings(item=item_3, index="3")
-        print(res)
+        # print(res)
         self.assertEqual(len(res), 2)
 
     def test_consciousness_measures_parser(self):
-        pass
+        item_1 = {
+            "Consciousness Measures Main type": "Objective",
+            "Consciousness Measures Specific type": "Low-level discrimination",
+            "Consciousness Measures Phase": "Separate sample",
+            "Consciousness Measures Number of trials for the objective measure": "320",
+            "Consciousness Measures Is the measure taken from the same participants as the main task?": "No",
+            "Consciousness Measures Number of participants of the awareness test": "8",
+            "Consciousness Measures Is the performance above chance?": "No",
+            "Consciousness Measures Were trials excluded from the analysis based on the measure?": "No",
+        }
+        item_2 = {
+            "Consciousness Measures Main type": "Objective; Subjective",
+            "Consciousness Measures Specific type": "High-level discrimination; Perception Awareness Scale (PAS)",
+            "Consciousness Measures Phase": "Post-experiment; Trial-by-trial",
+            "Consciousness Measures Number of trials for the objective measure": "60",
+            "Consciousness Measures Is the measure taken from the same participants as the main task?": "Yes",
+            "Consciousness Measures Number of participants of the awareness test": "",
+            "Consciousness Measures Is the performance above chance?": "No",
+            "Consciousness Measures Were trials excluded from the analysis based on the measure?": "Yes",
+        }
+
+        res = resolve_consciousness_measures(item=item_1, index="1")
+        # print(res)
+        self.assertEqual(len(res), 1)
+
+        res = resolve_consciousness_measures(item=item_2, index="2")
+        # print(res)
+        self.assertEqual(len(res), 2)
 
     def test_stimuli_parser(self):
         pass

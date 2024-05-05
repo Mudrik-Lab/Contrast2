@@ -9,8 +9,16 @@ from contrast_api.data_migration_functionality.errors import (
     IncoherentSampleDataError,
     SampleTypeError,
     InvalidConsciousnessMeasureDataError,
-    StimulusDurationError, ParadigmError, TaskTypeError, ProcessingDomainError, StimulusModalityError,
-    StimulusModeOfPresentationError, StimulusMetadataError, SampleSizeError, SuppressionMethodError, FindingError,
+    StimulusDurationError,
+    ParadigmError,
+    TaskTypeError,
+    ProcessingDomainError,
+    StimulusModalityError,
+    StimulusModeOfPresentationError,
+    StimulusMetadataError,
+    SampleSizeError,
+    SuppressionMethodError,
+    FindingError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
@@ -19,16 +27,17 @@ from uncontrast_studies.management.commands.errors_logger import write_errors_to
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/table_for_UnConTrust.xls"
+FILE_PATH = "uncontrast_studies/data/______Maor's dataset for migration - one line per experiment first part.xls"
 ERROR_LOG_PATH = "uncontrast_studies/data/UnContrast_Errors_Log.xlsx"
+
 
 class Command(BaseCommand):
     help = "Load uncon existing data"
 
     def handle(self, *args, **options):
         # Read .xlsx file and convert to dict
-        experiments_data_list = get_list_from_excel(FILE_PATH, sheet_name="Sheet2")
-        studies_historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="table_for_UnConTrust_metadata")
+        experiments_data_list = get_list_from_excel(FILE_PATH, sheet_name="experiments")
+        studies_historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="Metadata")
 
         logs = {
             "studies_problematic_data_log": [],
@@ -44,9 +53,8 @@ class Command(BaseCommand):
             "invalid_stimuli_presentation_mode_data_log": [],
             "stimuli_duration_data_log": [],
             "invalid_stimuli_metadata_log": [],
-            "sample_incoherent_data_log": [],
             "sample_type_errors_log": [],
-            "sample_size_errors_log": []
+            "sample_size_errors_log": [],
         }
 
         # iterate over studies
@@ -106,10 +114,6 @@ class Command(BaseCommand):
             except MissingStimulusCategoryError:
                 logs["stimuli_missing_object_data_log"].append(item)
                 logger.exception(f"row #{index} did not find matching stimulus category or sub-category")
-
-            except IncoherentSampleDataError:
-                logs["sample_incoherent_data_log"].append(item)
-                logger.exception(f"row #{index} has incoherent sample data")
 
             except SampleTypeError:
                 logs["sample_type_errors_log"].append(item)

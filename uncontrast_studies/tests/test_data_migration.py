@@ -25,9 +25,24 @@ class UnContrastDataMigrationTestCase(BaseTestCase):
 
     @unittest.skipIf(test_folder_doesnt_exist(), "Skipping if test data folder doesn't exist")
     def test_error_logger(self):
-        item_1 = {"journal": "invalid journal data", "study_id": "1", "task": "some task", "sample type": "some sample type"}
-        item_2 = {"journal": "journal data", "study_id": "missing", "task": "some task", "sample type": "some sample type"}
-        item_3 = {"journal": "journal data", "study_id": "2", "task": "invalid task data", "sample type": "some sample type"}
+        item_1 = {
+            "journal": "invalid journal data",
+            "study_id": "1",
+            "task": "some task",
+            "sample type": "some sample type",
+        }
+        item_2 = {
+            "journal": "journal data",
+            "study_id": "missing",
+            "task": "some task",
+            "sample type": "some sample type",
+        }
+        item_3 = {
+            "journal": "journal data",
+            "study_id": "2",
+            "task": "invalid task data",
+            "sample type": "some sample type",
+        }
         item_4 = {"journal": "journal data", "study_id": "3", "task": "some task", "sample type": "invalid sample type"}
         logs = {
             "studies_problematic_data_log": [item_1],
@@ -36,14 +51,9 @@ class UnContrastDataMigrationTestCase(BaseTestCase):
             "invalid_task_data_log": [item_3],
             "invalid_finding_data_log": [],
             "sample_type_errors_log": [item_4],
-            "sample_size_errors_log": []
-                }
+            "sample_size_errors_log": [],
+        }
         test_path = "uncontrast_studies/data/test_errors_log.xlsx"
         res = write_errors_to_log(logs, test_path)
         print(res)
         self.assertEqual(len(res), 4)
-
-
-
-
-

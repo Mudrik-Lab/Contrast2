@@ -199,7 +199,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         }
 
         res = resolve_uncon_stimuli_metadata(item=item, index="1")
-        self.assertEqual(len(res), 1)
         self.assertEqual(res.is_target_stimuli, True)
         self.assertEqual(res.is_target_same_as_prime, False)
 

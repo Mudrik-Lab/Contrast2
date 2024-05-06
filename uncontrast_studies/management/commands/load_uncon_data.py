@@ -27,7 +27,7 @@ from uncontrast_studies.management.commands.errors_logger import write_errors_to
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/______Maor's dataset for migration - one line per experiment first part.xls"
+FILE_PATH = "uncontrast_studies/data/dataset_05052024.xlsx"
 ERROR_LOG_PATH = "uncontrast_studies/data/UnContrast_Errors_Log.xlsx"
 
 
@@ -67,13 +67,16 @@ class Command(BaseCommand):
                 try:
                     with transaction.atomic():
                         create_study(item=study_item, unconsciousness=True)
-                        created_studies.append(study_id)
+                        # created_studies.append(study_id)
                 except ProblemInStudyExistingDataException:
                     logs["studies_problematic_data_log"].append(study_item)
 
         # iterate over experiments
         for item in experiments_data_list:
             index = int(item["exp"])
+            is_study_in_metadata = item["is study in metadata"]
+            if is_study_in_metadata == "0" or is_study_in_metadata == 0:
+                continue
             try:
                 with transaction.atomic():
                     process_uncon_row(item)

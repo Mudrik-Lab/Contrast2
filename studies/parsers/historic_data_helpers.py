@@ -21,8 +21,8 @@ from contrast_api.data_migration_functionality.errors import (
     ProblemInTheoryDrivenExistingDataException,
     IncoherentSampleDataError,
     SampleTypeError,
-    IncoherentStimuliData,
-    MissingValueInStimuli,
+    IncoherentStimuliDataError,
+    MissingValueInStimuliError,
     StimulusDurationError,
     ParadigmError,
 )
@@ -254,12 +254,12 @@ def get_stimuli_from_data(item: dict) -> List[StimulusFromData]:
     stimuli_durations = str(item["Stimuli Features.Duration"]).split("+")
 
     if not len(stimuli_categories) == len(stimuli_modalities) == len(stimuli_durations):
-        raise IncoherentStimuliData("not the same number of categories to modalities to durations")
+        raise IncoherentStimuliDataError("not the same number of categories to modalities to durations")
 
     for category, modality, duration in zip(stimuli_categories, stimuli_modalities, stimuli_durations):
         # resolve category and sub-category (if existing)
         if (category == "") or (modality == ""):
-            raise MissingValueInStimuli("missing value for category of modality")
+            raise MissingValueInStimuliError("missing value for category of modality")
         if "(" not in category:
             resolved_category = category.strip()
             resolved_sub_category = None

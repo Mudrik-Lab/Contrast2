@@ -22,11 +22,11 @@ class InvalidConsciousnessMeasureDataError(Exception):
     pass
 
 
-class IncoherentStimuliData(Exception):
+class IncoherentStimuliDataError(Exception):
     pass
 
 
-class MissingValueInStimuli(Exception):
+class MissingValueInStimuliError(Exception):
     pass
 
 

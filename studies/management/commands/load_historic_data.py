@@ -16,8 +16,8 @@ from contrast_api.data_migration_functionality.errors import (
     IncoherentSampleDataError,
     SampleTypeError,
     InvalidConsciousnessMeasureDataError,
-    IncoherentStimuliData,
-    MissingValueInStimuli,
+    IncoherentStimuliDataError,
+    MissingValueInStimuliError,
     StimulusDurationError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
@@ -72,7 +72,7 @@ class Command(BaseCommand):
                     process_row(item)
                     print(f"row #{index} completed")
 
-            except IncoherentStimuliData:
+            except IncoherentStimuliDataError:
                 stimuli_incoherent_data_log.append(item)
                 logger.exception(f"row #{index} has incoherent stimuli data")
 
@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 paradigms_log.append(item)
                 logger.exception(f"row #{index} has bad paradigm data")
 
-            except MissingValueInStimuli:
+            except MissingValueInStimuliError:
                 stimuli_missing_value_data_log.append(item)
                 logger.exception(f"row #{index} is missing 1 or more values in stimuli data")
 

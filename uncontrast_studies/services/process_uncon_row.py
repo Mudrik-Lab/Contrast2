@@ -32,7 +32,7 @@ from uncontrast_studies.models import (
 from uncontrast_studies.parsers.consciousness_measure_parser import resolve_consciousness_measures
 from uncontrast_studies.parsers.uncon_data_parsers import (
     resolve_uncon_paradigm,
-    resolve_uncon_task,
+    resolve_uncon_task_type,
     resolve_uncon_processing_domains,
 )
 from uncontrast_studies.parsers.stimulus_parser import (
@@ -108,7 +108,7 @@ def process_uncon_row(item: dict):
     experiment = create_uncon_experiment(item=item, index=experiment_index)
 
     # tasks
-    task_types = resolve_uncon_task(item=item, index=experiment_index)
+    task_types = resolve_uncon_task_type(item=item, index=experiment_index)
     for task_type in task_types:
         task = UnConTaskType.objects.get(name=task_type)
         UnConTask.objects.create(experiment=experiment, type=task)

@@ -18,7 +18,7 @@ def resolve_uncon_paradigm(item, index: str):
     return UnconResolvedParadigmData(main=main_paradigm, specific=specific_paradigm)
 
 
-def resolve_uncon_task(item: dict, index: str):
+def resolve_uncon_task_type(item: dict, index: str):
     task_data_list = clean_list_from_data(item["Tasks Type"])
     resolved_task_data_list = []
 

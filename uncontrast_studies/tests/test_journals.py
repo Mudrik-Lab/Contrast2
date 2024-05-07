@@ -49,8 +49,8 @@ class TestJournalsGraphTestCase(UnContrastBaseTestCase):
             mode_of_presentation=PresentationModeChoices.SUBLIMINAL,
         )
 
-        sample_1 = dict(type=UnConSampleChoices.CHILDREN, size_included=10, size_excluded=6)
-        sample_2 = dict(type=UnConSampleChoices.HEALTHY_ADULTS, size_included=20, size_excluded=8)
+        sample_1 = dict(type=UnConSampleChoices.CHILDREN, size_included=10, size_excluded=6, size_total=4)
+        sample_2 = dict(type=UnConSampleChoices.HEALTHY_ADULTS, size_included=20, size_excluded=8, size_total=12)
         unconsciousness_measure_1 = dict(
             phase=unconsciousness_measure_phase,
             type=unconsciousness_measure_category_type,

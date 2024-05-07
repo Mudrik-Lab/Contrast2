@@ -6,7 +6,6 @@ from django.db import transaction
 from contrast_api.data_migration_functionality.create_study import create_study
 from contrast_api.data_migration_functionality.errors import (
     MissingStimulusCategoryError,
-    IncoherentSampleDataError,
     SampleTypeError,
     InvalidConsciousnessMeasureDataError,
     StimulusDurationError,
@@ -18,16 +17,16 @@ from contrast_api.data_migration_functionality.errors import (
     StimulusMetadataError,
     SampleSizeError,
     SuppressionMethodError,
-    FindingError,
+    FindingError, IncoherentStimuliDataError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
-from uncontrast_studies.management.commands.process_uncon_row import process_uncon_row
-from uncontrast_studies.management.commands.errors_logger import write_errors_to_log
+from uncontrast_studies.services.process_uncon_row import process_uncon_row
+from uncontrast_studies.services.errors_logger import write_errors_to_log
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/______Maor's dataset for migration - one line per experiment first part.xls"
+FILE_PATH = "uncontrast_studies/data/dataset_05052024.xlsx"
 ERROR_LOG_PATH = "uncontrast_studies/data/UnContrast_Errors_Log.xlsx"
 
 
@@ -49,6 +48,7 @@ class Command(BaseCommand):
             "invalid_finding_data_log": [],
             "invalid_consciousness_measure_data_log": [],
             "stimuli_missing_object_data_log": [],
+            "incoherent_stimuli_data_log": [],
             "invalid_stimuli_modality_data_log": [],
             "invalid_stimuli_presentation_mode_data_log": [],
             "stimuli_duration_data_log": [],
@@ -67,13 +67,16 @@ class Command(BaseCommand):
                 try:
                     with transaction.atomic():
                         create_study(item=study_item, unconsciousness=True)
-                        created_studies.append(study_id)
+                        # created_studies.append(study_id)
                 except ProblemInStudyExistingDataException:
                     logs["studies_problematic_data_log"].append(study_item)
 
         # iterate over experiments
         for item in experiments_data_list:
             index = int(item["exp"])
+            is_study_in_metadata = item["is study in metadata"]
+            if is_study_in_metadata == "0" or is_study_in_metadata == 0:
+                continue
             try:
                 with transaction.atomic():
                     process_uncon_row(item)
@@ -94,6 +97,10 @@ class Command(BaseCommand):
             except SuppressionMethodError:
                 logs["invalid_suppression_method_data_log"].append(item)
                 logger.exception(f"row #{index} has invalid suppression method data")
+
+            except IncoherentStimuliDataError:
+                logs["incoherent_stimuli_data_log"].append(item)
+                logger.exception(f"row #{index} has incoherent stimulus data")
 
             except StimulusModeOfPresentationError:
                 logs["invalid_stimuli_presentation_mode_data_log"].append(item)

@@ -28,8 +28,13 @@ def bootstrap_type_uncon_models(apps, schema_editor):
             UnConsciousnessMeasureSubType.objects.get_or_create(name=specific_type, type=parent_type)
 
     UnConMainParadigm = apps.get_model("uncontrast_studies", "UnConMainParadigm")
-    for paradigm in uncon_paradigms.keys():
+    UnConSpecificParadigm = apps.get_model("uncontrast_studies", "UnConSpecificParadigm")
+    for paradigm, list_of_specific_paradigms in uncon_paradigms.items():
         UnConMainParadigm.objects.get_or_create(name=paradigm)
+        for specific_paradigm in list_of_specific_paradigms:
+            main = UnConMainParadigm.objects.get(name=paradigm)
+            UnConSpecificParadigm.objects.get_or_create(name=specific_paradigm, main=main)
+
 
     UnConProcessingMainDomain = apps.get_model("uncontrast_studies", "UnConProcessingMainDomain")
     for domain in uncon_processing_domains:

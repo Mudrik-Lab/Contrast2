@@ -2,18 +2,19 @@ from collections import namedtuple
 
 from configuration.uncontrast_initial_data_types import uncon_suppression_methods
 from contrast_api.data_migration_functionality.errors import SuppressionMethodError
+from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
 
 
 def resolve_uncon_suppression_method(item: dict, index: str):
     suppression_methods_list = []
     main_methods = []
     specific_methods = []
-    main_suppression_methods_data = str(item["Suppression method Main suppression method"]).split(";")
-    specific_suppression_methods_data = str(item["Suppression method Specific suppression method"]).split(";")
+    main_suppression_methods_data = clean_list_from_data(item["Suppression method Main suppression method"])
+    specific_suppression_methods_data = clean_list_from_data(item["Suppression method Specific suppression method"])
 
     for main_method in main_suppression_methods_data:
-        if main_method.strip() in uncon_suppression_methods.keys():
-            resolved_main_method = main_method.strip()
+        if main_method in uncon_suppression_methods.keys():
+            resolved_main_method = main_method
             main_methods.append(resolved_main_method)
         else:
             raise SuppressionMethodError(f"invalid main suppression method {main_method}, index {index}")
@@ -21,8 +22,8 @@ def resolve_uncon_suppression_method(item: dict, index: str):
     for specific_method in specific_suppression_methods_data:
         is_match = False
         for main_method in main_methods:
-            if specific_method.strip() in uncon_suppression_methods[main_method]:
-                resolved_specific_method = specific_method.strip()
+            if specific_method in uncon_suppression_methods[main_method]:
+                resolved_specific_method = specific_method
                 specific_methods.append(resolved_specific_method)
                 is_match = True
             else:

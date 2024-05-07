@@ -86,7 +86,13 @@ jobs:
         working-directory: ./ContrastFront
 
       - name: adding front code to django
-        run: cp -r ./ContrastFront/dist/* frontapp # TODO replace this to new setup
+        run: cp -r ./ContrastFront/dist/* frontapp
+
+      - name: adding front code to django - contrast
+        run: cp -r ./ContrastFront/dist-contrast/* frontapp/contrast
+
+      - name: adding front code to django - uncontrast front
+        run: cp -r ./ContrastFront/dist-uncontrast/* frontapp/uncontrast
 
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)

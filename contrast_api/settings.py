@@ -290,6 +290,11 @@ class Base(Configuration):
     LOGIN_URL = "two_factor:login"
     TWO_FACTOR_REMEMBER_COOKIE_AGE = 600
 
+    SPA_APPS_MAPPING = {
+        "contrastdb.tau.ac.il": 'contrastdb',
+        "uncontrastdb.tau.ac.il": 'uncontrastdb',
+    }
+
 
 class Development(Base):
     DEBUG = False

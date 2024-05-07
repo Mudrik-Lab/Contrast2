@@ -27,7 +27,7 @@ class MultiSPAMiddleware(SPAMiddleware):
             for url, static_file in self.files.items():
                 if url.endswith(index_page_suffix):
                     # to be frontend-routed
-                    self.SPA_ROOT_MAPPING[app] = static_file
+                    self.SPA_ROOT_MAPPING[domain] = static_file
 
     def update_files_dictionary(self, *args):
         super(MultiSPAMiddleware, self).update_files_dictionary(*args)

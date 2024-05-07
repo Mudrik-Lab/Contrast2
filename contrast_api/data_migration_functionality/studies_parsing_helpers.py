@@ -57,6 +57,7 @@ countries_override = {"United States": "United States of America"}
 def parse_country_names_to_codes(country_names: List[str]) -> List[str]:
     country_codes = []
     for name in country_names:
+        name = name.strip()
         code = countries.by_name(name)
         if len(code) == 0:
             if name in countries_override.keys():

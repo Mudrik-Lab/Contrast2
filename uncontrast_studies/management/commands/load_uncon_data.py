@@ -17,7 +17,7 @@ from contrast_api.data_migration_functionality.errors import (
     StimulusMetadataError,
     SampleSizeError,
     SuppressionMethodError,
-    FindingError,
+    FindingError, IncoherentStimuliDataError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
@@ -48,6 +48,7 @@ class Command(BaseCommand):
             "invalid_finding_data_log": [],
             "invalid_consciousness_measure_data_log": [],
             "stimuli_missing_object_data_log": [],
+            "incoherent_stimuli_data_log": [],
             "invalid_stimuli_modality_data_log": [],
             "invalid_stimuli_presentation_mode_data_log": [],
             "stimuli_duration_data_log": [],
@@ -96,6 +97,10 @@ class Command(BaseCommand):
             except SuppressionMethodError:
                 logs["invalid_suppression_method_data_log"].append(item)
                 logger.exception(f"row #{index} has invalid suppression method data")
+
+            except IncoherentStimuliDataError:
+                logs["incoherent_stimuli_data_log"].append(item)
+                logger.exception(f"row #{index} has incoherent stimulus data")
 
             except StimulusModeOfPresentationError:
                 logs["invalid_stimuli_presentation_mode_data_log"].append(item)

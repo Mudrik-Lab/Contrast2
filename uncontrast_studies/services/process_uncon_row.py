@@ -114,15 +114,14 @@ def process_uncon_row(item: dict):
         UnConTask.objects.create(experiment=experiment, type=task)
 
     # samples
-    samples = resolve_uncon_sample(item=item, index=experiment_index)
-    for sample in samples:
-        UnConSample.objects.create(
-            experiment=experiment,
-            type=sample.sample_type,
-            size_included=sample.included_size,
-            size_total=sample.total_size,
-            size_excluded=sample.excluded_size,
-        )
+    sample = resolve_uncon_sample(item=item, index=experiment_index)
+    UnConSample.objects.create(
+        experiment=experiment,
+        type=sample.sample_type,
+        size_included=sample.included_size,
+        size_total=sample.total_size,
+        size_excluded=sample.excluded_size,
+    )
 
     # stimuli
     prime_stimuli = resolve_uncon_stimuli(item=item, index=experiment_index, prime=True)

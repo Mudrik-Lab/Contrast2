@@ -91,7 +91,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
 
     try:
         if stimuli_number_of_stimuli_data in NULL_VALUES:
-            stimulus_number_of_stimuli = None
+            stimulus_number_of_stimuli = 0
         else:
             stimulus_number_of_stimuli = int(stimuli_number_of_stimuli_data)
 

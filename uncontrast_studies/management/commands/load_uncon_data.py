@@ -144,3 +144,5 @@ class Command(BaseCommand):
 
         # iterate over invalid-data logs and add them to .xlsx file in respective sheets
         write_errors_to_log(logs, ERROR_LOG_PATH)
+
+        print("data loading completed")

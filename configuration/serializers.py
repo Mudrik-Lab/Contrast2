@@ -161,7 +161,6 @@ class UnConStudiesConfigurationSerializer(serializers.Serializer):
     available_tasks_types = GenericTypeSerializer(many=True)
     available_suppression_method_types = GenericTypeSerializer(many=True)
     available_suppression_method_sub_types = UnConSuppressionMethodSubTypeSerializer(many=True)
-    available_processing_sub_domain_types = GenericTypeSerializer(many=True)
     available_processing_main_domain_types = GenericTypeSerializer(many=True)
     available_main_paradigm_type = GenericTypeSerializer(many=True)
     available_experiment_types = ExperimentTypeSerializer(many=True)

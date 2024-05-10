@@ -60,14 +60,14 @@ class Command(BaseCommand):
         # iterate over studies
         created_studies = []
         for study_item in studies_historic_data_list:
-            study_id = study_item["StudyID"]
-            if study_id in created_studies:
+            study_doi = study_item["DOI"]
+            if study_doi in created_studies:
                 continue
             else:
                 try:
                     with transaction.atomic():
                         create_study(item=study_item, unconsciousness=True)
-                        # created_studies.append(study_id)
+                        created_studies.append(study_doi)
                 except ProblemInStudyExistingDataException:
                     logs["studies_problematic_data_log"].append(study_item)
 

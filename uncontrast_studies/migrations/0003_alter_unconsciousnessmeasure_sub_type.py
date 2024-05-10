@@ -5,7 +5,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("uncontrast_studies", "0002_auto_20240405_1947"),
     ]

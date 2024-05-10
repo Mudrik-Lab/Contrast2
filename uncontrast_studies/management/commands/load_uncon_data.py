@@ -17,7 +17,8 @@ from contrast_api.data_migration_functionality.errors import (
     StimulusMetadataError,
     SampleSizeError,
     SuppressionMethodError,
-    FindingError, IncoherentStimuliDataError,
+    FindingError,
+    IncoherentStimuliDataError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException

@@ -2,8 +2,11 @@ from contrast_api.tests.base import BaseTestCase
 from uncontrast_studies.parsers.consciousness_measure_parser import resolve_consciousness_measures
 from uncontrast_studies.parsers.finding_parser import resolve_uncon_findings
 from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample
-from uncontrast_studies.parsers.stimulus_parser import resolve_uncon_stimuli_metadata, resolve_uncon_stimuli, \
-    is_target_duplicate
+from uncontrast_studies.parsers.stimulus_parser import (
+    resolve_uncon_stimuli_metadata,
+    resolve_uncon_stimuli,
+    is_target_duplicate,
+)
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.uncon_data_parsers import (
     resolve_uncon_paradigm,
@@ -211,7 +214,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Words",
             "Stimuli Modality 2": "Visual",
-            "Stimuli Number of different stimuli used in the experiment 2": "80"
+            "Stimuli Number of different stimuli used in the experiment 2": "80",
         }
 
         item_different_sub_category = {
@@ -222,7 +225,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Letters",
             "Stimuli Modality 2": "Visual",
-            "Stimuli Number of different stimuli used in the experiment 2": "80"
+            "Stimuli Number of different stimuli used in the experiment 2": "80",
         }
 
         item_different_num_of_stimuli = {
@@ -233,7 +236,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Words",
             "Stimuli Modality 2": "Visual",
-            "Stimuli Number of different stimuli used in the experiment 2": "80"
+            "Stimuli Number of different stimuli used in the experiment 2": "80",
         }
 
         item_different_modality = {
@@ -244,7 +247,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Words",
             "Stimuli Modality 2": "Auditory",
-            "Stimuli Number of different stimuli used in the experiment 2": "80"
+            "Stimuli Number of different stimuli used in the experiment 2": "80",
         }
 
         res = is_target_duplicate(item_identical)
@@ -255,4 +258,3 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertFalse(res)
         res = is_target_duplicate(item_different_modality)
         self.assertFalse(res)
-

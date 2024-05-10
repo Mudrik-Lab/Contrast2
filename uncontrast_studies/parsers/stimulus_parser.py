@@ -80,9 +80,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         is_same_length = len_category == len_sub_category == len_duration == len_soa
 
         if not is_same_length:
-            raise IncoherentStimuliDataError(
-                f"incoherent data for stimuli; index: {index} prime:{prime}"
-            )
+            raise IncoherentStimuliDataError(f"incoherent data for stimuli; index: {index} prime:{prime}")
 
         # resolve singular data for prime stimuli
         if stimuli_mode_of_presentation_data == "liminal":
@@ -177,9 +175,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
                     )
                 )
         else:
-            raise IncoherentStimuliDataError(
-                f"incoherent data for stimuli; index: {index} prime:{prime}"
-            )
+            raise IncoherentStimuliDataError(f"incoherent data for stimuli; index: {index} prime:{prime}")
     return resolved_stimuli
 
 

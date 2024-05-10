@@ -96,7 +96,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Experiment's Findings is_important": "missing; missing; missing; missing; missing",
         }
         item_2 = {
-            "Experiment's Findings Outcome": "Accuracy (notes for finding)",
+            "Experiment's Findings Outcome": "Accuracy (p(C))",
             "Experiment's Findings Is the effect significant?": "Yes",
             "Experiment's Findings Number of trials": "24",
             "Experiment's Findings is_important": "Yes",

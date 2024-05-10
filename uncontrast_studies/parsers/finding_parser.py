@@ -26,7 +26,12 @@ def resolve_uncon_findings(item: dict, index: str):
             if "(" in row_outcome:
                 split_outcome_data = row_outcome.split("(")
                 outcome = split_outcome_data[0].strip()
-                outcome_notes = split_outcome_data[1].split(")")[0].strip()
+                if "))" not in row_outcome:
+                    outcome_notes = split_outcome_data[1].split(")")[0].strip()
+                else:
+                    note_part_1 = split_outcome_data[1].split(")")[0].strip()
+                    note_part_2 = split_outcome_data[2].split("))")[0]
+                    outcome_notes = f"{note_part_1}({note_part_2})"
             else:
                 outcome = row_outcome
                 outcome_notes = None

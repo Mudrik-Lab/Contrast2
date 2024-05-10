@@ -44,7 +44,7 @@ def create_study(item: dict, unconsciousness):
     country_codes = parse_country_names_to_codes(country_names)
 
     try:
-        study = Study.objects.get(doi=DOI)
+        study = Study.objects.get(DOI=DOI)
     except ObjectDoesNotExist:
         study = Study.objects.create(
             DOI=DOI,
@@ -68,7 +68,7 @@ def create_study(item: dict, unconsciousness):
             authors.append(author)
         for author in authors:
             study.authors.add(author)
-            
+
         logger.info(f"study {study.DOI} created")
 
     return study

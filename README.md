@@ -82,29 +82,29 @@ We are currently using postgres. You need to set up a user,
 
 
 5. To load the pre-existing data you need to: 
-* [Download this file](https://docs.google.com/spreadsheets/d/180WivImbqDv6MBabsHIt2dqvHKS-xDZz/edit?usp=sharing&ouid=115553053451052458030&rtpof=true&sd=true)
-in .xlsx format for **ConTrast**, or
-* [Download this file](https://docs.google.com/spreadsheets/d/1ON1fUKPinoE8yiowCLTPos_GnWdUrN1i/edit?usp=sharing&ouid=115553053451052458030&rtpof=true&sd=true) in .xlsx format for **UnConTrast**
+   6. 
+      * [Download this file](https://docs.google.com/spreadsheets/d/180WivImbqDv6MBabsHIt2dqvHKS-xDZz/edit?usp=sharing&ouid=115553053451052458030&rtpof=true&sd=true)
+      in .xlsx format for **ConTrast**, or
+      * [Download this file](https://docs.google.com/spreadsheets/d/1ON1fUKPinoE8yiowCLTPos_GnWdUrN1i/edit#gid=321810273) in .xlsx format for **UnConTrast**
+   7.
+      * Save the file in
+      ``` /studies/data``` directory for **ConTrast**, or
+      * Save the file in
+      ``` /uncontrast_studies/data``` directory for **UnConTrast**
+   8. 
+      * Run this command for **ConTrast**:
 
+         ```
+          python manage.py load_historic_data 
+        ```
+      * Run this command for **UnConTrast**:
+
+         ```
+          python manage.py load_uncon_data 
+         ```   
 Note: if you need to do this in bash (for example when migrating on the server):
-1. Copy the file to your drive and temporarily allow open access to viewer to view
-2. loFollow the technique [here](https://chemicloud.com/blog/download-google-drive-files-using-wget/)
-* Save the file in
-``` /studies/data``` directory for **ConTrast**, or
-* Save the file in
-``` /uncontrast_studies/data``` directory for **UnConTrast**
-
-* Run this command for **ConTrast**:
-
-   ```
-    python manage.py load_historic_data 
-  ```
-* Run this command for **UnConTrast**:
-
-   ```
-    python manage.py load_uncon_data 
-   ```   
-
+      1. Copy the file to your drive and temporarily allow open access to viewer to view
+      2. loFollow the technique [here](https://chemicloud.com/blog/download-google-drive-files-using-wget/)
 6. Create a superuser for yourself to start working
    ```
     python manage.py createsuperuser 

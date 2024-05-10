@@ -50,8 +50,8 @@ class UnConsciousnessMeasure(models.Model):
         related_name="unconsciousness_measures",
     )
     sub_type = models.ForeignKey(
-        blank=False,
-        null=False,
+        blank=True,
+        null=True,
         on_delete=PROTECT,
         to=UnConsciousnessMeasureSubType,
         related_name="unconsciousness_measures",

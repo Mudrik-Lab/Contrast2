@@ -164,9 +164,9 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Category": "Pictures; Lingual",
             "Stimuli Sub-category": "Faces; Words",
             "Stimuli Modality": "Visual",
-            "Stimuli Duration": "17",
+            "Stimuli Duration": "17; 13",
             "Stimuli Number of different stimuli used in the experiment": "missing",
-            "Stimuli SOA": "117",
+            "Stimuli SOA": "117; 1",
             "Stimuli Mode of presentation": "Liminal",
         }
         item_3 = {

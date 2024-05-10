@@ -27,7 +27,7 @@ from uncontrast_studies.services.errors_logger import write_errors_to_log
 logger = logging.getLogger("UnConTrast")
 
 FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
-ERROR_LOG_PATH = "uncontrast_studies/data/UnContrast_Errors_Log.xlsx"
+ERROR_LOG_PATH = "uncontrast_studies/data/uncontrast_errors_log.xlsx"
 
 
 class Command(BaseCommand):

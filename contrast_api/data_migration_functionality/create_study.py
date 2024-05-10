@@ -45,7 +45,7 @@ def create_study(item: dict, unconsciousness):
 
     try:
         study = Study.objects.get(DOI=DOI)
-    except ObjectDoesNotExist:
+    except Study.DoesNotExist:
         study = Study.objects.create(
             DOI=DOI,
             title=title,

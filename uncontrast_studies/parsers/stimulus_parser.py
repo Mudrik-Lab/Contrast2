@@ -39,49 +39,16 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
     NULL_VALUES = ["", "NA", "N/A", "n/a", "missing"]
 
     resolved_stimuli = []
-    mode_of_presentation = None
-    stimulus_duration = None
-    stimulus_soa = None
 
+    # resolve singular data that exists for both prime and target stimuli
     if prime:
-        stimuli_category_data = clean_list_from_data(item["Stimuli Category"])
-        stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category"])
         stimuli_modality_data = str(item["Stimuli Modality"]).strip()
         stimuli_number_of_stimuli_data = item["Stimuli Number of different stimuli used in the experiment"]
-        stimuli_mode_of_presentation_data = str(item["Stimuli Mode of presentation"]).strip().lower()
-        stimuli_duration_data = str(item["Stimuli Duration"]).strip().lower()
-        stimuli_soa_data = item["Stimuli SOA"]
-
-        # start with singular data that is only relevant for prime stimuli
-        if stimuli_mode_of_presentation_data == "liminal":
-            mode_of_presentation = PresentationModeChoices.LIMINAL
-        elif stimuli_mode_of_presentation_data == "subliminal":
-            mode_of_presentation = PresentationModeChoices.SUBLIMINAL
-        else:
-            raise StimulusModeOfPresentationError(
-                f"{stimuli_mode_of_presentation_data} (index {index}) not valid for stimulus mode of presentation"
-            )
-        try:
-            if stimuli_duration_data in NULL_VALUES:
-                stimulus_duration = None
-            else:
-                stimulus_duration = float(stimuli_duration_data)
-
-            if stimuli_soa_data in NULL_VALUES:
-                stimulus_soa = None
-            else:
-                stimulus_soa = float(stimuli_soa_data)
-
-        except TypeError:
-            raise StimulusDurationError(f"invalid stimulus numeric data, {index}")
 
     else:
-        stimuli_category_data = clean_list_from_data(item["Stimuli Category 2"])
-        stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category 2"])
         stimuli_modality_data = str(item["Stimuli Modality 2"]).strip()
         stimuli_number_of_stimuli_data = item["Stimuli Number of different stimuli used in the experiment 2"]
 
-    # second, resolve the singular data fields that appear in both prime and target stimuli
     if stimuli_modality_data not in uncon_stimulus_modalities:
         raise StimulusModalityError(
             f"{stimuli_modality_data} (index {index}) not valid for stimulus modality, prime: {prime}"
@@ -98,15 +65,39 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
     except TypeError:
         raise StimulusDurationError(f"invalid stimulus numeric data, {index}")
 
-    # then, resolve fields that might have multiple entries
-    if len(stimuli_category_data) != len(stimuli_sub_category_data):
-        raise IncoherentStimuliDataError(
-            f"stimuli has {len(stimuli_category_data)} categories vs. {len(stimuli_sub_category_data)} sub-categories; index: {index} prime:{prime}"
-        )
-    else:
-        for idx in range(len(stimuli_category_data)):
+    if prime:
+        stimuli_category_data = clean_list_from_data(item["Stimuli Category"])
+        stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category"])
+        stimuli_duration_data = clean_list_from_data(item["Stimuli Duration"])
+        stimuli_soa_data = clean_list_from_data(item["Stimuli SOA"])
+        stimuli_mode_of_presentation_data = str(item["Stimuli Mode of presentation"]).strip().lower()
+
+        len_category = len(stimuli_category_data)
+        len_sub_category = len(stimuli_sub_category_data)
+        len_duration = len(stimuli_duration_data)
+        len_soa = len(stimuli_soa_data)
+
+        is_same_length = len_category == len_sub_category == len_duration == len_soa
+
+        if not is_same_length:
+            raise IncoherentStimuliDataError(f"incoherent data for stimuli; index: {index} prime:{prime}")
+
+        # resolve singular data for prime stimuli
+        if stimuli_mode_of_presentation_data == "liminal":
+            mode_of_presentation = PresentationModeChoices.LIMINAL
+        elif stimuli_mode_of_presentation_data == "subliminal":
+            mode_of_presentation = PresentationModeChoices.SUBLIMINAL
+        else:
+            raise StimulusModeOfPresentationError(
+                f"{stimuli_mode_of_presentation_data} (index {index}) not valid for stimulus mode of presentation"
+            )
+
+        # resolve fields that might have multiple entries for prime stimuli
+        for idx in range(len_category):
             indexed_stimuli_category = stimuli_category_data[idx]
             indexed_stimuli_sub_category = stimuli_sub_category_data[idx]
+            indexed_stimuli_duration = stimuli_duration_data[idx]
+            indexed_stimuli_soa = stimuli_soa_data[idx]
 
             if indexed_stimuli_category not in uncon_stimulus_categories.keys():
                 raise MissingStimulusCategoryError(
@@ -121,17 +112,70 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
                 else:
                     stimulus_sub_category = indexed_stimuli_sub_category
 
+            try:
+                if indexed_stimuli_duration in NULL_VALUES:  # TODO: after data is full, change to throw error
+                    stimulus_duration = 0
+                else:
+                    stimulus_duration = float(indexed_stimuli_duration)
+
+                if indexed_stimuli_soa in NULL_VALUES:
+                    stimulus_soa = 0
+                else:
+                    stimulus_soa = float(indexed_stimuli_soa)
+
+            except TypeError:
+                raise StimulusDurationError(f"invalid stimulus numeric data, {index}")
+
             resolved_stimuli.append(
                 UnconResolvedStimulusData(
                     category=stimulus_category,
                     sub_category=stimulus_sub_category,
                     modality=stimulus_modality,
+                    number_of_stimuli=stimulus_number_of_stimuli,
                     mode_of_presentation=mode_of_presentation,
                     duration=stimulus_duration,
                     soa=stimulus_soa,
-                    number_of_stimuli=stimulus_number_of_stimuli,
                 )
             )
+    else:
+        stimuli_category_data = clean_list_from_data(item["Stimuli Category 2"])
+        stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category 2"])
+
+        # resolve fields that might have multiple entries for target stimuli
+        len_category = len(stimuli_category_data)
+        len_sub_category = len(stimuli_sub_category_data)
+
+        if len_category == len_sub_category:
+            for idx in range(len(stimuli_category_data)):
+                indexed_stimuli_category = stimuli_category_data[idx]
+                indexed_stimuli_sub_category = stimuli_sub_category_data[idx]
+
+                if indexed_stimuli_category not in uncon_stimulus_categories.keys():
+                    raise MissingStimulusCategoryError(
+                        f"invalid stimulus category {indexed_stimuli_category} (index {index})"
+                    )
+                else:
+                    stimulus_category = indexed_stimuli_category
+                    if indexed_stimuli_sub_category not in uncon_stimulus_categories[stimulus_category]:
+                        raise MissingStimulusCategoryError(
+                            f"{indexed_stimuli_sub_category} (index {index}) invalid for stimulus category {stimulus_category}"
+                        )
+                    else:
+                        stimulus_sub_category = indexed_stimuli_sub_category
+
+                resolved_stimuli.append(
+                    UnconResolvedStimulusData(
+                        category=stimulus_category,
+                        sub_category=stimulus_sub_category,
+                        modality=stimulus_modality,
+                        number_of_stimuli=stimulus_number_of_stimuli,
+                        mode_of_presentation=None,
+                        duration=None,
+                        soa=None,
+                    )
+                )
+        else:
+            raise IncoherentStimuliDataError(f"incoherent data for stimuli; index: {index} prime:{prime}")
     return resolved_stimuli
 
 

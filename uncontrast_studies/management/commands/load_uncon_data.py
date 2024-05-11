@@ -17,7 +17,8 @@ from contrast_api.data_migration_functionality.errors import (
     StimulusMetadataError,
     SampleSizeError,
     SuppressionMethodError,
-    FindingError, IncoherentStimuliDataError,
+    FindingError,
+    IncoherentStimuliDataError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
@@ -26,8 +27,8 @@ from uncontrast_studies.services.errors_logger import write_errors_to_log
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/dataset_05052024.xlsx"
-ERROR_LOG_PATH = "uncontrast_studies/data/UnContrast_Errors_Log.xlsx"
+FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
+ERROR_LOG_PATH = "uncontrast_studies/data/uncontrast_errors_log.xlsx"
 
 
 class Command(BaseCommand):
@@ -51,7 +52,7 @@ class Command(BaseCommand):
             "incoherent_stimuli_data_log": [],
             "invalid_stimuli_modality_data_log": [],
             "invalid_stimuli_presentation_mode_data_log": [],
-            "stimuli_duration_data_log": [],
+            "stimuli_numeric_data_log": [],
             "invalid_stimuli_metadata_log": [],
             "sample_type_errors_log": [],
             "sample_size_errors_log": [],
@@ -60,14 +61,14 @@ class Command(BaseCommand):
         # iterate over studies
         created_studies = []
         for study_item in studies_historic_data_list:
-            study_id = study_item["StudyID"]
-            if study_id in created_studies:
+            study_doi = study_item["DOI"]
+            if study_doi in created_studies:
                 continue
             else:
                 try:
                     with transaction.atomic():
                         create_study(item=study_item, unconsciousness=True)
-                        # created_studies.append(study_id)
+                        created_studies.append(study_doi)
                 except ProblemInStudyExistingDataException:
                     logs["studies_problematic_data_log"].append(study_item)
 
@@ -111,8 +112,8 @@ class Command(BaseCommand):
                 logger.exception(f"row #{index} has invalid stimulus metadata")
 
             except StimulusDurationError:
-                logs["stimuli_duration_data_log"].append(item)
-                logger.exception(f"row #{index} has invalid stimulus duration numeric data")
+                logs["stimuli_numeric_data_log"].append(item)
+                logger.exception(f"row #{index} has invalid stimulus numeric data")
 
             except StimulusModalityError:
                 logs["invalid_stimuli_modality_data_log"].append(item)
@@ -141,6 +142,10 @@ class Command(BaseCommand):
             except InvalidConsciousnessMeasureDataError:
                 logs["invalid_consciousness_measure_data_log"].append(item)
                 logger.exception(f"row #{index} is problematic regarding to consciousness measure data")
+
+        length_of_error_logs = [len(log) for log in logs.values()]
+        sum_of_logs = sum(length_of_error_logs)
+        print(f"completed loading {len(experiments_data_list)} rows of data, with {sum_of_logs} errors")
 
         # iterate over invalid-data logs and add them to .xlsx file in respective sheets
         write_errors_to_log(logs, ERROR_LOG_PATH)

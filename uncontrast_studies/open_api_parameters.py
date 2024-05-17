@@ -30,6 +30,7 @@ UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [
 ]
 
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)
+bin_size_parameter = OpenApiParameter(name="bin_size", type=int, required=False)
 
 continuous_breakdown_options = OpenApiParameter(
     name="continuous_breakdown",

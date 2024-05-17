@@ -2,7 +2,7 @@ import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Count, Func, IntegerField
-from django.db.models.functions import JSONObject, Cast, Floor
+from django.db.models.functions import JSONObject, Cast, Floor, Ceil
 from uncontrast_studies.models import UnConExperiment, UnConSuppressedStimulus, UnConsciousnessMeasure, UnConSample, \
     UnConFinding
 from uncontrast_studies.processors.base import BaseProcessor
@@ -15,6 +15,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("continuous_breakdown")
         self.breakdown = breakdown[0]
+        self.bin_size = int(kwargs.pop("bin_size", ["1"])[0])
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")
@@ -64,8 +65,9 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
 
     def _aggregate_query_by_breakdown(self, filtered_subquery):
         BIN_SIZE = 10
+        BIN_NUMBER = 10
         # TODO: move the value param to be passed by the breadkdown
-        queryset = (
+        queryset = ( # This is for each kind of significance
             UnConExperiment.objects.values("significance")
             .distinct("significance")
             .annotate(series_name=F("significance"))
@@ -76,13 +78,13 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
                 "experiments", flat=True
             )
             return set(list(itertools.chain.from_iterable(ids)))
-        subquery = (
-            filtered_subquery.annotate(value=F("value"))
-            .annotate(value=Cast(Floor(F("value")/BIN_SIZE) * BIN_SIZE, output_field=IntegerField()))
-            .values("value")
-            .order_by("value")
+        subquery = ( # this is the actual histogram for a specific significance
+            filtered_subquery.annotate(value=F("value")).annotate(total=Count("value"))
+            .annotate(bin_value=Cast(Floor(F("value")/self.bin_size) * self.bin_size, output_field=IntegerField()))
+            .values("bin_value")
+            .order_by("bin_value")
             .annotate(experiment_count=Count("experiment", distinct=True))
-            .annotate(data=JSONObject(key=F("value"), value=F("experiment_count")))
+            .annotate(data=JSONObject(key=F("bin_value"), value=F("experiment_count")))
             .values_list("data")
         )
 

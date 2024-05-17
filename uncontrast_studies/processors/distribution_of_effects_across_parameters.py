@@ -1,8 +1,8 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Count, Func
-from django.db.models.functions import JSONObject
+from django.db.models import QuerySet, OuterRef, F, Count, Func, IntegerField
+from django.db.models.functions import JSONObject, Cast, Floor
 from uncontrast_studies.models import UnConExperiment, UnConSuppressedStimulus, UnConsciousnessMeasure, UnConSample, \
     UnConFinding
 from uncontrast_studies.processors.base import BaseProcessor
@@ -63,6 +63,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
         return self._aggregate_query_by_breakdown(subquery)
 
     def _aggregate_query_by_breakdown(self, filtered_subquery):
+        BIN_SIZE = 10
         # TODO: move the value param to be passed by the breadkdown
         queryset = (
             UnConExperiment.objects.values("significance")
@@ -77,6 +78,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             return set(list(itertools.chain.from_iterable(ids)))
         subquery = (
             filtered_subquery.annotate(value=F("value"))
+            .annotate(value=Cast(Floor(F("value")/BIN_SIZE) * BIN_SIZE, output_field=IntegerField()))
             .values("value")
             .order_by("value")
             .annotate(experiment_count=Count("experiment", distinct=True))

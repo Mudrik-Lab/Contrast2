@@ -3,7 +3,8 @@ import itertools
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Count, Func
 from django.db.models.functions import JSONObject
-from uncontrast_studies.models import UnConExperiment, UnConSuppressedStimulus, UnConsciousnessMeasure, UnConSample
+from uncontrast_studies.models import UnConExperiment, UnConSuppressedStimulus, UnConsciousnessMeasure, UnConSample, \
+    UnConFinding
 from uncontrast_studies.processors.base import BaseProcessor
 
 
@@ -33,6 +34,12 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
 
     def process_unconsciousness_measure_number_of_trials(self):
         subquery = UnConsciousnessMeasure.objects.filter(experiment__significance=OuterRef("series_name")).annotate(
+            value=F("number_of_trials")
+        )
+        return self._aggregate_query_by_breakdown(subquery)
+
+    def process_outcome_number_of_trials(self):
+        subquery = UnConFinding.objects.filter(experiment__significance=OuterRef("series_name")).annotate(
             value=F("number_of_trials")
         )
         return self._aggregate_query_by_breakdown(subquery)

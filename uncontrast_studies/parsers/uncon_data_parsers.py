@@ -12,8 +12,10 @@ def resolve_uncon_paradigm(item, index: str):
 
     if main_paradigm not in uncon_paradigms.keys():
         raise ParadigmError(f"index {index} missing main paradigm: {main_paradigm}.")
-    if specific_paradigm not in uncon_paradigms[main_paradigm]:
-        raise ParadigmError(f"index {index} missing specific paradigm: {specific_paradigm}.")
+    if len(uncon_paradigms[main_paradigm]) == 0:
+        specific_paradigm = main_paradigm
+    elif specific_paradigm not in uncon_paradigms[main_paradigm]:
+        raise ParadigmError(f"index {index} invalid specific paradigm: {specific_paradigm}.")
 
     return UnconResolvedParadigmData(main=main_paradigm, specific=specific_paradigm)
 

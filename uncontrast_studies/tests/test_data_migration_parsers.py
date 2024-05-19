@@ -37,12 +37,16 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res[1].specific, None)
 
     def test_paradigm_parser(self):
-        item = {"Paradigms Main paradigm": "Priming", "Paradigms Specific paradigm": "Semantic"}
+        item_1 = {"Paradigms Main paradigm": "Priming", "Paradigms Specific paradigm": "Semantic"}
+        item_2 = {"Paradigms Main paradigm": "Attention allocation", "Paradigms Specific paradigm": ""}
 
-        res = resolve_uncon_paradigm(item=item, index="1")
-
+        res = resolve_uncon_paradigm(item=item_1, index="1")
         self.assertEqual(res.main, "Priming")
         self.assertEqual(res.specific, "Semantic")
+
+        res = resolve_uncon_paradigm(item=item_2, index="2")
+        self.assertEqual(res.main, "Attention allocation")
+        self.assertEqual(res.specific, "Attention allocation")
 
     def test_task_parser(self):
         item_1 = {"Tasks Type": "Free viewing"}

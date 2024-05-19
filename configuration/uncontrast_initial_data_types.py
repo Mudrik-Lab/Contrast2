@@ -36,14 +36,20 @@ uncon_tasks = [
     "Discrimination",
     "Detection",
     "Task is irrelevant to the effect",
+    "Stem completion",
+    "Counting",
+    "Naming",
+    "Memory task",
+    "Change detection",
+    "Solving an excersize",
 ]
 
 uncon_stimulus_categories = {
     "Lingual": ["Words", "Letters", "Sentences"],
     "Numerical": ["Digits", "Numbers", "Mathematical exercise"],
-    "Pictures": ["Faces", "Objects", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Other"],
+    "Pictures": ["Faces", "Objects", "Scenes", "Fruit", "Animals", "Vehicles", "Logos", "Hands", "Other"],
     "Shapes": ["Arrows", "Gratings", "Simple shapes", "Other"],
-    "Line Drawings": ["Faces", "Objects", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Other"],
+    "Line Drawings": ["Faces", "Objects", "Fruit", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Symbols", "Other"],
     "Tactile Stimuli": [],
 }
 
@@ -51,7 +57,7 @@ uncon_stimulus_modalities = ["Auditory", "Olfactory", "Tactile", "Visual", "None
 
 uncon_suppression_methods = {
     "Masking": [
-        "Backward target Masking",
+        "Backward target masking",
         "Backward pattern masking",
         "Forward masking",
         "Metacontrast masking",
@@ -102,7 +108,7 @@ uncon_consciousness_measures_types = {
         "Likert Scale",
         "Other",
     ],
-    "Verbal Debriefing": [],
+    "Verbal debriefing": [],
     "None": [],
     "Other": [],
 }

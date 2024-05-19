@@ -38,6 +38,7 @@ def write_errors_to_log(logs: dict[str, list[str]], file_path):
         log_index = log_names.index(log_name)
         log_df = {"log_index": log_index, "content": pandas.DataFrame.from_records(log_content), "name": f"{log_name}"}
         if len(log_content) > 0:
+            print(f"Writing {log_name} with {len(log_content)} rows to {file_path}")
             logs_to_write.append(log_df)
 
     try:

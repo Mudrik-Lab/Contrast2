@@ -31,6 +31,9 @@ def bootstrap_type_uncon_models(apps, schema_editor):
     UnConSpecificParadigm = apps.get_model("uncontrast_studies", "UnConSpecificParadigm")
     for paradigm, list_of_specific_paradigms in uncon_paradigms.items():
         UnConMainParadigm.objects.get_or_create(name=paradigm)
+        if len(list_of_specific_paradigms) == 0:
+            main = UnConMainParadigm.objects.get(name=paradigm)
+            UnConSpecificParadigm.objects.get_or_create(name=paradigm, main=main)
         for specific_paradigm in list_of_specific_paradigms:
             main = UnConMainParadigm.objects.get(name=paradigm)
             UnConSpecificParadigm.objects.get_or_create(name=specific_paradigm, main=main)

@@ -1,4 +1,5 @@
 import logging
+from datetime import date
 
 from django.core.management import BaseCommand
 from django.db import transaction
@@ -27,8 +28,12 @@ from uncontrast_studies.services.errors_logger import write_errors_to_log
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
-ERROR_LOG_PATH = "uncontrast_studies/data/uncontrast_errors_log.xlsx"
+FILE_PATH = "uncontrast_studies/data/dataset_19052024.xlsx"
+MAOR_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
+FRANCOIS_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
+
+current_date = date.today()
+ERROR_LOG_PATH = f"uncontrast_studies/data/logs/uncontrast_errors_log_{current_date}.xlsx"
 
 
 class Command(BaseCommand):
@@ -36,6 +41,13 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         # Read .xlsx file and convert to dict
+        # maor_experiments_data = get_list_from_excel(MAOR_FILE_PATH, sheet_name="experiments")
+        # francois_experiments_data = get_list_from_excel(FRANCOIS_FILE_PATH, sheet_name="experiments")
+        # maor_experiments_metadata = get_list_from_excel(MAOR_FILE_PATH, sheet_name="Metadata")
+        # francois_experiments_metadata = get_list_from_excel(FRANCOIS_FILE_PATH, sheet_name="Metadata")
+        # experiments_data_list = francois_experiments_data + maor_experiments_data
+        # studies_historic_data_list = francois_experiments_metadata + maor_experiments_metadata
+
         experiments_data_list = get_list_from_excel(FILE_PATH, sheet_name="experiments")
         studies_historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="Metadata")
 

@@ -26,15 +26,33 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         super().tearDown()
 
     def test_suppression_method_parser(self):
-        item = {
+        item_1 = {
             "Suppression method Main suppression method": "Masking; Parafoveal display",
             "Suppression method Specific suppression method": "Backward pattern masking",
         }
-
-        res = resolve_uncon_suppression_method(item=item, index="1")
+        res = resolve_uncon_suppression_method(item=item_1, index="1")
 
         self.assertEqual(len(res), 2)
         self.assertEqual(res[1].specific, None)
+
+        item_2 = {
+            "Suppression method Main suppression method": "Masking",
+            "Suppression method Specific suppression method": "Backward target masking",
+        }
+        res = resolve_uncon_suppression_method(item=item_2, index="2")
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0].specific, "Backward target masking")
+        self.assertEqual(res[0].main, "Masking")
+
+        item_3 = {
+            "Suppression method Main suppression method": "Stimulus degradation",
+            "Suppression method Specific suppression method": "",
+        }
+        res = resolve_uncon_suppression_method(item=item_3, index="3")
+
+        self.assertEqual(len(res), 1)
+        self.assertEqual(res[0].specific, None)
+        self.assertEqual(res[0].main, "Stimulus degradation")
 
     def test_paradigm_parser(self):
         item_1 = {"Paradigms Main paradigm": "Priming", "Paradigms Specific paradigm": "Semantic"}

@@ -38,7 +38,6 @@ def bootstrap_type_uncon_models(apps, schema_editor):
             main = UnConMainParadigm.objects.get(name=paradigm)
             UnConSpecificParadigm.objects.get_or_create(name=specific_paradigm, main=main)
 
-
     UnConProcessingMainDomain = apps.get_model("uncontrast_studies", "UnConProcessingMainDomain")
     for domain in uncon_processing_domains:
         UnConProcessingMainDomain.objects.get_or_create(name=domain)

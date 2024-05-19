@@ -141,13 +141,12 @@ def process_uncon_row(item: dict):
     # suppression_methods
     suppression_method_data = resolve_uncon_suppression_method(item=item, index=experiment_index)
     for line in suppression_method_data:
-        if line.specific:
-            main = UnConSuppressionMethodType.objects.get(name=line.main)
+        main = UnConSuppressionMethodType.objects.get(name=line.main)
+        if line.specific is None:
+            UnConSuppressionMethod.objects.create(experiment=experiment, type=main, sub_type=None)
+        else:
             specific = UnConSuppressionMethodSubType.objects.get(name=line.specific, parent=main)
             UnConSuppressionMethod.objects.create(experiment=experiment, type=main, sub_type=specific)
-        else:
-            main = UnConSuppressionMethodType.objects.get(name=line.main)
-            UnConSuppressionMethod.objects.create(experiment=experiment, type=main, sub_type=None)
 
     # processing domains
     processing_domain_data = resolve_uncon_processing_domains(item=item, index=experiment_index)

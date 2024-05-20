@@ -28,7 +28,7 @@ from uncontrast_studies.open_api_parameters import (
     is_cm_same_participants_as_task_optional_parameter,
     is_trial_excluded_based_on_measure_optional_parameter,
     mode_of_presentation_optional_parameter,
-    continuous_breakdown_options,
+    continuous_breakdown_options, bin_size_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
 from uncontrast_studies.processors.distribution_of_effects_across_parameters import (
@@ -199,6 +199,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         parameters=[
             continuous_breakdown_options,
             number_of_experiments_parameter,
+            bin_size_parameter,
             is_csv,
         ],
     )

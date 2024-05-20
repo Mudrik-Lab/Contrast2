@@ -90,6 +90,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             .annotate(series=ArraySubquery(subquery))  # TODO: sub query always the significance options
             .annotate(field_len=Func(F("series"), function="CARDINALITY"))
             .filter(field_len__gt=0)
+            .filter(field_len__gt=self.min_number_of_experiments)
             .values("series_name", "series")
             .order_by("series_name")
         )

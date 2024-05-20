@@ -281,6 +281,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     list_display = ("id", "DOI", "title", "abbreviated_source_title", "is_author_submitter", "submitter_name")
     search_fields = ("title", "DOI", "submitter__email")
     list_filter = (
+        "type",
         "approval_status",
         "is_author_submitter",
         CountryFilter,
@@ -341,20 +342,19 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
         if request.POST.get("action") == "export_uncontrast_admin_action":
             export_class = self.resource_classes[1]
         else:
-            export_class = self.choose_export_resource_class(export_form)
+            export_class = self.choose_export_resource_class(export_form, request)
         export_resource_kwargs = self.get_export_resource_kwargs(request, *args, **kwargs)
         cls = export_class(**export_resource_kwargs)
-        export_data = cls.export(*args, queryset=queryset, **kwargs)
+        export_data = cls.export(queryset=queryset, **kwargs)
         return export_data
 
-    def get_uncontrast_export_data(self, file_format, queryset, *args, **kwargs):
-        # TODO: build a "related" manager
+    def get_uncontrast_export_data(self, file_format, request, queryset, **kwargs):
         uncontrast_experiments_qs = UnConExperiment.objects.related().filter(study__in=queryset)
-        return super().get_export_data(file_format, queryset=uncontrast_experiments_qs, *args, **kwargs)
+        return super().get_export_data(file_format, request, queryset=uncontrast_experiments_qs, **kwargs)
 
-    def get_export_data(self, file_format, queryset, *args, **kwargs):
+    def get_export_data(self, file_format, request, queryset, **kwargs):
         experiments_qs = Experiment.objects.related().filter(study__in=queryset)
-        return super().get_export_data(file_format, queryset=experiments_qs, *args, **kwargs)
+        return super().get_export_data(file_format,request, queryset=experiments_qs, **kwargs)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("submitter").prefetch_related("authors")

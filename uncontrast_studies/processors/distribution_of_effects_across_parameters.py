@@ -81,6 +81,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             .values("bin_value")
             .order_by("bin_value")
             .annotate(experiment_count=Count("experiment", distinct=True))
+            .filter(experiment_count__gt=self.min_number_of_experiments)
             .annotate(data=JSONObject(key=F("bin_value"), value=F("experiment_count")))
             .values_list("data")
         )
@@ -90,7 +91,6 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             .annotate(series=ArraySubquery(subquery))  # TODO: sub query always the significance options
             .annotate(field_len=Func(F("series"), function="CARDINALITY"))
             .filter(field_len__gt=0)
-            .filter(field_len__gt=self.min_number_of_experiments)
             .values("series_name", "series")
             .order_by("series_name")
         )

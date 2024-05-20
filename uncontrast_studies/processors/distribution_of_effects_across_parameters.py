@@ -64,9 +64,6 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
         return self._aggregate_query_by_breakdown(subquery)
 
     def _aggregate_query_by_breakdown(self, filtered_subquery):
-        BIN_SIZE = 10
-        BIN_NUMBER = 10
-        # TODO: move the value param to be passed by the breadkdown
         queryset = ( # This is for each kind of significance
             UnConExperiment.objects.values("significance")
             .distinct("significance")

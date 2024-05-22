@@ -19,7 +19,7 @@ from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusC
 from uncontrast_studies.models import (
     UnConsciousnessMeasureSubType,
     UnConStimulusSubCategory,
-    UnConSuppressionMethodSubType,
+    UnConSuppressionMethodSubType, UnConSpecificParadigm,
 )
 
 
@@ -118,6 +118,12 @@ class ParadigmConfigurationSerializer(serializers.ModelSerializer):
         return obj.parent.name
 
 
+class UnConSpecificParadigmSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = UnConSpecificParadigm
+        fields = ("name", "main", "id")
+
+
 class ExperimentTypeSerializer(serializers.Serializer):
     name = serializers.CharField()
     value = serializers.IntegerField()
@@ -163,6 +169,7 @@ class UnConStudiesConfigurationSerializer(serializers.Serializer):
     available_suppression_method_sub_types = UnConSuppressionMethodSubTypeSerializer(many=True)
     available_processing_main_domain_types = GenericTypeSerializer(many=True)
     available_main_paradigm_type = GenericTypeSerializer(many=True)
+    available_specific_paradigm_type = UnConSpecificParadigmSerializer(many=True)
     available_experiment_types = ExperimentTypeSerializer(many=True)
     available_stimulus_modality_type = GenericTypeSerializer(many=True)
     available_stimulus_category_type = GenericTypeSerializer(many=True)

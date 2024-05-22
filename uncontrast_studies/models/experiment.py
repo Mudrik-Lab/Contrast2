@@ -21,6 +21,7 @@ class UnConExperiment(models.Model):
     paradigm = models.ForeignKey(
         to="uncontrast_studies.UnConSpecificParadigm", on_delete=PROTECT, related_name="experiments"
     )  # TODO: possibly turn into many-to-many field
+    significance = models.CharField(null=False, blank=False, choices=SignificanceChoices.choices, default=SignificanceChoices.MIXED, max_length=10)
 
     # Stimuli metadata
     is_target_stimulus = models.BooleanField(
@@ -36,7 +37,7 @@ class UnConExperiment(models.Model):
     # notes
     consciousness_measures_notes = models.TextField(null=True, blank=True)
     experiment_findings_notes = models.TextField(null=True, blank=True)
-    significance = models.CharField(null=True, blank=True, choices=SignificanceChoices.choices, max_length=10)
+
     history = HistoricalRecords()
     objects = UnConExperimentManager()
 
@@ -49,7 +50,7 @@ class UnConExperiment(models.Model):
         if all(x is True for x in findings_significance):
             self.significance = SignificanceChoices.POSITIVE
         elif all(x is False for x in findings_significance):
-            self.significance = SignificanceChoices.POSITIVE
+            self.significance = SignificanceChoices.NEGATIVE
         else:
             self.significance = SignificanceChoices.MIXED
         self.save()

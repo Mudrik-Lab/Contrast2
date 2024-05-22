@@ -95,6 +95,7 @@ class ConfigurationView(GenericViewSet):
         available_suppression_method_types = UnConSuppressionMethodType.objects.all()
         available_suppression_method_sub_types = UnConSuppressionMethodSubType.objects.all()
         available_processing_main_domain_types = UnConProcessingMainDomain.objects.all()
+        available_specific_paradigm_type = UnConSpecificParadigm.objects.all()
         available_main_paradigm_type = UnConMainParadigm.objects.all()
         available_authors = Author.objects.all()
         available_stimulus_modality_type = UnConModalityType.objects.all()
@@ -121,6 +122,7 @@ class ConfigurationView(GenericViewSet):
             available_suppression_method_types=available_suppression_method_types,
             available_suppression_method_sub_types=available_suppression_method_sub_types,
             available_processing_main_domain_types=available_processing_main_domain_types,
+            available_specific_paradigm_type=available_specific_paradigm_type,
             available_main_paradigm_type=available_main_paradigm_type,
             approved_experiments_count=approved_experiments_count,
         )

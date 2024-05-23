@@ -27,6 +27,7 @@ UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [
     "unconsciousness_measure_number_of_participants_in_awareness_test",
     "sample_size_included",
     "sample_size_excluded",
+    "year_of_publication"
 ]
 
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)

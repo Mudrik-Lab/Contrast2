@@ -57,13 +57,18 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
         )
         return self._aggregate_query_by_breakdown(subquery)
 
+    def process_year_of_publication(self):
+        subquery = UnConExperiment.objects.filter(significance=OuterRef("series_name")).annotate(
+            value=F("study__year")
+        )
+        return self._aggregate_query_by_breakdown(subquery, "id")
     def process_sample_size_excluded(self):
         subquery = UnConSample.objects.filter(experiment__significance=OuterRef("series_name")).annotate(
             value=F("size_excluded")
         )
         return self._aggregate_query_by_breakdown(subquery)
 
-    def _aggregate_query_by_breakdown(self, filtered_subquery):
+    def _aggregate_query_by_breakdown(self, filtered_subquery, experiment_referencing_param="experiment"):
         queryset = ( # This is for each kind of significance
             UnConExperiment.objects.values("significance")
             .distinct("significance")
@@ -71,7 +76,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
         )
 
         if self.is_csv:
-            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("experiment"))).values_list(
+            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list(experiment_referencing_param))).values_list(
                 "experiments", flat=True
             )
             return set(list(itertools.chain.from_iterable(ids)))
@@ -80,7 +85,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             .annotate(bin_value=Cast(Floor(F("value")/self.bin_size) * self.bin_size, output_field=IntegerField()))
             .values("bin_value")
             .order_by("bin_value")
-            .annotate(experiment_count=Count("experiment", distinct=True))
+            .annotate(experiment_count=Count(experiment_referencing_param, distinct=True))
             .filter(experiment_count__gt=self.min_number_of_experiments)
             .annotate(data=JSONObject(key=F("bin_value"), value=F("experiment_count")))
             .values_list("data")

@@ -199,7 +199,8 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
-        by_significance = filtered_subquery.annotate(experiment_count=Count("id", distinct=True))
+        by_significance = filtered_subquery.values("significance")\
+            .order_by("-significance").annotate(experiment_count=Count("id", distinct=True))
         subquery = by_significance.annotate(
             data=JSONObject(key=F("significance"), value=F("experiment_count"))
         ).values_list("data")

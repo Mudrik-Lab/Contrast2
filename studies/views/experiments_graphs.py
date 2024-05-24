@@ -72,7 +72,6 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     queryset = (
         Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
         .filter(study__approval_status=ApprovalChoices.APPROVED)
-        .filter(study__type=StudyTypeChoices.CONSCIOUSNESS)
     )
 
     filterset_class = ExperimentFilter

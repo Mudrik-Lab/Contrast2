@@ -7,7 +7,6 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from contrast_api.choices import StudyTypeChoices
 from uncontrast_studies.filters import UnConExperimentFilter
 from uncontrast_studies.open_api_parameters import (
     number_of_experiments_parameter,
@@ -49,7 +48,6 @@ from contrast_api.serializers import (
     TrendsOverYearsGraphSerializer,
     BarGraphSerializer,
     StackedBarGraphSerializer,
-    DurationGraphSerializer,
     NestedPieChartSerializer,
     PieChartSerializer,
     HistogramsGraphSerializer,
@@ -67,7 +65,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     queryset = (
         UnConExperiment.objects.select_related("study", "study__approval_process", "study__submitter")
         .filter(study__approval_status=ApprovalChoices.APPROVED)
-        .filter(study__type=StudyTypeChoices.UNCONSCIOUSNESS)
     )
 
     filterset_class = UnConExperimentFilter

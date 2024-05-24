@@ -4,12 +4,11 @@ from rest_framework import filters
 
 from contrast_api.choices import StudyTypeChoices
 from contrast_api.studies.permissions import SubmitterOnlyPermission
-from studies.models import Study, Measure, Task, FindingTag, ConsciousnessMeasure, Stimulus, Paradigm
+from studies.models import Study
 
 from studies.views.base_submitted_studies import BaseSubmitStudiesViewSert
 from uncontrast_studies.models import (
     UnConsciousnessMeasure,
-    UnConSpecificParadigm,
     UnConTask,
     UnConFinding,
     UnConTargetStimulus,

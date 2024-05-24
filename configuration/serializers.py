@@ -19,7 +19,9 @@ from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusC
 from uncontrast_studies.models import (
     UnConsciousnessMeasureSubType,
     UnConStimulusSubCategory,
-    UnConSuppressionMethodSubType, UnConSpecificParadigm,
+    UnConSuppressionMethodSubType,
+    UnConSpecificParadigm,
+    UnConFinding,
 )
 
 
@@ -161,6 +163,8 @@ class UnConStudiesConfigurationSerializer(serializers.Serializer):
     approved_experiments_count = serializers.IntegerField()
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_mode_of_presentation = serializers.ListSerializer(child=serializers.CharField())
+    # TODO: change to generic type serializer once we change it to type
+    available_outcomes_type = serializers.ListSerializer(child=serializers.CharField())
     available_consciousness_measure_phase_type = GenericTypeSerializer(many=True)
     available_consciousness_measure_type = GenericTypeSerializer(many=True)
     available_consciousness_measure_sub_type = UnConsciousnessMeasureSubTypeSerializer(many=True)
@@ -174,6 +178,8 @@ class UnConStudiesConfigurationSerializer(serializers.Serializer):
     available_stimulus_modality_type = GenericTypeSerializer(many=True)
     available_stimulus_category_type = GenericTypeSerializer(many=True)
     available_stimulus_sub_category_type = UnConStimulusSubCategorySerializer(many=True)
+    are_participants_excluded_options = serializers.ListSerializer(child=serializers.BooleanField())
+    is_trial_excluded_based_on_measure_options = serializers.ListSerializer(child=serializers.BooleanField())
 
 
 class StudiesConfigurationSerializer(serializers.Serializer):

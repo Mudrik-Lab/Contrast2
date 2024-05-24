@@ -160,6 +160,16 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
         return subquery
 
+    def process_is_performance_above_chance(self, experiments: QuerySet[UnConExperiment]):
+        subquery = (
+            experiments.distinct()
+            .values("unconsciousness_measures__is_performance_above_chance")
+            .annotate(experiment_count=Count("id", distinct=True))
+            .annotate(key=F("unconsciousness_measures__is_performance_above_chance"))
+        )
+
+        return subquery
+
     def process_is_cm_same_participants_as_task(self, experiments: QuerySet[UnConExperiment]):
         subquery = (
             experiments.distinct()

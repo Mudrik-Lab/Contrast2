@@ -116,6 +116,19 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
+    def process_is_performance_above_chance(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            unconsciousness_measures__is_performance_above_chance=OuterRef("series_name")
+        ).values("id", "significance")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_performance_above_chance")
+            .distinct()
+            .annotate(series_name=F("is_performance_above_chance"))
+        )
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
     def process_is_cm_same_participants_as_task(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             unconsciousness_measures__is_cm_same_participants_as_task=OuterRef("series_name")
@@ -199,8 +212,11 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
-        by_significance = filtered_subquery.values("significance")\
-            .order_by("-significance").annotate(experiment_count=Count("id", distinct=True))
+        by_significance = (
+            filtered_subquery.values("significance")
+            .order_by("-significance")
+            .annotate(experiment_count=Count("id", distinct=True))
+        )
         subquery = by_significance.annotate(
             data=JSONObject(key=F("significance"), value=F("experiment_count"))
         ).values_list("data")

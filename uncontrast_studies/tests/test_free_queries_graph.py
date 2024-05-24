@@ -148,6 +148,18 @@ class TestFreeQueriesGraphTestCase(UnContrastBaseTestCase):
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+        filter_name = "are_participants_excluded"
+
+        first_sample = UnConSample.objects.first()
+        filters = {filter_name: True}
+        target_url = self.reverse_with_query_params(
+            "uncontrast-experiments-graphs-parameters-distribution-free-queries",
+            breakdown="modes_of_presentation",
+            **filters,
+        )
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
         filter_name = "suppressed_stimuli_categories"
         first_sample = UnConStimulusCategory.objects.first()
         filters = {filter_name: first_sample.id}

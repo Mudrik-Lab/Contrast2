@@ -31,7 +31,9 @@ def resolve_uncon_suppression_method(item: dict, index: str):
                     )
                     suppression_methods_list.append(suppression_method)
                 else:
-                    raise SuppressionMethodError(f"invalid specific suppression method {specific_method}, index {index}")
+                    raise SuppressionMethodError(
+                        f"invalid specific suppression method {specific_method}, index {index}"
+                    )
 
     return suppression_methods_list
 

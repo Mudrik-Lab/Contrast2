@@ -14,6 +14,7 @@ UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS = [
     "is_target_same_as_suppressed_stimulus",
     "is_cm_same_participants_as_task",
     "is_trial_excluded_based_on_measure",
+    "is_performance_above_chance",
     "modes_of_presentation",
     "suppression_method",
     "processing_domain",
@@ -27,7 +28,7 @@ UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [
     "unconsciousness_measure_number_of_participants_in_awareness_test",
     "sample_size_included",
     "sample_size_excluded",
-    "year_of_publication"
+    "year_of_publication",
 ]
 
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)
@@ -141,3 +142,8 @@ is_trial_excluded_based_on_measure_optional_parameter = OpenApiParameter(
 mode_of_presentation_optional_parameter = OpenApiParameter(
     name="modes_of_presentation", description="modes of presentation optional for", type=str, many=True, required=False
 )
+outcome_types_optional_parameter = OpenApiParameter(
+    name="outcome_types", description="outcome types optional for", type=str, required=False, many=True
+)
+
+are_participants_excluded = OpenApiParameter(name="are_participants_excluded", type=bool, required=False, many=False)

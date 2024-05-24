@@ -21,7 +21,9 @@ class UnConExperiment(models.Model):
     paradigm = models.ForeignKey(
         to="uncontrast_studies.UnConSpecificParadigm", on_delete=PROTECT, related_name="experiments"
     )  # TODO: possibly turn into many-to-many field
-    significance = models.CharField(null=False, blank=False, choices=SignificanceChoices.choices, default=SignificanceChoices.MIXED, max_length=10)
+    significance = models.CharField(
+        null=False, blank=False, choices=SignificanceChoices.choices, default=SignificanceChoices.MIXED, max_length=10
+    )
 
     # Stimuli metadata
     is_target_stimulus = models.BooleanField(

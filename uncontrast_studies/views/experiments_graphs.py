@@ -27,7 +27,10 @@ from uncontrast_studies.open_api_parameters import (
     is_cm_same_participants_as_task_optional_parameter,
     is_trial_excluded_based_on_measure_optional_parameter,
     mode_of_presentation_optional_parameter,
-    continuous_breakdown_options, bin_size_parameter,
+    outcome_types_optional_parameter,
+    continuous_breakdown_options,
+    bin_size_parameter,
+    are_participants_excluded,
 )
 from contrast_api.open_api_parameters import is_csv
 from uncontrast_studies.processors.distribution_of_effects_across_parameters import (
@@ -62,9 +65,8 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = FullUnConExperimentSerializer
     pagination_class = None
-    queryset = (
-        UnConExperiment.objects.select_related("study", "study__approval_process", "study__submitter")
-        .filter(study__approval_status=ApprovalChoices.APPROVED)
+    queryset = UnConExperiment.objects.select_related("study", "study__approval_process", "study__submitter").filter(
+        study__approval_status=ApprovalChoices.APPROVED
     )
 
     filterset_class = UnConExperimentFilter
@@ -169,8 +171,10 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
             types_multiple_optional_parameter,
             # is_target_same_as_suppressed_stimulus_optional_parameter,
             # is_cm_same_participants_as_task_optional_parameter,
-            # is_trial_excluded_based_on_measure_optional_parameter,
+            is_trial_excluded_based_on_measure_optional_parameter,
             mode_of_presentation_optional_parameter,
+            outcome_types_optional_parameter,
+            are_participants_excluded,
             number_of_experiments_parameter,
             is_csv,
         ],

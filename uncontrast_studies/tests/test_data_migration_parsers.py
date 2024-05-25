@@ -45,14 +45,14 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res[0].main, "Masking")
 
         item_3 = {
-            "Suppression method Main suppression method": "Stimulus degradation",
+            "Suppression method Main suppression method": "Inattentional blindness",
             "Suppression method Specific suppression method": "",
         }
         res = resolve_uncon_suppression_method(item=item_3, index="3")
 
         self.assertEqual(len(res), 1)
         self.assertEqual(res[0].specific, None)
-        self.assertEqual(res[0].main, "Stimulus degradation")
+        self.assertEqual(res[0].main, "Inattentional blindness")
 
     def test_paradigm_parser(self):
         item_1 = {"Paradigms Main paradigm": "Priming", "Paradigms Specific paradigm": "Semantic"}

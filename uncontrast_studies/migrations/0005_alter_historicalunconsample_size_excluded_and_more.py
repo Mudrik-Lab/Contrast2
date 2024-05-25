@@ -4,20 +4,23 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0004_alter_historicalunconexperiment_significance_and_more'),
+        ("uncontrast_studies", "0004_alter_historicalunconexperiment_significance_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalunconsample',
-            name='size_excluded',
-            field=models.IntegerField(default=0, verbose_name='how many participants were excluded based on awareness measure?'),
+            model_name="historicalunconsample",
+            name="size_excluded",
+            field=models.IntegerField(
+                default=0, verbose_name="how many participants were excluded based on awareness measure?"
+            ),
         ),
         migrations.AlterField(
-            model_name='unconsample',
-            name='size_excluded',
-            field=models.IntegerField(default=0, verbose_name='how many participants were excluded based on awareness measure?'),
+            model_name="unconsample",
+            name="size_excluded",
+            field=models.IntegerField(
+                default=0, verbose_name="how many participants were excluded based on awareness measure?"
+            ),
         ),
     ]

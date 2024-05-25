@@ -28,6 +28,7 @@ from uncontrast_studies.models import (
     UnConStimulusCategory,
     UnConStimulusSubCategory,
     UnConModalityType,
+    UnConOutcome,
 )
 from uncontrast_studies.parsers.consciousness_measure_parser import resolve_consciousness_measures
 from uncontrast_studies.parsers.uncon_data_parsers import (
@@ -157,9 +158,10 @@ def process_uncon_row(item: dict):
     # findings
     finding_data = resolve_uncon_findings(item=item, index=experiment_index)
     for finding in finding_data:
+        outcome = UnConOutcome.objects.get(name=finding.outcome)
         UnConFinding.objects.create(
             experiment=experiment,
-            outcome=finding.outcome,
+            outcome=outcome,
             is_significant=finding.is_significant,
             is_important=finding.is_important,
             number_of_trials=finding.number_of_trials,

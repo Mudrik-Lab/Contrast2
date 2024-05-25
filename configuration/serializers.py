@@ -163,8 +163,7 @@ class UnConStudiesConfigurationSerializer(serializers.Serializer):
     approved_experiments_count = serializers.IntegerField()
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_mode_of_presentation = serializers.ListSerializer(child=serializers.CharField())
-    # TODO: change to generic type serializer once we change it to type
-    available_outcomes_type = serializers.ListSerializer(child=serializers.CharField())
+    available_outcomes_type = serializers.GenericTypeSerializer(many=True)
     available_consciousness_measure_phase_type = GenericTypeSerializer(many=True)
     available_consciousness_measure_type = GenericTypeSerializer(many=True)
     available_consciousness_measure_sub_type = UnConsciousnessMeasureSubTypeSerializer(many=True)

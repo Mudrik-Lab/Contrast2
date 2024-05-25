@@ -53,6 +53,7 @@ from uncontrast_studies.models import (
     UnConSuppressionMethodType,
     UnConSuppressionMethodSubType,
     UnConFinding,
+    UnConOutcome,
 )
 from users.choices import GenderChoices, AcademicStageChoices
 
@@ -102,7 +103,7 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_modality_type = UnConModalityType.objects.all()
         available_stimulus_category_type = UnConStimulusCategory.objects.all()
         available_stimulus_sub_category_type = UnConStimulusSubCategory.objects.all()
-        available_outcomes_type = UnConFinding.objects.values_list("outcome", flat=True).distinct()
+        available_outcomes_type = UnConOutcome.objects.all()
         available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
         are_participants_excluded_options = [True, False]
         is_trial_excluded_based_on_measure_options = [True, False]

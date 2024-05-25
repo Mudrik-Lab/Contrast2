@@ -4,7 +4,7 @@ from uncontrast_studies.models.consciousness_measure import (
     UnConsciousnessMeasureType,
     UnConsciousnessMeasureSubType,
 )
-from uncontrast_studies.models.finding import UnConFinding
+from uncontrast_studies.models.finding import UnConFinding, UnConOutcome
 from uncontrast_studies.models.experiment import UnConExperiment
 from uncontrast_studies.models.paradigm import UnConSpecificParadigm, UnConMainParadigm
 from uncontrast_studies.models.processing_domain import (
@@ -48,4 +48,5 @@ __all__ = [
     UnConProcessingDomain,
     UnConProcessingMainDomain,
     UnConFinding,
+    UnConOutcome,
 ]

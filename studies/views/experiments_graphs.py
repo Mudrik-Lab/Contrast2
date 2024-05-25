@@ -69,9 +69,8 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     permission_classes = [AllowAny]
     serializer_class = FullExperimentSerializer
     pagination_class = None
-    queryset = (
-        Experiment.objects.select_related("study", "study__approval_process", "study__submitter")
-        .filter(study__approval_status=ApprovalChoices.APPROVED)
+    queryset = Experiment.objects.select_related("study", "study__approval_process", "study__submitter").filter(
+        study__approval_status=ApprovalChoices.APPROVED
     )
 
     filterset_class = ExperimentFilter

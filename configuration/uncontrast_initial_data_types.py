@@ -49,7 +49,18 @@ uncon_stimulus_categories = {
     "Numerical": ["Digits", "Numbers", "Mathematical exercise"],
     "Pictures": ["Faces", "Objects", "Scenes", "Fruit", "Animals", "Vehicles", "Logos", "Hands", "Other"],
     "Shapes": ["Arrows", "Gratings", "Simple shapes", "Other"],
-    "Line Drawings": ["Faces", "Objects", "Fruit", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Symbols", "Other"],
+    "Line Drawings": [
+        "Faces",
+        "Objects",
+        "Fruit",
+        "Scenes",
+        "Animals",
+        "Vehicles",
+        "Logos",
+        "Hands",
+        "Symbols",
+        "Other",
+    ],
     "Tactile Stimuli": [],
 }
 

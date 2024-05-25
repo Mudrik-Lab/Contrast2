@@ -52,6 +52,7 @@ from uncontrast_studies.models import (
     UnConMainParadigm,
     UnConSuppressionMethodType,
     UnConSuppressionMethodSubType,
+    UnConFinding,
 )
 from users.choices import GenderChoices, AcademicStageChoices
 
@@ -101,7 +102,10 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_modality_type = UnConModalityType.objects.all()
         available_stimulus_category_type = UnConStimulusCategory.objects.all()
         available_stimulus_sub_category_type = UnConStimulusSubCategory.objects.all()
+        available_outcomes_type = UnConFinding.objects.values_list("outcome", flat=True).distinct()
         available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
+        are_participants_excluded_options = [True, False]
+        is_trial_excluded_based_on_measure_options = [True, False]
         approved_experiments_count = UnConExperiment.objects.filter(
             study__approval_status=ApprovalChoices.APPROVED
         ).count()
@@ -124,6 +128,9 @@ class ConfigurationView(GenericViewSet):
             available_processing_main_domain_types=available_processing_main_domain_types,
             available_specific_paradigm_type=available_specific_paradigm_type,
             available_main_paradigm_type=available_main_paradigm_type,
+            available_outcomes_type=available_outcomes_type,
+            is_trial_excluded_based_on_measure_options=is_trial_excluded_based_on_measure_options,
+            are_participants_excluded_options=are_participants_excluded_options,
             approved_experiments_count=approved_experiments_count,
         )
 
@@ -159,6 +166,7 @@ class ConfigurationView(GenericViewSet):
         available_stimulus_modality_type = ModalityType.objects.all()
         available_stimulus_category_type = StimulusCategory.objects.all()
         available_stimulus_sub_category_type = StimulusSubCategory.objects.all()
+
         available_experiment_types = [dict(name=v, value=k) for k, v in ExperimentTypeChoices.choices]
         approved_experiments_count = Experiment.objects.filter(study__approval_status=ApprovalChoices.APPROVED).count()
         configuration_data = dict(

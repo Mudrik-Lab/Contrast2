@@ -354,7 +354,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
 
     def get_export_data(self, file_format, request, queryset, **kwargs):
         experiments_qs = Experiment.objects.related().filter(study__in=queryset)
-        return super().get_export_data(file_format,request, queryset=experiments_qs, **kwargs)
+        return super().get_export_data(file_format, request, queryset=experiments_qs, **kwargs)
 
     def get_queryset(self, request):
         return super().get_queryset(request).select_related("submitter").prefetch_related("authors")

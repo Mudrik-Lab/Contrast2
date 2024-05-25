@@ -1,8 +1,7 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import Func, F, Count, QuerySet, OuterRef
-
+from django.db.models import Func, F, Count, QuerySet, OuterRef, Case, When, Value
 
 from uncontrast_studies.processors.base import BaseProcessor
 from uncontrast_studies.models import (
@@ -37,6 +36,9 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.processing_domain_main_types = kwargs.pop("processing_domain_types", [])
         self.suppression_methods_types = kwargs.pop("suppression_methods_types", [])
         self.modes_of_presentation = kwargs.pop("modes_of_presentation", [])
+        self.outcome_types = kwargs.pop("outcome_types", [])
+        self.is_trial_excluded_based_on_measure = kwargs.pop("is_trial_excluded_based_on_measure", [])
+        self.are_participants_excluded = kwargs.pop("are_participants_excluded", [])
 
         self.types = kwargs.pop("types", [])
         self.tasks = kwargs.pop("tasks", [])
@@ -92,6 +94,21 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         if len(self.suppression_methods_types):
             queryset = queryset.filter(suppression_methods__type__id__in=self.suppression_methods_types)
 
+        if len(self.outcome_types):
+            # TODO: fix this later to use the type
+            queryset = queryset.filter(findings__outcome__in=self.outcome_types)
+
+        if len(self.is_trial_excluded_based_on_measure):
+            queryset = queryset.filter(
+                unconsciousness_measures__is_trial_excluded_based_on_measure__in=self.is_trial_excluded_based_on_measure
+            )
+
+        if len(self.are_participants_excluded):
+            queryset = queryset.annotate(
+                are_participants_excluded=Case(
+                    When(samples__size_excluded__gt=0, then=Value(True)), default=Value(False)
+                )
+            ).filter(are_participants_excluded__in=self.are_participants_excluded)
         return queryset
 
     def process_paradigm(self):
@@ -156,6 +173,20 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             UnConsciousnessMeasure.objects.values("is_cm_same_participants_as_task")
             .distinct()
             .annotate(series_name=F("is_cm_same_participants_as_task"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_is_performance_above_chance(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            unconsciousness_measures__is_performance_above_chance=OuterRef("series_name")
+        ).values("id")
+
+        breakdown_query = (
+            UnConsciousnessMeasure.objects.values("is_performance_above_chance")
+            .distinct()
+            .annotate(series_name=F("is_performance_above_chance"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

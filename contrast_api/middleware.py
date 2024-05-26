@@ -25,28 +25,37 @@ class MultiSPAMiddleware(SPAMiddleware):
     spa_roots = {}
 
     def update_files_dictionary(self, *args):
+        index_page_suffixes = {app: f'/static/{app}/index.html' for app in settings.SPA_APPS_MAPPING.values()}
+        print(index_page_suffixes)
         super(SPAMiddleware, self).update_files_dictionary(*args)
-        index_page_suffix = '/' + self.index_name
-        index_name_length = len(self.index_name)
+        # index_page_suffix = '/' + self.index_name
+        # index_name_length = len(self.index_name)
         static_prefix_length = len(settings.STATIC_URL) - 1
         directory_indexes = {}
-        # TODO refactor this to adpat to use of multiple spa roots
+        # TODO refactor this to adapt to use of multiple spa roots
         for url, static_file in self.files.items():
-            if url.endswith(index_page_suffix):
-                # For each index file found, add a corresponding URL->content
-                # mapping for the file's parent directory,
-                # so that the index page is served for
-                # the bare directory URL ending in '/'.
-                parent_directory_url = url[:-index_name_length]
-                directory_indexes[parent_directory_url] = static_file
-                # remember the root page for any other unrecognised files
-                # to be frontend-routed
-                self.spa_root = static_file
-            else:
+            is_index = False
+            for app_name, index_page_suffix in index_page_suffixes.items():
+                index_name_length = len(index_page_suffix) - 1
+                if url.endswith(index_page_suffix):
+                    # For each index file found, add a corresponding URL->content
+                    # mapping for the file's parent directory,
+                    # so that the index page is served for
+                    # the bare directory URL ending in '/'.
+                    parent_directory_url = url[:-index_name_length]
+                    directory_indexes[parent_directory_url] = static_file
+                    # remember the root page for any other unrecognised files
+                    # to be frontend-routed
+                    self.spa_roots[app_name] = static_file
+                    print(parent_directory_url)
+                    print(app_name, self.spa_roots[app_name])
+                    is_index = True
+            if not is_index:
                 # also serve static files on /
                 # e.g. when /my/file.png is requested, serve /static/my/file.png
                 directory_indexes[url[static_prefix_length:]] = static_file
         self.files.update(directory_indexes)
+        print("spa roots", self.spa_roots)
     def find_file(self, url, app_name=None):
         # In debug mode, find_file() is used to serve files directly
         # from the filesystem instead of using the list in `self.files`,
@@ -63,14 +72,14 @@ class MultiSPAMiddleware(SPAMiddleware):
             # e.g. when /my/file.png is requested, serve /static/my/file.png
             if (not url.startswith(self.static_url)):
                 url = os.path.join(self.static_url, url[1:])
-            return super(SPAMiddleware, self).find_file(url)
+            return super(MultiSPAMiddleware, self).find_file(url)
     def process_request(self, request):
         self.static_url  = settings.STATIC_URL
         # First try to serve the static files (on /static/ and on /)
         # which is relatively fast as files are stored in a self.files dict
         static_app = self.resolve_spa_app(request)
         if static_app:
-            self.static_url = f'/static/{static_app}/'
+            self.static_url = f'/static/{static_app}'
         if self.autorefresh:  # debug mode
             static_file = self.find_file(request.path_info)
         else:  # from the collected static files
@@ -78,6 +87,10 @@ class MultiSPAMiddleware(SPAMiddleware):
         if static_file is not None:
             return self.serve(static_file, request)
         else:
+            # retry for assets
+            static_file = self.files.get(f"/{static_app}{request.path_info}")
+            if static_file is not None:
+                return self.serve(static_file, request)
             # if no file was found there are two options:
 
             # 1) the file is in one of the Django urls

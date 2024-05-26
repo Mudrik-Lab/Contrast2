@@ -292,7 +292,7 @@ class Base(Configuration):
 
     SPA_APPS_MAPPING = {
         "contrastdb.tau.ac.il": "contrast",
-        "localhost:8000": "contrast",
+        "localhost:8000": "uncontrast",
         "uncontrastdb.tau.ac.il": "uncontrast",
         "uncontrastdb.tau.ac.il:8000": "uncontrast",
     }

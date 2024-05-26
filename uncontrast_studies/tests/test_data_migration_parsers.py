@@ -362,6 +362,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         res_text = clean_list_from_data(data_item_text)
         self.assertEqual(res_text, ["Words", "Digits"])
         res_integers = clean_list_from_data(data_item_integers, integer=True)
-        self.assertEqual(res_integers, [126.0, 126.0, 252.0])
+        self.assertEqual(res_integers, [126, 126, 252])
         res_floats = clean_list_from_data(data_item_floats, integer=True)
-        self.assertEqual(res_floats, [23.0, 94.0, 58.5])
+        self.assertEqual(res_floats, [23, 94, 58.5])

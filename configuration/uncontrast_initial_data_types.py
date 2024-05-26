@@ -52,7 +52,7 @@ uncon_stimulus_categories = {
     "Line Drawings": ["Faces", "Objects", "Fruit", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Other"],
     "Tactile Stimuli": [],
     "Biological motion": [],
-    "Sounds": []
+    "Sounds": [],
 }
 
 uncon_stimulus_modalities = ["Auditory", "Olfactory", "Tactile", "Visual", "None"]

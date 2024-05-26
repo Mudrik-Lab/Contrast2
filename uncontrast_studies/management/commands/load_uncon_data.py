@@ -19,7 +19,8 @@ from contrast_api.data_migration_functionality.errors import (
     SampleSizeError,
     SuppressionMethodError,
     FindingError,
-    IncoherentStimuliDataError, NumericListError,
+    IncoherentStimuliDataError,
+    NumericListError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
@@ -68,7 +69,7 @@ class Command(BaseCommand):
             "invalid_stimuli_metadata_log": [],
             "sample_type_errors_log": [],
             "sample_size_errors_log": [],
-            "invalid_numeric_data_log": []
+            "invalid_numeric_data_log": [],
         }
 
         # iterate over studies

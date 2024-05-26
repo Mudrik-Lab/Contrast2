@@ -88,9 +88,13 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         len_duration = len(stimuli_duration_data)
         len_soa = len(stimuli_soa_data)
 
-        is_same_length = len_category == len_duration == len_soa == len_sub_category and stimuli_sub_category_data != [""]
+        is_same_length = len_category == len_duration == len_soa == len_sub_category and stimuli_sub_category_data != [
+            ""
+        ]
         is_multiple_sub_categories_and_multiple_numerics = len_duration == len_soa == len_sub_category > len_category
-        is_multiple_sub_categories_and_singular_numerics = len_sub_category > len_category == len_duration == len_soa == 1
+        is_multiple_sub_categories_and_singular_numerics = (
+            len_sub_category > len_category == len_duration == len_soa == 1
+        )
         is_multiple_categories_and_singular_numerics = len_duration == len_soa == 1 < len_category
         is_no_sub_category = len_category > len_sub_category or stimuli_sub_category_data == [""]
 
@@ -143,9 +147,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         elif is_multiple_sub_categories_and_multiple_numerics:
             stimulus_category = stimuli_category_data[0]
             if stimulus_category not in uncon_stimulus_categories.keys():
-                raise MissingStimulusCategoryError(
-                    f"invalid stimulus category {stimulus_category} (index {index})"
-                )
+                raise MissingStimulusCategoryError(f"invalid stimulus category {stimulus_category} (index {index})")
 
             for idx in range(len_sub_category):
                 indexed_stimuli_sub_category = stimuli_sub_category_data[idx]
@@ -191,9 +193,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
             stimulus_soa = stimuli_soa_data[0]
 
             if stimulus_category not in uncon_stimulus_categories.keys():
-                raise MissingStimulusCategoryError(
-                    f"invalid stimulus category {stimulus_category} (index {index})"
-                )
+                raise MissingStimulusCategoryError(f"invalid stimulus category {stimulus_category} (index {index})")
             try:
                 if stimulus_duration in NULL_VALUES:  # TODO: after data is full, change to throw error
                     stimulus_duration = 0
@@ -294,9 +294,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
                 raise StimulusDurationError(f"invalid stimulus numeric data, {index}")
 
             if stimulus_category not in uncon_stimulus_categories.keys():
-                raise MissingStimulusCategoryError(
-                    f"invalid stimulus category {stimulus_category} (index {index})"
-                )
+                raise MissingStimulusCategoryError(f"invalid stimulus category {stimulus_category} (index {index})")
 
             if len(uncon_stimulus_categories[stimulus_category]) != 0:
                 raise MissingStimulusCategoryError(
@@ -325,7 +323,9 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         # resolve fields that might have multiple entries for target stimuli
         len_category = len(stimuli_category_data)
         len_sub_category = len(stimuli_sub_category_data)
-        is_no_sub_category = len(uncon_stimulus_categories[stimuli_category_data[0]]) == 0 and len(stimuli_sub_category_data[0]) == 0
+        is_no_sub_category = (
+            len(uncon_stimulus_categories[stimuli_category_data[0]]) == 0 and len(stimuli_sub_category_data[0]) == 0
+        )
         is_multiple_sub_categories = len_sub_category > len_category == 1
 
         if len_category == len_sub_category > 0 and stimuli_sub_category_data != [""]:
@@ -361,9 +361,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         elif is_no_sub_category:
             stimulus_category = stimuli_category_data[0]
             if stimulus_category not in uncon_stimulus_categories.keys():
-                raise MissingStimulusCategoryError(
-                    f"invalid stimulus category {stimulus_category} (index {index})"
-                )
+                raise MissingStimulusCategoryError(f"invalid stimulus category {stimulus_category} (index {index})")
 
             resolved_stimuli.append(
                 UnconResolvedStimulusData(
@@ -380,9 +378,7 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
         elif is_multiple_sub_categories:
             stimulus_category = stimuli_category_data[0]
             if stimulus_category not in uncon_stimulus_categories.keys():
-                raise MissingStimulusCategoryError(
-                    f"invalid stimulus category {stimulus_category} (index {index})"
-                )
+                raise MissingStimulusCategoryError(f"invalid stimulus category {stimulus_category} (index {index})")
 
             for sub_category in stimuli_sub_category_data:
                 if sub_category not in uncon_stimulus_categories[stimulus_category]:
@@ -401,7 +397,8 @@ def resolve_uncon_stimuli(item: dict, index: str, prime: bool):
                         mode_of_presentation=None,
                         duration=None,
                         soa=None,
-                    ))
+                    )
+                )
 
         else:
             raise IncoherentStimuliDataError(f"incoherent data for stimuli; index: {index} prime:{prime}")

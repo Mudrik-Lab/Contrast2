@@ -76,8 +76,12 @@ def create_uncon_experiment(item: dict, index):
 def create_prime_stimuli(experiment: object, stimuli_data: list):
     for stimulus in stimuli_data:
         category = UnConStimulusCategory.objects.get(name=stimulus.category)
-        sub_category = UnConStimulusSubCategory.objects.get(name=stimulus.sub_category, parent=category)
         modality = UnConModalityType.objects.get(name=stimulus.modality)
+        if stimulus.sub_category:
+            sub_category = UnConStimulusSubCategory.objects.get(name=stimulus.sub_category, parent=category)
+        else:
+            sub_category = None
+
         UnConSuppressedStimulus.objects.create(
             experiment=experiment,
             category=category,
@@ -93,8 +97,13 @@ def create_prime_stimuli(experiment: object, stimuli_data: list):
 def create_target_stimuli(experiment: object, stimuli_data: list):
     for stimulus in stimuli_data:
         category = UnConStimulusCategory.objects.get(name=stimulus.category)
-        sub_category = UnConStimulusSubCategory.objects.get(name=stimulus.sub_category, parent=category)
         modality = UnConModalityType.objects.get(name=stimulus.modality)
+        if stimulus.sub_category:
+            sub_category = UnConStimulusSubCategory.objects.get(name=stimulus.sub_category, parent=category)
+
+        else:
+            sub_category = None
+
         UnConTargetStimulus.objects.create(
             experiment=experiment,
             category=category,

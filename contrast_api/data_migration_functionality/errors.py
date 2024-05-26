@@ -68,3 +68,7 @@ class ProcessingDomainError(Exception):
 
 class FindingError(Exception):
     pass
+
+
+class NumericListError(Exception):
+    pass

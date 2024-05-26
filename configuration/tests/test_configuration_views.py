@@ -139,6 +139,11 @@ class ConfigurationViewsTestCase(BaseTestCase):
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+    def test_configuration_uncontrast_studies_endpoint(self):
+        url = self.reverse_with_query_params("configuration-uncon-studies-form")
+        res = self.client.get(url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
     def test_configuration_graphs_endpoint(self):
         url = self.reverse_with_query_params("configuration-graphs")
         res = self.client.get(url)

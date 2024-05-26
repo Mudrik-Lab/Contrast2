@@ -121,7 +121,7 @@ def process_uncon_row(item: dict):
         type=sample.sample_type,
         size_included=sample.included_size,
         size_total=sample.total_size,
-        size_excluded=sample.excluded_size,
+        size_excluded=sample.excluded_size or 0,
     )
 
     # stimuli

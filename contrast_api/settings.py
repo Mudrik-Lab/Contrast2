@@ -292,9 +292,11 @@ class Base(Configuration):
 
     SPA_APPS_MAPPING = {
         "contrastdb.tau.ac.il": "contrast",
-        "localhost:8000": "uncontrast",
+        "localhost:8000": "uncontrast",  # change this for local development view
         "uncontrastdb.tau.ac.il": "uncontrast",
-        "uncontrastdb.tau.ac.il:8000": "uncontrast",
+        # specific heroku dns names, hard coded here - for development access
+        "modern-kumquat-pq5vz8d7qphfmvzdk6iul2wr.herokudns.com": "contrast",
+        "vascular-hoverfly-itv8hhlcs4m4aokzq49vvluu.herokudns.com": "uncontrast",
     }
 
 
@@ -302,11 +304,9 @@ class Development(Base):
     DEBUG = False
     SWAGGER_ENABLED = values.BooleanValue(default=True)
     CORS_ALLOW_ALL_ORIGINS = True
-    ALLOWED_HOSTS = values.ListValue(["web",
-                                      "localhost",
-                                      "127.0.0.1",
-                                      "uncontrastdb.tau.ac.il",
-                                      "contrastdb.tau.ac.il"])
+    ALLOWED_HOSTS = values.ListValue(
+        ["web", "localhost", "127.0.0.1", "uncontrastdb.tau.ac.il", "contrastdb.tau.ac.il"]
+    )
 
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},

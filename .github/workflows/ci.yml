@@ -68,12 +68,6 @@ jobs:
           ssh-key: ${{ secrets.CONTRAST_DEPLOY_KEY }}
           path: ContrastFront
 
-#      - name: Check out repository frontend repository
-#        uses: actions/checkout@v3
-#        with:
-#          repository: "Mudrik-Lab/UnContrastFront"
-#          ssh-key: ${{ secrets.CONTRAST_DEPLOY_KEY }}
-#          path: UnContrastFront
 
       - name: build front app
         uses: actions/setup-node@v3
@@ -85,8 +79,8 @@ jobs:
       - run: npm run build
         working-directory: ./ContrastFront
 
-      - name: adding front code to django
-        run: cp -r ./ContrastFront/dist/* frontapp
+#      - name: adding front code to django
+#        run: cp -r ./ContrastFront/dist/* frontapp
 
       - name: adding front code to django - contrast
         run: cp -r ./ContrastFront/dist-contrast/* frontapp/contrast

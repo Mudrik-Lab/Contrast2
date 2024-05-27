@@ -124,4 +124,4 @@ uncon_consciousness_measures_phases = [
     "None",
 ]
 
-uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Other"]
+uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Mouse trajectories", "Other"]

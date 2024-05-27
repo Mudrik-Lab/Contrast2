@@ -480,13 +480,13 @@ files = [
 
 [[package]]
 name = "django-simple-history"
-version = "3.5.0"
+version = "3.6.0"
 description = "Store model history and view/revert changes from admin site."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django-simple-history-3.5.0.tar.gz", hash = "sha256:eef2943d7c846270f11c8136f38a3ba00de2bebd7b1b89037de5d9b148ed677a"},
-    {file = "django_simple_history-3.5.0-py3-none-any.whl", hash = "sha256:0030b3bb5ed219d6453320213e75cfa00dab7a381946124df9411729101c8874"},
+    {file = "django_simple_history-3.6.0-py3-none-any.whl", hash = "sha256:e6d7f94dbfdc45da6e77dda0bf7f080b243ade041ad1b240ce96a9927eadd3c9"},
+    {file = "django_simple_history-3.6.0.tar.gz", hash = "sha256:07ee8b42f088c5955690e6a9a959b83d733cd845830504fa30d08f2dea0759a2"},
 ]
 
 [package.dependencies]
@@ -1532,4 +1532,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.10,<3.11"
-content-hash = "c4b0f99ba04fd55ce98fc6353cfbdf7cecb040ff6485323866b735c0d2f1d911"
+content-hash = "5bdc5d412f58767dfbe0cbedabac1b872e7745d8a40bd8b097e49ab3a2e32df6"

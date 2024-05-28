@@ -82,7 +82,7 @@ class Base(Configuration):
     MIDDLEWARE = [
         "django.middleware.security.SecurityMiddleware",
         "whitenoise.middleware.WhiteNoiseMiddleware",
-        "spa.middleware.SPAMiddleware",
+        "contrast_api.middleware.MultiSPAMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",
         "corsheaders.middleware.CorsMiddleware",
         "django.middleware.common.CommonMiddleware",
@@ -290,11 +290,23 @@ class Base(Configuration):
     LOGIN_URL = "two_factor:login"
     TWO_FACTOR_REMEMBER_COOKIE_AGE = 600
 
+    SPA_APPS_MAPPING = values.DictValue({
+        "contrastdb.tau.ac.il": "contrast",
+        "localhost:8000": "uncontrast",  # change this for local development view
+        "uncontrastdb.tau.ac.il": "uncontrast",
+        # specific heroku dns names, hard coded here - for development access
+
+        "uncontrast.drorsoft.com": "uncontrast",
+    })
+
 
 class Development(Base):
+    DEBUG = False
     SWAGGER_ENABLED = values.BooleanValue(default=True)
     CORS_ALLOW_ALL_ORIGINS = True
-    ALLOWED_HOSTS = values.ListValue(["web", "localhost", "127.0.0.1"])
+    ALLOWED_HOSTS = values.ListValue(
+        ["web", "localhost", "127.0.0.1", "uncontrastdb.tau.ac.il", "contrastdb.tau.ac.il"]
+    )
 
     STORAGES = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
@@ -331,6 +343,7 @@ class Staging(Base):
 
 class Production(Base):
     DEBUG = values.BooleanValue(default=False, environ_prefix="")
+    CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOW_ALL_ORIGINS = False
     AWS_STORAGE_BUCKET_NAME = values.Value(environ_prefix="BUCKETEER", environ_name="BUCKET_NAME")
     AWS_ACCESS_KEY_ID = values.Value(environ_prefix="BUCKETEER")

@@ -68,6 +68,7 @@ jobs:
           ssh-key: ${{ secrets.CONTRAST_DEPLOY_KEY }}
           path: ContrastFront
 
+
       - name: build front app
         uses: actions/setup-node@v3
         with:
@@ -78,12 +79,18 @@ jobs:
       - run: npm run build
         working-directory: ./ContrastFront
 
-      - name: adding front code to django
-        run: cp -r ./ContrastFront/dist/* frontapp
+#      - name: adding front code to django
+#        run: cp -r ./ContrastFront/dist/* frontapp
+
+      - name: adding front code to django - contrast
+        run: cp -r ./ContrastFront/dist-contrast/* frontapp/contrast
+
+      - name: adding front code to django - uncontrast front
+        run: cp -r ./ContrastFront/dist-uncontrast/* frontapp/uncontrast
 
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
-        uses: akhileshns/heroku-deploy@v3.12.13
+        uses: akhileshns/heroku-deploy@v3.13.15
         with:
           heroku_email: ${{secrets.HEROKU_USER_EMAIL}}
           # https://help.heroku.com/PBGP6IDE/how-should-i-generate-an-api-key-that-allows-me-to-use-the-heroku-platform-api

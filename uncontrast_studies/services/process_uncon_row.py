@@ -37,9 +37,9 @@ from uncontrast_studies.parsers.uncon_data_parsers import (
     resolve_uncon_processing_domains,
 )
 from uncontrast_studies.parsers.stimulus_parser import (
-    resolve_uncon_stimuli,
+    resolve_uncon_prime_stimuli,
     resolve_uncon_stimuli_metadata,
-    is_target_duplicate,
+    is_target_duplicate, resolve_uncon_target_stimuli,
 )
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample
@@ -134,7 +134,7 @@ def process_uncon_row(item: dict):
     )
 
     # stimuli
-    prime_stimuli = resolve_uncon_stimuli(item=item, index=experiment_index, prime=True)
+    prime_stimuli = resolve_uncon_prime_stimuli(item=item, index=experiment_index)
     create_prime_stimuli(experiment, prime_stimuli)
     if experiment.is_target_stimulus:
         if experiment.is_target_same_as_suppressed_stimulus:
@@ -145,7 +145,7 @@ def process_uncon_row(item: dict):
             else:
                 create_target_stimuli(experiment, prime_stimuli)
         else:
-            target_stimuli = resolve_uncon_stimuli(item=item, index=experiment_index, prime=False)
+            target_stimuli = resolve_uncon_target_stimuli(item=item, index=experiment_index)
             create_target_stimuli(experiment, target_stimuli)
 
     # suppression_methods

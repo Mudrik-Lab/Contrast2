@@ -10,7 +10,8 @@ def resolve_authors_from_authors_text(text: str):
 
 
 def resolve_countries(text: str):
-    countries_list = text.split(", ")
+    countries_list = text.split(";")
+    countries_list = [country.strip() for country in countries_list]
     return countries_list
 
 
@@ -27,7 +28,8 @@ def resolve_country_from_affiliation_text(text: str):
 
 
 def resolve_authors_keywords_from_text(text: str):
-    authors_keyword_list = text.split("; ")
+    authors_keyword_list = text.split(";")
+    authors_keyword_list = [author.strip() for author in authors_keyword_list]
     return authors_keyword_list
 
 

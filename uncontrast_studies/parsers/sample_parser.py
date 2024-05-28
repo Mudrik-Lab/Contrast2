@@ -11,6 +11,7 @@ def resolve_uncon_sample(item: dict, index: str):
     samples_total_data = item["Samples Total"]
     samples_included_data = item["Samples Included"]
     samples_excluded_data = item["Samples If excluded, how many?"]
+    resolved_excluded_size = 0
 
     if sample_type_data.lower() == "healthy adults":
         resolved_sample_type = UnConSampleChoices.HEALTHY_ADULTS

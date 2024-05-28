@@ -79,8 +79,11 @@ jobs:
       - run: npm run build
         working-directory: ./ContrastFront
 
-#      - name: adding front code to django
-#        run: cp -r ./ContrastFront/dist/* frontapp
+      - run: npm run build:contrast
+        working-directory: ./ContrastFront
+
+      - run: npm run build:uncontrast
+        working-directory: ./ContrastFront
 
       - name: adding front code to django - contrast
         run: cp -r ./ContrastFront/dist-contrast/* frontapp/contrast

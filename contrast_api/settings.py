@@ -290,14 +290,15 @@ class Base(Configuration):
     LOGIN_URL = "two_factor:login"
     TWO_FACTOR_REMEMBER_COOKIE_AGE = 600
 
-    SPA_APPS_MAPPING = values.DictValue({
-        "contrastdb.tau.ac.il": "contrast",
-        "localhost:8000": "uncontrast",  # change this for local development view
-        "uncontrastdb.tau.ac.il": "uncontrast",
-        # specific heroku dns names, hard coded here - for development access
-
-        "uncontrast.drorsoft.com": "uncontrast",
-    })
+    SPA_APPS_MAPPING = values.DictValue(
+        {
+            "contrastdb.tau.ac.il": "contrast",
+            "localhost:8000": "uncontrast",  # change this for local development view
+            "uncontrastdb.tau.ac.il": "uncontrast",
+            # specific heroku dns names, hard coded here - for development access
+            "uncontrast.drorsoft.com": "uncontrast",
+        }
+    )
 
 
 class Development(Base):

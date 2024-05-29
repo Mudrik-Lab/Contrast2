@@ -178,9 +178,10 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(len(res), 2)
 
     def test_prime_stimuli_parser(self):
+
         item_1 = {
-            "Stimuli Category": "Lingual",
-            "Stimuli Sub-category": "Words",
+            "Stimuli Category": "Shapes",
+            "Stimuli Sub-category": "Simple shapes",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "33",
             "Stimuli Number of different stimuli used in the experiment": "missing",
@@ -264,6 +265,12 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[2].sub_category, "Digits")
 
     def test_target_stimuli_parser(self):
+        item_0 = {
+            "Stimuli Category 2": "missing",
+            "Stimuli Sub-category 2": "missing",
+            "Stimuli Modality 2": "missing",
+            "Stimuli Number of different stimuli used in the experiment 2": "missing",
+        }
         item_3 = {
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Words",
@@ -295,6 +302,8 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Number of different stimuli used in the experiment 2": "8",
         }
 
+        res_target_missing = resolve_uncon_target_stimuli(item=item_0, index="0")
+        self.assertEqual(len(res_target_missing), 0)
         res_target_singular = resolve_uncon_target_stimuli(item=item_3, index="3")
         self.assertEqual(len(res_target_singular), 1)
         res_target_multiple = resolve_uncon_target_stimuli(item=item_4, index="4")

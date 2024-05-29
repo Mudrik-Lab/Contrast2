@@ -284,6 +284,9 @@ def resolve_uncon_target_stimuli(item: dict, index: str):
     stimuli_category_data = clean_list_from_data(item["Stimuli Category 2"])
     stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category 2"])
 
+    if stimuli_category_data == ["missing"] or stimuli_sub_category_data == ["missing"]:
+        return resolved_stimuli
+
     # resolve singular data
     stimulus_modality, stimulus_number_of_stimuli = resolve_singular_stimulus_data(item=item, index=index, prime=False)
 

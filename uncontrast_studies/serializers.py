@@ -136,6 +136,7 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
     consciousness_measures = UnConsciousnessMeasureSerializer(many=True, read_only=True)
     paradigm = UnConSpecificParadigmSerializer(read_only=True)
 
+
     class Meta:
         model = UnConExperiment
         depth = 2
@@ -190,6 +191,21 @@ class StudyWithUnConExperimentsSerializer(serializers.ModelSerializer):
 
 
 class ThinUnConExperimentSerializer(FullUnConExperimentSerializer):
+    class Meta:
+        model = UnConExperiment
+        fields = [
+            "id",
+            "study",
+            "experiment_findings_notes",
+            "type",
+            "paradigm",
+            "is_target_same_as_suppressed_stimulus",
+            "is_target_stimulus",
+            "consciousness_measures_notes",
+        ]
+
+class UnConCreateExperimentSerializer(FullUnConExperimentSerializer):
+    paradigm = serializers.PrimaryKeyRelatedField(queryset=UnConSpecificParadigm.objects.all())
     class Meta:
         model = UnConExperiment
         fields = [

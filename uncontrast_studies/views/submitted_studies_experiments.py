@@ -13,7 +13,8 @@ from contrast_api.studies.permissions import SubmitterOnlyPermission
 from contrast_api.serializers import NoteUpdateSerializer, OptionalNoteUpdateSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 from uncontrast_studies.models import UnConExperiment
-from uncontrast_studies.serializers import FullUnConExperimentSerializer, ThinUnConExperimentSerializer
+from uncontrast_studies.serializers import FullUnConExperimentSerializer, ThinUnConExperimentSerializer, \
+    UnConCreateExperimentSerializer
 
 
 class SubmittedUnContrastStudyExperiments(StudyRelatedPermissionsViewMixin, ModelViewSet, GenericViewSet):
@@ -39,11 +40,11 @@ class SubmittedUnContrastStudyExperiments(StudyRelatedPermissionsViewMixin, Mode
 
     def get_serializer_class(self):
         if self.action in ["create", "update", "partial_update"]:
-            return ThinUnConExperimentSerializer
+            return UnConCreateExperimentSerializer
         else:
             return super().get_serializer_class()
 
-    @extend_schema(request=ThinUnConExperimentSerializer())
+    @extend_schema(request=UnConCreateExperimentSerializer())
     def create(self, request, *args, **kwargs):
         data = copy.deepcopy(request.data)
         data["study"] = int(self.kwargs.get("study_pk"))
@@ -58,7 +59,7 @@ class SubmittedUnContrastStudyExperiments(StudyRelatedPermissionsViewMixin, Mode
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
-    @extend_schema(request=ThinUnConExperimentSerializer())
+    @extend_schema(request=UnConCreateExperimentSerializer())
     def update(self, request, *args, **kwargs):
         partial = kwargs.pop("partial", False)
         instance = self.get_object()
@@ -94,7 +95,7 @@ class SubmittedUnContrastStudyExperiments(StudyRelatedPermissionsViewMixin, Mode
     @extend_schema(request=NoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullUnConExperimentSerializer)
     def set_experiment_findings_notes(self, request, pk, *args, **kwargs):
-        return self._set_experiment_note(request, note_field="experiment_findings_notes", is_optional_note=False)
+        return self._set_experiment_note(request, note_field="experiment_findings_notes", is_optional_note=True)
 
     @extend_schema(request=OptionalNoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullUnConExperimentSerializer)

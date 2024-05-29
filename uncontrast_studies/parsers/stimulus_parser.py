@@ -13,6 +13,14 @@ from contrast_api.data_migration_functionality.errors import (
 from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
 
 
+def is_missing_number_of_trials(item: dict):
+    stimuli_number_of_stimuli_data = item["Stimuli Number of different stimuli used in the experiment"]
+    if stimuli_number_of_stimuli_data == "missing":
+        return True
+    else:
+        return False
+
+
 def is_target_duplicate(item: dict):
     stimuli_category_data = item["Stimuli Category"]
     stimuli_sub_category_data = item["Stimuli Sub-category"]
@@ -37,11 +45,6 @@ def is_target_duplicate(item: dict):
 
 def resolve_uncon_prime_stimuli(item: dict, index: str):
     resolved_stimuli = []
-
-    stimuli_category_data = clean_list_from_data(item["Stimuli Category"])
-    stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category"])
-    stimuli_duration_data = clean_list_from_data(item["Stimuli Duration"], integer=True)
-    stimuli_soa_data = clean_list_from_data(item["Stimuli SOA"], integer=True)
     stimuli_mode_of_presentation_data = str(item["Stimuli Mode of presentation"]).strip().lower()
 
     # resolve singular data
@@ -332,7 +335,7 @@ def resolve_uncon_target_stimuli(item: dict, index: str):
     len_sub_category = len(stimuli_sub_category_data)
     is_same_length = len_category == len_sub_category and stimuli_sub_category_data != [""]
     is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [""]
-    is_multiple_sub_categories = len_sub_category > len_category == 1
+    is_multiple_sub_categories = len_sub_category > len_category >= 1
 
     if is_same_length:
         for idx in range(len(stimuli_category_data)):
@@ -414,6 +417,9 @@ def resolve_uncon_stimuli_metadata(item, index):
     if is_target_stimuli_same_as_prime_data == "yes":
         is_target_stimuli_same_as_prime = True
     elif is_target_stimuli_same_as_prime_data == "no":
+        is_target_stimuli_same_as_prime = False
+    elif is_target_stimuli_same_as_prime_data == "missing":
+        is_target_stimuli = False
         is_target_stimuli_same_as_prime = False
     else:
         raise StimulusMetadataError(f"bad stimulus metadata: {index}")

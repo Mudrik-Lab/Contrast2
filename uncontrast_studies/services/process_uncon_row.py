@@ -41,7 +41,6 @@ from uncontrast_studies.parsers.stimulus_parser import (
     resolve_uncon_stimuli_metadata,
     is_target_duplicate,
     resolve_uncon_target_stimuli,
-    is_missing_number_of_trials,
 )
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample
@@ -140,15 +139,12 @@ def process_uncon_row(item: dict):
     create_prime_stimuli(experiment, prime_stimuli)
     if experiment.is_target_stimulus:
         if experiment.is_target_same_as_suppressed_stimulus:
-            if is_missing_number_of_trials:
-                target_stimuli = resolve_uncon_target_stimuli(item=item, index=experiment_index)
-                create_target_stimuli(experiment, target_stimuli)
-            elif is_target_duplicate(item=item):
-                create_target_stimuli(experiment, prime_stimuli)
-            else:
+            if not is_target_duplicate(item=item):
                 raise IncoherentStimuliDataError(
                     f"target supposed to be same as prime stimulus, but it's different; index {experiment_index}"
                 )
+            else:
+                create_target_stimuli(experiment, prime_stimuli)
         else:
             target_stimuli = resolve_uncon_target_stimuli(item=item, index=experiment_index)
             create_target_stimuli(experiment, target_stimuli)

@@ -23,13 +23,16 @@ from contrast_api.data_migration_functionality.errors import (
     NumericListError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
-from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
+from contrast_api.data_migration_functionality.studies_parsing_helpers import (
+    ProblemInStudyExistingDataException,
+    MissingCountryDetectionException,
+)
 from uncontrast_studies.services.process_uncon_row import process_uncon_row
 from uncontrast_studies.services.errors_logger import write_errors_to_log
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/dataset_24052024.xlsx"
+FILE_PATH = "uncontrast_studies/data/dataset_29052024.xlsx"
 MAOR_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
 FRANCOIS_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
 
@@ -83,7 +86,11 @@ class Command(BaseCommand):
                     with transaction.atomic():
                         create_study(item=study_item, unconsciousness=True)
                         created_studies.append(study_doi)
+
                 except ProblemInStudyExistingDataException:
+                    logs["studies_problematic_data_log"].append(study_item)
+
+                except MissingCountryDetectionException:
                     logs["studies_problematic_data_log"].append(study_item)
 
         # iterate over experiments

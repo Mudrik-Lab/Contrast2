@@ -1,7 +1,12 @@
 from collections import namedtuple
 
 from configuration.uncontrast_initial_data_types import uncon_paradigms, uncon_tasks, uncon_processing_domains
-from contrast_api.data_migration_functionality.errors import ParadigmError, TaskTypeError, ProcessingDomainError
+from contrast_api.data_migration_functionality.errors import (
+    ParadigmError,
+    TaskTypeError,
+    ProcessingDomainError,
+    NumericListError,
+)
 
 UnconResolvedParadigmData = namedtuple("UnconParadigmFromData", ["main", "specific"])
 
@@ -47,6 +52,14 @@ def resolve_uncon_processing_domains(item: dict, index: str):
 
 def clean_list_from_data(data: object, integer: bool = False) -> list:
     list_from_data = str(data).split(";")
-    stripped_list_from_data = [int(item) if integer and item.isdigit() else item.strip() for item in list_from_data]
+    stripped_list_from_data = [item.strip() for item in list_from_data]
+    if integer:
+        try:
+            int_stripped_list_from_data = [
+                int(item) if item.isnumeric() else float(item) for item in stripped_list_from_data
+            ]
+        except ValueError:
+            raise NumericListError()
+        return int_stripped_list_from_data
 
     return stripped_list_from_data

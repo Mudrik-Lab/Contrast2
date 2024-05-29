@@ -1,5 +1,3 @@
-from django.core.exceptions import ObjectDoesNotExist
-
 from approval_process.choices import ApprovalChoices
 from contrast_api.choices import StudyTypeChoices
 from contrast_api.data_migration_functionality.studies_parsing_helpers import (
@@ -15,14 +13,22 @@ from studies.parsers.process_row import logger  # TODO: change to shared logger 
 
 
 def create_study(item: dict, unconsciousness):
+    authors = []
+
     if unconsciousness:
         source_title = item["Journal"]
         country_names = resolve_countries(item["Countries"])
-        author_keywords = [""]
         study_type = StudyTypeChoices.UNCONSCIOUSNESS
         funding = ""
         affiliations = ""
         abbreviated_source_title = ""
+        author_keywords = [""]
+
+        authors_names = resolve_authors_keywords_from_text(item["Authors"])
+        for author_name in authors_names:
+            author, created = Author.objects.get_or_create(name=author_name)
+            authors.append(author)
+
     else:
         funding = str(item["Funding.Details"])
         country_names = list(resolve_country_from_affiliation_text(item["Affiliations"]))
@@ -30,11 +36,17 @@ def create_study(item: dict, unconsciousness):
         affiliations = item["Affiliations"]
         abbreviated_source_title = item["Abbreviated.Source.Title"]
         study_type = StudyTypeChoices.CONSCIOUSNESS
+
         author_keywords_text = item["Author.Keywords"]
         if author_keywords_text:
             author_keywords = resolve_authors_keywords_from_text(author_keywords_text)
         else:
             author_keywords = [""]
+
+        authors_names = resolve_authors_from_authors_text(item["Authors"])
+        for author_name in authors_names:
+            author, created = Author.objects.get_or_create(name=author_name)
+            authors.append(author)
 
     DOI = item["DOI"]
     title = item["Title"]
@@ -60,12 +72,7 @@ def create_study(item: dict, unconsciousness):
             affiliations=affiliations,
             type=study_type,
         )
-        # parse authors and add to study
-        authors = []
-        authors_names = resolve_authors_from_authors_text(item["Authors"])
-        for author_name in authors_names:
-            author, created = Author.objects.get_or_create(name=author_name)
-            authors.append(author)
+        # add authors to study
         for author in authors:
             study.authors.add(author)
 

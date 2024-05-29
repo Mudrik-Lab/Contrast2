@@ -20,6 +20,7 @@ from contrast_api.data_migration_functionality.errors import (
     SuppressionMethodError,
     FindingError,
     IncoherentStimuliDataError,
+    NumericListError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
@@ -28,7 +29,7 @@ from uncontrast_studies.services.errors_logger import write_errors_to_log
 
 logger = logging.getLogger("UnConTrast")
 
-FILE_PATH = "uncontrast_studies/data/dataset_19052024.xlsx"
+FILE_PATH = "uncontrast_studies/data/dataset_24052024.xlsx"
 MAOR_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
 FRANCOIS_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
 
@@ -68,6 +69,7 @@ class Command(BaseCommand):
             "invalid_stimuli_metadata_log": [],
             "sample_type_errors_log": [],
             "sample_size_errors_log": [],
+            "invalid_numeric_data_log": [],
         }
 
         # iterate over studies
@@ -154,6 +156,9 @@ class Command(BaseCommand):
             except InvalidConsciousnessMeasureDataError:
                 logs["invalid_consciousness_measure_data_log"].append(item)
                 logger.exception(f"row #{index} is problematic regarding to consciousness measure data")
+
+            except NumericListError:
+                logs["invalid_numeric_data_log"].append(item)
 
         length_of_error_logs = [len(log) for log in logs.values()]
         sum_of_logs = sum(length_of_error_logs)

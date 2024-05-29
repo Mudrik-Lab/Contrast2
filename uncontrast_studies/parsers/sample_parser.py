@@ -11,6 +11,7 @@ def resolve_uncon_sample(item: dict, index: str):
     samples_total_data = item["Samples Total"]
     samples_included_data = item["Samples Included"]
     samples_excluded_data = item["Samples If excluded, how many?"]
+    resolved_excluded_size = 0
 
     if sample_type_data.lower() == "healthy adults":
         resolved_sample_type = UnConSampleChoices.HEALTHY_ADULTS
@@ -44,19 +45,11 @@ def resolve_uncon_sample(item: dict, index: str):
     except TypeError:
         raise SampleSizeError(f"invalid sample size {samples_excluded_data}, index {index}")
 
-    if resolved_excluded_size == 0:
-        sample = UnConResolvedSample(
-            sample_type=resolved_sample_type,
-            total_size=resolved_total_size,
-            included_size=resolved_included_size,
-            excluded_size=None,
-        )
-    else:
-        sample = UnConResolvedSample(
-            sample_type=resolved_sample_type,
-            total_size=resolved_total_size,
-            included_size=resolved_included_size,
-            excluded_size=resolved_excluded_size,
-        )
+    sample = UnConResolvedSample(
+        sample_type=resolved_sample_type,
+        total_size=resolved_total_size,
+        included_size=resolved_included_size,
+        excluded_size=resolved_excluded_size,
+    )
 
     return sample

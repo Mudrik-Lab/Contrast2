@@ -45,23 +45,14 @@ uncon_tasks = [
 ]
 
 uncon_stimulus_categories = {
-    "Lingual": ["Words", "Letters", "Sentences"],
+    "Lingual": ["Words", "Letters", "Sentences", "Word Stems"],
     "Numerical": ["Digits", "Numbers", "Mathematical exercise"],
     "Pictures": ["Faces", "Objects", "Scenes", "Fruit", "Animals", "Vehicles", "Logos", "Hands", "Other"],
-    "Shapes": ["Arrows", "Gratings", "Simple shapes", "Other"],
-    "Line Drawings": [
-        "Faces",
-        "Objects",
-        "Fruit",
-        "Scenes",
-        "Animals",
-        "Vehicles",
-        "Logos",
-        "Hands",
-        "Symbols",
-        "Other",
-    ],
+    "Shapes": ["Arrows", "Gratings", "Simple shapes", "Symbols", "Other"],
+    "Line Drawings": ["Faces", "Objects", "Fruit", "Scenes", "Animals", "Vehicles", "Logos", "Hands", "Other"],
     "Tactile Stimuli": [],
+    "Biological motion": [],
+    "Sounds": [],
 }
 
 uncon_stimulus_modalities = ["Auditory", "Olfactory", "Tactile", "Visual", "None"]
@@ -133,4 +124,4 @@ uncon_consciousness_measures_phases = [
     "None",
 ]
 
-uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Other"]
+uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Mouse trajectories", "Other"]

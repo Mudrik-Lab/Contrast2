@@ -64,11 +64,12 @@ def resolve_uncon_prime_stimuli(item: dict, index: str):
 
     is_same_length = len_category == len_duration == len_soa == len_sub_category and stimuli_sub_category_data != [""]
     is_multiple_sub_categories_and_multiple_numerics = (
-        len_duration == len_soa == len_sub_category and len_sub_category > len_category >= 1
+        len_duration == len_soa == len_sub_category and len_sub_category > len_category == 1
     )
     is_multiple_sub_categories_and_singular_numerics = len_sub_category > len_category == len_duration == len_soa == 1
     is_multiple_categories_and_singular_numerics = len_duration == len_soa == 1 < len_category
     is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [""]
+    is_multiple_categories_and_multiple_sub_categories = len_sub_category > len_category > 1 and len_duration == len_soa == 1
 
     if is_same_length:
         for idx in range(len_category):
@@ -128,6 +129,39 @@ def resolve_uncon_prime_stimuli(item: dict, index: str):
                     soa=stimulus_soa,
                 )
             )
+
+    elif is_multiple_categories_and_multiple_sub_categories:
+        stimulus_duration, stimulus_soa = check_numeric_values(index, stimuli_duration_data[0], stimuli_soa_data[0])
+        possible_categories_for_sub_category = []
+
+        for category in stimuli_category_data:
+            stimulus_category = check_category(index, category)
+            possible_categories_for_sub_category.append(stimulus_category)
+
+        for sub_category in stimuli_sub_category_data:
+            is_match = False
+            for stimulus_category in possible_categories_for_sub_category:
+                if sub_category in uncon_stimulus_categories[stimulus_category]:
+                    stimulus_sub_category = sub_category
+                    resolved_stimuli.append(
+                        UnconResolvedStimulusData(
+                            category=stimulus_category,
+                            sub_category=stimulus_sub_category,
+                            modality=stimulus_modality,
+                            number_of_stimuli=stimulus_number_of_stimuli,
+                            mode_of_presentation=mode_of_presentation,
+                            duration=stimulus_duration,
+                            soa=stimulus_soa,
+                        )
+                    )
+                    is_match = True
+                else:
+                    continue
+
+            if not is_match:
+                raise MissingStimulusCategoryError(
+                    f"{sub_category} (index {index}) invalid for stimulus categories {possible_categories_for_sub_category}"
+                )
 
     elif is_multiple_categories_and_singular_numerics:
         stimulus_duration, stimulus_soa = check_numeric_values(index, stimuli_duration_data[0], stimuli_soa_data[0])
@@ -191,13 +225,15 @@ def check_numeric_values(index: str, stimulus_duration, stimulus_soa):
 
 
 def check_sub_category(index: str, stimulus_category: str, sub_category: str) -> str:
+
     if sub_category not in uncon_stimulus_categories[stimulus_category]:
         raise MissingStimulusCategoryError(
             f"{sub_category} (index {index}) invalid for stimulus category {stimulus_category}"
         )
     else:
         stimulus_sub_category = sub_category
-    return stimulus_sub_category
+
+        return stimulus_sub_category
 
 
 def check_category(index: str, stimulus_category: str) -> str:

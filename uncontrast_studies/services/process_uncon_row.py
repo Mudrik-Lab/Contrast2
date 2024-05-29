@@ -39,7 +39,8 @@ from uncontrast_studies.parsers.uncon_data_parsers import (
 from uncontrast_studies.parsers.stimulus_parser import (
     resolve_uncon_prime_stimuli,
     resolve_uncon_stimuli_metadata,
-    is_target_duplicate, resolve_uncon_target_stimuli,
+    is_target_duplicate,
+    resolve_uncon_target_stimuli,
 )
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample

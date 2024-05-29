@@ -68,9 +68,7 @@ def resolve_uncon_prime_stimuli(item: dict, index: str):
     )
     is_multiple_sub_categories_and_singular_numerics = len_sub_category > len_category == len_duration == len_soa == 1
     is_multiple_categories_and_singular_numerics = len_duration == len_soa == 1 < len_category
-    is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [
-        ""
-    ]
+    is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [""]
 
     if is_same_length:
         for idx in range(len_category):
@@ -257,9 +255,7 @@ def resolve_uncon_target_stimuli(item: dict, index: str):
     len_category = len(stimuli_category_data)
     len_sub_category = len(stimuli_sub_category_data)
     is_same_length = len_category == len_sub_category and stimuli_sub_category_data != [""]
-    is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [
-        ""
-    ]
+    is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [""]
     is_multiple_sub_categories = len_sub_category > len_category == 1
 
     if is_same_length:

@@ -5,7 +5,8 @@ from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample
 from uncontrast_studies.parsers.stimulus_parser import (
     resolve_uncon_stimuli_metadata,
     resolve_uncon_prime_stimuli,
-    is_target_duplicate, resolve_uncon_target_stimuli,
+    is_target_duplicate,
+    resolve_uncon_target_stimuli,
 )
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.uncon_data_parsers import (
@@ -237,17 +238,11 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(len(res_prime_same_length_singular), 1)
         res_prime_same_length_multiple = resolve_uncon_prime_stimuli(item=item_2, index="2")
         self.assertEqual(len(res_prime_same_length_multiple), 2)
-        res_prime_multiple_sub_categories_and_singular_numerics = resolve_uncon_prime_stimuli(
-            item=item_6, index="6"
-        )
+        res_prime_multiple_sub_categories_and_singular_numerics = resolve_uncon_prime_stimuli(item=item_6, index="6")
         self.assertEqual(len(res_prime_multiple_sub_categories_and_singular_numerics), 2)
-        res_prime_multiple_sub_categories_and_multiple_numerics = resolve_uncon_prime_stimuli(
-            item=item_7, index="7"
-        )
+        res_prime_multiple_sub_categories_and_multiple_numerics = resolve_uncon_prime_stimuli(item=item_7, index="7")
         self.assertEqual(len(res_prime_multiple_sub_categories_and_multiple_numerics), 2)
-        res_prime_multiple_categories_and_singular_numerics = resolve_uncon_prime_stimuli(
-            item=item_8, index="8"
-        )
+        res_prime_multiple_categories_and_singular_numerics = resolve_uncon_prime_stimuli(item=item_8, index="8")
         self.assertEqual(len(res_prime_multiple_categories_and_singular_numerics), 2)
         res_prime_no_sub_category = resolve_uncon_prime_stimuli(item=item_9, index="9")
         self.assertEqual(len(res_prime_no_sub_category), 1)

@@ -30,7 +30,8 @@ from contrast_api.data_migration_functionality.studies_parsing_helpers import (
 from uncontrast_studies.services.process_uncon_row import process_uncon_row
 from uncontrast_studies.services.errors_logger import write_errors_to_log
 
-logger = logging.getLogger("UnConTrast")
+logger = logging.getLogger(__name__)
+
 
 FILE_PATH = "uncontrast_studies/data/dataset_29052024.xlsx"
 MAOR_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"

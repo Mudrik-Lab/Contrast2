@@ -32,17 +32,17 @@ def resolve_uncon_sample(item: dict, index: str):
 
     try:
         resolved_total_size = int(samples_total_data)
-    except TypeError:
+    except (TypeError, ValueError):
         raise SampleSizeError(f"invalid sample size {samples_total_data}, index {index}")
 
     try:
         resolved_included_size = int(samples_included_data)
-    except TypeError:
+    except (TypeError, ValueError):
         raise SampleSizeError(f"invalid sample size {samples_included_data}, index {index}")
 
     try:
         resolved_excluded_size = int(samples_excluded_data)
-    except TypeError:
+    except (TypeError, ValueError):
         raise SampleSizeError(f"invalid sample size {samples_excluded_data}, index {index}")
 
     sample = UnConResolvedSample(

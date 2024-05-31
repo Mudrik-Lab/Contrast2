@@ -5,7 +5,9 @@ from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample
 from uncontrast_studies.parsers.stimulus_parser import (
     resolve_uncon_stimuli_metadata,
     resolve_uncon_prime_stimuli,
-    is_target_duplicate, resolve_uncon_target_stimuli,
+    is_target_duplicate,
+    resolve_uncon_target_stimuli,
+    categorize_prime_stimulus_data,
 )
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.uncon_data_parsers import (
@@ -176,15 +178,15 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         # print(res)
         self.assertEqual(len(res), 2)
 
-    def test_stimuli_parser(self):
+    def test_prime_stimuli_parser(self):
         item_1 = {
-            "Stimuli Category": "Lingual",
-            "Stimuli Sub-category": "Words",
+            "Stimuli Category": "Numerical",
+            "Stimuli Sub-category": "Digits",
             "Stimuli Modality": "Visual",
-            "Stimuli Duration": "33",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
-            "Stimuli SOA": "33",
-            "Stimuli Mode of presentation": "Subliminal",
+            "Stimuli Duration": "58",
+            "Stimuli Number of different stimuli used in the experiment": "8",
+            "Stimuli SOA": "141",
+            "Stimuli Mode of presentation": "Liminal",
         }
         item_2 = {
             "Stimuli Category": "Pictures; Lingual",
@@ -195,7 +197,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli SOA": "117; 1",
             "Stimuli Mode of presentation": "Liminal",
         }
-
         item_6 = {
             "Stimuli Category": "Numerical",
             "Stimuli Sub-category": "Numbers; Digits",
@@ -232,26 +233,46 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli SOA": "0",
             "Stimuli Mode of presentation": "Liminal",
         }
+        item_12 = {
+            "Stimuli Category": "Lingual; Numerical",
+            "Stimuli Sub-category": "Letters; Words; Digits",
+            "Stimuli Modality": "Tactile",
+            "Stimuli Duration": "0",
+            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli SOA": "0",
+            "Stimuli Mode of presentation": "Liminal",
+        }
 
         res_prime_same_length_singular = resolve_uncon_prime_stimuli(item=item_1, index="1")
         self.assertEqual(len(res_prime_same_length_singular), 1)
         res_prime_same_length_multiple = resolve_uncon_prime_stimuli(item=item_2, index="2")
         self.assertEqual(len(res_prime_same_length_multiple), 2)
-        res_prime_multiple_sub_categories_and_singular_numerics = resolve_uncon_prime_stimuli(
-            item=item_6, index="6"
-        )
+        res_prime_multiple_sub_categories_and_singular_numerics = resolve_uncon_prime_stimuli(item=item_6, index="6")
         self.assertEqual(len(res_prime_multiple_sub_categories_and_singular_numerics), 2)
-        res_prime_multiple_sub_categories_and_multiple_numerics = resolve_uncon_prime_stimuli(
-            item=item_7, index="7"
-        )
+        res_prime_multiple_sub_categories_and_multiple_numerics = resolve_uncon_prime_stimuli(item=item_7, index="7")
         self.assertEqual(len(res_prime_multiple_sub_categories_and_multiple_numerics), 2)
-        res_prime_multiple_categories_and_singular_numerics = resolve_uncon_prime_stimuli(
-            item=item_8, index="8"
-        )
+        res_prime_multiple_categories_and_singular_numerics = resolve_uncon_prime_stimuli(item=item_8, index="8")
         self.assertEqual(len(res_prime_multiple_categories_and_singular_numerics), 2)
         res_prime_no_sub_category = resolve_uncon_prime_stimuli(item=item_9, index="9")
         self.assertEqual(len(res_prime_no_sub_category), 1)
+        res_prime_multiple_sub_categories_and_multiple_categories = resolve_uncon_prime_stimuli(
+            item=item_12, index="12"
+        )
+        self.assertEqual(len(res_prime_multiple_sub_categories_and_multiple_categories), 3)
+        self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[0].category, "Lingual")
+        self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[1].category, "Lingual")
+        self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[2].category, "Numerical")
+        self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[0].sub_category, "Letters")
+        self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[1].sub_category, "Words")
+        self.assertEqual(res_prime_multiple_sub_categories_and_multiple_categories[2].sub_category, "Digits")
 
+    def test_target_stimuli_parser(self):
+        item_0 = {
+            "Stimuli Category 2": "missing",
+            "Stimuli Sub-category 2": "missing",
+            "Stimuli Modality 2": "missing",
+            "Stimuli Number of different stimuli used in the experiment 2": "missing",
+        }
         item_3 = {
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Words",
@@ -276,7 +297,15 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Modality 2": "Visual",
             "Stimuli Number of different stimuli used in the experiment 2": "8",
         }
+        item_11 = {
+            "Stimuli Category 2": "Lingual; Numerical",
+            "Stimuli Sub-category 2": "Letters; Digits",
+            "Stimuli Modality 2": "Visual",
+            "Stimuli Number of different stimuli used in the experiment 2": "8",
+        }
 
+        res_target_missing = resolve_uncon_target_stimuli(item=item_0, index="0")
+        self.assertEqual(len(res_target_missing), 0)
         res_target_singular = resolve_uncon_target_stimuli(item=item_3, index="3")
         self.assertEqual(len(res_target_singular), 1)
         res_target_multiple = resolve_uncon_target_stimuli(item=item_4, index="4")
@@ -291,6 +320,27 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res_target_multiple_sub_categories[0].category, "Pictures")
         self.assertEqual(res_target_multiple_sub_categories[0].sub_category, "Animals")
         self.assertEqual(res_target_multiple_sub_categories[1].sub_category, "Faces")
+
+        res_target_multiple_categories_and_sub_categories = resolve_uncon_target_stimuli(item=item_11, index="11")
+        self.assertEqual(len(res_target_multiple_categories_and_sub_categories), 2)
+        self.assertEqual(res_target_multiple_categories_and_sub_categories[0].category, "Lingual")
+        self.assertEqual(res_target_multiple_categories_and_sub_categories[1].category, "Numerical")
+        self.assertEqual(res_target_multiple_categories_and_sub_categories[0].sub_category, "Letters")
+        self.assertEqual(res_target_multiple_categories_and_sub_categories[1].sub_category, "Digits")
+
+    def test_categorize_prime_stimulus_data(self):
+        item_1 = {
+            "Stimuli Category": "Numerical",
+            "Stimuli Sub-category": "Digits",
+            "Stimuli Modality": "Visual",
+            "Stimuli Duration": "58",
+            "Stimuli Number of different stimuli used in the experiment": "8",
+            "Stimuli SOA": "141",
+            "Stimuli Mode of presentation": "Liminal",
+        }
+
+        res_same_length = categorize_prime_stimulus_data(item=item_1)
+        self.assertEqual(res_same_length.is_same_length, True)
 
     def test_stimulus_metadata_parser(self):
         item = {

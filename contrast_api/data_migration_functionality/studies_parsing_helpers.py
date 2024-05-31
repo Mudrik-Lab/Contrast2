@@ -53,7 +53,7 @@ class MissingCountryDetectionException(Exception):
     pass
 
 
-countries_override = {"United States": "United States of America"}
+countries_override = {"United States": "United States of America", "England": "United Kingdom"}
 
 
 def parse_country_names_to_codes(country_names: List[str]) -> List[str]:

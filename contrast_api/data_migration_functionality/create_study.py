@@ -21,7 +21,7 @@ def create_study(item: dict, unconsciousness):
         study_type = StudyTypeChoices.UNCONSCIOUSNESS
         funding = ""
         affiliations = ""
-        abbreviated_source_title = ""
+        abbreviated_source_title = item["Journal"]
         author_keywords = [""]
 
         authors_names = resolve_authors_keywords_from_text(item["Authors"])

@@ -381,13 +381,13 @@ Django = ">=3.2"
 
 [[package]]
 name = "django-import-export"
-version = "4.0.5"
+version = "4.0.7"
 description = "Django application and library for importing and exporting data with included admin integration."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "django_import_export-4.0.5-py3-none-any.whl", hash = "sha256:55dcb6127a33deac30631dfe09bc0d68db9cfbe0bbda40d83ad8aa64ac1d2fd0"},
-    {file = "django_import_export-4.0.5.tar.gz", hash = "sha256:23e99815a25dc2f889a0f96b9c74500b7aaeefe81a02c952cda8c51dcb7db720"},
+    {file = "django_import_export-4.0.7-py3-none-any.whl", hash = "sha256:173d165b85774a3f8327b58af89ed2d6d95547f668dba39b8c9eceb8870d32a4"},
+    {file = "django_import_export-4.0.7.tar.gz", hash = "sha256:63f0c8add728aafc82bcb7c53ec9f66528a9556c4786ef28f5f8b8eb662a7021"},
 ]
 
 [package.dependencies]
@@ -1532,4 +1532,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">3.10,<3.11"
-content-hash = "c4b0f99ba04fd55ce98fc6353cfbdf7cecb040ff6485323866b735c0d2f1d911"
+content-hash = "8156a189ae0f3ec87cddc751ee3c93d0e60a1d7eefddd396f4a807c20785a734"

@@ -302,7 +302,7 @@ class Base(Configuration):
 
 
 class Development(Base):
-    DEBUG = False
+    DEBUG = True
     SWAGGER_ENABLED = values.BooleanValue(default=True)
     CORS_ALLOW_ALL_ORIGINS = True
     ALLOWED_HOSTS = values.ListValue(

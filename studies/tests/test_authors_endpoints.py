@@ -1,7 +1,4 @@
-from django.urls import reverse
-
 from contrast_api.tests.base import BaseTestCase
-from studies.models import Author
 
 
 class AuthorsTestCase(BaseTestCase):

@@ -1,5 +1,5 @@
 import copy
-from typing import List, Dict
+
 
 from drf_spectacular.utils import extend_schema
 from rest_framework import status
@@ -10,11 +10,13 @@ from rest_framework.viewsets import GenericViewSet, ModelViewSet
 from approval_process.choices import ApprovalChoices
 from contrast_api.studies.permissions import SubmitterOnlyPermission
 
-from contrast_api.serializers import NoteUpdateSerializer, OptionalNoteUpdateSerializer
+from contrast_api.serializers import NoteUpdateSerializer, OptionalNoteUpdateSerializer, BooleanFlagUpdateSerializer
 from studies.views.base_study_related_views_mixins import StudyRelatedPermissionsViewMixin
 from uncontrast_studies.models import UnConExperiment
-from uncontrast_studies.serializers import FullUnConExperimentSerializer, ThinUnConExperimentSerializer, \
-    UnConCreateExperimentSerializer
+from uncontrast_studies.serializers import (
+    FullUnConExperimentSerializer,
+    UnConCreateExperimentSerializer,
+)
 
 
 class SubmittedUnContrastStudyExperiments(StudyRelatedPermissionsViewMixin, ModelViewSet, GenericViewSet):
@@ -91,6 +93,28 @@ class SubmittedUnContrastStudyExperiments(StudyRelatedPermissionsViewMixin, Mode
         serializer = self.get_serializer(instance)
         headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    def _set_experiment_boolean(self, request, boolean_field_name: str):
+        instance: UnConExperiment = self.get_object()
+        serializer = BooleanFlagUpdateSerializer(data=request.data)
+
+        serializer.is_valid(raise_exception=True)
+        field_value = serializer.validated_data.get("flag")
+        setattr(instance, boolean_field_name, field_value)
+        instance.save()
+        serializer = self.get_serializer(instance)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+    @extend_schema(request=BooleanFlagUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullUnConExperimentSerializer)
+    def set_experiment_is_target_stimulus(self, request, pk, *args, **kwargs):
+        return self._set_experiment_boolean(request, boolean_field_name="is_target_stimulus")
+
+    @extend_schema(request=BooleanFlagUpdateSerializer())
+    @action(detail=True, methods=["POST"], serializer_class=FullUnConExperimentSerializer)
+    def set_experiment_is_target_same_as_suppressed_stimulus(self, request, pk, *args, **kwargs):
+        return self._set_experiment_boolean(request, boolean_field_name="is_target_same_as_suppressed_stimulus")
 
     @extend_schema(request=NoteUpdateSerializer())
     @action(detail=True, methods=["POST"], serializer_class=FullUnConExperimentSerializer)

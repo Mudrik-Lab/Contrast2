@@ -23,8 +23,6 @@ from uncontrast_studies.open_api_parameters import (
     types_multiple_optional_parameter,
     processing_domain_multiple_optional_parameter,
     suppression_methods_multiple_optional_parameter,
-    is_target_same_as_suppressed_stimulus_optional_parameter,
-    is_cm_same_participants_as_task_optional_parameter,
     is_trial_excluded_based_on_measure_optional_parameter,
     mode_of_presentation_optional_parameter,
     outcome_types_optional_parameter,

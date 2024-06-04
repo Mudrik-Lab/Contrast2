@@ -29,7 +29,6 @@ from studies.models import (
     Sample,
     Author,
 )
-from uncontrast_studies.models import UnConTaskType, UnConTask
 
 
 class BaseTestCase(APITestCase):

@@ -1,4 +1,4 @@
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from drf_spectacular.utils import extend_schema
 from rest_framework import filters
 

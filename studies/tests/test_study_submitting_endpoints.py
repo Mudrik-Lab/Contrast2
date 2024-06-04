@@ -14,7 +14,6 @@ from contrast_api.choices import (
 )
 from studies.models import Study, Theory, Paradigm, Technique, TaskType, MeasureType, StimulusCategory, ModalityType
 from contrast_api.tests.base import BaseTestCase
-from django.core import mail
 
 from users.models import Profile
 
@@ -53,7 +52,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         experiments_res = self.get_experiments_for_study(first_result["id"])
         self.assertEqual(len(experiments_res), 0)
-        rpt_theory = Theory.objects.get(name="RPT")
+        rpt_theory = Theory.objects.get(name="RPT")  # noqa: F841
         res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"])
 
         self.assertListEqual(res_experiment["techniques"], [])
@@ -79,13 +78,13 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
             study_id, experiment_id, task_data=dict(type=task_type.id, description="we did this")
         )
 
-        measure_res = self.when_measure_is_added_to_experiment(
+        measure_res = self.when_measure_is_added_to_experiment(  # noqa: F841
             study_id, experiment_id, measure_data=dict(type=measure_type.id, notes="this is a measure")
         )
 
         # check with stimulus without subcategory
 
-        stimulus_res = self.when_stimulus_is_added_to_experiment(
+        stimulus_res = self.when_stimulus_is_added_to_experiment(  # noqa: F841
             study_id, experiment_id, stimulus_data=dict(category=stimulus_category.id, modality=stimulus_modality.id)
         )
         relevant_theories = Theory.objects.filter(parent__isnull=False)
@@ -103,7 +102,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(first_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
 
         # Now replace it
-        interpretations_res = self.when_interpretation_is_added_to_experiment(
+        interpretations_res = self.when_interpretation_is_added_to_experiment(  # noqa: F841
             study_id,
             experiment_id,
             interpretation_data=dict(theory=relevant_theories[0].id, type=InterpretationsChoices.CHALLENGES),
@@ -120,8 +119,8 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
                 )  # data has been updated
                 break
 
-        paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
-        technique_res = self.when_technique_is_removed_from_experiment(
+        paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)  # noqa: F841
+        technique_res = self.when_technique_is_removed_from_experiment(  # noqa: F841
             study_id, experiment_id, technique_id=technique.id
         )
         tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)
@@ -163,12 +162,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res[0]["sample_notes"], "")
 
-        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
+        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)  # noqa: F841
 
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 0)
 
-        delete_study_res = self.when_study_is_removed(study_id)
+        delete_study_res = self.when_study_is_removed(study_id)  # noqa: F841
 
         studies_res = self.get_pending_studies()
         self.assertEqual(studies_res["count"], 0)
@@ -181,7 +180,7 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         """
         self.given_user_exists(username="submitting_user")
 
-        registration_res = self.when_user_is_registered(
+        registration_res = self.when_user_is_registered(  # noqa: F841
             username="reviewer_user", password="12345", email="test@email.com"
         )
 
@@ -224,12 +223,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         )
         # trying with empty
 
-        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
+        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)  # noqa: F841
 
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 0)
 
-        delete_study_res = self.when_study_is_removed(study_id)
+        delete_study_res = self.when_study_is_removed(study_id)  # noqa: F841
 
         studies_res = self.get_pending_studies()
         self.assertEqual(studies_res["count"], 0)

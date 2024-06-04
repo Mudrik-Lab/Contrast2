@@ -2,8 +2,8 @@ from django_countries import countries
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
-from contrast_api.choices import SignificanceChoices
-from studies.models import Study, Author, ConsciousnessMeasureType, TaskType
+
+from studies.models import Study, Author
 from studies.serializers import AuthorSerializer
 from uncontrast_studies.models import (
     UnConExperiment,
@@ -136,7 +136,6 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
     consciousness_measures = UnConsciousnessMeasureSerializer(many=True, read_only=True)
     paradigm = UnConSpecificParadigmSerializer(read_only=True)
 
-
     class Meta:
         model = UnConExperiment
         depth = 2
@@ -204,8 +203,10 @@ class ThinUnConExperimentSerializer(FullUnConExperimentSerializer):
             "consciousness_measures_notes",
         ]
 
+
 class UnConCreateExperimentSerializer(FullUnConExperimentSerializer):
     paradigm = serializers.PrimaryKeyRelatedField(queryset=UnConSpecificParadigm.objects.all())
+
     class Meta:
         model = UnConExperiment
         fields = [

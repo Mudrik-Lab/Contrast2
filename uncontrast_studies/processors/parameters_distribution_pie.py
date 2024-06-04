@@ -16,7 +16,6 @@ from uncontrast_studies.models import (
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
     UnConSuppressionMethodType,
-    UnConSpecificParadigm,
     UnConMainParadigm,
     UnConsciousnessMeasure,
 )
@@ -59,20 +58,6 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .distinct()
             .annotate(series_name=F("is_performance_above_chance"))
         )
-        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
-        return qs
-
-    def process_is_target_same_as_suppressed_stimulus(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(
-            is_target_same_as_suppressed_stimulus=OuterRef("series_name")
-        )
-
-        breakdown_query = (
-            UnConExperiment.objects.values("is_target_same_as_suppressed_stimulus")
-            .distinct()
-            .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
-        )
-
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 

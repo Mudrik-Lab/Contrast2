@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import PROTECT, CASCADE
+from django.db.models import PROTECT
 from simple_history.models import HistoricalRecords
 
 

@@ -52,7 +52,6 @@ from uncontrast_studies.models import (
     UnConMainParadigm,
     UnConSuppressionMethodType,
     UnConSuppressionMethodSubType,
-    UnConFinding,
     UnConOutcome,
 )
 from users.choices import GenderChoices, AcademicStageChoices

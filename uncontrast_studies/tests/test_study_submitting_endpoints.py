@@ -1,4 +1,3 @@
-import datetime
 import json
 from unittest import skip
 
@@ -8,10 +7,9 @@ from rest_framework import status
 from approval_process.choices import ApprovalChoices
 from contrast_api.choices import (
     ExperimentTypeChoices,
-    InterpretationsChoices,
 )
 from studies.models import Study
-from contrast_api.tests.base import BaseTestCase
+
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
 from users.models import Profile
@@ -146,7 +144,9 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
 
         specific_paradigm = self.given_uncon_specific_paradigm_exists("specific_paradigm", main=main_paradigm)
 
-        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=study_id, paradigm_id=specific_paradigm.id)
+        res_experiment = self.when_experiment_is_added_to_study_via_api(
+            study_id=study_id, paradigm_id=specific_paradigm.id
+        )
         experiment_id = res_experiment["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 1)
@@ -154,7 +154,9 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
             study_id=study_id, experiment_id=experiment_id, notes="the results are here"
         )
         # trying with empty
-        self.add_experiment_findings_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="bla notes")
+        self.add_experiment_findings_notes_to_experiment(
+            study_id=study_id, experiment_id=experiment_id, notes="bla notes"
+        )
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res[0]["experiment_findings_notes"], "bla notes")
         self.assertEqual(experiments_res[0]["type"], ExperimentTypeChoices.BEHAVIORAL)
@@ -162,12 +164,12 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(experiments_res[0]["experiment_findings_notes"], "")
 
-        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
+        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)  # noqa: F841
 
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 0)
 
-        delete_study_res = self.when_study_is_removed(study_id)
+        delete_study_res = self.when_study_is_removed(study_id)  # noqa: F841
 
         studies_res = self.get_pending_studies()
         self.assertEqual(studies_res["count"], 0)
@@ -181,7 +183,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         """
         self.given_user_exists(username="submitting_user")
 
-        registration_res = self.when_user_is_registered(
+        registration_res = self.when_user_is_registered(  # noqa: F841
             username="reviewer_user", password="12345", email="test@email.com"
         )
 
@@ -224,12 +226,12 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         )
         # trying with empty
 
-        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)
+        delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)  # noqa: F841
 
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 0)
 
-        delete_study_res = self.when_study_is_removed(study_id)
+        delete_study_res = self.when_study_is_removed(study_id)  # noqa: F841
 
         studies_res = self.get_pending_studies()
         self.assertEqual(studies_res["count"], 0)
@@ -341,7 +343,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
-    def when_experiment_is_added_to_study_via_api(self, study_id: int, paradigm_id:int, **kwargs):
+    def when_experiment_is_added_to_study_via_api(self, study_id: int, paradigm_id: int, **kwargs):
         target_url = reverse("uncontrast-studies-experiments-list", args=[study_id])
         default_experiment = dict(
             paradigm=paradigm_id,
@@ -431,13 +433,17 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
     def add_experiment_findings_notes_to_experiment(
         self, study_id: int, experiment_id: int, notes, expected_result_code=status.HTTP_201_CREATED
     ):
-        target_url = reverse("uncontrast-studies-experiments-set-experiment-findings-notes", args=[study_id, experiment_id])
+        target_url = reverse(
+            "uncontrast-studies-experiments-set-experiment-findings-notes", args=[study_id, experiment_id]
+        )
         res = self.client.post(target_url, json.dumps(dict(note=notes)), content_type="application/json")
         self.assertEqual(res.status_code, expected_result_code)
 
     def add_experiment_consciousness_measures_notes_to_experiment(
         self, study_id: int, experiment_id: int, notes, expected_result_code=status.HTTP_201_CREATED
     ):
-        target_url = reverse("uncontrast-studies-experiments-set-consciousness-measures-notes", args=[study_id, experiment_id])
+        target_url = reverse(
+            "uncontrast-studies-experiments-set-consciousness-measures-notes", args=[study_id, experiment_id]
+        )
         res = self.client.post(target_url, json.dumps(dict(note=notes)), content_type="application/json")
         self.assertEqual(res.status_code, expected_result_code)

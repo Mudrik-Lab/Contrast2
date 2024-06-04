@@ -21,7 +21,6 @@ from uncontrast_studies.models import (
     UnConStimulusSubCategory,
     UnConSuppressionMethodSubType,
     UnConSpecificParadigm,
-    UnConFinding,
 )
 
 

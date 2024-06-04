@@ -122,7 +122,7 @@ class MultiSPAMiddleware(SPAMiddleware):
                 return self.serve(self.spa_roots.get(app_name), request)
             except AttributeError:  # no SPA page stored yet
                 print("dynamically populating spa root ", app_name)
-                spa_root = self.find_file(f"/", app_name=app_name)
+                spa_root = self.find_file("/", app_name=app_name)
                 self.spa_roots[app_name] = spa_root
                 if self.spa_roots.get(app_name):
                     return self.serve(self.spa_roots[app_name], request)

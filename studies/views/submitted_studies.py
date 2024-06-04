@@ -1,4 +1,4 @@
-from django.db.models import Prefetch, Q
+from django.db.models import Prefetch
 from rest_framework import filters
 
 from contrast_api.choices import StudyTypeChoices

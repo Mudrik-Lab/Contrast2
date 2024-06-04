@@ -16,7 +16,6 @@ from uncontrast_studies.models import (
     UnConProcessingMainDomain,
     UnConMainParadigm,
     UnConTask,
-    UnConTaskType,
     UnConSuppressedStimulus,
     UnConTargetStimulus,
     UnConModalityType,

@@ -1,8 +1,8 @@
 import copy
 
-from django.db.models import Prefetch, Q
+from django.db.models import Q
 from drf_spectacular.utils import extend_schema
-from rest_framework import filters, status
+from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -10,7 +10,6 @@ from rest_framework.viewsets import ModelViewSet
 from approval_process.choices import ApprovalChoices
 from contrast_api.choices import StudyTypeChoices
 from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
-from contrast_api.studies.permissions import SubmitterOnlyPermission
 from studies.models import Study
 from studies.serializers import (
     ThinStudyWithExperimentsSerializer,

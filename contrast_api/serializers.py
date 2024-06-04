@@ -5,6 +5,10 @@ class NoteUpdateSerializer(serializers.Serializer):
     note = serializers.CharField()
 
 
+class BooleanFlagUpdateSerializer(serializers.Serializer):
+    flag = serializers.BooleanField()
+
+
 class OptionalNoteUpdateSerializer(serializers.Serializer):
     note = serializers.CharField(trim_whitespace=True, allow_blank=True, allow_null=True)
 

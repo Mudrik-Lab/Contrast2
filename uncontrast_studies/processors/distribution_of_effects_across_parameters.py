@@ -2,7 +2,7 @@ import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Count, Func, IntegerField
-from django.db.models.functions import JSONObject, Cast, Floor, Ceil
+from django.db.models.functions import JSONObject, Cast, Floor
 from uncontrast_studies.models import (
     UnConExperiment,
     UnConSuppressedStimulus,

@@ -3,7 +3,7 @@ from import_export import resources
 from import_export.fields import Field
 
 from contrast_api.choices import ExperimentTypeChoices
-from studies.models import Experiment, Study
+from studies.models import Experiment
 
 SEPERATOR = " || "
 

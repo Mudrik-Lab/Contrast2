@@ -16,7 +16,7 @@ class TheoryGrandOverviewGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
 
     def process(self):
-        process_func = getattr(self, f"process_theory_family")
+        process_func = getattr(self, "process_theory_family")
         return process_func()
 
     def process_theory_family(self):

@@ -61,7 +61,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             is_performance_above_chance=True,
             is_trial_excluded_based_on_measure=False,
         )
-        experiment_positive_1 = self.given_uncon_experiment_exists_for_study(
+        experiment_positive_1 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.POSITIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
@@ -70,7 +70,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2],
         )
 
-        experiment_positive_2 = self.given_uncon_experiment_exists_for_study(
+        experiment_positive_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.POSITIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
@@ -79,7 +79,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             unconsciousness_measures=[unconsciousness_measure_2],
         )
 
-        experiment_negative_1 = self.given_uncon_experiment_exists_for_study(
+        experiment_negative_1 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.NEGATIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
@@ -88,7 +88,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2],
         )
 
-        experiment_negative_2 = self.given_uncon_experiment_exists_for_study(
+        experiment_negative_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.NEGATIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
@@ -97,7 +97,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             unconsciousness_measures=[unconsciousness_measure_1],
         )
 
-        experiment_mixed_1 = self.given_uncon_experiment_exists_for_study(
+        experiment_mixed_1 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.MIXED,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
@@ -106,7 +106,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2],
         )
 
-        experiment_mixed_2 = self.given_uncon_experiment_exists_for_study(
+        experiment_mixed_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.MIXED,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,

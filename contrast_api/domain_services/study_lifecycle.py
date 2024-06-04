@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from django.template.loader import render_to_string
 
 from approval_process.choices import ApprovalChoices
-from approval_process.models import ApprovalProcess, ApprovalComment
+from approval_process.models import ApprovalComment
 from contrast_api.application_services.notifier import NotifierService
 from contrast_api.choices import StudyTypeChoices
 from studies.models import Study

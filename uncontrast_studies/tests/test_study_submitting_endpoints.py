@@ -158,6 +158,8 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
             study_id=study_id, experiment_id=experiment_id, notes="bla notes"
         )
         experiments_res = self.get_experiments_for_study(study_id)
+        # verify my studies work now
+        res = self.when_user_fetches_their_studies()
         self.assertEqual(experiments_res[0]["experiment_findings_notes"], "bla notes")
         self.assertEqual(experiments_res[0]["type"], ExperimentTypeChoices.BEHAVIORAL)
         self.add_experiment_findings_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="")

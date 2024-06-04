@@ -52,9 +52,9 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
             Prefetch("uncon_experiments", queryset=UnConExperiment.objects.select_related("paradigm")),
             "authors",
             Prefetch("uncon_experiments__tasks", queryset=UnConTask.objects.select_related("type")),
-            Prefetch("uncon_experiments__findings", queryset=UnConFinding.objects.select_related("type")),
+            Prefetch("uncon_experiments__findings", queryset=UnConFinding.objects.select_related("outcome")),
             Prefetch(
-                "uncon_experiments__consciousness_measures",
+                "uncon_experiments__unconsciousness_measures",
                 queryset=UnConsciousnessMeasure.objects.select_related("type", "sub_type", "phase"),
             ),
             Prefetch(
@@ -71,7 +71,7 @@ class SubmitUnContrastStudiesViewSet(BaseSubmitStudiesViewSert):
             ),
             Prefetch(
                 "uncon_experiments__processing_domains",
-                queryset=UnConProcessingDomain.objects.select_related("main", "sub_domain"),
+                queryset=UnConProcessingDomain.objects.select_related("main"),
             ),
             "uncon_experiments__samples",
         )

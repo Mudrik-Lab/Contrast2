@@ -162,7 +162,7 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
 
 class StudyWithUnConExperimentsSerializer(serializers.ModelSerializer):
     authors = AuthorSerializer(many=True, required=False)
-    experiments = FullUnConExperimentSerializer(many=True, required=False)
+    experiments = FullUnConExperimentSerializer(many=True, required=False, source="uncon_experiments", read_only=True)
     authors_key_words = serializers.ListSerializer(child=serializers.CharField(), required=False)
 
     class Meta:
@@ -222,7 +222,7 @@ class UnConCreateExperimentSerializer(FullUnConExperimentSerializer):
 
 
 class ThinStudyWithUnConExperimentsSerializer(StudyWithUnConExperimentsSerializer):
-    experiments = ThinUnConExperimentSerializer(many=True, required=False)
+    experiments = ThinUnConExperimentSerializer(many=True, required=False, source="uncon_experiments", read_only=True)
 
 
 class StudyWithExperimentsUnConCreateSerializer(StudyWithUnConExperimentsSerializer):

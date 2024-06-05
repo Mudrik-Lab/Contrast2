@@ -143,6 +143,8 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         main_paradigm = self.given_uncon_main_paradigm_exists("main_paradigm")
 
         specific_paradigm = self.given_uncon_specific_paradigm_exists("specific_paradigm", main=main_paradigm)
+        study = self.get_specific_study(study_id)
+        self.assertEqual(len(study["experiments"]), 0)
 
         res_experiment = self.when_experiment_is_added_to_study_via_api(
             study_id=study_id, paradigm_id=specific_paradigm.id
@@ -150,6 +152,8 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         experiment_id = res_experiment["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 1)
+        study = self.get_specific_study(study_id)
+        self.assertEqual(len(study["experiments"]), 1)
         self.add_experiment_findings_notes_to_experiment(
             study_id=study_id, experiment_id=experiment_id, notes="the results are here"
         )

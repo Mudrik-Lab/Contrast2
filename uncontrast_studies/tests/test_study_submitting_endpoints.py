@@ -1,3 +1,4 @@
+import datetime
 import json
 from unittest import skip
 
@@ -7,8 +8,10 @@ from rest_framework import status
 from approval_process.choices import ApprovalChoices
 from contrast_api.choices import (
     ExperimentTypeChoices,
+    UnConSampleChoices,
 )
 from studies.models import Study
+from uncontrast_studies.models import UnConTaskType
 
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
@@ -25,107 +28,95 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
     def tearDown(self) -> None:
         super().tearDown()
 
-    # @skip("Not implemented experiments submission yet")
-    # def test_study_and_experiment_sub_relations_creation_by_user(self):
-    #     """
-    #     test study is created with 201
-    #     test approval status is pending and approval process is created
-    #     test submitter gets study back, but other user don't
-    #     """
-    #     self.given_user_exists(username="submitting_user")
-    #     self.given_user_authenticated("submitting_user", "12345")
-    #     study_res = self.when_uncontrast_study_created_by_user_via_api()
-    #
-    #     res = self.get_pending_studies()
-    #     self.assertEqual(len(res["results"]), 1)
-    #
-    #     first_result = res["results"][0]
-    #     res = self.get_specific_study(first_result["id"])
-    #     self.assertEqual(res["approval_status"], ApprovalChoices.PENDING)
-    #
-    #     self.assertIsNotNone(res["approval_process"])
-    #     study_id = study_res["id"]
-    #     study = Study.objects.get(id=study_id)
-    #     self.assertEqual(study.approval_process.started_at.date(), datetime.date.today())
-    #
-    #     experiments_res = self.get_experiments_for_study(first_result["id"])
-    #     self.assertEqual(len(experiments_res), 0)
-    #     rpt_theory = Theory.objects.get(name="RPT")
-    #     res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=first_result["id"])
-    #
-    #     self.assertListEqual(res_experiment["techniques"], [])
-    #     self.assertListEqual(res_experiment["tasks"], [])
-    #
-    #     experiments_res = self.get_experiments_for_study(study_id)
-    #     self.assertEqual(len(experiments_res), 1)
-    #
-    #     experiment_id = res_experiment["id"]
-    #     parent_paradigm, created = Paradigm.objects.get_or_create(
-    #         name="Abnormal Contents of Consciousness", parent=None, sub_type=None
-    #     )
-    #     paradigm, created = Paradigm.objects.get_or_create(name="Amusia", parent=parent_paradigm, sub_type=None)
-    #     technique, created = Technique.objects.get_or_create(name="fMRI")
-    #     task_type, created = TaskType.objects.get_or_create(name="Discrimination")
-    #     stimulus_category, created = StimulusCategory.objects.get_or_create(name="Animals")
-    #     stimulus_modality, created = ModalityType.objects.get_or_create(name="Auditory")
-    #
-    #     paradigms_res = self.when_paradigm_is_added_to_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
-    #     technique_res = self.when_technique_is_added_to_experiment(study_id, experiment_id, technique_id=technique.id)
-    #     tasks_res = self.when_task_is_added_to_experiment(
-    #         study_id, experiment_id, task_data=dict(type=task_type.id, description="we did this")
-    #     )
-    #
-    #     # check with stimulus without subcategory
-    #
-    #     stimulus_res = self.when_stimulus_is_added_to_experiment(
-    #         study_id, experiment_id, stimulus_data=dict(category=stimulus_category.id, modality=stimulus_modality.id)
-    #     )
-    #     relevant_theories = Theory.objects.filter(parent__isnull=False)
-    #     for theory in relevant_theories:
-    #         interpretations_res = self.when_interpretation_is_added_to_experiment(
-    #             study_id, experiment_id, interpretation_data=dict(theory=theory.id, type=InterpretationsChoices.PRO)
-    #         )
-    #     task_id = tasks_res["id"]
-    #     experiments_res = self.get_experiments_for_study(study_id)
-    #     first_experiment = experiments_res[0]
-    #     self.assertEqual(first_experiment["paradigms"][0]["name"], "Amusia")
-    #     self.assertEqual(first_experiment["techniques"][0]["name"], "fMRI")
-    #     self.assertEqual(first_experiment["tasks"][0]["type"], task_type.id)
-    #     self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
-    #     self.assertEqual(first_experiment["interpretations"][0]["type"], InterpretationsChoices.PRO)
-    #
-    #     # Now replace it
-    #     interpretations_res = self.when_interpretation_is_added_to_experiment(
-    #         study_id,
-    #         experiment_id,
-    #         interpretation_data=dict(theory=relevant_theories[0].id, type=InterpretationsChoices.CHALLENGES),
-    #     )
-    #
-    #     experiments_res = self.get_experiments_for_study(study_id)
-    #     first_experiment = experiments_res[0]
-    #     # verify count hasn't been changed
-    #     self.assertEqual(len(first_experiment["interpretations"]), relevant_theories.count())
-    #     for interpretation in first_experiment["interpretations"]:
-    #         if interpretation["theory"] == relevant_theories[0].id:
-    #             self.assertEqual(
-    #                 first_experiment["interpretations"][0]["type"], InterpretationsChoices.CHALLENGES
-    #             )  # data has been updated
-    #             break
-    #
-    #     paradigms_res = self.when_paradigm_is_removed_from_experiment(study_id, experiment_id, paradigm_id=paradigm.id)
-    #     technique_res = self.when_technique_is_removed_from_experiment(
-    #         study_id, experiment_id, technique_id=technique.id
-    #     )
-    #     tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)
-    #     experiments_res = self.get_experiments_for_study(study_id)
-    #     self.assertListEqual(experiments_res[0]["paradigms"], [])
-    #     self.assertListEqual(experiments_res[0]["techniques"], [])
-    #     self.assertListEqual(experiments_res[0]["tasks"], [])
-    #
-    #     # now submit to review
-    #     self.when_study_is_submitted_to_review(study_id)
+    def test_study_and_experiment_sub_relations_creation_by_user(self):
+        """
+        test study is created with 201
+        test approval status is pending and approval process is created
+        test submitter gets study back, but other user don't
+        """
+        main_paradigm = self.given_uncon_main_paradigm_exists("main_paradigm")
 
-    # @skip("Not implemented experiments submission yet")
+        specific_paradigm = self.given_uncon_specific_paradigm_exists("specific_paradigm", main=main_paradigm)
+        sample_data = dict(type=UnConSampleChoices.CHILDREN, size_included=10, size_excluded=6, size_total=4)
+        self.given_user_exists(username="submitting_user")
+        self.given_user_authenticated("submitting_user", "12345")
+        study_res = self.when_uncontrast_study_created_by_user_via_api()
+
+        res = self.get_pending_studies()
+        self.assertEqual(len(res["results"]), 1)
+
+        first_result = res["results"][0]
+        res = self.get_specific_study(first_result["id"])
+        self.assertEqual(res["approval_status"], ApprovalChoices.PENDING)
+
+        self.assertIsNotNone(res["approval_process"])
+        study_id = study_res["id"]
+        study = Study.objects.get(id=study_id)
+        self.assertEqual(study.approval_process.started_at.date(), datetime.date.today())
+
+        experiments_res = self.get_experiments_for_study(first_result["id"])
+        self.assertEqual(len(experiments_res), 0)
+        res_experiment = self.when_experiment_is_added_to_study_via_api(
+            study_id=first_result["id"], paradigm_id=specific_paradigm.id
+        )
+
+        self.assertListEqual(res_experiment["consciousness_measures"], [])
+        self.assertListEqual(res_experiment["tasks"], [])
+        self.assertListEqual(res_experiment["samples"], [])
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertEqual(len(experiments_res), 1)
+
+        experiment_id = res_experiment["id"]
+        task_type = self.given_uncon_task_type_exists("task_type")
+        unconsciousness_measure_phase = self.given_unconsciousness_measure_phase_exists("phase_type")
+        unconsciousness_measure_category_type = self.given_unconsciousness_measure_category_type_exists("category_type")
+        unconsciousness_measure_category_sub_type = self.given_unconsciousness_measure_category_sub_type_exists(
+            "category_sub_type", category_type=unconsciousness_measure_category_type
+        )
+        unconsciousness_measure_res = self.when_unconsciousness_measure_is_added_to_experiment(
+            study_id,
+            experiment_id,
+            dict(
+                phase=unconsciousness_measure_phase.id,
+                type=unconsciousness_measure_category_type.id,
+                sub_type=unconsciousness_measure_category_sub_type.id,
+                is_performance_above_chance=True,
+                is_trial_excluded_based_on_measure=False,
+                number_of_trials=5,
+                number_of_participants_in_awareness_test=10,
+                is_cm_same_participants_as_task=False,
+            ),
+        )
+        tasks_res = self.when_task_is_added_to_experiment(
+            study_id, experiment_id, task_data=dict(type=task_type.id, description="we did this")
+        )
+        samples_res = self.when_sample_is_added_to_experiment(study_id, experiment_id, sample_data=sample_data)
+
+        unconsciousness_measure_id = unconsciousness_measure_res["id"]
+        task_id = tasks_res["id"]
+        experiments_res = self.get_experiments_for_study(study_id)
+        first_experiment = experiments_res[0]
+
+        self.assertEqual(first_experiment["tasks"][0]["type"], task_type.id)
+        self.assertEqual(
+            first_experiment["consciousness_measures"][0]["type"], unconsciousness_measure_category_type.id
+        )
+
+        experiments_res = self.get_experiments_for_study(study_id)
+        first_experiment = experiments_res[0]  # noqa: F841
+
+        tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)  # noqa: F841
+        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment(
+            study_id, experiment_id, unconsciousness_measure_id
+        )  # noqa: F841
+        experiments_res = self.get_experiments_for_study(study_id)
+        self.assertListEqual(experiments_res[0]["consciousness_measures"], [])
+        self.assertListEqual(experiments_res[0]["tasks"], [])
+
+        # now submit to review
+        self.when_study_is_submitted_to_review(study_id)
+
     def test_study_and_experiment_deletion_by_user(self):
         """
         test study is created with 201
@@ -180,7 +171,6 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         studies_res = self.get_pending_studies()
         self.assertEqual(studies_res["count"], 0)
 
-    @skip("Not implemented experiments submission yet")
     def test_study_and_experiment_deletion_by_reviewer_user(self):
         """
         test study is created with 201
@@ -202,16 +192,22 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
 
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertEqual(len(experiments_res), 0)
-        res_experiment = self.when_experiment_is_added_to_study_via_api(study_id=study_id)
+
+        main_paradigm = self.given_uncon_main_paradigm_exists("main_paradigm")
+
+        specific_paradigm = self.given_uncon_specific_paradigm_exists("specific_paradigm", main=main_paradigm)
+        res_experiment = self.when_experiment_is_added_to_study_via_api(
+            study_id=study_id, paradigm_id=specific_paradigm.id
+        )
         experiment_id = res_experiment["id"]
 
         self.given_user_authenticated("reviewer_user", "12345")
 
         # verify this would fail with permission error
-        self.add_results_summary_to_experiment(
+        self.add_experiment_findings_notes_to_experiment(
             study_id=study_id,
             experiment_id=experiment_id,
-            results_summary="the results are here",
+            notes="the results are here",
             expected_result_code=status.HTTP_403_FORBIDDEN,
         )
 
@@ -227,10 +223,9 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         res = self.when_user_fetches_their_studies()
         self.assertEqual(len(res), 1)
 
-        self.add_results_summary_to_experiment(
-            study_id=study_id, experiment_id=experiment_id, results_summary="the results are here"
+        self.add_experiment_findings_notes_to_experiment(
+            study_id=study_id, experiment_id=experiment_id, notes="the results are here"
         )
-        # trying with empty
 
         delete_experiment_res = self.when_experiment_is_removed_from_study(study_id, experiment_id)  # noqa: F841
 
@@ -394,6 +389,18 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 
+    def when_sample_is_added_to_experiment(self, study_id, experiment_id, sample_data):
+        target_url = reverse("uncontrast-samples-list", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(sample_data), content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        return res.data
+
+    def when_unconsciousness_measure_is_added_to_experiment(self, study_id, experiment_id, measure_data):
+        target_url = reverse("uncontrast-consciousness_measures-list", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(measure_data), content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        return res.data
+
     def when_suppressed_stimulus_is_added_to_experiment(self, study_id, experiment_id, stimulus_data):
         target_url = reverse("uncontrast-suppressed-stimuli-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(stimulus_data), content_type="application/json")
@@ -453,3 +460,13 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         )
         res = self.client.post(target_url, json.dumps(dict(note=notes)), content_type="application/json")
         self.assertEqual(res.status_code, expected_result_code)
+
+    def when_unconsciousness_measure_is_removed_to_experiment(
+        self, study_id, experiment_id, unconsciousness_measure_id
+    ):
+        target_url = reverse(
+            "uncontrast-consciousness_measures-detail", args=[study_id, experiment_id, unconsciousness_measure_id]
+        )
+        res = self.client.delete(target_url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
+        return res.data

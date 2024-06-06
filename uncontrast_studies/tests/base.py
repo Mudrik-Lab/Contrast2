@@ -23,6 +23,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasurePhase,
     UnConsciousnessMeasureType,
     UnConsciousnessMeasureSubType,
+    UnConTaskType,
 )
 
 
@@ -113,6 +114,13 @@ class UnContrastBaseTestCase(BaseTestCase):
         )
         category_type, created = UnConStimulusCategory.objects.get_or_create(**params)
         return category_type
+
+    def given_uncon_task_type_exists(self, name: str):
+        params = dict(
+            name=name,
+        )
+        task_type, created = UnConTaskType.objects.get_or_create(**params)
+        return task_type
 
     def given_unconsciousness_measure_phase_exists(self, name: str):
         params = dict(

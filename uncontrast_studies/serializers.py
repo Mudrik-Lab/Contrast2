@@ -121,7 +121,7 @@ class UnConSuppressionMethodSerializer(serializers.ModelSerializer):
 class UnConSampleSerializer(serializers.ModelSerializer):
     class Meta:
         model = UnConSample
-        fields = ("experiment", "id", "type", "size_excluded", "size_included")
+        fields = ("experiment", "id", "type", "size_excluded", "size_included", "size_total")
 
 
 class FullUnConExperimentSerializer(serializers.ModelSerializer):
@@ -133,7 +133,9 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
     processing_domains = UnConProcessingDomainSerializer(many=True, read_only=True)
     suppression_methods = UnConSuppressionMethodSerializer(many=True, read_only=True)
     tasks = UnConTaskSerializer(many=True, read_only=True)
-    consciousness_measures = UnConsciousnessMeasureSerializer(many=True, read_only=True)
+    consciousness_measures = UnConsciousnessMeasureSerializer(
+        many=True, read_only=True, source="unconsciousness_measures"
+    )
     paradigm = UnConSpecificParadigmSerializer(read_only=True)
 
     class Meta:

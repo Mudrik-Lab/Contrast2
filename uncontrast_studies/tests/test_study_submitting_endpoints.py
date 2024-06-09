@@ -88,12 +88,28 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
                 is_cm_same_participants_as_task=False,
             ),
         )
+
+        unconsciousness_measure_res_2 = self.when_unconsciousness_measure_is_added_to_experiment(
+            study_id,
+            experiment_id,
+            dict(
+                phase=unconsciousness_measure_phase.id,
+                type=unconsciousness_measure_category_type.id,
+                sub_type=None,
+                is_performance_above_chance=True,
+                is_trial_excluded_based_on_measure=False,
+                number_of_trials=5,
+                number_of_participants_in_awareness_test=10,
+                is_cm_same_participants_as_task=False,
+            ),
+        )
         tasks_res = self.when_task_is_added_to_experiment(
             study_id, experiment_id, task_data=dict(type=task_type.id, description="we did this")
         )
         samples_res = self.when_sample_is_added_to_experiment(study_id, experiment_id, sample_data=sample_data)
 
         unconsciousness_measure_id = unconsciousness_measure_res["id"]
+        unconsciousness_measure_id_2 = unconsciousness_measure_res_2["id"]
         task_id = tasks_res["id"]
         experiments_res = self.get_experiments_for_study(study_id)
         first_experiment = experiments_res[0]
@@ -107,9 +123,13 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         first_experiment = experiments_res[0]  # noqa: F841
 
         tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)  # noqa: F841
-        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment(
+        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment(# noqa: F841
             study_id, experiment_id, unconsciousness_measure_id
-        )  # noqa: F841
+        )
+
+        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment( # noqa: F841
+            study_id, experiment_id, unconsciousness_measure_id_2
+        )
         experiments_res = self.get_experiments_for_study(study_id)
         self.assertListEqual(experiments_res[0]["consciousness_measures"], [])
         self.assertListEqual(experiments_res[0]["tasks"], [])

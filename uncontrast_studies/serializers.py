@@ -110,7 +110,7 @@ class UnConProcessingDomainSerializer(serializers.ModelSerializer):
 
 
 class UnConSuppressionMethodSerializer(serializers.ModelSerializer):
-    sub_type = serializers.PrimaryKeyRelatedField(queryset=UnConSuppressionMethodSubType.objects.all())
+    sub_type = serializers.PrimaryKeyRelatedField(queryset=UnConSuppressionMethodSubType.objects.all(), allow_null=True)
     type = serializers.PrimaryKeyRelatedField(queryset=UnConSuppressionMethodType.objects.all())
 
     class Meta:

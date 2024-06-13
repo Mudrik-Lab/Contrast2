@@ -19,7 +19,7 @@ def resolve_uncon_suppression_method(item: dict, index: str):
         else:
             raise SuppressionMethodError(f"invalid main suppression method {main_method}, index {index}")
 
-        if len(uncon_suppression_methods[main_method]) == 0:
+        if not uncon_suppression_methods[main_method]:
             suppression_method = UnconResolvedSuppressionMethodData(main=resolved_main_method, specific=None)
             suppression_methods_list.append(suppression_method)
         else:
@@ -30,6 +30,8 @@ def resolve_uncon_suppression_method(item: dict, index: str):
                         main=resolved_main_method, specific=resolved_specific_method
                     )
                     suppression_methods_list.append(suppression_method)
+                elif specific_method == "":
+                    continue
                 else:
                     raise SuppressionMethodError(
                         f"invalid specific suppression method {specific_method}, index {index}"

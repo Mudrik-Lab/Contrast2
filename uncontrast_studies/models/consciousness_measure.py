@@ -66,7 +66,7 @@ class UnConsciousnessMeasure(models.Model):
         blank=False,
         verbose_name="was consciousness measure taken from the same participants as the main task",
     )
-    is_performance_above_chance = models.BooleanField(null=False, blank=False)
+    is_performance_above_chance = models.BooleanField(null=True, blank=True)
     is_trial_excluded_based_on_measure = models.BooleanField(
         null=False, blank=False, verbose_name="were trials excluded from the analysis based on the measure"
     )

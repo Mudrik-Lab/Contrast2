@@ -6,7 +6,7 @@ from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
 
 
 def resolve_uncon_findings(item: dict, index: str):
-    NULL_VALUES = ["", "NA", "N/A", "n/a", "missing"]
+    NULL_VALUES = ["", "NA", "N/A", "n/a", "missing", "NaN", "nan"]
 
     resolved_findings = []
     resolved_outcome_data = []
@@ -45,7 +45,7 @@ def resolve_uncon_findings(item: dict, index: str):
             if row_significance.lower() == "yes":
                 is_significant = True
             elif (
-                row_significance.lower() == "no" or row_significance.lower() == "missing"
+                row_significance.lower() == "no" or row_significance.lower() == "missing" or row_significance.lower() == "unknown"
             ):  # TODO: change later when no missing data
                 is_significant = False
             else:
@@ -56,7 +56,7 @@ def resolve_uncon_findings(item: dict, index: str):
                     number_of_trials = 1
                 else:
                     number_of_trials = int(row_number_of_trials)
-            except TypeError:
+            except (TypeError, ValueError):
                 raise FindingError(f"invalid number of trials {row_number_of_trials}, exp {index}, idx {idx}")
 
             if row_importance.lower() == "yes":

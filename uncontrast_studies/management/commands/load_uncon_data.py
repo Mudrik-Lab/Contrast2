@@ -20,7 +20,7 @@ from contrast_api.data_migration_functionality.errors import (
     SuppressionMethodError,
     FindingError,
     IncoherentStimuliDataError,
-    NumericListError,
+    NumericListError, MissingValueInStimuliError,
 )
 from contrast_api.data_migration_functionality.helpers import get_list_from_excel
 from contrast_api.data_migration_functionality.studies_parsing_helpers import (
@@ -33,7 +33,7 @@ from uncontrast_studies.services.errors_logger import write_errors_to_log
 logger = logging.getLogger(__name__)
 
 
-FILE_PATH = "uncontrast_studies/data/dataset_29052024.xlsx"
+FILE_PATH = "uncontrast_studies/data/dataset_13062024.xlsx"
 MAOR_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
 FRANCOIS_FILE_PATH = "uncontrast_studies/data/dataset_10052024.xlsx"
 
@@ -141,7 +141,7 @@ class Command(BaseCommand):
                 logs["invalid_stimuli_modality_data_log"].append(item)
                 logger.exception(f"row #{index} has invalid stimulus modality data")
 
-            except MissingStimulusCategoryError:
+            except (MissingStimulusCategoryError, MissingValueInStimuliError):
                 logs["stimuli_missing_object_data_log"].append(item)
                 logger.exception(f"row #{index} did not find matching stimulus category or sub-category")
 

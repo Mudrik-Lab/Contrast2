@@ -8,7 +8,8 @@ from contrast_api.data_migration_functionality.errors import (
     StimulusModeOfPresentationError,
     StimulusDurationError,
     StimulusMetadataError,
-    IncoherentStimuliDataError, MissingValueInStimuliError,
+    IncoherentStimuliDataError,
+    MissingValueInStimuliError,
 )
 from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
 
@@ -219,13 +220,19 @@ def categorize_prime_stimulus_data(item: dict):
     len_soa = len(stimuli_soa_data)
 
     try:
-        is_same_length = len_category == len_duration == len_soa == len_sub_category and stimuli_sub_category_data != [""]
+        is_same_length = len_category == len_duration == len_soa == len_sub_category and stimuli_sub_category_data != [
+            ""
+        ]
         is_multiple_sub_categories_and_multiple_numerics = (
             len_duration == len_soa == len_sub_category and len_sub_category > len_category == 1
         )
-        is_multiple_sub_categories_and_singular_numerics = len_sub_category > len_category == len_duration == len_soa == 1
+        is_multiple_sub_categories_and_singular_numerics = (
+            len_sub_category > len_category == len_duration == len_soa == 1
+        )
         is_multiple_categories_and_singular_numerics = len_duration == len_soa == 1 < len_category
-        is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [""]
+        is_no_sub_category = uncon_stimulus_categories[
+            stimuli_category_data[0]
+        ] == [] and stimuli_sub_category_data == [""]
         is_multiple_categories_and_multiple_sub_categories = (
             len_sub_category > len_category > 1 and len_duration == len_soa == 1
         )
@@ -337,7 +344,7 @@ def resolve_uncon_target_stimuli(item: dict, index: str):
     len_category = len(stimuli_category_data)
     len_sub_category = len(stimuli_sub_category_data)
     is_same_length = len_category == len_sub_category and stimuli_sub_category_data != [""]
-    is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == []
+    is_no_sub_category = uncon_stimulus_categories[stimuli_category_data[0]] == [] and stimuli_sub_category_data == [""]
     is_multiple_sub_categories = len_sub_category > len_category >= 1
 
     if is_same_length:

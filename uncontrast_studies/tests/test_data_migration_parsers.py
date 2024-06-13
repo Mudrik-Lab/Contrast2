@@ -83,11 +83,11 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res[1], "Go/No go")
 
     def test_processing_domain_parser(self):
-        item_1 = {"Processing domain": "Visual discrimination"}
-        item_2 = {"Processing domain": "Numerical;Visual discrimination"}
+        item_1 = {"Processing domain": "Visual"}
+        item_2 = {"Processing domain": "Numerical;Visual"}
 
         res = resolve_uncon_processing_domains(item=item_1, index="1")
-        self.assertEqual(res[0], "Visual discrimination")
+        self.assertEqual(res[0], "Visual")
         self.assertEqual(len(res), 1)
 
         res = resolve_uncon_processing_domains(item=item_2, index="2")

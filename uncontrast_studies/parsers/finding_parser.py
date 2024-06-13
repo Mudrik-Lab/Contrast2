@@ -45,7 +45,9 @@ def resolve_uncon_findings(item: dict, index: str):
             if row_significance.lower() == "yes":
                 is_significant = True
             elif (
-                row_significance.lower() == "no" or row_significance.lower() == "missing" or row_significance.lower() == "unknown"
+                row_significance.lower() == "no"
+                or row_significance.lower() == "missing"
+                or row_significance.lower() == "unknown"
             ):  # TODO: change later when no missing data
                 is_significant = False
             else:

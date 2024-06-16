@@ -3,7 +3,7 @@ from collections import namedtuple
 from django.core.exceptions import ObjectDoesNotExist
 
 from contrast_api.choices import ExperimentTypeChoices
-from contrast_api.data_migration_functionality.errors import IncoherentStimuliDataError
+from contrast_api.data_migration_functionality.errors import IncoherentStimuliDataError, StimulusModalityError
 from contrast_api.data_migration_functionality.studies_parsing_helpers import ProblemInStudyExistingDataException
 from studies.models import Study
 from uncontrast_studies.models import (
@@ -62,57 +62,60 @@ def create_uncon_experiment(item: dict, index):
     paradigm_data = resolve_uncon_paradigm(item, index)
     main_paradigm = UnConMainParadigm.objects.get(name=paradigm_data.main)
     paradigm = UnConSpecificParadigm.objects.get(main=main_paradigm, name=paradigm_data.specific)
-    stimuli_metadata = resolve_uncon_stimuli_metadata(item, index)
 
     experiment = UnConExperiment.objects.create(
         study=study,
         type=ExperimentTypeChoices.BEHAVIORAL,
         paradigm=paradigm,
-        is_target_stimulus=stimuli_metadata.is_target_stimuli,
-        is_target_same_as_suppressed_stimulus=stimuli_metadata.is_target_same_as_prime,
     )
 
     return experiment
 
 
-def create_prime_stimuli(experiment: object, stimuli_data: list):
-    for stimulus in stimuli_data:
-        category = UnConStimulusCategory.objects.get(name=stimulus.category)
-        modality = UnConModalityType.objects.get(name=stimulus.modality)
-        if stimulus.sub_category:
-            sub_category = UnConStimulusSubCategory.objects.get(name=stimulus.sub_category, parent=category)
-        else:
-            sub_category = None
+def create_prime_stimulus(experiment, prime_data, is_target_stimuli: bool):
+    category = UnConStimulusCategory.objects.get(name=prime_data.category)
+    try:
+        modality = UnConModalityType.objects.get(name=prime_data.modality)
+    except UnConModalityType.DoesNotExist:
+        raise StimulusModalityError()
 
-        UnConSuppressedStimulus.objects.create(
-            experiment=experiment,
-            category=category,
-            sub_category=sub_category,
-            modality=modality,
-            mode_of_presentation=stimulus.mode_of_presentation,
-            duration=stimulus.duration,
-            soa=stimulus.soa,
-            number_of_stimuli=stimulus.number_of_stimuli,
-        )
+    if prime_data.sub_category:
+        sub_category = UnConStimulusSubCategory.objects.get(name=prime_data.sub_category, parent=category)
+    else:
+        sub_category = None
+
+    suppressed_stimulus = UnConSuppressedStimulus.objects.create(
+        experiment=experiment,
+        category=category,
+        sub_category=sub_category,
+        modality=modality,
+        mode_of_presentation=prime_data.mode_of_presentation,
+        duration=prime_data.duration,
+        soa=prime_data.soa,
+        number_of_stimuli=prime_data.number_of_stimuli,
+        is_target_stimulus=is_target_stimuli,
+    )
+
+    return suppressed_stimulus
 
 
-def create_target_stimuli(experiment: object, stimuli_data: list):
-    for stimulus in stimuli_data:
-        category = UnConStimulusCategory.objects.get(name=stimulus.category)
-        modality = UnConModalityType.objects.get(name=stimulus.modality)
-        if stimulus.sub_category:
-            sub_category = UnConStimulusSubCategory.objects.get(name=stimulus.sub_category, parent=category)
+def create_target_stimulus(experiment, suppressed_stimulus, stimulus_data, is_target_same_as_suppressed_stimulus: bool):
+    category = UnConStimulusCategory.objects.get(name=stimulus_data.category)
+    modality = UnConModalityType.objects.get(name=stimulus_data.modality)
+    if stimulus_data.sub_category:
+        sub_category = UnConStimulusSubCategory.objects.get(name=stimulus_data.sub_category, parent=category)
+    else:
+        sub_category = None
 
-        else:
-            sub_category = None
-
-        UnConTargetStimulus.objects.create(
-            experiment=experiment,
-            category=category,
-            sub_category=sub_category,
-            modality=modality,
-            number_of_stimuli=stimulus.number_of_stimuli,
-        )
+    UnConTargetStimulus.objects.create(
+        experiment=experiment,
+        suppressed_stimulus=suppressed_stimulus,
+        is_target_same_as_suppressed_stimulus=is_target_same_as_suppressed_stimulus,
+        category=category,
+        sub_category=sub_category,
+        modality=modality,
+        number_of_stimuli=stimulus_data.number_of_stimuli,
+    )
 
 
 def process_uncon_row(item: dict):
@@ -136,22 +139,27 @@ def process_uncon_row(item: dict):
     )
 
     # stimuli
-    prime_stimuli = resolve_uncon_prime_stimuli(item=item, index=experiment_index)
-    create_prime_stimuli(experiment, prime_stimuli)
-    if experiment.is_target_stimulus:
-        if experiment.is_target_same_as_suppressed_stimulus:
-            if is_missing_number_of_trials:
-                target_stimuli = resolve_uncon_target_stimuli(item=item, index=experiment_index)
-                create_target_stimuli(experiment, target_stimuli)
-            elif is_target_duplicate(item=item):
-                create_target_stimuli(experiment, prime_stimuli)
-            else:
-                raise IncoherentStimuliDataError(
-                    f"target supposed to be same as prime stimulus, but it's different; index {experiment_index}"
+    resolved_prime_stimuli = resolve_uncon_prime_stimuli(item=item, index=experiment_index)
+    is_target_stimuli, is_target_same_as_prime = resolve_uncon_stimuli_metadata(item=item, index=experiment_index)
+    if is_target_stimuli:
+        resolved_target_stimuli = resolve_uncon_target_stimuli(item=item, index=experiment_index)
+        if is_target_same_as_prime and is_target_duplicate(item=item):
+            for prime_data in resolved_prime_stimuli:
+                suppressed_stimulus = create_prime_stimulus(experiment, prime_data, is_target_stimuli)
+                create_target_stimulus(experiment, suppressed_stimulus, prime_data, is_target_same_as_prime)
+        elif len(resolved_prime_stimuli) == len(resolved_target_stimuli) and not is_target_same_as_prime:
+            for idx in range(len(resolved_prime_stimuli)):
+                suppressed_stimulus = create_prime_stimulus(experiment, resolved_prime_stimuli[idx], is_target_stimuli)
+                create_target_stimulus(
+                    experiment, suppressed_stimulus, resolved_target_stimuli[idx], is_target_same_as_prime
                 )
         else:
-            target_stimuli = resolve_uncon_target_stimuli(item=item, index=experiment_index)
-            create_target_stimuli(experiment, target_stimuli)
+            raise IncoherentStimuliDataError(
+                f"target supposed to be same as prime stimulus, but it's different; index {experiment_index}"
+            )
+    else:
+        for prime_data in resolved_prime_stimuli:
+            create_prime_stimulus(experiment, prime_data, is_target_stimuli)
 
     # suppression_methods
     suppression_method_data = resolve_uncon_suppression_method(item=item, index=experiment_index)

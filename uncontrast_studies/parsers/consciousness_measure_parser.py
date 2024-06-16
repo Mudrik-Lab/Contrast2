@@ -94,12 +94,12 @@ def resolve_consciousness_measures(item: dict, index: str):
     )
 
     is_singular_main_type = len(cm_main_type_data) == 1 and not cm_main_type_data == [""]
-    is_singular_specific_type = len(cm_specific_type_data) == 1 and not cm_specific_type_data == [""]
+    is_singular_specific_type = len(cm_specific_type_data) == 1
     is_singular_phase = len(cm_phase_data) == 1 and not cm_phase_data == [""]
     is_singular_number_of_trials = len(number_of_trials_objective_data) == 1
     is_singular_number_of_participants = len(number_of_awareness_participants_data) == 1
     is_singular_is_same_as_task = len(is_same_as_task_data) == 1 and not is_same_as_task_data == [""]
-    is_singular_is_above_chance = len(is_above_chance_data) == 1 and not is_above_chance_data == [""]
+    is_singular_is_above_chance = len(is_above_chance_data) == 1
     is_singular_is_trials_excluded = len(is_trials_excluded_data) == 1 and not is_trials_excluded_data == [""]
 
     is_multiple_main_type = len(cm_main_type_data) > 1

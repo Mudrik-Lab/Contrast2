@@ -40,7 +40,7 @@ def resolve_uncon_sample(item: dict, index: str):
     except (TypeError, ValueError):
         raise SampleSizeError(f"invalid sample size {samples_included_data}, index {index}")
 
-    if samples_excluded_data == "missing":
+    if samples_excluded_data == "":
         resolved_excluded_size = 0
     else:
         try:

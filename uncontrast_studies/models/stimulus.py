@@ -49,7 +49,9 @@ class UnConSuppressedStimulus(models.Model):
         on_delete=CASCADE,
         related_name="suppressed_stimuli",
     )
-
+    is_target_stimulus = models.BooleanField(
+        null=False, blank=False, verbose_name="are there also non-suppressed stimuli", default=False
+    )
     category = models.ForeignKey(
         null=False, blank=False, on_delete=PROTECT, to=UnConStimulusCategory, related_name="suppressed_stimuli"
     )
@@ -86,7 +88,13 @@ class UnConTargetStimulus(models.Model):
         on_delete=CASCADE,
         related_name="target_stimuli",
     )
-
+    suppressed_stimulus = models.ForeignKey(null=False, blank=False, on_delete=PROTECT, to=UnConSuppressedStimulus)
+    is_target_same_as_suppressed_stimulus = models.BooleanField(
+        null=False,
+        blank=False,
+        verbose_name="is the non-suppressed stimulus the same as the suppressed stimulus",
+        default=False,
+    )
     category = models.ForeignKey(
         null=False, blank=False, on_delete=PROTECT, to=UnConStimulusCategory, related_name="target_stimuli"
     )

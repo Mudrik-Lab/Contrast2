@@ -44,11 +44,7 @@ def resolve_uncon_findings(item: dict, index: str):
 
             if row_significance.lower() == "yes":
                 is_significant = True
-            elif (
-                row_significance.lower() == "no"
-                or row_significance.lower() == "missing"
-                or row_significance.lower() == "unknown"
-            ):  # TODO: change later when no missing data
+            elif row_significance.lower() == "no":
                 is_significant = False
             else:
                 raise FindingError(f"invalid significance {row_significance}, exp {index}, idx {idx}")

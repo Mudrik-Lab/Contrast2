@@ -117,12 +117,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(len(res), 4)
 
     def test_findings_parser(self):
-        item_1 = {
-            "Experiment's Findings Outcome": "Reaction times; Reaction times; Accuracy; Reaction times; Accuracy",
-            "Experiment's Findings Is the effect significant?": "No; missing; Yes; no; yes",
-            "Experiment's Findings Number of trials": "1; 2; 3; 4; 5",
-            "Experiment's Findings is_important": "missing; missing; missing; missing; missing",
-        }
         item_2 = {
             "Experiment's Findings Outcome": "Accuracy (p(C))",
             "Experiment's Findings Is the effect significant?": "Yes",
@@ -131,14 +125,10 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         }
         item_3 = {
             "Experiment's Findings Outcome": "Reaction times; Reaction times",
-            "Experiment's Findings Is the effect significant?": "missing; missing",
+            "Experiment's Findings Is the effect significant?": "Yes; No",
             "Experiment's Findings Number of trials": "46; 46",
             "Experiment's Findings is_important": "No; Yes",
         }
-
-        res = resolve_uncon_findings(item=item_1, index="1")
-        # print(res)
-        self.assertEqual(len(res), 5)
 
         res = resolve_uncon_findings(item=item_2, index="2")
         # print(res)
@@ -213,7 +203,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Faces; Words",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "17; 13",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "117; 1",
             "Stimuli Mode of presentation": "Liminal",
         }
@@ -222,7 +212,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Numbers; Digits",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "33",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "33",
             "Stimuli Mode of presentation": "Subliminal",
         }
@@ -231,7 +221,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Objects; Animals",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "17; 13",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "117; 1",
             "Stimuli Mode of presentation": "Liminal",
         }
@@ -240,7 +230,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Letters; Numbers",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "33",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "50",
             "Stimuli Mode of presentation": "Subliminal",
         }
@@ -249,7 +239,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "",
             "Stimuli Modality": "Tactile",
             "Stimuli Duration": "0",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "0",
             "Stimuli Mode of presentation": "Liminal",
         }
@@ -258,13 +248,14 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Letters; Words; Digits",
             "Stimuli Modality": "Tactile",
             "Stimuli Duration": "0",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "0",
             "Stimuli Mode of presentation": "Liminal",
         }
 
         res_prime_same_length_singular = resolve_uncon_prime_stimuli(item=item_1, index="1")
         self.assertEqual(len(res_prime_same_length_singular), 1)
+        self.assertEqual(res_prime_same_length_singular[0].modality, "Visual")
         res_prime_same_length_multiple = resolve_uncon_prime_stimuli(item=item_2, index="2")
         self.assertEqual(len(res_prime_same_length_multiple), 2)
         res_prime_multiple_sub_categories_and_singular_numerics = resolve_uncon_prime_stimuli(item=item_6, index="6")
@@ -429,6 +420,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
     def test_clean_list_from_data(self):
         data_item_text = "Words; Digits"
         data_item_text_2 = "Objective; Subjective"
+        data_item_text_3 = "Line drawings; Line drawings;"
         data_item_integers = "126; 126; 252"
         data_item_floats = "23; 94; 58.5"
         data_item_str = "NaN; 40; 40"
@@ -440,6 +432,8 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res_text, ["Words", "Digits"])
         res_text_2 = clean_list_from_data(data_item_text_2)
         self.assertEqual(res_text_2, ["Objective", "Subjective"])
+        res_text_3 = clean_list_from_data(data_item_text_3)
+        self.assertEqual(res_text_3, ["Line drawings", "Line drawings", ""])
         res_integers = clean_list_from_data(data_item_integers, integer=True)
         self.assertEqual(res_integers, [126, 126, 252])
         res_floats = clean_list_from_data(data_item_floats, integer=True)

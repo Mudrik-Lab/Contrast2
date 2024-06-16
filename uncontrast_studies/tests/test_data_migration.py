@@ -2,7 +2,7 @@ import os
 import unittest
 
 from contrast_api.tests.base import BaseTestCase
-from uncontrast_studies.services.errors_logger import write_errors_to_log
+from uncontrast_studies.services.errors_logger import write_to_log
 
 
 # Create your tests here.
@@ -54,6 +54,6 @@ class UnContrastDataMigrationTestCase(BaseTestCase):
             "sample_size_errors_log": [],
         }
         test_path = "uncontrast_studies/data/test_errors_log.xlsx"
-        res = write_errors_to_log(logs, test_path)
+        res = write_to_log(logs, test_path)
         print(res)
         self.assertEqual(len(res), 4)

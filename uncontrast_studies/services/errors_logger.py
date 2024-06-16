@@ -31,7 +31,7 @@ logger = logging.getLogger("UnConTrast")
 # df_consciousness_measure.to_excel(writer, sheet_name="ConsciousnessMeasureData", index=False)
 
 
-def write_errors_to_log(logs: dict[str, list[str]], file_path):
+def write_to_log(logs: dict[str, list[str]], file_path):
     log_names = list(logs)
     logs_to_write = []
     for log_name, log_content in logs.items():

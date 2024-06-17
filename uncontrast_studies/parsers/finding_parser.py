@@ -1,13 +1,11 @@
 from collections import namedtuple
 
-from configuration.uncontrast_initial_data_types import uncon_finding_outcomes
+from configuration.uncontrast_initial_data_types import uncon_finding_outcomes, NULL_VALUES
 from contrast_api.data_migration_functionality.errors import FindingError
 from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
 
 
 def resolve_uncon_findings(item: dict, index: str):
-    NULL_VALUES = ["", "NA", "N/A", "n/a", "missing"]
-
     resolved_findings = []
     resolved_outcome_data = []
     outcome_data = clean_list_from_data(item["Experiment's Findings Outcome"])
@@ -44,9 +42,7 @@ def resolve_uncon_findings(item: dict, index: str):
 
             if row_significance.lower() == "yes":
                 is_significant = True
-            elif (
-                row_significance.lower() == "no" or row_significance.lower() == "missing"
-            ):  # TODO: change later when no missing data
+            elif row_significance.lower() == "no":
                 is_significant = False
             else:
                 raise FindingError(f"invalid significance {row_significance}, exp {index}, idx {idx}")
@@ -56,7 +52,7 @@ def resolve_uncon_findings(item: dict, index: str):
                     number_of_trials = 1
                 else:
                     number_of_trials = int(row_number_of_trials)
-            except TypeError:
+            except (TypeError, ValueError):
                 raise FindingError(f"invalid number of trials {row_number_of_trials}, exp {index}, idx {idx}")
 
             if row_importance.lower() == "yes":

@@ -6,6 +6,7 @@ from django_countries import countries
 
 def resolve_authors_from_authors_text(text: str):
     authors_list = text.split(", ")
+    authors_list = [author.replace("...", "").replace("_", "").strip() for author in authors_list]
     return authors_list
 
 

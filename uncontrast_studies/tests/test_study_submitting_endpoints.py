@@ -123,11 +123,11 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         first_experiment = experiments_res[0]  # noqa: F841
 
         tasks_res = self.when_task_is_removed_from_experiment(study_id, experiment_id, task_id)  # noqa: F841
-        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment(# noqa: F841
+        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment(  # noqa: F841
             study_id, experiment_id, unconsciousness_measure_id
         )
 
-        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment( # noqa: F841
+        unconsciousness_measure_res = self.when_unconsciousness_measure_is_removed_to_experiment(  # noqa: F841
             study_id, experiment_id, unconsciousness_measure_id_2
         )
         experiments_res = self.get_experiments_for_study(study_id)

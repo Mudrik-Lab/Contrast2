@@ -31,7 +31,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
     def test_suppression_method_parser(self):
         item_1 = {
             "Suppression method Main suppression method": "Masking; Parafoveal display",
-            "Suppression method Specific suppression method": "Backward pattern masking",
+            "Suppression method Specific suppression method": "Backward pattern masking ;",
         }
         res = resolve_uncon_suppression_method(item=item_1, index="1")
 
@@ -83,11 +83,11 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res[1], "Go/No go")
 
     def test_processing_domain_parser(self):
-        item_1 = {"Processing domain": "Visual discrimination"}
-        item_2 = {"Processing domain": "Numerical;Visual discrimination"}
+        item_1 = {"Processing domain": "Visual"}
+        item_2 = {"Processing domain": "Numerical;Visual"}
 
         res = resolve_uncon_processing_domains(item=item_1, index="1")
-        self.assertEqual(res[0], "Visual discrimination")
+        self.assertEqual(res[0], "Visual")
         self.assertEqual(len(res), 1)
 
         res = resolve_uncon_processing_domains(item=item_2, index="2")
@@ -117,12 +117,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(len(res), 4)
 
     def test_findings_parser(self):
-        item_1 = {
-            "Experiment's Findings Outcome": "Reaction times; Reaction times; Accuracy; Reaction times; Accuracy",
-            "Experiment's Findings Is the effect significant?": "No; missing; Yes; no; yes",
-            "Experiment's Findings Number of trials": "1; 2; 3; 4; 5",
-            "Experiment's Findings is_important": "missing; missing; missing; missing; missing",
-        }
         item_2 = {
             "Experiment's Findings Outcome": "Accuracy (p(C))",
             "Experiment's Findings Is the effect significant?": "Yes",
@@ -131,14 +125,10 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         }
         item_3 = {
             "Experiment's Findings Outcome": "Reaction times; Reaction times",
-            "Experiment's Findings Is the effect significant?": "missing; missing",
+            "Experiment's Findings Is the effect significant?": "Yes; No",
             "Experiment's Findings Number of trials": "46; 46",
             "Experiment's Findings is_important": "No; Yes",
         }
-
-        res = resolve_uncon_findings(item=item_1, index="1")
-        # print(res)
-        self.assertEqual(len(res), 5)
 
         res = resolve_uncon_findings(item=item_2, index="2")
         # print(res)
@@ -160,23 +150,43 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Consciousness Measures Were trials excluded from the analysis based on the measure?": "No",
         }
         item_2 = {
-            "Consciousness Measures Main type": "Objective; Subjective",
-            "Consciousness Measures Specific type": "High-level discrimination; Perception Awareness Scale (PAS)",
-            "Consciousness Measures Phase": "Post-experiment; Trial-by-trial",
-            "Consciousness Measures Number of trials for the objective measure": "60",
+            "Consciousness Measures Main type": "Subjective",
+            "Consciousness Measures Specific type": "Perception Awareness Scale (PAS)",
+            "Consciousness Measures Phase": "Trial-by-trial",
+            "Consciousness Measures Number of trials for the objective measure": "0",
             "Consciousness Measures Is the measure taken from the same participants as the main task?": "Yes",
-            "Consciousness Measures Number of participants of the awareness test": "",
+            "Consciousness Measures Number of participants of the awareness test": "0",
             "Consciousness Measures Is the performance above chance?": "No",
             "Consciousness Measures Were trials excluded from the analysis based on the measure?": "Yes",
         }
 
-        res = resolve_consciousness_measures(item=item_1, index="1")
-        # print(res)
-        self.assertEqual(len(res), 1)
+        item_3 = {
+            "Consciousness Measures Main type": "Objective; Subjective",
+            "Consciousness Measures Specific type": "High-level discrimination; Perception Awareness Scale (PAS)",
+            "Consciousness Measures Phase": "Post-experiment; Trial-by-trial",
+            "Consciousness Measures Number of trials for the objective measure": "60",
+            "Consciousness Measures Is the measure taken from the same participants as the main task?": "Yes; No",
+            "Consciousness Measures Number of participants of the awareness test": "2",
+            "Consciousness Measures Is the performance above chance?": "Yes; None",
+            "Consciousness Measures Were trials excluded from the analysis based on the measure?": "Yes; No",
+        }
+        res_singular_objective = resolve_consciousness_measures(item=item_1, index="1")
+        self.assertEqual(len(res_singular_objective), 1)
+        self.assertEqual(res_singular_objective[0].is_performance_above_chance, False)
 
-        res = resolve_consciousness_measures(item=item_2, index="2")
-        # print(res)
-        self.assertEqual(len(res), 2)
+        res_singular_subjective = resolve_consciousness_measures(item=item_2, index="2")
+
+        self.assertEqual(len(res_singular_subjective), 1)
+        self.assertEqual(res_singular_subjective[0].is_performance_above_chance, None)
+        self.assertEqual(res_singular_subjective[0].number_of_trials, None)
+
+        res_multiple_objective_subjective = resolve_consciousness_measures(item=item_3, index="3")
+        self.assertEqual(len(res_multiple_objective_subjective), 2)
+        self.assertEqual(res_multiple_objective_subjective[0].is_performance_above_chance, True)
+        self.assertEqual(res_multiple_objective_subjective[1].is_performance_above_chance, None)
+        self.assertEqual(res_multiple_objective_subjective[0].phase, "Post-experiment")
+        self.assertEqual(res_multiple_objective_subjective[0].number_of_trials, 60)
+        self.assertEqual(res_multiple_objective_subjective[1].number_of_awareness_participants, 2)
 
     def test_prime_stimuli_parser(self):
         item_1 = {
@@ -193,7 +203,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Faces; Words",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "17; 13",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "117; 1",
             "Stimuli Mode of presentation": "Liminal",
         }
@@ -202,7 +212,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Numbers; Digits",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "33",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "33",
             "Stimuli Mode of presentation": "Subliminal",
         }
@@ -211,7 +221,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Objects; Animals",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "17; 13",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "117; 1",
             "Stimuli Mode of presentation": "Liminal",
         }
@@ -220,7 +230,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Letters; Numbers",
             "Stimuli Modality": "Visual",
             "Stimuli Duration": "33",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "50",
             "Stimuli Mode of presentation": "Subliminal",
         }
@@ -229,7 +239,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "",
             "Stimuli Modality": "Tactile",
             "Stimuli Duration": "0",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "0",
             "Stimuli Mode of presentation": "Liminal",
         }
@@ -238,13 +248,14 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Sub-category": "Letters; Words; Digits",
             "Stimuli Modality": "Tactile",
             "Stimuli Duration": "0",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "0",
             "Stimuli SOA": "0",
             "Stimuli Mode of presentation": "Liminal",
         }
 
         res_prime_same_length_singular = resolve_uncon_prime_stimuli(item=item_1, index="1")
         self.assertEqual(len(res_prime_same_length_singular), 1)
+        self.assertEqual(res_prime_same_length_singular[0].modality, "Visual")
         res_prime_same_length_multiple = resolve_uncon_prime_stimuli(item=item_2, index="2")
         self.assertEqual(len(res_prime_same_length_multiple), 2)
         res_prime_multiple_sub_categories_and_singular_numerics = resolve_uncon_prime_stimuli(item=item_6, index="6")
@@ -408,12 +419,32 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
 
     def test_clean_list_from_data(self):
         data_item_text = "Words; Digits"
+        data_item_text_2 = "Objective; Subjective"
+        data_item_text_3 = "Line drawings; Line drawings;"
         data_item_integers = "126; 126; 252"
         data_item_floats = "23; 94; 58.5"
+        data_item_str = "NaN; 40; 40"
+        missing_numeric_data = " ; 3"
+        missing_data = " ; yes"
+        empty = ""
 
         res_text = clean_list_from_data(data_item_text)
         self.assertEqual(res_text, ["Words", "Digits"])
+        res_text_2 = clean_list_from_data(data_item_text_2)
+        self.assertEqual(res_text_2, ["Objective", "Subjective"])
+        res_text_3 = clean_list_from_data(data_item_text_3)
+        self.assertEqual(res_text_3, ["Line drawings", "Line drawings", ""])
         res_integers = clean_list_from_data(data_item_integers, integer=True)
         self.assertEqual(res_integers, [126, 126, 252])
         res_floats = clean_list_from_data(data_item_floats, integer=True)
         self.assertEqual(res_floats, [23, 94, 58.5])
+        res_missing_data = clean_list_from_data(missing_data)
+        self.assertEqual(res_missing_data, ["", "yes"])
+        res_empty = clean_list_from_data(empty)
+        self.assertEqual(res_empty, [""])
+
+        # res_missing_numeric_data = clean_list_from_data(missing_numeric_data, integer=True)
+        # self.assertEqual(res_missing_numeric_data, ["", 3])
+
+        # res_string = clean_list_from_data(data_item_str, integer=True)
+        # self.assertEqual(res_string, ["nan", 40, 40])

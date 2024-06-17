@@ -12,7 +12,7 @@ from uncontrast_studies.models import (
     UnConTaskType,
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
-    UnConSuppressionMethodType,
+    UnConSuppressionMethodType, UnConTargetStimulus,
 )
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor
@@ -153,9 +153,9 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_is_target_same_as_suppressed_stimulus(self, experiments: QuerySet[UnConExperiment]):
         subquery = (
             experiments.distinct()
-            .values("is_target_same_as_suppressed_stimulus")
+            .values("target_stimuli__is_target_same_as_suppressed_stimulus")
             .annotate(experiment_count=Count("id", distinct=True))
-            .annotate(key=F("is_target_same_as_suppressed_stimulus"))
+            .annotate(key=F("target_stimuli__is_target_same_as_suppressed_stimulus"))
         )
 
         return subquery

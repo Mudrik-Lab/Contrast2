@@ -41,7 +41,7 @@ uncon_tasks = [
     "Naming",
     "Memory task",
     "Change detection",
-    "Solving an excersize",
+    "Solving an exercise",
 ]
 
 uncon_stimulus_categories = {
@@ -94,7 +94,7 @@ uncon_suppression_methods = {
 
 uncon_processing_domains = [
     "Lingual",
-    "Visual discrimination",
+    "Visual",
     "Numerical",
     "Memory",
     "Action priming",
@@ -135,3 +135,5 @@ uncon_consciousness_measures_phases = [
 ]
 
 uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Mouse trajectories", "Other"]
+
+NULL_VALUES = ["", "NA", "N/A", "n/a", "missing", "NaN", "nan"]

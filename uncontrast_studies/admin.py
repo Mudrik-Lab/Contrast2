@@ -29,8 +29,8 @@ from uncontrast_studies.models import (
 
 class UnConExperimentAdmin(BaseContrastAdmin):
     model = UnConExperiment
-    list_display = ("id", "is_target_stimulus", "is_target_same_as_suppressed_stimulus", "significance")
-    list_filter = ("is_target_stimulus", "is_target_same_as_suppressed_stimulus", "significance")
+    list_display = ("id", "significance")
+    list_filter = ("significance",)
 
 
 class UnConsciousnessMeasureAdmin(BaseContrastAdmin):

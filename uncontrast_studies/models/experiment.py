@@ -25,17 +25,6 @@ class UnConExperiment(models.Model):
         null=False, blank=False, choices=SignificanceChoices.choices, default=SignificanceChoices.MIXED, max_length=10
     )
 
-    # Stimuli metadata
-    is_target_stimulus = models.BooleanField(
-        null=False, blank=False, verbose_name="are there also non-suppressed stimuli", default=False
-    )
-    is_target_same_as_suppressed_stimulus = models.BooleanField(
-        null=False,
-        blank=False,
-        verbose_name="is the non-suppressed stimulus the same as the suppressed stimulus",
-        default=False,
-    )
-
     # notes
     consciousness_measures_notes = models.TextField(null=True, blank=True)
     experiment_findings_notes = models.TextField(null=True, blank=True)

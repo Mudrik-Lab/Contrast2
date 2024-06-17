@@ -17,7 +17,7 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConSuppressionMethodType,
     UnConMainParadigm,
-    UnConsciousnessMeasure,
+    UnConsciousnessMeasure, UnConTargetStimulus,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 
@@ -63,11 +63,11 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_is_target_same_as_suppressed_stimulus(self):
         experiments_subquery_by_breakdown = self.experiments.filter(
-            is_target_same_as_suppressed_stimulus=OuterRef("series_name")
+            target_stimuli__is_target_same_as_suppressed_stimulus=OuterRef("series_name")
         )
 
         breakdown_query = (
-            UnConExperiment.objects.values("is_target_same_as_suppressed_stimulus")
+            UnConTargetStimulus.objects.values("is_target_same_as_suppressed_stimulus")
             .distinct()
             .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
         )

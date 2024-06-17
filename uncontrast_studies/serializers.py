@@ -68,7 +68,9 @@ class UnConsciousnessMeasureSerializer(serializers.ModelSerializer):
 
 class UnConTargetStimulusSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusCategory.objects.all())
-    sub_category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True)
+    sub_category = serializers.PrimaryKeyRelatedField(
+        queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True
+    )
     modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
 
     class Meta:
@@ -78,7 +80,9 @@ class UnConTargetStimulusSerializer(serializers.ModelSerializer):
 
 class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusCategory.objects.all())
-    sub_category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True)
+    sub_category = serializers.PrimaryKeyRelatedField(
+        queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True
+    )
     modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
 
     class Meta:
@@ -153,8 +157,6 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
             "suppressed_stimuli",
             "target_stimuli",
             "tasks",
-            "is_target_same_as_suppressed_stimulus",
-            "is_target_stimulus",
             "consciousness_measures_notes",
             "processing_domains",
             "suppression_methods",
@@ -200,8 +202,7 @@ class ThinUnConExperimentSerializer(FullUnConExperimentSerializer):
             "experiment_findings_notes",
             "type",
             "paradigm",
-            "is_target_same_as_suppressed_stimulus",
-            "is_target_stimulus",
+
             "consciousness_measures_notes",
         ]
 
@@ -217,8 +218,6 @@ class UnConCreateExperimentSerializer(FullUnConExperimentSerializer):
             "experiment_findings_notes",
             "type",
             "paradigm",
-            "is_target_same_as_suppressed_stimulus",
-            "is_target_stimulus",
             "consciousness_measures_notes",
         ]
 

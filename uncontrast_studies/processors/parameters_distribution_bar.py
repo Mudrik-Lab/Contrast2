@@ -16,7 +16,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConsciousnessMeasurePhase,
     UnConSuppressedStimulus,
-    UnConsciousnessMeasure,
+    UnConsciousnessMeasure, UnConTargetStimulus,
 )
 
 
@@ -54,11 +54,11 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def process_is_target_same_as_suppressed_stimulus(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            is_target_same_as_suppressed_stimulus=OuterRef("series_name")
+            target_stimuli__is_target_same_as_suppressed_stimulus=OuterRef("series_name")
         ).values("id", "significance")
 
         breakdown_query = (
-            UnConExperiment.objects.values("is_target_same_as_suppressed_stimulus")
+            UnConTargetStimulus.objects.values("is_target_same_as_suppressed_stimulus")
             .distinct()
             .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
         )

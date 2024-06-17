@@ -295,7 +295,7 @@ class Base(Configuration):
             "contrastdb.tau.ac.il": "contrast",
             "localhost:8000": "uncontrast",  # change this for local development view
             "uncontrastdb.tau.ac.il": "uncontrast",
-            # fow now, to be removed later
+            # specific heroku dns names, hard coded here - for development access
             "uncontrast.drorsoft.com": "uncontrast",
         }
     )

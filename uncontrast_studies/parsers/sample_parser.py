@@ -40,10 +40,13 @@ def resolve_uncon_sample(item: dict, index: str):
     except (TypeError, ValueError):
         raise SampleSizeError(f"invalid sample size {samples_included_data}, index {index}")
 
-    try:
-        resolved_excluded_size = int(samples_excluded_data)
-    except (TypeError, ValueError):
-        raise SampleSizeError(f"invalid sample size {samples_excluded_data}, index {index}")
+    if samples_excluded_data == "":
+        resolved_excluded_size = 0
+    else:
+        try:
+            resolved_excluded_size = int(samples_excluded_data)
+        except (TypeError, ValueError):
+            raise SampleSizeError(f"invalid sample size {samples_excluded_data}, index {index}")
 
     sample = UnConResolvedSample(
         sample_type=resolved_sample_type,

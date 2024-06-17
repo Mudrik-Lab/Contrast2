@@ -126,7 +126,6 @@ def resolve_consciousness_measures(item: dict, index: str):
         and is_multiple_specific_type
         and is_multiple_phase
         and is_multiple_is_same_as_task
-        and is_multiple_is_trials_excluded
         and is_multiple_is_above_chance
     )
 
@@ -177,7 +176,7 @@ def resolve_consciousness_measures(item: dict, index: str):
             resolved_main_type = check_main_type(cm_main_type_data[idx], index=index)
             resolved_specific_type = check_specific_type(cm_specific_type_data[idx], resolved_main_type, index=index)
             resolved_phase = check_phase(cm_phase_data[idx], index=index)
-            resolved_is_trials_excluded = resolve_boolean_value(is_trials_excluded_data[idx], index=index)
+
             resolved_is_same_as_task = resolve_boolean_value(is_same_as_task_data[idx], index=index)
             if is_multiple_number_of_trials:
                 resolved_number_of_trials = resolve_numeric_value(number_of_trials_objective_data[idx], index=index)
@@ -191,6 +190,10 @@ def resolve_consciousness_measures(item: dict, index: str):
                 resolved_number_of_awareness_participants = resolve_numeric_value(
                     number_of_awareness_participants_data[0], index=index
                 )
+            if is_multiple_is_trials_excluded:
+                resolved_is_trials_excluded = resolve_boolean_value(is_trials_excluded_data[idx], index=index)
+            else:
+                resolved_is_trials_excluded = resolve_boolean_value(is_trials_excluded_data[0], index=index)
 
             if resolved_main_type == "Objective":
                 resolved_is_above_chance = resolve_boolean_value(is_above_chance_data[idx], index=index)

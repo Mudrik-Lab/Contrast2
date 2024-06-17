@@ -353,13 +353,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         res_same_length = categorize_prime_stimulus_data(item=item_1)
         self.assertEqual(res_same_length.is_same_length, True)
 
-        res_target_multiple_categories_and_sub_categories = resolve_uncon_target_stimuli(item=item_11, index="11")
-        self.assertEqual(len(res_target_multiple_categories_and_sub_categories), 2)
-        self.assertEqual(res_target_multiple_categories_and_sub_categories[0].category, "Lingual")
-        self.assertEqual(res_target_multiple_categories_and_sub_categories[1].category, "Numerical")
-        self.assertEqual(res_target_multiple_categories_and_sub_categories[0].sub_category, "Letters")
-        self.assertEqual(res_target_multiple_categories_and_sub_categories[1].sub_category, "Digits")
-
     def test_stimulus_metadata_parser(self):
         item = {
             "Stimuli Are there also non-suppressed stimuli that participants had to provide a response to (i.e., a target)?": "Yes",

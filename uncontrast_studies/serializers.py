@@ -157,8 +157,6 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
             "suppressed_stimuli",
             "target_stimuli",
             "tasks",
-            "is_target_same_as_suppressed_stimulus",
-            "is_target_stimulus",
             "consciousness_measures_notes",
             "processing_domains",
             "suppression_methods",
@@ -204,8 +202,7 @@ class ThinUnConExperimentSerializer(FullUnConExperimentSerializer):
             "experiment_findings_notes",
             "type",
             "paradigm",
-            "is_target_same_as_suppressed_stimulus",
-            "is_target_stimulus",
+
             "consciousness_measures_notes",
         ]
 
@@ -221,8 +218,6 @@ class UnConCreateExperimentSerializer(FullUnConExperimentSerializer):
             "experiment_findings_notes",
             "type",
             "paradigm",
-            "is_target_same_as_suppressed_stimulus",
-            "is_target_stimulus",
             "consciousness_measures_notes",
         ]
 

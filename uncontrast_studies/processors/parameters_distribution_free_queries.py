@@ -170,9 +170,9 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         ).values("id")
 
         breakdown_query = (
-            UnConTargetStimulus.objects.values("is_target_same_as_suppressed_stimulus")
+            UnConsciousnessMeasure.objects.values("is_cm_same_participants_as_task")
             .distinct()
-            .annotate(series_name=F("is_target_same_as_suppressed_stimulus"))
+            .annotate(series_name=F("is_cm_same_participants_as_task"))
         )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)

@@ -68,7 +68,9 @@ class UnConsciousnessMeasureSerializer(serializers.ModelSerializer):
 
 class UnConTargetStimulusSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusCategory.objects.all())
-    sub_category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True)
+    sub_category = serializers.PrimaryKeyRelatedField(
+        queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True
+    )
     modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
 
     class Meta:
@@ -78,7 +80,9 @@ class UnConTargetStimulusSerializer(serializers.ModelSerializer):
 
 class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
     category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusCategory.objects.all())
-    sub_category = serializers.PrimaryKeyRelatedField(queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True)
+    sub_category = serializers.PrimaryKeyRelatedField(
+        queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True
+    )
     modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
 
     class Meta:

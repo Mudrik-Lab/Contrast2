@@ -3,6 +3,7 @@ import itertools
 from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import Func, F, Count, QuerySet, OuterRef, Case, When, Value
 
+from contrast_api.utils import cast_as_boolean
 from uncontrast_studies.processors.base import BaseProcessor
 from uncontrast_studies.models import (
     UnConSample,
@@ -38,7 +39,8 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.modes_of_presentation = kwargs.pop("modes_of_presentation", [])
         self.outcome_types = kwargs.pop("outcome_types", [])
         self.is_trial_excluded_based_on_measure = kwargs.pop("is_trial_excluded_based_on_measure", [])
-        self.are_participants_excluded = kwargs.pop("are_participants_excluded", [])
+        are_participants_excluded = kwargs.pop("are_participants_excluded", [])
+        self.are_participants_excluded = [cast_as_boolean(x)     for x in are_participants_excluded]
 
         self.types = kwargs.pop("types", [])
         self.tasks = kwargs.pop("tasks", [])

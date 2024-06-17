@@ -29,7 +29,7 @@ from contrast_api.data_migration_functionality.studies_parsing_helpers import (
     MissingCountryDetectionException,
 )
 from uncontrast_studies.services.process_uncon_row import process_uncon_row
-from uncontrast_studies.services.errors_logger import write_to_log
+from uncontrast_studies.services.uncontrast_logger import write_to_log
 
 logger = logging.getLogger(__name__)
 

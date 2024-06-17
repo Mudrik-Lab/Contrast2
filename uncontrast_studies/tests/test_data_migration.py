@@ -2,7 +2,7 @@ import os
 import unittest
 
 from contrast_api.tests.base import BaseTestCase
-from uncontrast_studies.services.errors_logger import write_to_log
+from uncontrast_studies.services.uncontrast_logger import write_to_log
 
 
 # Create your tests here.

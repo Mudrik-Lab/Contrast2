@@ -3,6 +3,7 @@ from collections import namedtuple
 from configuration.uncontrast_initial_data_types import (
     uncon_consciousness_measures_types,
     uncon_consciousness_measures_phases,
+    NULL_VALUES,
 )
 from contrast_api.data_migration_functionality.errors import InvalidConsciousnessMeasureDataError
 from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
@@ -24,7 +25,6 @@ UnConResolvedConMeasure = namedtuple(
 
 
 def resolve_numeric_value(numeric_value, index: str):
-    NULL_VALUES = ["", "NA", "N/A", "n/a", "missing"]
     if numeric_value in NULL_VALUES:
         resolved_numeric_value = None
     else:

@@ -135,3 +135,5 @@ uncon_consciousness_measures_phases = [
 ]
 
 uncon_finding_outcomes = ["Reaction times", "Accuracy", "Eye movements", "Mouse trajectories", "Other"]
+
+NULL_VALUES = ["", "NA", "N/A", "n/a", "missing", "NaN", "nan"]

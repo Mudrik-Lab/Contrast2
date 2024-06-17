@@ -1,13 +1,11 @@
 from collections import namedtuple
 
-from configuration.uncontrast_initial_data_types import uncon_finding_outcomes
+from configuration.uncontrast_initial_data_types import uncon_finding_outcomes, NULL_VALUES
 from contrast_api.data_migration_functionality.errors import FindingError
 from uncontrast_studies.parsers.uncon_data_parsers import clean_list_from_data
 
 
 def resolve_uncon_findings(item: dict, index: str):
-    NULL_VALUES = ["", "NA", "N/A", "n/a", "missing", "NaN", "nan"]
-
     resolved_findings = []
     resolved_outcome_data = []
     outcome_data = clean_list_from_data(item["Experiment's Findings Outcome"])

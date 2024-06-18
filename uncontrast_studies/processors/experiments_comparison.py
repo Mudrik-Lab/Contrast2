@@ -156,6 +156,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .values("target_stimuli__is_target_same_as_suppressed_stimulus")
             .annotate(experiment_count=Count("id", distinct=True))
             .annotate(key=F("target_stimuli__is_target_same_as_suppressed_stimulus"))
+            .exclude(key__isnull=True)
         )
 
         return subquery

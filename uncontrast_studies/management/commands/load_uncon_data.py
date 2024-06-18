@@ -33,19 +33,28 @@ from uncontrast_studies.services.uncontrast_logger import write_to_log
 
 logger = logging.getLogger(__name__)
 
-FILE_PATH = "uncontrast_studies/data/dataset_16062024.xlsx"
-current_date = date.today()
-ERROR_LOG_PATH = f"uncontrast_studies/data/logs/uncontrast_errors_log_{current_date}.xlsx"
-SUCCESS_LOG_PATH = f"uncontrast_studies/data/logs/uncontrast_success_log_{current_date}.xlsx"
-
 
 class Command(BaseCommand):
-    help = "Load uncon existing data"
+    help = "Load uncontrast existing data"
+
+    def add_arguments(self, parser):
+        parser.add_argument("-f", "--filename", type=str, help="Filename to load")
+        parser.add_argument("--dev", action='store_true', help="Start dev data migration process")
 
     def handle(self, *args, **options):
+        if options["dev"]:
+            filename = options["filename"]
+        else:
+            filename = "staging_data"
+
+        file_path = f"uncontrast_studies/data/{filename}.xlsx"
+        current_date = date.today()
+        error_log_path = f"uncontrast_studies/data/logs/uncontrast_errors_log_{current_date}.xlsx"
+        success_log_path = f"uncontrast_studies/data/logs/uncontrast_success_log_{current_date}.xlsx"
+
         # Read .xlsx file and convert to dict
-        experiments_data_list = get_list_from_excel(FILE_PATH, sheet_name="experiments")
-        studies_historic_data_list = get_list_from_excel(FILE_PATH, sheet_name="Metadata")
+        experiments_data_list = get_list_from_excel(file_path, sheet_name="experiments")
+        studies_historic_data_list = get_list_from_excel(file_path, sheet_name="Metadata")
 
         errors_logs = {
             "studies_problematic_data_log": [],
@@ -67,7 +76,7 @@ class Command(BaseCommand):
             "invalid_numeric_data_log": [],
         }
 
-        success_logs = {"successful_studies": [], "completed_experiments": []}
+        success_logs = {"Metadata": [], "experiments": []}
 
         # iterate over studies
         created_studies = []
@@ -80,7 +89,7 @@ class Command(BaseCommand):
                     with transaction.atomic():
                         create_study(item=study_item, unconsciousness=True)
                         created_studies.append(study_doi)
-                        success_logs["successful_studies"].append(study_item)
+                        success_logs["Metadata"].append(study_item)
 
                 except ProblemInStudyExistingDataException:
                     errors_logs["studies_problematic_data_log"].append(study_item)
@@ -95,7 +104,7 @@ class Command(BaseCommand):
                 with transaction.atomic():
                     process_uncon_row(item)
                     print(f"row #{index} completed")
-                    success_logs["completed_experiments"].append(item)
+                    success_logs["experiments"].append(item)
 
             except ParadigmError:
                 errors_logs["invalid_paradigm_data_log"].append(item)
@@ -160,12 +169,13 @@ class Command(BaseCommand):
             except NumericListError:
                 errors_logs["invalid_numeric_data_log"].append(item)
 
-        length_of_error_logs = [len(log) for log in errors_logs.values()]
-        sum_of_logs = sum(length_of_error_logs)
-        print(f"completed loading {len(experiments_data_list)} rows of data, with {sum_of_logs} errors")
+        # length_of_error_logs = [len(log) if log != [] else 0 for log in errors_logs.values()]
+        sum_of_logs = sum(len(log) for log in errors_logs.values())
+        if sum_of_logs > 0:
+            print(f"completed loading {len(experiments_data_list)} rows of data, with {sum_of_logs} errors")
 
-        # iterate over invalid-data logs and add them to .xlsx file in respective sheets
-        write_to_log(errors_logs, ERROR_LOG_PATH)
+            # iterate over invalid-data logs and add them to .xlsx file in respective sheets
+            write_to_log(errors_logs, error_log_path)
 
-        # create success log
-        write_to_log(success_logs, SUCCESS_LOG_PATH)
+            # create success log
+            write_to_log(success_logs, success_log_path)

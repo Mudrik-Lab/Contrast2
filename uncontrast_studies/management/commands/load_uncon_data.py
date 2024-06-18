@@ -169,7 +169,6 @@ class Command(BaseCommand):
             except NumericListError:
                 errors_logs["invalid_numeric_data_log"].append(item)
 
-        # length_of_error_logs = [len(log) if log != [] else 0 for log in errors_logs.values()]
         sum_of_logs = sum(len(log) for log in errors_logs.values())
         if sum_of_logs > 0:
             print(f"completed loading {len(experiments_data_list)} rows of data, with {sum_of_logs} errors")

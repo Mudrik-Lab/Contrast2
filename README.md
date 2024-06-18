@@ -85,7 +85,7 @@ We are currently using postgres. You need to set up a user,
    6. 
       * [Download this file](https://docs.google.com/spreadsheets/d/180WivImbqDv6MBabsHIt2dqvHKS-xDZz/edit?usp=sharing&ouid=115553053451052458030&rtpof=true&sd=true)
       in .xlsx format for **ConTrast**, or
-      * [Download this file](https://docs.google.com/spreadsheets/d/1ON1fUKPinoE8yiowCLTPos_GnWdUrN1i/edit#gid=321810273) in .xlsx format for **UnConTrast**
+      * [Download this file](https://docs.google.com/spreadsheets/d/16icOOS2XWvFel80k9Gw3pC-r3EsaOi-U/edit?usp=drive_link&ouid=115553053451052458030&rtpof=true&sd=true) in .xlsx format for **UnConTrast**
    7.
       * Save the file in
       ``` /studies/data``` directory for **ConTrast**, or

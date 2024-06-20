@@ -76,10 +76,16 @@ class UnConTargetStimulusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UnConTargetStimulus
-        fields = ("experiment", "id", "category", "sub_category", "modality",
-                  "suppressed_stimulus",
-                  "is_target_same_as_suppressed_stimulus",
-                  "number_of_stimuli")
+        fields = (
+            "experiment",
+            "id",
+            "category",
+            "sub_category",
+            "modality",
+            "suppressed_stimulus",
+            "is_target_same_as_suppressed_stimulus",
+            "number_of_stimuli",
+        )
 
 
 class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
@@ -102,7 +108,7 @@ class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
             "duration",
             "soa",
             "number_of_stimuli",
-            "is_target_stimulus"
+            "is_target_stimulus",
         )
 
 

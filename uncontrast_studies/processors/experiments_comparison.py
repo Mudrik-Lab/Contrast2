@@ -13,7 +13,8 @@ from uncontrast_studies.models import (
     UnConTaskType,
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
-    UnConSuppressionMethodType, UnConTargetStimulus,
+    UnConSuppressionMethodType,
+    UnConTargetStimulus,
 )
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor

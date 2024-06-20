@@ -16,7 +16,9 @@ from uncontrast_studies.models import (
     UnConProcessingMainDomain,
     UnConMainParadigm,
     UnConsciousnessMeasure,
-    UnConSuppressedStimulus, UnConTargetStimulus, UnConStimulusSubCategory,
+    UnConSuppressedStimulus,
+    UnConTargetStimulus,
+    UnConStimulusSubCategory,
 )
 
 
@@ -40,7 +42,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         self.outcome_types = kwargs.pop("outcome_types", [])
         self.is_trial_excluded_based_on_measure = kwargs.pop("is_trial_excluded_based_on_measure", [])
         are_participants_excluded = kwargs.pop("are_participants_excluded", [])
-        self.are_participants_excluded = [cast_as_boolean(x)     for x in are_participants_excluded]
+        self.are_participants_excluded = [cast_as_boolean(x) for x in are_participants_excluded]
 
         self.types = kwargs.pop("types", [])
         self.tasks = kwargs.pop("tasks", [])
@@ -241,6 +243,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
+
     def process_target_stimuli_category(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             target_stimuli__category=OuterRef("pk")

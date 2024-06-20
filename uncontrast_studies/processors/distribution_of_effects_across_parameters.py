@@ -90,6 +90,9 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
             .annotate(bin_value=Cast(Floor(F("value") / self.bin_size) * self.bin_size, output_field=IntegerField()))
             .values("bin_value")
             .order_by("bin_value")
+            .filter(
+                bin_value__gt=0
+            )  # those with zero in those type of values are just default we didn't have the value
             .annotate(experiment_count=Count(experiment_referencing_param, distinct=True))
             .filter(experiment_count__gt=self.min_number_of_experiments)
             .annotate(data=JSONObject(key=F("bin_value"), value=F("experiment_count")))

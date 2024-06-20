@@ -16,7 +16,9 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConsciousnessMeasurePhase,
     UnConSuppressedStimulus,
-    UnConsciousnessMeasure, UnConTargetStimulus, UnConStimulusSubCategory,
+    UnConsciousnessMeasure,
+    UnConTargetStimulus,
+    UnConStimulusSubCategory,
 )
 
 
@@ -88,7 +90,8 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def process_suppressed_stimuli_sub_category(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            suppressed_stimuli__sub_category=OuterRef("pk")).values("id", "significance")
+            suppressed_stimuli__sub_category=OuterRef("pk")
+        ).values("id", "significance")
 
         breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct().annotate(series_name=F("name"))
 
@@ -97,7 +100,8 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
 
     def process_target_stimuli_sub_category(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            target_stimuli__sub_category=OuterRef("pk")).values("id", "significance")
+            target_stimuli__sub_category=OuterRef("pk")
+        ).values("id", "significance")
 
         breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct().annotate(series_name=F("name"))
 

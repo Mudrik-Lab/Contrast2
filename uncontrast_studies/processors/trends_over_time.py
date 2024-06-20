@@ -16,7 +16,9 @@ from uncontrast_studies.models import (
     UnConStimulusCategory,
     UnConSuppressionMethodType,
     UnConsciousnessMeasure,
-    UnConSuppressedStimulus, UnConTargetStimulus, UnConStimulusSubCategory,
+    UnConSuppressedStimulus,
+    UnConTargetStimulus,
+    UnConStimulusSubCategory,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 
@@ -100,7 +102,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
     def process_suppressed_stimuli_sub_category(self):
         experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__sub_category=OuterRef("pk"))
 
-        breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
+        breakdown_query = (
+            UnConStimulusSubCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
+        )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
@@ -124,7 +128,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
     def process_target_stimuli_sub_category(self):
         experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__sub_category=OuterRef("pk"))
 
-        breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
+        breakdown_query = (
+            UnConStimulusSubCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
+        )
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

@@ -16,7 +16,7 @@ from uncontrast_studies.models import (
     UnConProcessingMainDomain,
     UnConMainParadigm,
     UnConsciousnessMeasure,
-    UnConSuppressedStimulus, UnConTargetStimulus,
+    UnConSuppressedStimulus, UnConTargetStimulus, UnConStimulusSubCategory,
 )
 
 
@@ -226,6 +226,21 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
+    def process_suppressed_stimuli_sub_category(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__sub_category=OuterRef("pk"))
+
+        breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct().annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_target_stimuli_sub_category(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__sub_category=OuterRef("pk"))
+
+        breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct().annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
     def process_target_stimuli_category(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             target_stimuli__category=OuterRef("pk")

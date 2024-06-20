@@ -16,7 +16,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConsciousnessMeasurePhase,
     UnConSuppressedStimulus,
-    UnConsciousnessMeasure, UnConTargetStimulus,
+    UnConsciousnessMeasure, UnConTargetStimulus, UnConStimulusSubCategory,
 )
 
 
@@ -82,6 +82,24 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         ).values("id", "significance")
 
         breakdown_query = UnConStimulusCategory.objects.values("name").distinct().annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_suppressed_stimuli_sub_category(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            suppressed_stimuli__sub_category=OuterRef("pk")).values("id", "significance")
+
+        breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct().annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_target_stimuli_sub_category(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            target_stimuli__sub_category=OuterRef("pk")).values("id", "significance")
+
+        breakdown_query = UnConStimulusSubCategory.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

@@ -72,10 +72,14 @@ class UnConTargetStimulusSerializer(serializers.ModelSerializer):
         queryset=UnConStimulusSubCategory.objects.all(), required=False, allow_null=True
     )
     modality = serializers.PrimaryKeyRelatedField(queryset=UnConModalityType.objects.all())
+    suppressed_stimulus = serializers.PrimaryKeyRelatedField(queryset=UnConSuppressedStimulus.objects.all())
 
     class Meta:
         model = UnConTargetStimulus
-        fields = ("experiment", "id", "category", "sub_category", "modality", "number_of_stimuli")
+        fields = ("experiment", "id", "category", "sub_category", "modality",
+                  "suppressed_stimulus",
+                  "is_target_same_as_suppressed_stimulus",
+                  "number_of_stimuli")
 
 
 class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
@@ -98,6 +102,7 @@ class UnConSuppressedStimulusSerializer(serializers.ModelSerializer):
             "duration",
             "soa",
             "number_of_stimuli",
+            "is_target_stimulus"
         )
 
 
@@ -202,7 +207,6 @@ class ThinUnConExperimentSerializer(FullUnConExperimentSerializer):
             "experiment_findings_notes",
             "type",
             "paradigm",
-
             "consciousness_measures_notes",
         ]
 

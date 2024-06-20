@@ -7,6 +7,7 @@ from uncontrast_studies.models import (
     UnConSample,
     UnConModalityType,
     UnConStimulusCategory,
+    UnConStimulusSubCategory,
     UnConsciousnessMeasureType,
     UnConsciousnessMeasurePhase,
     UnConTaskType,
@@ -76,6 +77,28 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
     def process_target_stimuli_category(self, experiments: QuerySet[UnConExperiment]):
         subquery = (
             UnConStimulusCategory.objects.filter(target_stimuli__experiment__in=experiments)
+            .distinct()
+            .values("name")
+            .annotate(experiment_count=Count("target_stimuli__experiment", distinct=True))
+            .annotate(key=F("name"))
+        )
+
+        return subquery
+
+    def process_suppressed_stimuli_sub_category(self, experiments: QuerySet[UnConExperiment]):
+        subquery = (
+            UnConStimulusSubCategory.objects.filter(suppressed_stimuli__experiment__in=experiments)
+            .distinct()
+            .values("name")
+            .annotate(experiment_count=Count("suppressed_stimuli__experiment", distinct=True))
+            .annotate(key=F("name"))
+        )
+
+        return subquery
+
+    def process_target_stimuli_sub_category(self, experiments: QuerySet[UnConExperiment]):
+        subquery = (
+            UnConStimulusSubCategory.objects.filter(target_stimuli__experiment__in=experiments)
             .distinct()
             .values("name")
             .annotate(experiment_count=Count("target_stimuli__experiment", distinct=True))

@@ -72,3 +72,7 @@ def parse_country_names_to_codes(country_names: List[str]) -> List[str]:
         country_codes.append(code)
 
     return country_codes
+
+
+def journal_parser(text: str):
+    return text.strip()

@@ -6,7 +6,7 @@ from contrast_api.data_migration_functionality.studies_parsing_helpers import (
     parse_country_names_to_codes,
     validate_year,
     resolve_authors_from_authors_text,
-    resolve_countries,
+    resolve_countries, journal_parser,
 )
 from studies.models import Study, Author
 from studies.parsers.process_row import logger  # TODO: change to shared logger for both sites
@@ -16,12 +16,12 @@ def create_study(item: dict, unconsciousness):
     authors = []
 
     if unconsciousness:
-        source_title = item["Journal"]
+        source_title = journal_parser(item["Journal"])
         country_names = resolve_countries(item["Countries"])
         study_type = StudyTypeChoices.UNCONSCIOUSNESS
         funding = ""
         affiliations = ""
-        abbreviated_source_title = item["Journal"]
+        abbreviated_source_title = item["Journal abbreviated"]
         author_keywords = [""]
 
         authors_names = resolve_authors_keywords_from_text(item["Authors"])

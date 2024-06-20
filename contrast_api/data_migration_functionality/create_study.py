@@ -21,9 +21,8 @@ def create_study(item: dict, unconsciousness):
         study_type = StudyTypeChoices.UNCONSCIOUSNESS
         funding = ""
         affiliations = ""
-        abbreviated_source_title = item["Journal abbreviated"]
+        abbreviated_source_title = journal_parser(item["Journal abbreviated"])
         author_keywords = [""]
-
         authors_names = resolve_authors_keywords_from_text(item["Authors"])
         for author_name in authors_names:
             author, created = Author.objects.get_or_create(name=author_name)

@@ -175,6 +175,7 @@ class Base(Configuration):
                 "uncontrast_studies.UnConTargetStimulus",
                 "uncontrast_studies.UnConProcessingDomain",
                 "uncontrast_studies.UnConSuppressionMethod",
+                "uncontrast_studies.UnConSample",
             ),
         },
         {"app": "configuration", "label": "general graphs and forms related configuration"},

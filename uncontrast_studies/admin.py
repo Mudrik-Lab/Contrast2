@@ -164,7 +164,7 @@ class UnConSampleAdmin(BaseContrastAdmin):
         ("size_excluded", NumericRangeFilter),
         ("size_included", NumericRangeFilter),
     )
-    list_display = ("type", "size_excluded", "size_included", "experiment_id")
+    list_display = ("type", "size_total", "size_excluded", "size_included", "experiment_id")
 
 
 class UnConProcessingDomainMainTypeAdmin(BaseContrastAdmin):
@@ -207,6 +207,7 @@ admin.site.register(UnConStimulusSubCategory, UnConStimulusSubCategoryAdmin)
 admin.site.register(UnConModalityType, UnConModalityTypeAdmin)
 admin.site.register(UnConMainParadigm, UnConMainParadigmAdmin)
 admin.site.register(UnConSpecificParadigm, UnConSpecificParadigmAdmin)
+admin.site.register(UnConSample, UnConSampleAdmin)
 admin.site.register(UnConProcessingMainDomain, UnConProcessingDomainMainTypeAdmin)
 admin.site.register(UnConProcessingDomain, UnConProcessingDomainAdmin)
 admin.site.register(UnConSuppressionMethod, UnConSuppressionMethodAdmin)

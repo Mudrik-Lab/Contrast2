@@ -19,6 +19,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasure,
     UnConTargetStimulus,
     UnConStimulusSubCategory,
+    UnConSuppressionMethodType,
 )
 
 
@@ -203,7 +204,7 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
             suppression_methods__type=OuterRef("pk")
         ).values("id", "significance")
 
-        breakdown_query = UnConProcessingMainDomain.objects.values("name").distinct().annotate(series_name=F("name"))
+        breakdown_query = UnConSuppressionMethodType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

@@ -19,6 +19,7 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConTargetStimulus,
     UnConStimulusSubCategory,
+    UnConSuppressionMethodType,
 )
 
 
@@ -299,7 +300,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             suppression_methods__type=OuterRef("pk")
         ).values("id")
 
-        breakdown_query = UnConProcessingMainDomain.objects.values("name").distinct().annotate(series_name=F("name"))
+        breakdown_query = UnConSuppressionMethodType.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

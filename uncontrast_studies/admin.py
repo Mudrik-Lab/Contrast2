@@ -163,8 +163,9 @@ class UnConSampleAdmin(BaseContrastAdmin):
         "type",
         ("size_excluded", NumericRangeFilter),
         ("size_included", NumericRangeFilter),
+        ("size_total", NumericRangeFilter),
     )
-    list_display = ("type", "size_total", "size_excluded", "size_included", "experiment_id")
+    list_display = ("type", "size_excluded", "size_included", "size_total", "experiment_id")
 
 
 class UnConProcessingDomainMainTypeAdmin(BaseContrastAdmin):

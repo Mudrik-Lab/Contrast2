@@ -14,8 +14,7 @@ class SampleChoices(TextChoices):
 
 class UnConSampleChoices(TextChoices):
     HEALTHY_ADULTS = "healthy_adults", _("Healthy adults")
-    HEALTHY_COLLEGE_STUDENTS = "Healthy_college_students", _("Healthy college students")
-    CHILDREN = "children", _("Children")
+    HEALTHY_CHILDREN = "healthy_children", _("Healthy children")
     PATIENTS_ADULTS = "patients_adults", _("Patients (adults)")
     PATIENTS_CHILDREN = "patients_children", _("Patients (children)")
     NON_HUMAN = "non_human", _("Non-human")

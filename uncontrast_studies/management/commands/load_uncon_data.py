@@ -39,7 +39,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("-f", "--filename", type=str, help="Filename to load")
-        parser.add_argument("--dev", action='store_true', help="Start dev data migration process")
+        parser.add_argument("--dev", action="store_true", help="Start dev data migration process")
 
     def handle(self, *args, **options):
         if options["dev"]:

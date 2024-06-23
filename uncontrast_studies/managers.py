@@ -46,8 +46,6 @@ class UnConExperimentManager(models.Manager):
                 )
             )
             .prefetch_related(
-                Prefetch(
-                    "processing_domains", queryset=UnConProcessingDomain.objects.select_related("main")
-                )
+                Prefetch("processing_domains", queryset=UnConProcessingDomain.objects.select_related("main"))
             )
         )

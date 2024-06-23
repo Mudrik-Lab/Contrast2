@@ -247,9 +247,9 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         ids_subquery = by_significance.order_by("id").values_list("id")
 
         if self.is_csv:
-            ids = queryset.annotate(
-                experiments=ArraySubquery(filtered_subquery.values_list("id"))
-            ).values_list("experiments", flat=True)
+            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("id"))).values_list(
+                "experiments", flat=True
+            )
             return set(list(itertools.chain.from_iterable(ids)))
 
         qs = (

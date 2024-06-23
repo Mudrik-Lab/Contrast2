@@ -6,7 +6,8 @@ from contrast_api.data_migration_functionality.studies_parsing_helpers import (
     parse_country_names_to_codes,
     validate_year,
     resolve_authors_from_authors_text,
-    resolve_countries, journal_parser,
+    resolve_countries,
+    journal_parser,
 )
 from studies.models import Study, Author
 from studies.parsers.process_row import logger  # TODO: change to shared logger for both sites

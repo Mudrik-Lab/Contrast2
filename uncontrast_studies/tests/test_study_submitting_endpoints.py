@@ -37,7 +37,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         main_paradigm = self.given_uncon_main_paradigm_exists("main_paradigm")
 
         specific_paradigm = self.given_uncon_specific_paradigm_exists("specific_paradigm", main=main_paradigm)
-        sample_data = dict(type=UnConSampleChoices.CHILDREN, size_included=10, size_excluded=6, size_total=4)
+        sample_data = dict(type=UnConSampleChoices.HEALTHY_CHILDREN, size_included=10, size_excluded=6, size_total=4)
         self.given_user_exists(username="submitting_user")
         self.given_user_authenticated("submitting_user", "12345")
         study_res = self.when_uncontrast_study_created_by_user_via_api()

@@ -21,10 +21,10 @@ class UnConExperimentManager(models.Manager):
             .select_related("study", "paradigm")
             .prefetch_related("study__authors")
             .prefetch_related(Prefetch("tasks", queryset=UnConTask.objects.select_related("type")))
-            .prefetch_related(Prefetch("findings", queryset=UnConFinding.objects))
+            .prefetch_related(Prefetch("findings", queryset=UnConFinding.objects.select_related("outcome")))
             .prefetch_related(
                 Prefetch(
-                    "consciousness_measures", queryset=UnConsciousnessMeasure.objects.select_related("type", "phase")
+                    "unconsciousness_measures", queryset=UnConsciousnessMeasure.objects.select_related("type", "phase")
                 )
             )
             .prefetch_related(
@@ -47,7 +47,7 @@ class UnConExperimentManager(models.Manager):
             )
             .prefetch_related(
                 Prefetch(
-                    "processing_domains", queryset=UnConProcessingDomain.objects.select_related("main", "sub_domain")
+                    "processing_domains", queryset=UnConProcessingDomain.objects.select_related("main")
                 )
             )
         )

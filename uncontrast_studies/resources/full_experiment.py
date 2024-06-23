@@ -103,10 +103,10 @@ class FullUnConExperimentResource(resources.ModelResource):
         )
 
     def dehydrate_tasks(self, experiment: UnConExperiment):
-        return SEPERATOR.join(task.type.name for task in experiment.uncon_tasks.all())
+        return SEPERATOR.join(task.type.name for task in experiment.tasks.all())
 
     def dehydrate_processing_domains(self, experiment: UnConExperiment):
-        return SEPERATOR.join(f"{domain.main} {domain.sub_domain}" for domain in experiment.processing_domains.all())
+        return SEPERATOR.join(f"{domain.main}" for domain in experiment.processing_domains.all())
 
     def dehydrate_suppression_methods(self, experiment: UnConExperiment):
         return SEPERATOR.join(

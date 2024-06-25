@@ -89,7 +89,7 @@ class UnConTargetStimulus(models.Model):
         related_name="target_stimuli",
     )
     suppressed_stimulus = models.ForeignKey(
-        null=False, blank=False, on_delete=PROTECT, to=UnConSuppressedStimulus, related_name="target_stimuli"
+        null=False, blank=False, on_delete=CASCADE, to=UnConSuppressedStimulus, related_name="target_stimuli"
     )
     is_target_same_as_suppressed_stimulus = models.BooleanField(
         null=False,

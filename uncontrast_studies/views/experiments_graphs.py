@@ -93,9 +93,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     @extend_schema(
         responses=NationOfConsciousnessBySignificanceGraphSerializer(many=True),
         parameters=[
-            OpenApiParameter(
-                name="theory", type=str, required=False, many=True, description="theory filter - supports multiple"
-            ),
+
             number_of_experiments_parameter,
             is_csv,
         ],

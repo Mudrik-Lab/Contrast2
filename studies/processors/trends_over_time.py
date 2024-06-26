@@ -201,18 +201,28 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         # Note we're filtering out empty timeseries with the cardinality option
         retval = []
         earliest_year = None
+        latest_year = None
+
         for series_data in list(qs):
             series = self.accumulate_inner_series_values_and_filter(
                 series_data["series"], self.min_number_of_experiments
             )
             if len(series):
                 earliest_year_in_series = series_data["series"][0]["year"]
+                latest_year_in_series = series_data["series"][-1]["year"]
                 if earliest_year is None or earliest_year_in_series < earliest_year:
                     earliest_year = earliest_year_in_series
+                if latest_year is None or latest_year_in_series > latest_year:
+                    latest_year = latest_year_in_series
                 retval.append(dict(series_name=series_data["series_name"], series=series))
         if earliest_year is not None:
             for line in retval:
                 if line["series"][0]["year"] > earliest_year:
                     # todo check if I can really insert like that
                     line["series"].insert(0, dict(year=earliest_year, value=0))
+        if latest_year is not None:
+            for line in retval:
+                if line["series"][-1]["year"] < latest_year:
+                    previous_value = line["series"][-1]["value"]
+                    line["series"].append(dict(year=latest_year, value=previous_value))
         return retval

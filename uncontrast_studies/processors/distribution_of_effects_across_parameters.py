@@ -9,6 +9,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasure,
     UnConSample,
     UnConFinding,
+    UnConTargetStimulus,
 )
 from uncontrast_studies.processors.base import BaseProcessor
 
@@ -33,7 +34,16 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
         return self._aggregate_query_by_breakdown(subquery)
 
     def process_number_of_stimuli(self):
+        return self.process_number_of_suppressed_stimuli()
+
+    def process_number_of_suppressed_stimuli(self):
         subquery = UnConSuppressedStimulus.objects.filter(experiment__significance=OuterRef("series_name")).annotate(
+            value=F("number_of_stimuli")
+        )
+        return self._aggregate_query_by_breakdown(subquery)
+
+    def process_number_of_target_stimuli(self):
+        subquery = UnConTargetStimulus.objects.filter(experiment__significance=OuterRef("series_name")).annotate(
             value=F("number_of_stimuli")
         )
         return self._aggregate_query_by_breakdown(subquery)

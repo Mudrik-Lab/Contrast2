@@ -5,25 +5,48 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0003_alter_uncontargetstimulus_suppressed_stimulus'),
+        ("uncontrast_studies", "0003_alter_uncontargetstimulus_suppressed_stimulus"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalunconsample',
-            name='type',
-            field=models.CharField(choices=[('healthy_adults', 'Healthy adults'), ('healthy_children', 'Healthy children'), ('patients_adults', 'Patients (adults)'), ('patients_children', 'Patients (children)'), ('non_human', 'Non-human'), ('computer', 'Computer')], max_length=30),
+            model_name="historicalunconsample",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("healthy_adults", "Healthy adults"),
+                    ("healthy_children", "Healthy children"),
+                    ("patients_adults", "Patients (adults)"),
+                    ("patients_children", "Patients (children)"),
+                    ("non_human", "Non-human"),
+                    ("computer", "Computer"),
+                ],
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='unconsample',
-            name='type',
-            field=models.CharField(choices=[('healthy_adults', 'Healthy adults'), ('healthy_children', 'Healthy children'), ('patients_adults', 'Patients (adults)'), ('patients_children', 'Patients (children)'), ('non_human', 'Non-human'), ('computer', 'Computer')], max_length=30),
+            model_name="unconsample",
+            name="type",
+            field=models.CharField(
+                choices=[
+                    ("healthy_adults", "Healthy adults"),
+                    ("healthy_children", "Healthy children"),
+                    ("patients_adults", "Patients (adults)"),
+                    ("patients_children", "Patients (children)"),
+                    ("non_human", "Non-human"),
+                    ("computer", "Computer"),
+                ],
+                max_length=30,
+            ),
         ),
         migrations.AlterField(
-            model_name='uncontargetstimulus',
-            name='suppressed_stimulus',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='target_stimuli', to='uncontrast_studies.unconsuppressedstimulus'),
+            model_name="uncontargetstimulus",
+            name="suppressed_stimulus",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="target_stimuli",
+                to="uncontrast_studies.unconsuppressedstimulus",
+            ),
         ),
     ]

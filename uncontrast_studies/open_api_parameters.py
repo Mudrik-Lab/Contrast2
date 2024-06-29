@@ -24,7 +24,9 @@ UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS = [
 
 UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [
     "suppressed_stimuli_duration",
-    "number_of_stimuli",
+    "number_of_stimuli",  # backwards compatibility points to suppressed
+    "number_of_suppressed_stimuli",
+    "number_of_target_stimuli",
     "unconsciousness_measure_number_of_trials",
     "outcome_number_of_trials",
     "unconsciousness_measure_number_of_participants_in_awareness_test",

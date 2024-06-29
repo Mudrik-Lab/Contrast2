@@ -93,7 +93,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
     @extend_schema(
         responses=NationOfConsciousnessBySignificanceGraphSerializer(many=True),
         parameters=[
-
             number_of_experiments_parameter,
             is_csv,
         ],

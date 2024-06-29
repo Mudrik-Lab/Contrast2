@@ -58,6 +58,10 @@ paradigms_multiple_optional_parameter = OpenApiParameter(
     name="paradigms", description="paradigms optional", type=int, many=True, required=False
 )
 
+paradigm_single_optional_parameter = OpenApiParameter(
+    name="paradigm", description="paradigm main optional", type=int, many=False, required=False
+)
+
 suppressed_stimuli_categories_multiple_optional_parameter = OpenApiParameter(
     name="suppressed_stimuli_categories",
     description="suppressed stimuli categories families",

@@ -29,6 +29,7 @@ from uncontrast_studies.open_api_parameters import (
     continuous_breakdown_options,
     bin_size_parameter,
     are_participants_excluded,
+    paradigm_single_optional_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
 from uncontrast_studies.processors.distribution_of_effects_across_parameters import (
@@ -92,10 +93,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
 
     @extend_schema(
         responses=NationOfConsciousnessBySignificanceGraphSerializer(many=True),
-        parameters=[
-            number_of_experiments_parameter,
-            is_csv,
-        ],
+        parameters=[number_of_experiments_parameter, is_csv, paradigm_single_optional_parameter],
     )
     @action(detail=False, methods=["GET"], serializer_class=NationOfConsciousnessBySignificanceGraphSerializer)
     def nations_of_consciousness(self, request, *args, **kwargs):

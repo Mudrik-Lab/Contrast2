@@ -8,7 +8,7 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
     def __init__(self, experiments: QuerySet[UnConExperiment], **kwargs):
         super().__init__(experiments=experiments, **kwargs)
         self.paradigm = None
-        paradigm = kwargs.pop("paradigm",None)
+        paradigm = kwargs.pop("paradigm", None)
         if paradigm is not None:
             self.paradigm = paradigm[0]
 
@@ -27,12 +27,14 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
         return aggregate
 
     def get_queryset(self):
-        filtered_qs:QuerySet[UnConExperiment] = self.experiments
+        filtered_qs: QuerySet[UnConExperiment] = self.experiments
         if self.paradigm is not None:
             filtered_qs = filtered_qs.filter(paradigm__main=self.paradigm)
-        experiments_by_countries_and_theories = filtered_qs.select_related("study")\
-            .values("id", "study", "significance")\
+        experiments_by_countries_and_theories = (
+            filtered_qs.select_related("study")
+            .values("id", "study", "significance")
             .annotate(country=Func(F("study__countries"), function="unnest"))
+        )
 
         return experiments_by_countries_and_theories
 

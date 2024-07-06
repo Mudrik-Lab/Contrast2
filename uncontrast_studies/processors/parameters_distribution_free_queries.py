@@ -70,7 +70,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
             queryset = queryset.filter(suppressed_stimuli__modality__id__in=self.suppressed_stimuli_modalities)
 
         if len(self.modes_of_presentation):
-            queryset = queryset.filter(suppressed_stimuli__modes_of_presentation__in=self.modes_of_presentation)
+            queryset = queryset.filter(suppressed_stimuli__mode_of_presentation__in=self.modes_of_presentation)
 
         if len(self.target_stimuli_categories):
             queryset = queryset.filter(target_stimuli__category__id__in=self.target_stimuli_categories)

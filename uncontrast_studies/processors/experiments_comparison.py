@@ -245,6 +245,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                 subquery_by_breakdown = (
                     subquery.order_by("-experiment_count")
                     .filter(experiment_count__gt=self.min_number_of_experiments)
+                    .exclude(key__isnull=True)
                     .annotate(data=JSONObject(key=F("key"), value=F("experiment_count")))
                     .values_list("data", flat=True)
                 )

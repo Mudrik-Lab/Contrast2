@@ -32,6 +32,7 @@ def _sentry_event_filter(event, hint):
 
 
 class Base(Configuration):
+    NAME = 'base'
     BASE_DIR = Path(__file__).resolve().parent.parent
 
     # Quick-start development settings - unsuitable for production
@@ -304,6 +305,8 @@ class Base(Configuration):
 
 
 class Development(Base):
+    NAME = 'development'
+
     DEBUG = True
     SWAGGER_ENABLED = values.BooleanValue(default=True)
     CORS_ALLOW_ALL_ORIGINS = True
@@ -321,6 +324,8 @@ class Development(Base):
 
 
 class Testing(Development):
+    NAME = 'testing'
+
     PASSWORD_HASHERS = [
         "django.contrib.auth.hashers.MD5PasswordHasher",
     ]
@@ -339,14 +344,17 @@ class Testing(Development):
 
 
 class Staging(Base):
+    NAME = 'staging'
+
     DEBUG = values.BooleanValue(default=False, environ_prefix="")
     CORS_ALLOW_ALL_ORIGINS = False
     AWS_STORAGE_BUCKET_NAME = values.Value(environ_name="S3_STORAGE")
 
 
 class Production(Base):
+    NAME = 'production'
+
     DEBUG = values.BooleanValue(default=False, environ_prefix="")
-    CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOW_ALL_ORIGINS = False
     AWS_STORAGE_BUCKET_NAME = values.Value(environ_prefix="BUCKETEER", environ_name="BUCKET_NAME")
     AWS_ACCESS_KEY_ID = values.Value(environ_prefix="BUCKETEER")

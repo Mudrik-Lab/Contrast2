@@ -1,12 +1,13 @@
 from django.db import models
-from django.db.models import CASCADE, Q
+from django.db.models import CASCADE, Q, UniqueConstraint
 
 from contrast_api.choices import InterpretationsChoices
 
 
 class Interpretation(models.Model):
     class Meta:
-        indexes = [models.Index(fields=["experiment", "theory"]), models.Index(fields=["id", "type"])]
+        # index_together = (("experiment", "theory"),)
+        constraints = [UniqueConstraint(fields=('experiment','theory'), name='unique_theory')]
 
 
     experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE, related_name="theories")

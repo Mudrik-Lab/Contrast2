@@ -6,7 +6,8 @@ from contrast_api.choices import InterpretationsChoices
 
 class Interpretation(models.Model):
     class Meta:
-        index_together = (("experiment", "theory"),)
+        indexes = [models.Index(fields=["experiment", "theory"]), models.Index(fields=["id", "type"])]
+
 
     experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE, related_name="theories")
     theory = models.ForeignKey(

@@ -7,7 +7,6 @@ from django.http import HttpResponse
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
-# from simple_history.admin import SimpleHistoryAdmin
 
 from contrast_api.admin_utils import SimpleHistoryWithDeletedAdmin
 from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
@@ -120,6 +119,7 @@ class ExperimentAdmin(BaseContrastAdmin):
         "tasks_notes",
         "consciousness_measures_notes",
         "stimuli_notes",
+        "sample_notes",
         "techniques",
         "paradigms",
     )

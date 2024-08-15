@@ -107,8 +107,8 @@ class Migration(migrations.Migration):
                 null=True,
             ),
         ),
-        migrations.AlterIndexTogether(
-            name="interpretation",
-            index_together={("experiment", "theory")},
-        ),
+        migrations.AddIndex(
+            model_name='interpretation',
+            index=models.Index(fields=['experiment", "theory'], name='studies_int_id_329c3f_idx'),
+        )
     ]

@@ -28,7 +28,7 @@ from contrast_api.data_migration_functionality.studies_parsing_helpers import (
     ProblemInStudyExistingDataException,
     MissingCountryDetectionException,
 )
-from uncontrast_studies.services.process_uncon_row import process_uncon_experiment
+from uncontrast_studies.services.process_uncon_experiment import process_uncon_experiment
 from uncontrast_studies.services.uncontrast_logger import write_to_log
 
 logger = logging.getLogger(__name__)

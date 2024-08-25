@@ -7,8 +7,7 @@ from contrast_api.choices import InterpretationsChoices
 class Interpretation(models.Model):
     class Meta:
         # index_together = (("experiment", "theory"),)
-        constraints = [UniqueConstraint(fields=('experiment','theory'), name='unique_theory')]
-
+        constraints = [UniqueConstraint(fields=("experiment", "theory"), name="unique_theory")]
 
     experiment = models.ForeignKey(to="studies.Experiment", on_delete=CASCADE, related_name="theories")
     theory = models.ForeignKey(

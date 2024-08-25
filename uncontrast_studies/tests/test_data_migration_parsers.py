@@ -339,7 +339,6 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         self.assertEqual(res_target_multiple_categories_and_sub_categories[0].sub_category, "Letters")
         self.assertEqual(res_target_multiple_categories_and_sub_categories[1].sub_category, "Digits")
 
-
     def test_categorize_prime_stimulus_data(self):
         item_1 = {
             "Stimuli Category": "Numerical",

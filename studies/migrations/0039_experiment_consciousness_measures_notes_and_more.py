@@ -113,8 +113,7 @@ class Migration(migrations.Migration):
         #     index_together={("experiment", "theory")},
         # ),
         migrations.AddConstraint(
-            model_name='interpretation',
-            constraint=models.UniqueConstraint(fields=('experiment', 'theory'), name='unique_theory'),
+            model_name="interpretation",
+            constraint=models.UniqueConstraint(fields=("experiment", "theory"), name="unique_theory"),
         ),
-
     ]

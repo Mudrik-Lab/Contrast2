@@ -6,30 +6,37 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0058_alter_historicaltask_options'),
+        ("studies", "0058_alter_historicaltask_options"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalstudy',
-            name='authors_key_words',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, default=list, size=None),
+            model_name="historicalstudy",
+            name="authors_key_words",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=100), blank=True, default=list, size=None
+            ),
         ),
         migrations.AlterField(
-            model_name='historicalstudy',
-            name='countries',
-            field=django.contrib.postgres.fields.ArrayField(base_field=django_countries.fields.CountryField(max_length=2), blank=True, default=list, size=None),
+            model_name="historicalstudy",
+            name="countries",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=django_countries.fields.CountryField(max_length=2), blank=True, default=list, size=None
+            ),
         ),
         migrations.AlterField(
-            model_name='study',
-            name='authors_key_words',
-            field=django.contrib.postgres.fields.ArrayField(base_field=models.CharField(max_length=100), blank=True, default=list, size=None),
+            model_name="study",
+            name="authors_key_words",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=models.CharField(max_length=100), blank=True, default=list, size=None
+            ),
         ),
         migrations.AlterField(
-            model_name='study',
-            name='countries',
-            field=django.contrib.postgres.fields.ArrayField(base_field=django_countries.fields.CountryField(max_length=2), blank=True, default=list, size=None),
+            model_name="study",
+            name="countries",
+            field=django.contrib.postgres.fields.ArrayField(
+                base_field=django_countries.fields.CountryField(max_length=2), blank=True, default=list, size=None
+            ),
         ),
     ]

@@ -28,7 +28,7 @@ from contrast_api.data_migration_functionality.studies_parsing_helpers import (
     ProblemInStudyExistingDataException,
     MissingCountryDetectionException,
 )
-from uncontrast_studies.services.process_uncon_row import process_uncon_row
+from uncontrast_studies.services.process_uncon_row import process_uncon_experiment
 from uncontrast_studies.services.uncontrast_logger import write_to_log
 
 logger = logging.getLogger(__name__)
@@ -102,7 +102,7 @@ class Command(BaseCommand):
             index = index + 1
             try:
                 with transaction.atomic():
-                    process_uncon_row(item)
+                    process_uncon_experiment(item)
                     print(f"row #{index} completed")
                     success_logs["experiments"].append(item)
 

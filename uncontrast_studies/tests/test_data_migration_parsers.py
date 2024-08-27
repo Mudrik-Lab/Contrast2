@@ -375,6 +375,17 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Number of different stimuli used in the experiment 2": "80",
         }
 
+        item_identical_multiple = {
+            "Stimuli Category": "Lingual; Numerical",
+            "Stimuli Sub-category": "Letters; Digits",
+            "Stimuli Modality": "Visual;Visual",
+            "Stimuli Number of different stimuli used in the experiment": "8;8",
+            "Stimuli Category 2": "Lingual; Numerical",
+            "Stimuli Sub-category 2": "Letters; Digits",
+            "Stimuli Modality 2": "Visual; Visual",
+            "Stimuli Number of different stimuli used in the experiment 2": "8;8",
+        }
+
         item_different_sub_category = {
             "Stimuli Category": "Lingual",
             "Stimuli Sub-category": "Words",
@@ -390,7 +401,7 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
             "Stimuli Category": "Lingual",
             "Stimuli Sub-category": "Words",
             "Stimuli Modality": "Visual",
-            "Stimuli Number of different stimuli used in the experiment": "missing",
+            "Stimuli Number of different stimuli used in the experiment": "9",
             "Stimuli Category 2": "Lingual",
             "Stimuli Sub-category 2": "Words",
             "Stimuli Modality 2": "Visual",
@@ -409,6 +420,8 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         }
 
         res = is_target_duplicate(item_identical)
+        self.assertTrue(res)
+        res = is_target_duplicate(item_identical_multiple)
         self.assertTrue(res)
         res = is_target_duplicate(item_different_sub_category)
         self.assertFalse(res)

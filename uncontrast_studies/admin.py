@@ -29,9 +29,9 @@ from uncontrast_studies.models import (
 
 class UnConExperimentAdmin(BaseContrastAdmin):
     model = UnConExperiment
-    search_fields = ("study__DOI", "study__title","consciousness_measures_notes", "experiment_findings_notes")
+    search_fields = ("study__DOI", "study__title", "consciousness_measures_notes", "experiment_findings_notes")
     list_display = ("id", "significance", "paradigm")
-    list_filter = ("significance","paradigm__main")
+    list_filter = ("significance", "paradigm__main")
 
 
 class UnConsciousnessMeasureAdmin(BaseContrastAdmin):

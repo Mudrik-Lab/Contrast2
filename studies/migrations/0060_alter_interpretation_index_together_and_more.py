@@ -3,27 +3,25 @@
 from django.db import migrations, models
 from django.conf import settings
 
-class Migration(migrations.Migration):
 
+class Migration(migrations.Migration):
     dependencies = [
-        ('studies', '0059_alter_historicalstudy_authors_key_words_and_more'),
+        ("studies", "0059_alter_historicalstudy_authors_key_words_and_more"),
     ]
 
     original_operations = [
         migrations.AlterIndexTogether(
-            name='interpretation',
+            name="interpretation",
             index_together=set(),
         ),
         migrations.AddConstraint(
-            model_name='interpretation',
-            constraint=models.UniqueConstraint(fields=('experiment', 'theory'), name='unique_theory'),
+            model_name="interpretation",
+            constraint=models.UniqueConstraint(fields=("experiment", "theory"), name="unique_theory"),
         ),
     ]
-    testing_operations = [
-
-    ]
-    if settings.NAME == 'testing':
-        operations =testing_operations
+    testing_operations = []
+    if settings.NAME == "testing":
+        operations = testing_operations
     else:
         operations = original_operations
     operations = operations

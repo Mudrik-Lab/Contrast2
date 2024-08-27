@@ -24,15 +24,19 @@ def is_missing_number_of_trials(item: dict):
 
 
 def is_target_duplicate(item: dict):
-    stimuli_category_data = item["Stimuli Category"]
-    stimuli_sub_category_data = item["Stimuli Sub-category"]
-    stimuli_modality_data = item["Stimuli Modality"]
-    stimuli_number_of_stimuli_data = item["Stimuli Number of different stimuli used in the experiment"]
+    stimuli_category_data = clean_list_from_data(item["Stimuli Category"])
+    stimuli_sub_category_data = clean_list_from_data(item["Stimuli Sub-category"])
+    stimuli_modality_data = clean_list_from_data(item["Stimuli Modality"])
+    stimuli_number_of_stimuli_data = clean_list_from_data(
+        item["Stimuli Number of different stimuli used in the experiment"], integer=True
+    )
 
-    stimuli_category_data_2 = item["Stimuli Category 2"]
-    stimuli_sub_category_data_2 = item["Stimuli Sub-category 2"]
-    stimuli_modality_data_2 = item["Stimuli Modality 2"]
-    stimuli_number_of_stimuli_data_2 = item["Stimuli Number of different stimuli used in the experiment 2"]
+    stimuli_category_data_2 = clean_list_from_data(item["Stimuli Category 2"])
+    stimuli_sub_category_data_2 = clean_list_from_data(item["Stimuli Sub-category 2"])
+    stimuli_modality_data_2 = clean_list_from_data(item["Stimuli Modality 2"])
+    stimuli_number_of_stimuli_data_2 = clean_list_from_data(
+        item["Stimuli Number of different stimuli used in the experiment 2"], integer=True
+    )
 
     if (
         stimuli_category_data == stimuli_category_data_2
@@ -369,7 +373,12 @@ def resolve_uncon_target_stimuli(item: dict, index: str):
             stimulus_category = check_category(index, stimuli_category_data[idx])
             stimulus_sub_category = check_sub_category(index, stimulus_category, stimuli_sub_category_data[idx])
             if is_multiple_modalities:
-                stimulus_modality = stimuli_modalities[idx]
+                try:
+                    stimulus_modality = stimuli_modalities[idx]
+                except IndexError:
+                    raise IncoherentStimuliDataError(
+                        "number of modality values is lower than number of stimuli categories"
+                    )
             else:
                 stimulus_modality = stimuli_modalities[0]
             if is_multiple_number_of_stimuli:

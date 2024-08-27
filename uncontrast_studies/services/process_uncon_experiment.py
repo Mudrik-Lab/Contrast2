@@ -118,7 +118,7 @@ def create_target_stimulus(experiment, suppressed_stimulus, stimulus_data, is_ta
     )
 
 
-def process_uncon_row(item: dict):
+def process_uncon_experiment(item: dict):
     experiment_index = item["exp"]
     experiment = create_uncon_experiment(item=item, index=experiment_index)
 

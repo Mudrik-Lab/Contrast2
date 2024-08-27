@@ -27,11 +27,15 @@ class Study(models.Model):
     approval_status = models.IntegerField(
         choices=ApprovalChoices.choices, null=False, blank=False, default=ApprovalChoices.PENDING
     )
-    authors_key_words = ArrayField(models.CharField(max_length=100, blank=False, null=False), default=list, blank=True, null=False)
+    authors_key_words = ArrayField(
+        models.CharField(max_length=100, blank=False, null=False), default=list, blank=True, null=False
+    )
     funding = models.TextField(null=True, blank=True)
     source_title = models.CharField(null=True, blank=True, max_length=200)
     abbreviated_source_title = models.CharField(null=True, blank=True, max_length=200)
-    countries = ArrayField(CountryField(null=False, blank=False), default=list, blank=True, null=False)  # Wondering if this is a good modeling, but we'll see
+    countries = ArrayField(
+        CountryField(null=False, blank=False), default=list, blank=True, null=False
+    )  # Wondering if this is a good modeling, but we'll see
     affiliations = models.TextField(null=True, blank=True)
     submitter = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=SET_NULL

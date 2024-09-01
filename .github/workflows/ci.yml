@@ -1,6 +1,13 @@
 name: CI pipeline
 on: [push, pull_request]
 jobs:
+  security-job:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: microsoft/DevSkim-Action@v1
+    - uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: devskim-results.sarif
   test-job:
     runs-on: ubuntu-latest
     strategy:
@@ -47,7 +54,7 @@ jobs:
 
   deploy:
     if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
-    needs: [test-job]
+    needs: [test-job, security-job]
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code

@@ -38,7 +38,7 @@ django-simple-history = "^3.7.0"
 openpyxl = "^3.1.5"
 
 [tool.poetry.dev-dependencies]
-pytest = "^8.2.2"
+pytest = "^8.3.2"
 ruff = "^0.6.0"
 
 [build-system]

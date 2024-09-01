@@ -104,7 +104,7 @@ We are currently using postgres. You need to set up a user,
          ```   
 Note: if you need to do this in bash (for example when migrating on the server):
       1. Copy the file to your drive and temporarily allow open access to viewer to view
-      2. loFollow the technique [here](https://chemicloud.com/blog/download-google-drive-files-using-wget/)
+      2. Follow the technique [here](https://chemicloud.com/blog/download-google-drive-files-using-wget/)
 6. Create a superuser for yourself to start working
    ```
     python manage.py createsuperuser 

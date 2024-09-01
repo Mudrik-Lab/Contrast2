@@ -27,7 +27,6 @@ from uncontrast_studies.models import (
 )
 class UnConExperimentInline(admin.StackedInline):
     model = UnConExperiment
-    filter_horizontal = ("paradigm", )
     fields = (
         'paradigm',
         'significance',

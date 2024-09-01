@@ -272,6 +272,7 @@ def review_study(modeladmin, request, queryset):
 
 
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
+    from uncontrast_studies.admin import UnConExperimentInline
     model = Study
     resource_classes = [
         FullExperimentResource,
@@ -289,7 +290,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
         ("year", NumericRangeFilter),
     )
     actions = (approve_study, reject_study, review_study, pending_study)
-    inlines = [ExperimentInline]
+    inlines = [ExperimentInline, UnConExperimentInline]
     """
     Note: a lot of methods here are inherited from the base export action because 
     we both customize it to export not studies but experiments, and now we need to adapt it

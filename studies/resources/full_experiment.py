@@ -3,7 +3,7 @@ from import_export import resources
 from import_export.fields import Field
 
 from contrast_api.choices import ExperimentTypeChoices
-from studies.models import Experiment
+from studies.models import Experiment, FindingTag
 
 SEPERATOR = " || "
 
@@ -120,8 +120,13 @@ class FullExperimentResource(resources.ModelResource):
             self.resolve_finding_tag_description(finding) for finding in experiment.finding_tags.all()
         )
 
-    def resolve_finding_tag_description(self, finding):
-        return f"type: {finding.type.name} family: {finding.family.name} is_NCC: {finding.is_NCC}"
+    def resolve_finding_tag_description(self, finding: FindingTag):
+        return (f"type: {finding.type.name} | family: {finding.family.name} |"
+                f" is_NCC: {finding.is_NCC} | atlas_tag: {finding.AAL_atlas_tag} |"
+                f" analysis_type: {finding.analysis_type} | direction: {finding.direction} |"
+                f" onset: {finding.onset} | offset: {finding.offset} |"
+                f" band_lower_bound: {finding.band_lower_bound} | band_higher_bound: {finding.band_higher_bound} |"
+                f" technique: {finding.technique}")
 
     def dehydrate_theory_driven_theories(self, experiment: Experiment):
         return SEPERATOR.join([theory.name for theory in experiment.theory_driven_theories.all()])

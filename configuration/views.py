@@ -154,6 +154,7 @@ class ConfigurationView(GenericViewSet):
         available_theories = Theory.objects.filter(parent__isnull=False).select_related("parent")
         available_paradigms = Paradigm.objects.filter(parent__isnull=False).select_related("parent", "parent__parent")
         available_paradigms_families = Paradigm.objects.filter(parent__isnull=True)
+        available_paradigms_sub_types = Paradigm.objects.filter(sub_type__isnull=False)
         available_populations_types = SampleChoices.values
         available_theory_driven_types = TheoryDrivenChoices.values
         available_AAL_atlas_tag_types = AALAtlasTagChoices.values
@@ -173,6 +174,7 @@ class ConfigurationView(GenericViewSet):
             existing_journals=existing_journals,
             available_techniques=techniques,
             available_paradigms_families=available_paradigms_families,
+            available_paradigms_sub_types=available_paradigms_sub_types,
             available_populations_types=available_populations_types,
             available_theory_driven_types=available_theory_driven_types,
             available_AAL_atlas_tag_types=available_AAL_atlas_tag_types,

@@ -106,6 +106,14 @@ class StimulusCategorySerializer(serializers.ModelSerializer):
         fields = ("name", "id")
 
 
+class ParadigmSubTypeConfigurationSerializer(serializers.ModelSerializer):
+
+    parent = serializers.CharField(source="name")
+    name = serializers.CharField(source="sub_type")
+    class Meta:
+        model = Paradigm
+        fields = ("name", "parent", "id")
+
 class ParadigmConfigurationSerializer(serializers.ModelSerializer):
     parent = serializers.SerializerMethodField()
 
@@ -188,6 +196,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_theories = TheoryConfigurationSerializer(many=True)
     available_paradigms = ParadigmConfigurationSerializer(many=True)
     available_paradigms_families = ParadigmConfigurationSerializer(many=True)
+    available_paradigms_sub_types = ParadigmSubTypeConfigurationSerializer(many=True)
     available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseTypeSerializer(many=True)
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_theory_driven_types = serializers.ListSerializer(child=serializers.CharField())

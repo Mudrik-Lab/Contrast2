@@ -179,7 +179,7 @@ class ExperimentInline(admin.StackedInline):
     show_change_link = True
     extra = 0
 
-    # inlines = (
+    # inlines = ( # need to migrate this to be sub inline
     #     InterpretationInline,
     #     SampleInline,
     #     FindingTagInline,

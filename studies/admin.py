@@ -165,17 +165,28 @@ class ExperimentInline(admin.StackedInline):
         "type_of_consciousness",
         "is_reporting",
         "theory_driven",
-        "stimuli_notes",
+        "theory_driven_theories",
         "results_summary",
         "paradigms_notes",
         "tasks_notes",
         "consciousness_measures_notes",
-        "paradigms",
+        "stimuli_notes",
+        "sample_notes",
         "techniques",
+        "paradigms",
     )
     # fields =
     show_change_link = True
     extra = 0
+
+    # inlines = (
+    #     InterpretationInline,
+    #     SampleInline,
+    #     FindingTagInline,
+    #     MeasureInline,
+    #     ConsciousnessMeasureInline,
+    #     StimulusInline,
+    # )
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)

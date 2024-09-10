@@ -110,6 +110,7 @@ class ExperimentAdmin(BaseContrastAdmin):
     )
     model = Experiment
     fields = (
+        "study",
         "type_of_consciousness",
         "is_reporting",
         "theory_driven",
@@ -143,7 +144,11 @@ class ExperimentAdmin(BaseContrastAdmin):
         ConsciousnessMeasureInline,
         StimulusInline,
     )
-
+    def get_readonly_fields(self, request, obj=None):
+        if obj is None:
+            return ()
+        else:
+            return ('study',)
     def get_queryset(self, request):
         qs = self.model._default_manager.related()
         # TODO: this should be handled by some parameter to the ChangeList.
@@ -160,7 +165,9 @@ class ExperimentAdmin(BaseContrastAdmin):
 
 class ExperimentInline(admin.StackedInline):
     model = Experiment
+    fk_name = 'study'
     filter_horizontal = ("techniques", "paradigms")
+    readonly_fields = ('study',)
     fields = (
         "type_of_consciousness",
         "is_reporting",
@@ -177,6 +184,8 @@ class ExperimentInline(admin.StackedInline):
     )
     # fields =
     show_change_link = True
+
+
     extra = 0
 
     # inlines = ( # need to migrate this to be sub inline
@@ -418,7 +427,9 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
 class FindingTagAdmin(BaseContrastAdmin):
     model = FindingTag
     search_fields = ("notes",)
+
     list_display = (
+        "experiment_id",
         "id",
         "type",
         "family",
@@ -429,20 +440,19 @@ class FindingTagAdmin(BaseContrastAdmin):
         "direction",
         "AAL_atlas_tag",
         "notes",
-        "experiment_id",
     )
     list_filter = (
         ("family", admin.RelatedOnlyFieldListFilter),
+        "direction",
+        "is_NCC",
+        TheoryInterpretationFilter,
         ("type", admin.RelatedOnlyFieldListFilter),
         ("onset", NumericRangeFilter),
         ("offset", NumericRangeFilter),
         ("band_lower_bound", NumericRangeFilter),
         ("band_higher_bound", NumericRangeFilter),
         ("technique", admin.RelatedOnlyFieldListFilter),
-        "direction",
         "analysis_type",
-        "is_NCC",
-        TheoryInterpretationFilter,
     )
 
 

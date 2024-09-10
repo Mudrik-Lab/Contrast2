@@ -54,6 +54,11 @@ class Experiment(models.Model):
     history = HistoricalRecords()
     objects = ExperimentManager()
 
+    def save(
+        self, force_insert=False, force_update=False, using=None, update_fields=None
+    ):
+        return self.save(force_insert=force_insert, force_update=force_update, using=using, update_fields=update_fields)
+
     def clean(self):
         if self.paradigms.count() == 0 or self.paradigms is None:
             raise ValidationError({"paradigms": "There should be at least one"})

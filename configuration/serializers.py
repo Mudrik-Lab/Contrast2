@@ -107,12 +107,13 @@ class StimulusCategorySerializer(serializers.ModelSerializer):
 
 
 class ParadigmSubTypeConfigurationSerializer(serializers.ModelSerializer):
-
     parent = serializers.CharField(source="name")
     name = serializers.CharField(source="sub_type")
+
     class Meta:
         model = Paradigm
         fields = ("name", "parent", "id")
+
 
 class ParadigmConfigurationSerializer(serializers.ModelSerializer):
     parent = serializers.SerializerMethodField()

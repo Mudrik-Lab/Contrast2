@@ -144,11 +144,13 @@ class ExperimentAdmin(BaseContrastAdmin):
         ConsciousnessMeasureInline,
         StimulusInline,
     )
+
     def get_readonly_fields(self, request, obj=None):
         if obj is None:
             return ()
         else:
-            return ('study',)
+            return ("study",)
+
     def get_queryset(self, request):
         qs = self.model._default_manager.related()
         # TODO: this should be handled by some parameter to the ChangeList.
@@ -165,9 +167,9 @@ class ExperimentAdmin(BaseContrastAdmin):
 
 class ExperimentInline(admin.StackedInline):
     model = Experiment
-    fk_name = 'study'
+    fk_name = "study"
     filter_horizontal = ("techniques", "paradigms")
-    readonly_fields = ('study',)
+    readonly_fields = ("study",)
     fields = (
         "type_of_consciousness",
         "is_reporting",
@@ -184,7 +186,6 @@ class ExperimentInline(admin.StackedInline):
     )
     # fields =
     show_change_link = True
-
 
     extra = 0
 
@@ -293,6 +294,7 @@ def review_study(modeladmin, request, queryset):
 
 class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     from uncontrast_studies.admin import UnConExperimentInline
+
     model = Study
     resource_classes = [
         FullExperimentResource,

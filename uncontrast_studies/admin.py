@@ -25,17 +25,15 @@ from uncontrast_studies.models import (
     UnConSuppressionMethodSubType,
     UnConExperiment,
 )
+
+
 class UnConExperimentInline(admin.StackedInline):
     model = UnConExperiment
-    fields = (
-        'paradigm',
-        'significance',
-        'consciousness_measures_notes',
-        'experiment_findings_notes'
-    )
+    fields = ("paradigm", "significance", "consciousness_measures_notes", "experiment_findings_notes")
     # fields =
     show_change_link = True
     extra = 0
+
 
 class UnConExperimentAdmin(BaseContrastAdmin):
     model = UnConExperiment

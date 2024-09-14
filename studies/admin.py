@@ -7,6 +7,7 @@ from django.http import HttpResponse
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
 from django_countries import countries
+from import_export.formats.base_formats import CSV
 
 from contrast_api.admin_utils import SimpleHistoryWithDeletedAdmin
 from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
@@ -319,64 +320,19 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     to uncontrast experiments also
     """
 
-    def export_uncontrast_admin_action(self, request, queryset):
-        """
-        Exports the selected rows using file_format.
-        """
-        export_format = request.POST.get("file_format")
-
-        if not export_format:
-            messages.warning(request, _("You must select an export format."))
-        else:
-            formats = self.get_export_formats()
-            file_format = formats[int(export_format)]()
-
-            export_data = self.get_uncontrast_export_data(
-                file_format, queryset, request=request, encoding=self.to_encoding
-            )
-            content_type = file_format.get_content_type()
-            response = HttpResponse(export_data, content_type=content_type)
-            response["Content-Disposition"] = 'attachment; filename="%s"' % (
-                self.get_export_filename(request, queryset, file_format),
-            )
-            return response
-
-    def get_actions(self, request):
-        actions = super().get_actions(request)
-        actions.update(
-            export_uncontrast_admin_action=(
-                type(self).export_uncontrast_admin_action,
-                "export_uncontrast_admin_action",
-                _("Export selected uncontrast %(verbose_name_plural)s"),
-            )
-        )
-        return actions
-
-    @property
-    def media(self):
-        super_media = super().media
-        return forms.Media(
-            js=super_media._js + ["studies/action_formats.js"],
-            css=super_media._css,
-        )
-
-    def get_data_for_export(self, request, queryset, *args, **kwargs):
-        export_form = kwargs.get("export_form")
-        if request.POST.get("action") == "export_uncontrast_admin_action":
-            export_class = self.resource_classes[1]
-        else:
-            export_class = self.choose_export_resource_class(export_form, request)
-        export_resource_kwargs = self.get_export_resource_kwargs(request, *args, **kwargs)
-        cls = export_class(**export_resource_kwargs)
-        export_data = cls.export(queryset=queryset, **kwargs)
-        return export_data
-
-    def get_uncontrast_export_data(self, file_format, request, queryset, **kwargs):
-        uncontrast_experiments_qs = UnConExperiment.objects.related().filter(study__in=queryset)
-        return super().get_export_data(file_format, request, queryset=uncontrast_experiments_qs, **kwargs)
+    export_formats = [CSV]
 
     def get_export_data(self, file_format, request, queryset, **kwargs):
+        requested_resource_id = request.POST.get("resource")
+        messages.info(request, "Note we support exporting only a single kind of study")
+        if requested_resource_id:
+            resource = self.resource_classes[int(requested_resource_id)]
+            if resource == FullUnConExperimentResource:
+                uncontrust_experiments_qs = UnConExperiment.objects.related().filter(study__in=queryset)
+                return super().get_export_data(file_format, request, queryset=uncontrust_experiments_qs, **kwargs)
+
         experiments_qs = Experiment.objects.related().filter(study__in=queryset)
+
         return super().get_export_data(file_format, request, queryset=experiments_qs, **kwargs)
 
     def get_queryset(self, request):

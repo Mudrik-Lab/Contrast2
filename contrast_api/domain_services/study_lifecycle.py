@@ -15,7 +15,7 @@ class StudyLifeCycleService:
 
     def resolve_site_name_by_study_type(self, study_type):
         if study_type == StudyTypeChoices.UNCONSCIOUSNESS:
-            return "UnConTraSt"
+            return "UnConTrust"
         else:
             return "ConTraSt"
 

@@ -19,7 +19,7 @@ class FeedbackView(GenericViewSet):
 
     def resolve_site_from_request(self, request):
         if self.basename == "feedback_uncontrast":
-            return "UnContrast"
+            return "UnContrust"
         else:
             return "Contrast"
 

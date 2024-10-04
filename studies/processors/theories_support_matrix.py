@@ -67,35 +67,3 @@ class TheoryGrandOverviewGraphDataProcessor(BaseProcessor):
         )
         # Note we're filtering out empty timeseries with the cardinality option
         return qs
-
-    # def process(self):
-    #     relevant_experiments = self.get_queryset()
-    #
-    #     aggregate = self.aggregate(relevant_experiments)
-    #
-    #     return aggregate
-    #
-    # def get_queryset(self):
-    #     queryset = Interpretation.objects.all()
-    #
-    #     experiments_by_theory = (
-    #         queryset.filter(type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES], experiment__in=self.experiments)
-    #         .select_related("experiment")
-    #         .values("experiment", "type")
-    #     )
-    #     return experiments_by_theory
-    #
-    # def aggregate(self, queryset):
-    #     if self.is_csv:
-    #         ids = queryset.values_list("experiment_id", flat=True)
-    #         return set(ids)
-    #     # having "values" before annotate with count results in a "select *, count(1) from .. GROUP BY
-    #
-    #     return (
-    #         queryset.values("type")
-    #         .annotate(count=Count("experiment_id", distinct=True))
-    #         .filter(count__gt=self.min_number_of_experiments)
-    #         .annotate(value=F("count"), key=F("type"))
-    #         .values("value", "key")
-    #         .order_by("-value", "key")
-    #     )

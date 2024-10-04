@@ -36,6 +36,7 @@ from uncontrast_studies.processors.distribution_of_effects_across_parameters imp
     DistributionOfEffectsAcrossParametersGraphDataProcessor,
 )
 from uncontrast_studies.processors.experiments_comparison import ComparisonParametersDistributionPieGraphDataProcessor
+from uncontrast_studies.processors.grand_overview_pie import GrandOverviewPieGraphDataProcessor
 from uncontrast_studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from uncontrast_studies.processors.journals import JournalsGraphDataProcessor
 from uncontrast_studies.processors.nations_of_consciousness import NationOfConsciousnessDataProcessor
@@ -78,6 +79,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_free_queries": BarGraphSerializer,
         "parameters_distribution_experiments_comparison": PieChartSerializer,
         "distribution_of_effects_across_parameters": HistogramsGraphSerializer,
+        "grand_overview_pie": PieChartSerializer,
     }
 
     graph_processors = {
@@ -89,7 +91,13 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_free_queries": ParametersDistributionFreeQueriesDataProcessor,
         "parameters_distribution_experiments_comparison": ComparisonParametersDistributionPieGraphDataProcessor,
         "distribution_of_effects_across_parameters": DistributionOfEffectsAcrossParametersGraphDataProcessor,
+        "grand_overview_pie": GrandOverviewPieGraphDataProcessor,
     }
+
+    @extend_schema(responses={200: PieChartSerializer()}, parameters=[number_of_experiments_parameter, is_csv])
+    @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
+    def grand_overview_pie(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(
         responses=NationOfConsciousnessBySignificanceGraphSerializer(many=True),
@@ -219,6 +227,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         graph_processor = graph_data_processor(queryset, **request.query_params)
         graph_data = graph_processor.process()
         if not graph_processor.is_csv:
+            print(graph_data)
             serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
 
             return Response(serializer.data, status=status.HTTP_200_OK)

@@ -299,17 +299,17 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
 
         # one email for site manager and one for recipient
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == "regarding your submission to uncontrast database", 0
+            lambda x: x.subject.lower() == "regarding your submission to uncontrust database", 0
         )
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == "an uncontrast submission was received", 0
+            lambda x: x.subject.lower() == "an uncontrust submission was received", 0
         )
         self.when_study_is_submitted_to_review(study_id)
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == "regarding your submission to uncontrast database", 1
+            lambda x: x.subject.lower() == "regarding your submission to uncontrust database", 1
         )
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == "uncontrast submission was received", 1
+            lambda x: x.subject.lower() == "uncontrust submission was received", 1
         )
 
     def test_study_approve_reject_flow(self):
@@ -326,7 +326,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         self.when_admin_approves_study(study_id)
 
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == "regarding your submission to uncontrast database"
+            lambda x: x.subject.lower() == "regarding your submission to uncontrust database"
             and "We are glad to notify you that following review by a member" in x.body,
             1,
         )
@@ -337,7 +337,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         self.when_admin_rejects_study(study_id)
 
         self.verify_mailbox_emails_count_by_predicate(
-            lambda x: x.subject.lower() == "regarding your submission to uncontrast database"
+            lambda x: x.subject.lower() == "regarding your submission to uncontrust database"
             and "decided that it is outside the scope of our database" in x.body,
             1,
         )

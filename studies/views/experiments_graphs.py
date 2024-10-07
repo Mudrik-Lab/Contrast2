@@ -34,7 +34,7 @@ from studies.open_api_parameters import (
     paradigms_families_multiple_optional_parameter,
     techniques_multiple_optional_parameter_id_based,
     interpretation_theories,
-    interpretations,
+    interpretations, aggregated_interpretations_optional_parameter, aggregated_interpretation_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
 from studies.processors.theories_support_matrix import TheoryGrandOverviewGraphDataProcessor
@@ -107,13 +107,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     @extend_schema(
         responses=NestedPieChartSerializer,
         parameters=[
-            OpenApiParameter(
-                name="interpretation",
-                description="supporting or challenging",
-                type=str,
-                enum=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
-                required=True,
-            ),
+            aggregated_interpretation_parameter,
             number_of_experiments_parameter,
             is_reporting_filter_parameter,
             theory_driven_filter_parameter,
@@ -181,13 +175,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
             theory_driven_filter_parameter,
             type_of_consciousness_filter_parameter,
             is_csv,
-            OpenApiParameter(
-                name="interpretation",
-                description="supporting or challenging",
-                type=str,
-                enum=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
-                required=True,
-            ),
+            aggregated_interpretation_parameter,
         ],
     )
     @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
@@ -203,6 +191,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
             is_reporting_filter_parameter,
             theory_driven_filter_parameter,
             type_of_consciousness_filter_parameter,
+            aggregated_interpretations_optional_parameter
         ],
     )
     @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)

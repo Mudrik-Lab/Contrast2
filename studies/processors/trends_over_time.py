@@ -4,6 +4,7 @@ from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Count, Func
 from django.db.models.functions import JSONObject
 
+from contrast_api.choices import AggregatedOptionalInterpretationsChoices
 from studies.models import (
     Experiment,
     Paradigm,
@@ -26,6 +27,11 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
+        aggregated_interpretation = kwargs.pop("aggregated_interpretation")
+        aggregated_interpretation_res = aggregated_interpretation[0]
+        if aggregated_interpretation_res != AggregatedOptionalInterpretationsChoices.ALL:
+            self.aggregated_interpretation = aggregated_interpretation_res
+
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")

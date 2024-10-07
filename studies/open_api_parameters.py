@@ -4,7 +4,7 @@ from contrast_api.choices import (
     TheoryDrivenChoices,
     ReportingChoices,
     TypeOfConsciousnessChoices,
-    InterpretationsChoices,
+    InterpretationsChoices, AggregatedOptionalInterpretationsChoices,
 )
 
 BREAKDOWN_OPTIONS = [
@@ -44,7 +44,7 @@ theory_driven_filter_parameter = OpenApiParameter(
 type_of_consciousness_filter_parameter = OpenApiParameter(
     name="type_of_consciousness",
     type=str,
-    description="Optional filter",
+    description="Optional type of consciousness filter",
     enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + ["either"],
 )
 
@@ -136,6 +136,22 @@ interpretations = OpenApiParameter(
     enum=[option[0] for option in InterpretationsChoices.choices],
     type=str,
     many=True,
+    required=False,
+)
+aggregated_interpretation_parameter = OpenApiParameter(
+                name="interpretation",
+                description="supporting or challenging",
+                type=str,
+                enum=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
+                required=True,
+            )
+
+aggregated_interpretations_optional_parameter = OpenApiParameter(
+    name="aggregated_interpretation_optional",
+    description="Aggregated interpretations types optional - can be all",
+    enum=[option[0] for option in AggregatedOptionalInterpretationsChoices.choices],
+    type=str,
+    many=False,
     required=False,
 )
 interpretation_theories = OpenApiParameter(

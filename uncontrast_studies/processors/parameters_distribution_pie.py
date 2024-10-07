@@ -13,6 +13,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasureType,
     UnConsciousnessMeasurePhase,
     UnConTaskType,
+    UnConOutcome,
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
     UnConSuppressionMethodType,
@@ -101,6 +102,14 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
 
         breakdown_query = UnConTaskType.objects.values("name").distinct().annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_outcome_type(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(findings__outcome=OuterRef("pk"))
+
+        breakdown_query = UnConOutcome.objects.values("name").distinct().annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

@@ -13,8 +13,7 @@ from uncontrast_studies.models import (
     UnConTaskType,
     UnConProcessingMainDomain,
     UnConSuppressedStimulus,
-    UnConSuppressionMethodType,
-    UnConTargetStimulus,
+    UnConSuppressionMethodType, UnConOutcome,
 )
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor
@@ -49,6 +48,17 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
             .values("type")
             .annotate(experiment_count=Count("experiment", distinct=True))
             .annotate(key=F("type"))
+        )
+
+        return subquery
+
+    def process_outcome_type(self, experiments: QuerySet[UnConExperiment]):
+        subquery = (
+            UnConOutcome.objects.filter(findings__experiment__in=experiments)
+            .distinct()
+            .values("name")
+            .annotate(experiment_count=Count("findings__experiment", distinct=True))
+            .annotate(key=F("name"))
         )
 
         return subquery

@@ -10,6 +10,7 @@ from uncontrast_studies.models import (
     UnConSample,
     UnConProcessingMainDomain,
     UnConTaskType,
+    UnConOutcome,
     UnConModalityType,
     UnConsciousnessMeasurePhase,
     UnConsciousnessMeasureType,
@@ -67,6 +68,14 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
 
         breakdown_query = UnConTaskType.objects.values("name").distinct("name").annotate(series_name=F("name"))
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
+    def process_outcome_type(self):
+        experiments_subquery_by_breakdown = self.experiments.filter(findings__outcome=OuterRef("pk"))
+
+        breakdown_query = UnConOutcome.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs

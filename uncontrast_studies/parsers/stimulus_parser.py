@@ -340,7 +340,7 @@ def resolve_common_stimulus_data(item: dict, prime: bool):
             stimuli_number_of_stimuli_list.append(stimulus_number_of_stimuli)
 
         except TypeError:
-            raise StimulusDurationError(f"invalid stimulus numeric data")
+            raise StimulusDurationError(f"invalid stimulus numeric data: {number}")
 
     return stimuli_modalities, stimuli_number_of_stimuli_list
 

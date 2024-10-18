@@ -1,6 +1,5 @@
 import datetime
 import json
-from unittest import skip
 
 from django.urls import reverse
 from rest_framework import status
@@ -11,7 +10,6 @@ from contrast_api.choices import (
     UnConSampleChoices,
 )
 from studies.models import Study
-from uncontrast_studies.models import UnConTaskType
 
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
@@ -106,7 +104,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         tasks_res = self.when_task_is_added_to_experiment(
             study_id, experiment_id, task_data=dict(type=task_type.id, description="we did this")
         )
-        samples_res = self.when_sample_is_added_to_experiment(study_id, experiment_id, sample_data=sample_data)
+        samples_res = self.when_sample_is_added_to_experiment(study_id, experiment_id, sample_data=sample_data)  # noqa:F841
 
         unconsciousness_measure_id = unconsciousness_measure_res["id"]
         unconsciousness_measure_id_2 = unconsciousness_measure_res_2["id"]
@@ -174,7 +172,7 @@ class UnContrastSubmittedStudiesViewSetTestCase(UnContrastBaseTestCase):
         )
         experiments_res = self.get_experiments_for_study(study_id)
         # verify my studies work now
-        res = self.when_user_fetches_their_studies()
+        res = self.when_user_fetches_their_studies()  # noqa: F841
         self.assertEqual(experiments_res[0]["experiment_findings_notes"], "bla notes")
         self.assertEqual(experiments_res[0]["type"], ExperimentTypeChoices.BEHAVIORAL)
         self.add_experiment_findings_notes_to_experiment(study_id=study_id, experiment_id=experiment_id, notes="")

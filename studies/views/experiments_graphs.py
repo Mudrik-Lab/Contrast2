@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from contrast_api.choices import InterpretationsChoices
+
 from studies.filters import ExperimentFilter
 from studies.models import Experiment
 from studies.open_api_parameters import (

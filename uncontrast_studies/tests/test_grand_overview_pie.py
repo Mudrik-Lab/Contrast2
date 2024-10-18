@@ -1,7 +1,6 @@
 from rest_framework import status
 
 from contrast_api.choices import StudyTypeChoices, PresentationModeChoices, SignificanceChoices, UnConSampleChoices
-from uncontrast_studies.open_api_parameters import UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
 

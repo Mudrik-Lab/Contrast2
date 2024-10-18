@@ -31,7 +31,7 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         self.breakdown = breakdown[0]
         theory = kwargs.pop("theory")
         self.theory = None
-        if len(theory):
+        if len(theory) and theory[0] != "ALL":
             theory_reference = theory[0]
             try:
                 theory = Theory.objects.get(name__iexact=theory_reference)

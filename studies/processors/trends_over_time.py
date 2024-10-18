@@ -27,10 +27,12 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
-        aggregated_interpretation = kwargs.pop("aggregated_interpretation")
-        aggregated_interpretation_res = aggregated_interpretation[0]
-        if aggregated_interpretation_res != AggregatedOptionalInterpretationsChoices.ALL:
-            self.aggregated_interpretation = aggregated_interpretation_res
+        self.aggregated_interpretation = None
+        if "aggregated_interpretation_filter" in kwargs:
+            aggregated_interpretation = kwargs.pop("aggregated_interpretation_filter")[0]
+            if aggregated_interpretation != AggregatedOptionalInterpretationsChoices.ALL:
+                self.aggregated_interpretation = aggregated_interpretation
+
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")

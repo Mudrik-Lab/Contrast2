@@ -147,13 +147,14 @@ aggregated_interpretation_parameter = OpenApiParameter(
     required=True,
 )
 
-aggregated_interpretations_optional_parameter = OpenApiParameter(
-    name="aggregated_interpretation_optional",
-    description="Aggregated interpretations types optional - can be all",
+aggregated_interpretations_optional_filter = OpenApiParameter(
+    name="aggregated_interpretation_filter",
+    description="Aggregated interpretations types optional - defaults to all",
     enum=[option[0] for option in AggregatedOptionalInterpretationsChoices.choices],
     type=str,
     many=False,
     required=False,
+    default=AggregatedOptionalInterpretationsChoices.ALL
 )
 interpretation_theories = OpenApiParameter(
     name="interpretation_theories",
@@ -161,4 +162,5 @@ interpretation_theories = OpenApiParameter(
     type=int,
     many=True,
     required=False,
+
 )

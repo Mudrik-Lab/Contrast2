@@ -1,7 +1,7 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Func, Count, Value, CharField
+from django.db.models import QuerySet, F, Count, Value, CharField
 from django.db.models.functions import JSONObject
 
 from contrast_api.orm_helpers import SubqueryCount
@@ -20,7 +20,7 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasure,
     UnConTargetStimulus,
     UnConStimulusSubCategory,
-)
+)  # noqa: F841
 from uncontrast_studies.processors.base import BaseProcessor
 
 

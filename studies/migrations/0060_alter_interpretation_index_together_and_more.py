@@ -10,10 +10,10 @@ class Migration(migrations.Migration):
     ]
 
     original_operations = [
-        migrations.AlterIndexTogether(
-            name="interpretation",
-            index_together=set(),
-        ),
+        # migrations.AlterIndexTogether(
+        #     name="interpretation",
+        #     index_together=set(),
+        # ),
         migrations.AddConstraint(
             model_name="interpretation",
             constraint=models.UniqueConstraint(fields=("experiment", "theory"), name="unique_theory"),

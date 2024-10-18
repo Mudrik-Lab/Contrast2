@@ -1,14 +1,32 @@
 name: CI pipeline
-on: [push, pull_request]
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+    branches:
+      - '**'
 jobs:
   security-job:
     runs-on: ubuntu-latest
+    if: | # security runs either on main or PR
+      github.event_name == 'push' && contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref) || 
+      (github.event_name == 'pull_request')
     steps:
+    - name: Check out repository code
+      uses: actions/checkout@v4
     - uses: microsoft/DevSkim-Action@v1
-    - uses: github/codeql-action/upload-sarif@v2
+      with:
+        output-file: devskim-results.sarif
+
+    - uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: devskim-results.sarif
+        category: DevSkim
   test-job:
+    if: | # I don't want to run on dependebot pushes, just pr, but for the rest all, including all prs
+      (github.event_name == 'push' && github.actor != 'dependabot[bot]') ||
+      (github.event_name == 'pull_request')
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
@@ -37,7 +55,7 @@ jobs:
       - run: echo "Starting build"
       - run: apt update && apt install -y gcc libpq-dev libz-dev
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Install Poetry
         run: |
             curl -fsS -o get-poetry.py https://install.python-poetry.org

@@ -19,7 +19,8 @@ from uncontrast_studies.models import (
     UnConsciousnessMeasure,
     UnConTargetStimulus,
     UnConStimulusSubCategory,
-    UnConSuppressionMethodType, UnConOutcome,
+    UnConSuppressionMethodType,
+    UnConOutcome,
 )
 
 

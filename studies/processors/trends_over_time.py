@@ -32,7 +32,6 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         if aggregated_interpretation_res != AggregatedOptionalInterpretationsChoices.ALL:
             self.aggregated_interpretation = aggregated_interpretation_res
 
-
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func()

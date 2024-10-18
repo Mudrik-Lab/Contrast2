@@ -33,10 +33,13 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
             if aggregated_interpretation != AggregatedOptionalInterpretationsChoices.ALL:
                 self.aggregated_interpretation = aggregated_interpretation
 
-
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func()
+
+    def process_theory_by_support(self):
+        # TODO implement, and find out how to handle supports/challenges
+        pass
 
     def process_paradigm_family(self):
         experiments_subquery_by_breakdown = self.experiments.filter(paradigms__parent=OuterRef("pk"))
@@ -172,6 +175,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
+
 
     def process_measure(self):
         experiments_subquery_by_breakdown = self.experiments.filter(measures__type=OuterRef("pk"))

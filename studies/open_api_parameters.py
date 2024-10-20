@@ -26,6 +26,8 @@ BREAKDOWN_OPTIONS = [
     "measure",
 ]
 
+THEORY_ADDED_BREAKDOWN_OPTIONS = BREAKDOWN_OPTIONS + ["theory"]
+
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)
 
 is_reporting_filter_parameter = OpenApiParameter(
@@ -51,6 +53,10 @@ type_of_consciousness_filter_parameter = OpenApiParameter(
 
 breakdown_parameter = OpenApiParameter(
     name="breakdown", description="breakdown needed for certain graphs", type=str, enum=BREAKDOWN_OPTIONS, required=True
+)
+
+theory_added_breakdown_parameter = OpenApiParameter(
+    name="breakdown", description="breakdown needed + theory. for certain graphs", type=str, enum=THEORY_ADDED_BREAKDOWN_OPTIONS, required=True
 )
 
 theory_single_required_parameter = OpenApiParameter(name="theory", type=str, required=True, description="theory filter")
@@ -154,7 +160,7 @@ aggregated_interpretations_optional_filter = OpenApiParameter(
     type=str,
     many=False,
     required=False,
-    default=AggregatedOptionalInterpretationsChoices.ALL,
+    default=AggregatedOptionalInterpretationsChoices.EITHER,
 )
 interpretation_theories = OpenApiParameter(
     name="interpretation_theories",

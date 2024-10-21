@@ -2,6 +2,7 @@ from rest_framework import status
 
 from contrast_api.choices import ReportingChoices, InterpretationsChoices
 from contrast_api.tests.base import BaseTestCase
+from studies.open_api_parameters import BREAKDOWN_OPTIONS
 
 
 # Create your tests here.
@@ -198,23 +199,7 @@ class ParameterDistributionBarGraphTestCase(BaseTestCase):
             second_technique,
             third_measure_with_second_type,
         ) = self._given_world_setup()
-        for breakdown in {
-            "paradigm_family",
-            "paradigm",
-            "population",
-            "finding_tag",
-            "finding_tag_family",
-            "reporting",
-            "theory_driven",
-            "task",
-            "stimuli_category",
-            "modality",
-            "consciousness_measure_phase",
-            "consciousness_measure_type",
-            "type_of_consciousness",
-            "technique",
-            "measure",
-        }:
+        for breakdown in BREAKDOWN_OPTIONS:
             target_url = self.reverse_with_query_params(
                 "experiments-graphs-parameters-distribution-bar", breakdown=breakdown, theory=self.gnw_parent_theory.id
             )

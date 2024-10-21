@@ -2,6 +2,7 @@ from rest_framework import status
 
 from contrast_api.choices import ReportingChoices
 from contrast_api.tests.base import BaseTestCase
+from studies.open_api_parameters import THEORY_ADDED_BREAKDOWN_OPTIONS
 
 
 # Create your tests here.
@@ -229,3 +230,11 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         self.assertDictEqual(first_series["series"][0], dict(year=2002, value=0))
         self.assertDictEqual(first_series["series"][1], dict(year=2004, value=1))
         self.assertDictEqual(second_series["series"][0], dict(year=2002, value=2))
+
+        # sanity check
+
+        for breakdown in THEORY_ADDED_BREAKDOWN_OPTIONS:
+
+            target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown=breakdown)
+            res = self.client.get(target_url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)

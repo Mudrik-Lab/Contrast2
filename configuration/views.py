@@ -206,7 +206,7 @@ class ConfigurationView(GenericViewSet):
     def graphs(self, request, **kwargs):
         images = GraphImage.objects.all()
         available_parent_theories = (
-            Theory.objects.select_related().filter(parent__isnull=True).values_list("name", flat=True)
+            Theory.objects.select_related().filter(parent__isnull=True).exclude(name__iexact="other").values_list("name", flat=True)
         )
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True

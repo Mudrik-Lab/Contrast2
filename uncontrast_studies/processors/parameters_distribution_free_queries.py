@@ -19,7 +19,8 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConTargetStimulus,
     UnConStimulusSubCategory,
-    UnConSuppressionMethodType, UnConOutcome,
+    UnConSuppressionMethodType,
+    UnConOutcome,
 )
 
 
@@ -220,7 +221,9 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         return qs
 
     def process_outcome_type(self):
-        experiments_subquery_by_breakdown = self.filtered_experiments.filter(findings__outcome=OuterRef("pk")).values("id")
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(findings__outcome=OuterRef("pk")).values(
+            "id"
+        )
 
         breakdown_query = UnConOutcome.objects.values("name").distinct().annotate(series_name=F("name"))
 

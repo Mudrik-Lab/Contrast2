@@ -41,7 +41,6 @@ from uncontrast_studies.parsers.stimulus_parser import (
     resolve_uncon_stimuli_metadata,
     is_target_duplicate,
     resolve_uncon_target_stimuli,
-    is_missing_number_of_trials,
 )
 from uncontrast_studies.parsers.suppression_method_parser import resolve_uncon_suppression_method
 from uncontrast_studies.parsers.sample_parser import resolve_uncon_sample

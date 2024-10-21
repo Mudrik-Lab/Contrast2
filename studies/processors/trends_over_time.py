@@ -4,6 +4,7 @@ from django.contrib.postgres.expressions import ArraySubquery
 from django.db.models import QuerySet, OuterRef, F, Count, Func
 from django.db.models.functions import JSONObject
 
+from contrast_api.choices import AggregatedOptionalInterpretationsChoices, InterpretationsChoices
 from studies.models import (
     Experiment,
     Paradigm,
@@ -15,7 +16,7 @@ from studies.models import (
     ConsciousnessMeasurePhaseType,
     ConsciousnessMeasureType,
     Technique,
-    MeasureType,
+    MeasureType, Theory, Interpretation,
 )
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
@@ -26,10 +27,38 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
+        self.aggregated_interpretation = None
+        if "aggregated_interpretation_filter" in kwargs:
+            aggregated_interpretation = kwargs.pop("aggregated_interpretation_filter")[0]
+            if aggregated_interpretation != AggregatedOptionalInterpretationsChoices.EITHER:
+                self.aggregated_interpretation = aggregated_interpretation
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func()
+
+    def process_theory(self):
+
+        experiments_subquery_by_breakdown = self.experiments.filter(interpretations__parent=OuterRef("pk"))
+        if self.aggregated_interpretation:
+            experiments_ids = Interpretation.objects.filter(type=self.aggregated_interpretation).values_list('experiment_id', flat=True)
+            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(
+                id__in=experiments_ids
+            )
+        else:
+            experiments_ids = Interpretation.objects.filter(type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]).values_list('experiment_id', flat=True)
+
+            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(
+                id__in=experiments_ids
+
+            )
+
+        breakdown_query = (
+            Theory.objects.filter(parent__isnull=True).values("name").distinct("name").annotate(series_name=F("name"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
 
     def process_paradigm_family(self):
         experiments_subquery_by_breakdown = self.experiments.filter(paradigms__parent=OuterRef("pk"))
@@ -165,6 +194,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
+
 
     def process_measure(self):
         experiments_subquery_by_breakdown = self.experiments.filter(measures__type=OuterRef("pk"))

@@ -51,7 +51,7 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         experiments_subquery_by_breakdown = (
             AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
             .filter(experiment__in=self.experiments)
-            .filter(experiment__paradigms=OuterRef("pk"))
+            .filter(experiment__paradigms__name=OuterRef("name"))
         )
 
         breakdown_query = (

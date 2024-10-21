@@ -61,7 +61,7 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
     def process_paradigm(self):
         experiments_subquery_by_breakdown = (
             Interpretation.objects.filter(experiment__in=self.experiments)
-            .filter(experiment__paradigms=OuterRef("pk"))
+            .filter(experiment__paradigms__name=OuterRef("name"))
             .annotate(relation_type=F("type"))
             .values("experiment", "relation_type")
         )

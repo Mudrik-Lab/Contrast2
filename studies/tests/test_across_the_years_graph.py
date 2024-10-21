@@ -234,7 +234,6 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         # sanity check
 
         for breakdown in THEORY_ADDED_BREAKDOWN_OPTIONS:
-
             target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown=breakdown)
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)

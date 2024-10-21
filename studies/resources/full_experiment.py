@@ -124,22 +124,38 @@ class FullExperimentResource(resources.ModelResource):
         )
 
     def resolve_finding_tag_description(self, finding: FindingTag):
-        return INNER_SEPERATOR.join(
-            [
-                f"type: {finding.type.name}",
-                f"family: {finding.family.name}",
-                f"is_NCC: {finding.is_NCC}",
-                f"atlas_tag: {finding.AAL_atlas_tag}",
-                f"analysis_type: {finding.analysis_type}",
-                f"direction: {finding.direction}",
-                f"onset: {finding.onset}",
-                f"offset: {finding.offset}",
-                f"band_lower_bound: {finding.band_lower_bound}",
-                f"band_higher_bound: {finding.band_higher_bound}",
-                f"technique: {finding.technique}",
-                f"notes: {finding.notes}",
-            ]
-        )
+        if finding.family.name == "Frequency":
+            return INNER_SEPERATOR.join(
+                [
+                    f"type: {finding.type.name}",
+                    f"family: {finding.family.name}",
+                    f"is_NCC: {finding.is_NCC}",
+                    f"atlas_tag: {finding.AAL_atlas_tag}",
+                    f"analysis_type: {finding.analysis_type}",
+                    f"direction: {finding.direction}",
+                    f"onset: {finding.onset}",
+                    f"offset: {finding.offset}",
+                    f"band_lower_bound: {finding.band_lower_bound}",
+                    f"band_higher_bound: {finding.band_higher_bound}",
+                    f"technique: {finding.technique}",
+                    f"notes: {finding.notes}",
+                ]
+            )
+        else:
+            return INNER_SEPERATOR.join(
+                [
+                    f"type: {finding.type.name}",
+                    f"family: {finding.family.name}",
+                    f"is_NCC: {finding.is_NCC}",
+                    f"atlas_tag: {finding.AAL_atlas_tag}",
+                    f"onset: {finding.onset}",
+                    f"offset: {finding.offset}",
+                    f"band_lower_bound: {finding.band_lower_bound}",
+                    f"band_higher_bound: {finding.band_higher_bound}",
+                    f"technique: {finding.technique}",
+                    f"notes: {finding.notes}",
+                ]
+            )
 
     def dehydrate_theory_driven_theories(self, experiment: Experiment):
         return SEPERATOR.join([theory.name for theory in experiment.theory_driven_theories.all()])

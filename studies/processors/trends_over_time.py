@@ -16,7 +16,9 @@ from studies.models import (
     ConsciousnessMeasurePhaseType,
     ConsciousnessMeasureType,
     Technique,
-    MeasureType, Theory, Interpretation,
+    MeasureType,
+    Theory,
+    Interpretation,
 )
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor
@@ -38,20 +40,18 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return process_func()
 
     def process_theory(self):
-
         experiments_subquery_by_breakdown = self.experiments.filter(interpretations__parent=OuterRef("pk"))
         if self.aggregated_interpretation:
-            experiments_ids = Interpretation.objects.filter(type=self.aggregated_interpretation).values_list('experiment_id', flat=True)
-            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(
-                id__in=experiments_ids
+            experiments_ids = Interpretation.objects.filter(type=self.aggregated_interpretation).values_list(
+                "experiment_id", flat=True
             )
+            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(id__in=experiments_ids)
         else:
-            experiments_ids = Interpretation.objects.filter(type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]).values_list('experiment_id', flat=True)
+            experiments_ids = Interpretation.objects.filter(
+                type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]
+            ).values_list("experiment_id", flat=True)
 
-            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(
-                id__in=experiments_ids
-
-            )
+            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(id__in=experiments_ids)
 
         breakdown_query = (
             Theory.objects.filter(parent__isnull=True).values("name").distinct("name").annotate(series_name=F("name"))
@@ -194,7 +194,6 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
-
 
     def process_measure(self):
         experiments_subquery_by_breakdown = self.experiments.filter(measures__type=OuterRef("pk"))

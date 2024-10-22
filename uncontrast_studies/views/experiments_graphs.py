@@ -227,7 +227,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         graph_processor = graph_data_processor(queryset, **request.query_params)
         graph_data = graph_processor.process()
         if not graph_processor.is_csv:
-            print(graph_data)
             serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
 
             return Response(serializer.data, status=status.HTTP_200_OK)

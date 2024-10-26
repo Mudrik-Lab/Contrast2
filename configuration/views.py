@@ -206,7 +206,10 @@ class ConfigurationView(GenericViewSet):
     def graphs(self, request, **kwargs):
         images = GraphImage.objects.all()
         available_parent_theories = (
-            Theory.objects.select_related().filter(parent__isnull=True).exclude(name__iexact="other").values_list("name", flat=True)
+            Theory.objects.select_related()
+            .filter(parent__isnull=True)
+            .exclude(name__iexact="other")
+            .values_list("name", flat=True)
         )
         available_finding_tags_types_for_timings = FindingTagType.objects.filter(family__name="Temporal").values_list(
             "name", flat=True
@@ -218,9 +221,11 @@ class ConfigurationView(GenericViewSet):
             Technique.objects.filter(findings_tags__family__name="Temporal").distinct().values_list("name", flat=True)
         )
 
+        available_parent_theories_including_all = list(available_parent_theories) + ["ALL"]
         configuration_data = dict(
             images=images,
             available_parent_theories=available_parent_theories,
+            available_parent_theories_including_all=available_parent_theories_including_all,
             available_finding_tags_types_for_timings=available_finding_tags_types_for_timings,
             available_techniques_for_frequencies=available_techniques_for_frequencies,
             available_techniques_for_timings=available_techniques_for_timings,

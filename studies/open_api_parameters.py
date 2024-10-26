@@ -56,7 +56,11 @@ breakdown_parameter = OpenApiParameter(
 )
 
 theory_added_breakdown_parameter = OpenApiParameter(
-    name="breakdown", description="breakdown needed + theory. for certain graphs", type=str, enum=THEORY_ADDED_BREAKDOWN_OPTIONS, required=True
+    name="breakdown",
+    description="breakdown needed + theory. for certain graphs",
+    type=str,
+    enum=THEORY_ADDED_BREAKDOWN_OPTIONS,
+    required=True,
 )
 
 theory_single_required_parameter = OpenApiParameter(name="theory", type=str, required=True, description="theory filter")

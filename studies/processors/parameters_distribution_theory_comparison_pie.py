@@ -235,7 +235,8 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                     .annotate(data=JSONObject(key=F("key"), value=F("experiment_count")))
                     .values_list("data", flat=True)
                 )
-
+                # TODO: adaption needed https://trello.com/c/1in869h0/283-thoeries-comparison-graph-change-the-n-in-the-middle-of-the-pie
+                # change total_value to get the total number of experiments within theory and that relation
                 if len(subquery_by_breakdown) > 0:
                     series = list(subquery_by_breakdown)
                     total_value = self.accumulate_total_from_series(series)

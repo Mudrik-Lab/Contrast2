@@ -25,7 +25,6 @@ class MultiSPAMiddleware(SPAMiddleware):
 
     def update_files_dictionary(self, *args):
         index_page_suffixes = {app: f"/static/{app}/index.html" for app in settings.SPA_APPS_MAPPING.values()}
-        print(index_page_suffixes)
         super(SPAMiddleware, self).update_files_dictionary(*args)
         # index_page_suffix = '/' + self.index_name
         # index_name_length = len(self.index_name)
@@ -43,13 +42,10 @@ class MultiSPAMiddleware(SPAMiddleware):
                     # the bare directory URL ending in '/'.
                     parent_directory_url = url[:-index_name_length] + app_name + "/"
                     directory_indexes[parent_directory_url] = static_file
-                    print(parent_directory_url)
                     # remember the root page for any other unrecognised files
                     # to be frontend-routed
                     self.spa_roots[app_name] = static_file
-                    print(url)
-                    print(parent_directory_url)
-                    print(app_name, self.spa_roots[app_name])
+
                     is_index = True
             if not is_index:
                 # also serve static files on /

@@ -108,7 +108,7 @@ def resolve_consciousness_measures(item: dict, index: str):
     is_multiple_number_of_trials = len(number_of_trials_objective_data) > 1
     is_multiple_number_of_participants = len(number_of_awareness_participants_data) > 1
     is_multiple_is_same_as_task = len(is_same_as_task_data) > 1
-    is_multiple_is_above_chance = len(is_above_chance_data) > 1 # noqa: F841
+    is_multiple_is_above_chance = len(is_above_chance_data) > 1  # noqa: F841
     is_multiple_is_trials_excluded = len(is_trials_excluded_data) > 1
 
     is_singular_data = (

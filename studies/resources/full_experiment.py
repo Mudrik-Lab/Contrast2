@@ -131,7 +131,7 @@ class FullExperimentResource(resources.ModelResource):
             f"technique: {finding.technique}",
             f"notes: {finding.notes}",
         ]
-        if finding.family.name.lower() == "spatial" and finding.technique.name.lower == "fmri":
+        if finding.family.name.lower() == "spatial" and finding.technique.name.lower() == "fmri":
             resources = base_finding_resources + [f"atlas_tag: {finding.AAL_atlas_tag}"]
             return INNER_SEPERATOR.join(resources)
 

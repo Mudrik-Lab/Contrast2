@@ -148,6 +148,8 @@ class ConfigurationViewsTestCase(BaseTestCase):
         url = self.reverse_with_query_params("configuration-graphs")
         res = self.client.get(url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIn('available_parent_theories_including_all', res.data)
+        self.assertIn('ALL', res.data['available_parent_theories_including_all'])
 
     def test_configuration_registration_form_endpoint(self):
         url = self.reverse_with_query_params("configuration-registration-form")

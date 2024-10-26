@@ -3,7 +3,6 @@
 from django.db import migrations, models
 
 
-
 class Migration(migrations.Migration):
     dependencies = [
         ("studies", "0038_alter_experiment_type"),

@@ -36,8 +36,7 @@ from studies.open_api_parameters import (
     interpretation_theories,
     interpretations,
     aggregated_interpretations_optional_filter,
-    aggregated_interpretation_parameter,
-    theory_added_breakdown_parameter,
+    aggregated_interpretation_parameter, theory_added_breakdown_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
 from studies.processors.theories_support_matrix import TheoryGrandOverviewGraphDataProcessor

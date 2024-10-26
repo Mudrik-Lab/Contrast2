@@ -195,6 +195,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
+
     def process_measure(self):
         experiments_subquery_by_breakdown = self.experiments.filter(measures__type=OuterRef("pk"))
 

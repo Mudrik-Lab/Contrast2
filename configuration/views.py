@@ -221,9 +221,11 @@ class ConfigurationView(GenericViewSet):
             Technique.objects.filter(findings_tags__family__name="Temporal").distinct().values_list("name", flat=True)
         )
 
+        available_parent_theories_including_all = available_parent_theories + ["ALL"]
         configuration_data = dict(
             images=images,
             available_parent_theories=available_parent_theories,
+            available_parent_theories_including_all=available_parent_theories_including_all,
             available_finding_tags_types_for_timings=available_finding_tags_types_for_timings,
             available_techniques_for_frequencies=available_techniques_for_frequencies,
             available_techniques_for_timings=available_techniques_for_timings,

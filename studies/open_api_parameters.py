@@ -5,6 +5,7 @@ from contrast_api.choices import (
     ReportingChoices,
     TypeOfConsciousnessChoices,
     InterpretationsChoices,
+    AggregatedOptionalInterpretationsChoices,
 )
 
 BREAKDOWN_OPTIONS = [
@@ -25,6 +26,8 @@ BREAKDOWN_OPTIONS = [
     "measure",
 ]
 
+THEORY_ADDED_BREAKDOWN_OPTIONS = BREAKDOWN_OPTIONS + ["theory"]
+
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)
 
 is_reporting_filter_parameter = OpenApiParameter(
@@ -44,12 +47,16 @@ theory_driven_filter_parameter = OpenApiParameter(
 type_of_consciousness_filter_parameter = OpenApiParameter(
     name="type_of_consciousness",
     type=str,
-    description="Optional filter",
+    description="Optional type of consciousness filter",
     enum=[option[0] for option in TypeOfConsciousnessChoices.choices] + ["either"],
 )
 
 breakdown_parameter = OpenApiParameter(
     name="breakdown", description="breakdown needed for certain graphs", type=str, enum=BREAKDOWN_OPTIONS, required=True
+)
+
+theory_added_breakdown_parameter = OpenApiParameter(
+    name="breakdown", description="breakdown needed + theory. for certain graphs", type=str, enum=THEORY_ADDED_BREAKDOWN_OPTIONS, required=True
 )
 
 theory_single_required_parameter = OpenApiParameter(name="theory", type=str, required=True, description="theory filter")
@@ -137,6 +144,23 @@ interpretations = OpenApiParameter(
     type=str,
     many=True,
     required=False,
+)
+aggregated_interpretation_parameter = OpenApiParameter(
+    name="interpretation",
+    description="supporting or challenging",
+    type=str,
+    enum=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
+    required=True,
+)
+
+aggregated_interpretations_optional_filter = OpenApiParameter(
+    name="aggregated_interpretation_filter",
+    description="Aggregated interpretations types optional - defaults to all",
+    enum=[option[0] for option in AggregatedOptionalInterpretationsChoices.choices],
+    type=str,
+    many=False,
+    required=False,
+    default=AggregatedOptionalInterpretationsChoices.EITHER,
 )
 interpretation_theories = OpenApiParameter(
     name="interpretation_theories",

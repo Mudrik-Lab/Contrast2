@@ -436,8 +436,8 @@ class UnContrastDataMigrationParsersTestCase(BaseTestCase):
         data_item_text_3 = "Line drawings; Line drawings;"
         data_item_integers = "126; 126; 252"
         data_item_floats = "23; 94; 58.5"
-        data_item_str = "NaN; 40; 40"
-        missing_numeric_data = " ; 3"
+        data_item_str = "NaN; 40; 40"  # noqa: F841
+        missing_numeric_data = " ; 3"  # noqa: F841
         missing_data = " ; yes"
         empty = ""
 

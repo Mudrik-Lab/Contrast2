@@ -37,6 +37,12 @@ class AggregatedInterpretationsChoices(TextChoices):
     CHALLENGES = "challenges", _("Challenges")
 
 
+class AggregatedOptionalInterpretationsChoices(TextChoices):
+    PRO = "pro", _("Pro")
+    CHALLENGES = "challenges", _("Challenges")
+    EITHER = "either", _("Either")
+
+
 class TypeOfConsciousnessChoices(TextChoices):
     CONTENT = "content", _("Content")
     STATE = "state", _("State")

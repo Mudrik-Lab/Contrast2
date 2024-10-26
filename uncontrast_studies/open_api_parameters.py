@@ -20,7 +20,7 @@ UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS = [
     "modes_of_presentation",
     "suppression_method",
     "processing_domain",
-    "outcome_type"
+    "outcome_type",
 ]
 
 UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [

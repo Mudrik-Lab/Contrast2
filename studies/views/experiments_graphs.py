@@ -7,7 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 
 from approval_process.choices import ApprovalChoices
-from contrast_api.choices import InterpretationsChoices
+
 from studies.filters import ExperimentFilter
 from studies.models import Experiment
 from studies.open_api_parameters import (
@@ -35,6 +35,8 @@ from studies.open_api_parameters import (
     techniques_multiple_optional_parameter_id_based,
     interpretation_theories,
     interpretations,
+    aggregated_interpretations_optional_filter,
+    aggregated_interpretation_parameter, theory_added_breakdown_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
 from studies.processors.theories_support_matrix import TheoryGrandOverviewGraphDataProcessor
@@ -107,13 +109,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     @extend_schema(
         responses=NestedPieChartSerializer,
         parameters=[
-            OpenApiParameter(
-                name="interpretation",
-                description="supporting or challenging",
-                type=str,
-                enum=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
-                required=True,
-            ),
+            aggregated_interpretation_parameter,
             number_of_experiments_parameter,
             is_reporting_filter_parameter,
             theory_driven_filter_parameter,
@@ -181,13 +177,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
             theory_driven_filter_parameter,
             type_of_consciousness_filter_parameter,
             is_csv,
-            OpenApiParameter(
-                name="interpretation",
-                description="supporting or challenging",
-                type=str,
-                enum=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
-                required=True,
-            ),
+            aggregated_interpretation_parameter,
         ],
     )
     @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
@@ -197,12 +187,13 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     @extend_schema(
         responses=TrendsOverYearsGraphSerializer(many=True),
         parameters=[
-            breakdown_parameter,
+            theory_added_breakdown_parameter,
             is_csv,
             number_of_experiments_parameter,
             is_reporting_filter_parameter,
             theory_driven_filter_parameter,
             type_of_consciousness_filter_parameter,
+            aggregated_interpretations_optional_filter,
         ],
     )
     @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)
@@ -212,12 +203,13 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     @extend_schema(
         responses=TrendsOverYearsGraphSerializer(many=True),
         parameters=[
-            breakdown_parameter,
+            theory_added_breakdown_parameter,
             is_csv,
             number_of_experiments_parameter,
             is_reporting_filter_parameter,
             theory_driven_filter_parameter,
             type_of_consciousness_filter_parameter,
+            aggregated_interpretations_optional_filter,
         ],
     )
     @action(detail=False, methods=["GET"], serializer_class=TrendsOverYearsGraphSerializer)

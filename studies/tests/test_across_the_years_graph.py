@@ -1,6 +1,7 @@
+from django.contrib.admin.utils import flatten
 from rest_framework import status
 
-from contrast_api.choices import ReportingChoices
+from contrast_api.choices import ReportingChoices, AggregatedOptionalInterpretationsChoices
 from contrast_api.tests.base import BaseTestCase
 from studies.open_api_parameters import THEORY_ADDED_BREAKDOWN_OPTIONS
 
@@ -233,7 +234,47 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
 
         # sanity check
 
+    def test_across_the_years_sanity_check(self):
+        (
+            another_different_child_paradigm,
+            different_child_paradigm,
+            different_parent_paradigm,
+            first_measure,
+            first_technique,
+            fourth_measure,
+            masking_child_paradigm,
+            masking_parent_paradigm,
+            second_measure,
+            second_technique,
+            third_measure_with_second_type,
+        ) = self._given_world_setup()
+
         for breakdown in THEORY_ADDED_BREAKDOWN_OPTIONS:
             target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown=breakdown)
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown="theory", aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.EITHER)
+        res_either = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown="theory", aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.PRO)
+        res_pro = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown="theory",
+                                                    aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.CHALLENGES)
+        res_challenges = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+        def total_series(graph):
+            multiple_series = [x["series"] for x in graph]
+            return sum([x['value'] for x  in flatten(multiple_series)])
+
+        pro_total = total_series(res_pro.data)
+        challenges_total = total_series(res_challenges.data)
+        either_total = total_series(res_either.data)
+
+        self.assertEqual(either_total, pro_total+challenges_total)
+

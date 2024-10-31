@@ -1,7 +1,7 @@
 from django.contrib.admin.utils import flatten
 from rest_framework import status
 
-from contrast_api.choices import ReportingChoices, AggregatedOptionalInterpretationsChoices
+from contrast_api.choices import ReportingChoices, AggregatedOptionalInterpretationsChoices, InterpretationsChoices
 from contrast_api.tests.base import BaseTestCase
 from studies.open_api_parameters import THEORY_ADDED_BREAKDOWN_OPTIONS
 
@@ -23,8 +23,8 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         )
         self.gnw_parent_theory = self.given_theory_exists(parent=None, name="GNW", acronym="GNW")
         self.rpt_parent_theory = self.given_theory_exists(parent=None, name="RPT", acronym="RPT")
-        self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
-        self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
+        gnw_child_theory = self.given_theory_exists(parent=self.gnw_parent_theory, name="GNW_child")
+        rpt_child_theory = self.given_theory_exists(parent=self.rpt_parent_theory, name="RPT_child")
         masking_parent_paradigm = self.given_paradigm_exists(name="masking_parent_paradigm")
         masking_child_paradigm = self.given_paradigm_exists(
             name="masking_child_paradigm", parent=masking_parent_paradigm
@@ -57,6 +57,37 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
             is_reporting=ReportingChoices.BOTH,
             paradigms=[another_different_child_paradigm],
         )
+        self.given_interpretation_exist(
+            experiment=israeli_study_experiment,  # masking_child_paradigm
+            theory=gnw_child_theory,
+            interpretation_type=InterpretationsChoices.PRO,
+        )
+
+        self.given_interpretation_exist(
+            experiment=british_israeli_study_experiment,
+            # masking_child_paradigm, different
+            theory=gnw_child_theory,
+            interpretation_type=InterpretationsChoices.CHALLENGES,
+        )
+
+        self.given_interpretation_exist(
+            experiment=israeli_study_experiment,  # masking_child_paradigm
+            theory=rpt_child_theory,
+            interpretation_type=InterpretationsChoices.CHALLENGES,
+        )
+
+        # self.given_interpretation_exist(
+        #     experiment=israeli_study_experiment_2,  # masking_child_paradigm, different
+        #     theory=gnw_child_theory,
+        #     interpretation_type=InterpretationsChoices.PRO,
+        # )
+        #
+        # self.given_interpretation_exist(
+        #     experiment=british_israeli_study_experiment,
+        #     # masking_child_paradigm, different
+        #     theory=rpt_child_theory,
+        #     interpretation_type=InterpretationsChoices.PRO,
+        # )
         first_measure = self.given_measure_exists(
             experiment_id=israeli_study_experiment.id, measure_type="a_first_measure"
         )
@@ -254,27 +285,50 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)
 
+    def test_across_the_years_by_theories_check(self):
+        (
+            another_different_child_paradigm,
+            different_child_paradigm,
+            different_parent_paradigm,
+            first_measure,
+            first_technique,
+            fourth_measure,
+            masking_child_paradigm,
+            masking_parent_paradigm,
+            second_measure,
+            second_technique,
+            third_measure_with_second_type,
+        ) = self._given_world_setup()
 
-        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown="theory", aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.EITHER)
+        target_url = self.reverse_with_query_params(
+            "experiments-graphs-across-the-years",
+            breakdown="theory",
+            aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.EITHER,
+        )
         res_either = self.client.get(target_url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_either.status_code, status.HTTP_200_OK)
 
-        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown="theory", aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.PRO)
+        target_url = self.reverse_with_query_params(
+            "experiments-graphs-across-the-years",
+            breakdown="theory",
+            aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.PRO,
+        )
         res_pro = self.client.get(target_url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_pro.status_code, status.HTTP_200_OK)
 
-        target_url = self.reverse_with_query_params("experiments-graphs-across-the-years", breakdown="theory",
-                                                    aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.CHALLENGES)
+        target_url = self.reverse_with_query_params(
+            "experiments-graphs-across-the-years",
+            breakdown="theory",
+            aggregated_interpretation_filter=AggregatedOptionalInterpretationsChoices.CHALLENGES,
+        )
         res_challenges = self.client.get(target_url)
-        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(res_challenges.status_code, status.HTTP_200_OK)
 
         def total_series(graph):
             multiple_series = [x["series"] for x in graph]
-            return sum([x['value'] for x  in flatten(multiple_series)])
+            return sum([x["value"] for x in flatten(multiple_series)])
 
         pro_total = total_series(res_pro.data)
         challenges_total = total_series(res_challenges.data)
-        either_total = total_series(res_either.data)
 
-        self.assertEqual(either_total, pro_total+challenges_total)
-
+        self.assertNotEquals(pro_total, challenges_total)

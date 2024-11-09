@@ -140,12 +140,12 @@ class TechniqueAddRemoveSerializer(serializers.Serializer):
 class FullExperimentSerializer(serializers.ModelSerializer):
     study = serializers.PrimaryKeyRelatedField(queryset=Study.objects.all())
     interpretations = serializers.SerializerMethodField()
-    finding_tags = FindingTagSerializer(many=True, read_only=True)
-    measures = MeasureSerializer(many=True, read_only=True)
-    samples = SampleSerializer(many=True, read_only=True)
-    stimuli = StimulusSerializer(many=True, read_only=True)
-    tasks = TaskSerializer(many=True, read_only=True)
-    consciousness_measures = ConsciousnessMeasureSerializer(many=True, read_only=True)
+    finding_tags = serializers.SerializerMethodField()
+    measures = serializers.SerializerMethodField()
+    samples = serializers.SerializerMethodField()
+    stimuli = serializers.SerializerMethodField()
+    tasks = serializers.SerializerMethodField()
+    consciousness_measures = serializers.SerializerMethodField()
     techniques = TechniqueSerializer(many=True, read_only=True)
     paradigms = ParadigmSerializer(many=True, read_only=True)
     theory_driven_theories = serializers.SlugRelatedField(many=True, slug_field="name", queryset=Theory.objects.all())
@@ -177,6 +177,36 @@ class FullExperimentSerializer(serializers.ModelSerializer):
             "paradigms_notes",
             "sample_notes",
         )
+
+    @extend_schema_field(SampleSerializer(many=True))
+    def get_samples(self, obj: Experiment):
+        samples = obj.samples.order_by("id")
+        return SampleSerializer(many=True, instance=samples).data
+
+    @extend_schema_field(ConsciousnessMeasureSerializer(many=True))
+    def get_consciousness_measures(self, obj: Experiment):
+        consciousness_measures = obj.consciousness_measures.order_by("id")
+        return ConsciousnessMeasureSerializer(many=True, instance=consciousness_measures).data
+
+    @extend_schema_field(TaskSerializer(many=True))
+    def get_tasks(self, obj: Experiment):
+        tasks = obj.tasks.order_by("id")
+        return TaskSerializer(many=True, instance=tasks).data
+
+    @extend_schema_field(StimulusSerializer(many=True))
+    def get_stimuli(self, obj: Experiment):
+        stimuli = obj.stimuli.order_by("id")
+        return StimulusSerializer(many=True, instance=stimuli).data
+
+    @extend_schema_field(MeasureSerializer(many=True))
+    def get_measures(self, obj: Experiment):
+        measures = obj.measures.order_by("id")
+        return MeasureSerializer(many=True, instance=measures).data
+
+    @extend_schema_field(FindingTagSerializer(many=True))
+    def get_finding_tags(self, obj: Experiment):
+        findings = obj.finding_tags.order_by("id")
+        return FindingTagSerializer(many=True, instance=findings).data
 
     @extend_schema_field(InterpretationSerializer(many=True))
     def get_interpretations(self, obj: Experiment):

@@ -29,12 +29,11 @@ class TimingsGraphDataProcessor(BaseProcessor):
         queryset = Interpretation.objects.filter(type=InterpretationsChoices.PRO)
         if self.theory is not None:
             queryset = queryset.filter(theory__parent=self.theory)
-        experiments_interpretations = (
-            queryset.filter(experiment__finding_tags__technique__name__in=self.techniques)
-            .filter(experiment__finding_tags__type__name__in=self.tags_types)
-            .filter(experiment__finding_tags__is_NCC=True)
-            .filter(experiment__in=self.experiments)
-        )
+        experiments_interpretations = queryset.filter(
+            experiment__finding_tags__technique__name__in=self.techniques,
+            experiment__finding_tags__type__name__in=self.tags_types,
+            experiment__finding_tags__is_NCC=True,
+        ).filter(experiment__in=self.experiments)
 
         if self.is_theory_driven_only:
             experiments_interpretations = experiments_interpretations.filter(

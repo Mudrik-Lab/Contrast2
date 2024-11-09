@@ -34,10 +34,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return process_func()
 
     def process_paradigm_family(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__paradigms__parent=OuterRef("pk"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__paradigms__parent=OuterRef("pk"),
         )
 
         breakdown_query = (
@@ -48,10 +48,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_paradigm(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__paradigms__name=OuterRef("name"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__paradigms__name=OuterRef("name"),
         )
 
         breakdown_query = (
@@ -62,10 +62,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_population(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__samples__type=OuterRef("type"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO, experiment__in=self.experiments, experiment__samples__type=OuterRef("type")
         )
 
         breakdown_query = Sample.objects.values("type").order_by("type").distinct().annotate(series_name=F("type"))
@@ -74,11 +72,11 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_finding_tag(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__finding_tags__type=OuterRef("pk"))
-            .filter(experiment__finding_tags__is_NCC=True)
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__finding_tags__type=OuterRef("pk"),
+            experiment__finding_tags__is_NCC=True,
         )
 
         breakdown_query = FindingTagType.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -87,11 +85,11 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_finding_tag_family(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__finding_tags__family=OuterRef("pk"))
-            .filter(experiment__finding_tags__is_NCC=True)
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__finding_tags__is_NCC=True,
+            experiment__finding_tags__family=OuterRef("pk"),
         )
 
         breakdown_query = FindingTagFamily.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -100,10 +98,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_reporting(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__is_reporting=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__is_reporting=OuterRef("series_name"),
         )
 
         breakdown_query = Experiment.objects.values("is_reporting").distinct().annotate(series_name=F("is_reporting"))
@@ -112,10 +110,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_theory_driven(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__theory_driven=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__theory_driven=OuterRef("series_name"),
         )
 
         breakdown_query = Experiment.objects.values("theory_driven").distinct().annotate(series_name=F("theory_driven"))
@@ -124,10 +122,8 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_task(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__tasks__type=OuterRef("pk"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO, experiment__in=self.experiments, experiment__tasks__type=OuterRef("pk")
         )
 
         breakdown_query = TaskType.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -136,10 +132,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_stimuli_category(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__stimuli__category=OuterRef("pk"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__stimuli__category=OuterRef("pk"),
         )
 
         breakdown_query = StimulusCategory.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -148,10 +144,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_modality(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__stimuli__modality=OuterRef("pk"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__stimuli__modality=OuterRef("pk"),
         )
 
         breakdown_query = ModalityType.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -160,10 +156,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_consciousness_measure_phase(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__consciousness_measures__phase=OuterRef("pk"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__consciousness_measures__phase=OuterRef("pk"),
         )
 
         breakdown_query = (
@@ -174,10 +170,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_consciousness_measure_type(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__consciousness_measures__type=OuterRef("pk"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__consciousness_measures__type=OuterRef("pk"),
         )
 
         breakdown_query = ConsciousnessMeasureType.objects.values("name").distinct().annotate(series_name=F("name"))
@@ -186,10 +182,10 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_type_of_consciousness(self):
-        experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__type_of_consciousness=OuterRef("series_name"))
+        experiments_subquery_by_breakdown = AggregatedInterpretation.objects.filter(
+            type=InterpretationsChoices.PRO,
+            experiment__in=self.experiments,
+            experiment__type_of_consciousness=OuterRef("series_name"),
         )
 
         breakdown_query = (
@@ -203,9 +199,9 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_technique(self):
         experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__techniques=OuterRef("pk"))
+            AggregatedInterpretation.objects.filter(
+                type=InterpretationsChoices.PRO, experiment__in=self.experiments, experiment__techniques=OuterRef("pk")
+            )
             .annotate(relation_type=F("type"))
             .values("experiment", "relation_type")
         )
@@ -216,9 +212,11 @@ class ParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_measure(self):
         experiments_subquery_by_breakdown = (
-            AggregatedInterpretation.objects.filter(type=InterpretationsChoices.PRO)
-            .filter(experiment__in=self.experiments)
-            .filter(experiment__measures__type=OuterRef("pk"))
+            AggregatedInterpretation.objects.filter(
+                type=InterpretationsChoices.PRO,
+                experiment__in=self.experiments,
+                experiment__measures__type=OuterRef("pk"),
+            )
             .annotate(relation_type=F("type"))
             .values("experiment", "relation_type")
         )

@@ -73,8 +73,9 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_finding_tag(self, theory_interpretations_experiments):
         subquery = (
-            FindingTagType.objects.filter(findingtag__experiment__in=theory_interpretations_experiments)
-            .filter(findingtag__is_NCC=True)
+            FindingTagType.objects.filter(
+                findingtag__experiment__in=theory_interpretations_experiments, findingtag__is_NCC=True
+            )
             .distinct()
             .values("name")
             .annotate(experiment_count=Count("findingtag__experiment", distinct=True))
@@ -85,8 +86,9 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_finding_tag_family(self, theory_interpretations_experiments):
         subquery = (
-            FindingTagFamily.objects.filter(findingtag__experiment__in=theory_interpretations_experiments)
-            .filter(findingtag__is_NCC=True)
+            FindingTagFamily.objects.filter(
+                findingtag__experiment__in=theory_interpretations_experiments, findingtag__is_NCC=True
+            )
             .distinct()
             .values("name")
             .annotate(experiment_count=Count("findingtag__experiment", distinct=True))
@@ -216,15 +218,15 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         experiment_ids = []
         for theory in parent_theories:
             theory_interpretations_experiments = (
-                Interpretation.objects.filter(type=self.interpretation, theory__parent=theory)
-                .filter(experiment__in=self.experiments)
+                Interpretation.objects.filter(
+                    type=self.interpretation, theory__parent=theory, experiment__in=self.experiments
+                )
                 .distinct()
                 .values_list("experiment", flat=True)
             )
             # Children_experiments is referring from theory to child theory and from their to "experiments"
+            theory_experiment_ids = theory_interpretations_experiments.values_list("experiment_id", flat=True)
             if self.is_csv:
-                theory_experiment_ids = theory_interpretations_experiments.values_list("experiment_id", flat=True)
-
                 experiment_ids += theory_experiment_ids
             else:
                 subquery = self.get_query(theory_interpretations_experiments)
@@ -240,6 +242,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                 if len(subquery_by_breakdown) > 0:
                     series = list(subquery_by_breakdown)
                     total_value = self.accumulate_total_from_series(series)
+                    # total_value = len(theory_experiment_ids)
                     result = dict(series=series, series_name=theory.acronym, value=total_value)
                     results.append(result)
         if self.is_csv:

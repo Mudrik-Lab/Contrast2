@@ -168,8 +168,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
     def process_finding_tag(self):
         experiments_subquery_by_breakdown = (
             Interpretation.objects.filter(experiment__in=self.filtered_experiments)
-            .filter(experiment__finding_tags__type=OuterRef("pk"))
-            .filter(experiment__finding_tags__is_NCC=True)
+            .filter(experiment__finding_tags__type=OuterRef("pk"), experiment__finding_tags__is_NCC=True)
             .values("experiment")
         )
 
@@ -181,8 +180,7 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
     def process_finding_tag_family(self):
         experiments_subquery_by_breakdown = (
             Interpretation.objects.filter(experiment__in=self.filtered_experiments)
-            .filter(experiment__finding_tags__family=OuterRef("pk"))
-            .filter(experiment__finding_tags__is_NCC=True)
+            .filter(experiment__finding_tags__family=OuterRef("pk"), experiment__finding_tags__is_NCC=True)
             .values("experiment")
         )
 

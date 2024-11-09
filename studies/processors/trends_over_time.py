@@ -41,18 +41,14 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
 
     def process_theory(self):
         if self.aggregated_interpretation:
-            experiments_subquery_by_breakdown = (self.experiments
-                                                 .filter(theories__theory__parent__name=OuterRef("name"),
-                                                         theories__type=self.aggregated_interpretation)
-                                                 )
+            experiments_subquery_by_breakdown = self.experiments.filter(
+                theories__theory__parent__name=OuterRef("name"), theories__type=self.aggregated_interpretation
+            )
         else:
-
-
-            experiments_subquery_by_breakdown = (self.experiments
-                                                 .filter(theories__theory__parent__name=OuterRef("name"),
-                                                         theories__type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES])
-                                                 )
-
+            experiments_subquery_by_breakdown = self.experiments.filter(
+                theories__theory__parent__name=OuterRef("name"),
+                theories__type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES],
+            )
 
         breakdown_query = (
             Theory.objects.filter(parent__isnull=True).values("name").distinct("name").annotate(series_name=F("name"))
@@ -92,18 +88,17 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_finding_tag(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__type=OuterRef("pk")).filter(
-            finding_tags__is_NCC=True
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            finding_tags__type=OuterRef("pk"), finding_tags__is_NCC=True
         )
-
         breakdown_query = FindingTagType.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
         qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
         return qs
 
     def process_finding_tag_family(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(finding_tags__family=OuterRef("pk")).filter(
-            finding_tags__is_NCC=True
+        experiments_subquery_by_breakdown = self.experiments.filter(
+            finding_tags__family=OuterRef("pk"), finding_tags__is_NCC=True
         )
 
         breakdown_query = FindingTagFamily.objects.values("name").distinct("name").annotate(series_name=F("name"))

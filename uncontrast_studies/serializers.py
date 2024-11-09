@@ -1,4 +1,5 @@
 from django_countries import countries
+from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
@@ -141,16 +142,14 @@ class UnConSampleSerializer(serializers.ModelSerializer):
 
 class FullUnConExperimentSerializer(serializers.ModelSerializer):
     study = serializers.PrimaryKeyRelatedField(queryset=Study.objects.all())
-    findings = UnConFindingSerializer(many=True, read_only=True)
-    samples = UnConSampleSerializer(many=True, read_only=True)
-    suppressed_stimuli = UnConSuppressedStimulusSerializer(many=True, read_only=True)
-    target_stimuli = UnConTargetStimulusSerializer(many=True, read_only=True)
-    processing_domains = UnConProcessingDomainSerializer(many=True, read_only=True)
-    suppression_methods = UnConSuppressionMethodSerializer(many=True, read_only=True)
-    tasks = UnConTaskSerializer(many=True, read_only=True)
-    consciousness_measures = UnConsciousnessMeasureSerializer(
-        many=True, read_only=True, source="unconsciousness_measures"
-    )
+    findings = serializers.SerializerMethodField()
+    samples = serializers.SerializerMethodField()
+    suppressed_stimuli = serializers.SerializerMethodField()
+    target_stimuli = serializers.SerializerMethodField()
+    processing_domains = serializers.SerializerMethodField()
+    suppression_methods = serializers.SerializerMethodField()
+    tasks = serializers.SerializerMethodField()
+    consciousness_measures = serializers.SerializerMethodField()
     paradigm = UnConSpecificParadigmSerializer(read_only=True)
 
     class Meta:
@@ -173,6 +172,46 @@ class FullUnConExperimentSerializer(serializers.ModelSerializer):
             "suppression_methods",
             "significance",
         )
+
+    @extend_schema_field(UnConFindingSerializer(many=True))
+    def get_findings(self, obj: UnConExperiment):
+        findings = obj.findings.order_by("id")
+        return UnConFindingSerializer(many=True, instance=findings).data
+
+    @extend_schema_field(UnConsciousnessMeasureSerializer(many=True))
+    def get_consciousness_measures(self, obj: UnConExperiment):
+        consciousness_measures = obj.unconsciousness_measures.order_by("id")
+        return UnConsciousnessMeasureSerializer(many=True, instance=consciousness_measures).data
+
+    @extend_schema_field(UnConSampleSerializer(many=True))
+    def get_samples(self, obj: UnConExperiment):
+        samples = obj.samples.order_by("id")
+        return UnConSampleSerializer(many=True, instance=samples).data
+
+    @extend_schema_field(UnConSuppressedStimulusSerializer(many=True))
+    def get_suppressed_stimuli(self, obj: UnConExperiment):
+        suppressed_stimuli = obj.suppressed_stimuli.order_by("id")
+        return UnConSuppressedStimulusSerializer(many=True, instance=suppressed_stimuli).data
+
+    @extend_schema_field(UnConTargetStimulusSerializer(many=True))
+    def get_target_stimuli(self, obj: UnConExperiment):
+        target_stimuli = obj.target_stimuli.order_by("id")
+        return UnConTargetStimulusSerializer(many=True, instance=target_stimuli).data
+
+    @extend_schema_field(UnConTaskSerializer(many=True))
+    def get_tasks(self, obj: UnConExperiment):
+        tasks = obj.tasks.order_by("id")
+        return UnConTaskSerializer(many=True, instance=tasks).data
+
+    @extend_schema_field(UnConProcessingDomainSerializer(many=True))
+    def get_processing_domains(self, obj: UnConExperiment):
+        processing_domains = obj.processing_domains.order_by("id")
+        return UnConProcessingDomainSerializer(many=True, instance=processing_domains).data
+
+    @extend_schema_field(UnConSuppressionMethodSerializer(many=True))
+    def get_suppression_methods(self, obj: UnConExperiment):
+        suppression_methods = obj.suppression_methods.order_by("id")
+        return UnConSuppressionMethodSerializer(many=True, instance=suppression_methods).data
 
 
 class StudyWithUnConExperimentsSerializer(serializers.ModelSerializer):

@@ -64,6 +64,12 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         )
 
         self.given_interpretation_exist(
+            experiment=israeli_study_experiment,  # masking_child_paradigm
+            theory=rpt_child_theory,
+            interpretation_type=InterpretationsChoices.CHALLENGES,
+        )
+
+        self.given_interpretation_exist(
             experiment=british_israeli_study_experiment,
             # masking_child_paradigm, different
             theory=gnw_child_theory,
@@ -71,23 +77,12 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
         )
 
         self.given_interpretation_exist(
-            experiment=israeli_study_experiment,  # masking_child_paradigm
+            experiment=british_israeli_study_experiment,
+            # masking_child_paradigm, different
             theory=rpt_child_theory,
-            interpretation_type=InterpretationsChoices.CHALLENGES,
+            interpretation_type=InterpretationsChoices.NEUTRAL,
         )
 
-        # self.given_interpretation_exist(
-        #     experiment=israeli_study_experiment_2,  # masking_child_paradigm, different
-        #     theory=gnw_child_theory,
-        #     interpretation_type=InterpretationsChoices.PRO,
-        # )
-        #
-        # self.given_interpretation_exist(
-        #     experiment=british_israeli_study_experiment,
-        #     # masking_child_paradigm, different
-        #     theory=rpt_child_theory,
-        #     interpretation_type=InterpretationsChoices.PRO,
-        # )
         first_measure = self.given_measure_exists(
             experiment_id=israeli_study_experiment.id, measure_type="a_first_measure"
         )

@@ -40,18 +40,19 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return process_func()
 
     def process_theory(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(interpretations__parent=OuterRef("pk"))
         if self.aggregated_interpretation:
-            experiments_ids = Interpretation.objects.filter(type=self.aggregated_interpretation).values_list(
-                "experiment_id", flat=True
-            )
-            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(id__in=experiments_ids)
+            experiments_subquery_by_breakdown = (self.experiments
+                                                 .filter(theories__theory__parent__name=OuterRef("name"),
+                                                         theories__type=self.aggregated_interpretation)
+                                                 )
         else:
-            experiments_ids = Interpretation.objects.filter(
-                type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES]
-            ).values_list("experiment_id", flat=True)
 
-            experiments_subquery_by_breakdown = experiments_subquery_by_breakdown.filter(id__in=experiments_ids)
+
+            experiments_subquery_by_breakdown = (self.experiments
+                                                 .filter(theories__theory__parent__name=OuterRef("name"),
+                                                         theories__type__in=[InterpretationsChoices.PRO, InterpretationsChoices.CHALLENGES])
+                                                 )
+
 
         breakdown_query = (
             Theory.objects.filter(parent__isnull=True).values("name").distinct("name").annotate(series_name=F("name"))

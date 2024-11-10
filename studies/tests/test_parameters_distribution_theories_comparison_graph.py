@@ -156,9 +156,9 @@ class ParameterDistributionTheoriesComparisonPieGraphTestCase(BaseTestCase):
         second_series = res.data[1]
 
         self.assertEqual(first_series["series_name"], self.gnw_parent_theory.name)  # 3 total prod
-        self.assertEqual(first_series["value"], 3)  # 3 total prod
+        self.assertEqual(first_series["value"], 2)  # 2 experiments with GWT and PRO
         self.assertEqual(second_series["series_name"], self.rpt_parent_theory.name)  # 2 pro
-        self.assertEqual(second_series["value"], 2)  # 2 pro
+        self.assertEqual(second_series["value"], 1)  # 2 pro
 
         self.assertEqual(first_series["series"][0]["key"], masking_parent_paradigm.name)
         self.assertEqual(first_series["series"][0]["value"], 2)

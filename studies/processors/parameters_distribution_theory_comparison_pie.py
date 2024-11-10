@@ -241,8 +241,8 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                 # change total_value to get the total number of experiments within theory and that relation
                 if len(subquery_by_breakdown) > 0:
                     series = list(subquery_by_breakdown)
-                    total_value = self.accumulate_total_from_series(series)
-                    # total_value = len(theory_experiment_ids)
+                    # total_value = self.accumulate_total_from_series(series)
+                    total_value = len(set(theory_experiment_ids))
                     result = dict(series=series, series_name=theory.acronym, value=total_value)
                     results.append(result)
         if self.is_csv:

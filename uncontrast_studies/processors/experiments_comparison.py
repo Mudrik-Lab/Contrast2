@@ -246,8 +246,9 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
             experiments_for_option = (
                 self.experiments.filter(significance=sig_option).distinct().values_list("id", flat=True)
             )
+            option_experiment_ids = experiments_for_option.values_list("id", flat=True)
             if self.is_csv:
-                option_experiment_ids = experiments_for_option.values_list("id", flat=True)
+
 
                 experiment_ids += option_experiment_ids
             else:
@@ -263,7 +264,8 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
                 if len(subquery_by_breakdown) > 0:
                     series = list(subquery_by_breakdown)
-                    total_value = self.accumulate_total_from_series(series)
+                    # total_value = self.accumulate_total_from_series(series)
+                    total_value = len(set(option_experiment_ids))
                     result = dict(series=series, series_name=sig_option, value=total_value)
                     results.append(result)
         if self.is_csv:

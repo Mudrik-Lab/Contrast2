@@ -1,5 +1,5 @@
 from django.db import models
-from django.db.models import CASCADE, PROTECT
+from django.db.models import CASCADE, PROTECT, Q
 from simple_history.models import HistoricalRecords
 
 
@@ -24,6 +24,7 @@ class UnConsciousnessMeasureSubType(models.Model):
         null=False,
         on_delete=PROTECT,
         to=UnConsciousnessMeasureType,
+        limit_choices_to=~Q(name="Both"),  # both is synthetic, not to be used directly
         related_name="unconsciousness_measure_sub_types",
     )
 
@@ -47,7 +48,8 @@ class UnConsciousnessMeasure(models.Model):
         null=False,
         on_delete=PROTECT,
         to=UnConsciousnessMeasureType,
-        related_name="unconsciousness_measures",
+        limit_choices_to=~Q(name="Both"), # both is synthetic, not to be used directly
+        related_name="unconsciousness_measures"
     )
     sub_type = models.ForeignKey(
         blank=True,

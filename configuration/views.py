@@ -90,7 +90,8 @@ class ConfigurationView(GenericViewSet):
         available_populations_types = UnConSampleChoices.values
         available_mode_of_presentation = PresentationModeChoices.values
         available_consciousness_measure_phase_type = UnConsciousnessMeasurePhase.objects.all()
-        available_consciousness_measure_type = UnConsciousnessMeasureType.objects.all()
+        # it's a "synthetic" type not to be used directly
+        available_consciousness_measure_type = UnConsciousnessMeasureType.objects.exclude(name__iexact="Both")
         available_consciousness_measure_sub_type = UnConsciousnessMeasureSubType.objects.all()
         available_tasks_types = UnConTaskType.objects.all()
         available_suppression_method_types = UnConSuppressionMethodType.objects.all()

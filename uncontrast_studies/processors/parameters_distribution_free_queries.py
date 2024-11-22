@@ -1,7 +1,7 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import Func, F, Count, QuerySet, OuterRef, Case, When, Value
+from django.db.models import Func, F, Count, QuerySet, OuterRef, Case, When, Value, Q, CharField, Exists
 
 from contrast_api.utils import cast_as_boolean
 from uncontrast_studies.processors.base import BaseProcessor
@@ -297,9 +297,28 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
         return qs
 
     def process_consciousness_measure_type(self):
-        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
-            unconsciousness_measures__type=OuterRef("pk")
-        ).values("id")
+        experiments_subquery_by_breakdown = (
+            self.filtered_experiments.annotate(
+                measure_type=Case(
+                    When(
+                        Exists(UnConsciousnessMeasure.objects.filter(experiment=OuterRef("pk"), type__name="Objective"))
+                        & Exists(
+                            UnConsciousnessMeasure.objects.filter(experiment=OuterRef("pk"), type__name="Subjective")
+                        ),
+                        then=Value("Both"),
+                    ),
+                    default=Value(None),
+                    output_field=CharField(null=True),
+                )
+            )
+            .filter(
+                Q(measure_type=OuterRef("name"))
+                |
+                # we need to remove the case where the type is Objective/Subjective
+                (Q(unconsciousness_measures__type__name=OuterRef("name")) & Q(measure_type__isnull=True))
+            )
+            .values("id")
+        )
 
         breakdown_query = UnConsciousnessMeasureType.objects.values("name").distinct().annotate(series_name=F("name"))
 

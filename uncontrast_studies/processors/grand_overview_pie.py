@@ -65,13 +65,5 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
             .values("series_name", "value", "series")
         )[0:1]
 
-        # qs = (experiments
-        #     .aggregate(
-        #         series=ArraySubquery(subquery),
-        #         series_name=Value("Grand Overview", output_field=CharField()),
-        #         value=Count("id", distinct=True)
-        #     )
-        # )
-
         # Note we're filtering out empty timeseries with the cardinality option
         return qs

@@ -1,7 +1,7 @@
 import itertools
 
 from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, OuterRef, F, Count, Func
+from django.db.models import QuerySet, OuterRef, F, Count, Func, Case, When, Value, Q, CharField, Exists
 from django.db.models.functions import JSONObject
 
 from uncontrast_studies.models import (
@@ -29,13 +29,14 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         super().__init__(experiments=experiments, **kwargs)
         breakdown = kwargs.pop("breakdown")
         self.breakdown = breakdown[0]
+        self.filtered_experiments = self.experiments  # parity with others
 
     def process(self):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func()
 
     def process_paradigm(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(paradigm__main=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(paradigm__main=OuterRef("pk"))
 
         breakdown_query = UnConMainParadigm.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -43,7 +44,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_population(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(samples__type=OuterRef("type"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(samples__type=OuterRef("type"))
 
         breakdown_query = UnConSample.objects.values("type").distinct().annotate(series_name=F("type"))
 
@@ -51,7 +52,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_is_target_same_as_suppressed_stimulus(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             target_stimuli__is_target_same_as_suppressed_stimulus=OuterRef("series_name")
         )
 
@@ -65,7 +66,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_task(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(tasks__type=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(tasks__type=OuterRef("pk"))
 
         breakdown_query = UnConTaskType.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -73,7 +74,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_outcome_type(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(findings__outcome=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(findings__outcome=OuterRef("pk"))
 
         breakdown_query = UnConOutcome.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -81,7 +82,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_processing_domain(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(processing_domains__main=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(processing_domains__main=OuterRef("pk"))
 
         breakdown_query = (
             UnConProcessingMainDomain.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -91,7 +92,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_suppression_method(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(suppression_methods__type=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(suppression_methods__type=OuterRef("pk"))
 
         breakdown_query = (
             UnConSuppressionMethodType.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -101,7 +102,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_suppressed_stimuli_category(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__category=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            suppressed_stimuli__category=OuterRef("pk")
+        )
 
         breakdown_query = UnConStimulusCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -109,7 +112,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_suppressed_stimuli_sub_category(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__sub_category=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            suppressed_stimuli__sub_category=OuterRef("pk")
+        )
 
         breakdown_query = (
             UnConStimulusSubCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -119,7 +124,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_suppressed_stimuli_modality(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(suppressed_stimuli__modality=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            suppressed_stimuli__modality=OuterRef("pk")
+        )
 
         breakdown_query = UnConModalityType.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -127,7 +134,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_target_stimuli_category(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__category=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(target_stimuli__category=OuterRef("pk"))
 
         breakdown_query = UnConStimulusCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -135,7 +142,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_target_stimuli_sub_category(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__sub_category=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            target_stimuli__sub_category=OuterRef("pk")
+        )
 
         breakdown_query = (
             UnConStimulusSubCategory.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -145,7 +154,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_target_stimuli_modality(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(target_stimuli__modality=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(target_stimuli__modality=OuterRef("pk"))
 
         breakdown_query = UnConModalityType.objects.values("name").distinct("name").annotate(series_name=F("name"))
 
@@ -153,7 +162,9 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_consciousness_measure_phase(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(unconsciousness_measures__phase=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
+            unconsciousness_measures__phase=OuterRef("pk")
+        )
 
         breakdown_query = (
             UnConsciousnessMeasurePhase.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -163,7 +174,22 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_consciousness_measure_type(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(unconsciousness_measures__type=OuterRef("pk"))
+        experiments_subquery_by_breakdown = self.filtered_experiments.annotate(
+            measure_type=Case(
+                When(
+                    Exists(UnConsciousnessMeasure.objects.filter(experiment=OuterRef("pk"), type__name="Objective"))
+                    & Exists(UnConsciousnessMeasure.objects.filter(experiment=OuterRef("pk"), type__name="Subjective")),
+                    then=Value("Both"),
+                ),
+                default=Value(None),
+                output_field=CharField(null=True),
+            )
+        ).filter(
+            Q(measure_type=OuterRef("name"))
+            |
+            # we need to remove the case where the type is Objective/Subjective
+            (Q(unconsciousness_measures__type__name=OuterRef("name")) & Q(measure_type__isnull=True))
+        )
 
         breakdown_query = (
             UnConsciousnessMeasureType.objects.values("name").distinct("name").annotate(series_name=F("name"))
@@ -173,7 +199,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_is_performance_above_chance(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             unconsciousness_measures__is_performance_above_chance=OuterRef("series_name")
         ).values("id", "significance")
 
@@ -186,7 +212,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_is_cm_same_participants_as_task(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             unconsciousness_measures__is_cm_same_participants_as_task=OuterRef("series_name")
         ).values("id", "significance")
 
@@ -199,7 +225,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_is_trial_excluded_based_on_measure(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             unconsciousness_measures__is_trial_excluded_based_on_measure=OuterRef("series_name")
         ).values("id")
 
@@ -213,7 +239,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         return qs
 
     def process_modes_of_presentation(self):
-        experiments_subquery_by_breakdown = self.experiments.filter(
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(
             suppressed_stimuli__mode_of_presentation=OuterRef("series_name")
         )
         breakdown_query = (

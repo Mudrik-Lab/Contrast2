@@ -1,5 +1,5 @@
-from django.db.models import QuerySet, F, Count
-from django.db.models.functions import JSONObject
+from django.db.models import QuerySet, F, Count, Exists, OuterRef, Q, Case, Subquery, When, IntegerField
+from django.db.models.functions import JSONObject, Coalesce
 
 from contrast_api.choices import SignificanceChoices
 
@@ -153,12 +153,44 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         return subquery
 
     def process_consciousness_measure_type(self, experiments: QuerySet[UnConExperiment]):
+        experiments_with_both = experiments.annotate(
+            has_subjective=Exists(
+                UnConsciousnessMeasureType.objects.filter(
+                    unconsciousness_measures__experiment=OuterRef("pk"), name="Subjective"
+                )
+            ),
+            has_objective=Exists(
+                UnConsciousnessMeasureType.objects.filter(
+                    unconsciousness_measures__experiment=OuterRef("pk"), name="Objective"
+                )
+            ),
+        ).filter(has_subjective=True, has_objective=True)
         subquery = (
-            UnConsciousnessMeasureType.objects.filter(unconsciousness_measures__experiment__in=experiments)
-            .distinct()
-            .values("name")
-            .annotate(experiment_count=Count("unconsciousness_measures__experiment", distinct=True))
+            UnConsciousnessMeasureType.objects.filter(
+                Q(unconsciousness_measures__experiment__in=experiments) | Q(name="Both")
+            )
+            .annotate(
+                experiment_count=Case(
+                    When(
+                        name="Both",
+                        then=Subquery(experiments_with_both.annotate(count=Count("id")).values("count")[:1]),
+                    ),
+                    When(
+                        # to remove double counting the "both" experiments
+                        Q(name="Objective") | Q(name="Subjective"),
+                        then=Count(
+                            "unconsciousness_measures__experiment",
+                            distinct=True,
+                            filter=~Q(unconsciousness_measures__experiment__in=experiments_with_both)
+                        ),
+                    ),
+                    default=Count("unconsciousness_measures__experiment", distinct=True),
+                    output_field=IntegerField(),
+                )
+            )
             .annotate(key=F("name"))
+            .values("name", "experiment_count", "key")
+            .distinct()
         )
 
         return subquery
@@ -244,12 +276,10 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
         experiment_ids = []
         for sig_option in significance_options:
             experiments_for_option = (
-                self.experiments.filter(significance=sig_option).distinct().values_list("id", flat=True)
+                self.experiments.filter(significance=sig_option).distinct()  # .values_list("id", flat=True)
             )
             option_experiment_ids = experiments_for_option.values_list("id", flat=True)
             if self.is_csv:
-
-
                 experiment_ids += option_experiment_ids
             else:
                 subquery = self.get_query(experiments_for_option)

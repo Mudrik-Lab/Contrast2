@@ -36,6 +36,8 @@ UNCONTRAST_GRAPH_CONTINUOUS_BREAKDOWN_OPTIONS = [
     "year_of_publication",
 ]
 
+UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS_WITH_SIGNIFICANCE = UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS + ['significance']
+
 number_of_experiments_parameter = OpenApiParameter(name="min_number_of_experiments", type=int, required=False)
 bin_size_parameter = OpenApiParameter(name="bin_size", type=int, required=False)
 
@@ -52,6 +54,14 @@ breakdown_parameter = OpenApiParameter(
     description="breakdown needed for certain graphs",
     type=str,
     enum=UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS,
+    required=True,
+)
+
+breakdown_parameter_with_significance = OpenApiParameter(
+    name="breakdown",
+    description="breakdown needed for certain graphs",
+    type=str,
+    enum=UNCONTRAST_GRAPH_BREAKDOWN_OPTIONS_WITH_SIGNIFICANCE,
     required=True,
 )
 

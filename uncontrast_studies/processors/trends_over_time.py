@@ -35,6 +35,17 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
         process_func = getattr(self, f"process_{self.breakdown}")
         return process_func()
 
+    def process_significance(self):
+        experiments_subquery_by_breakdown = self.filtered_experiments.filter(significance=OuterRef("series_name"))
+        breakdown_query = (
+            UnConExperiment.objects.values("significance")
+            .distinct()
+            .annotate(series_name=F("significance"))
+        )
+
+        qs = self._aggregate_query_by_breakdown(breakdown_query, experiments_subquery_by_breakdown)
+        return qs
+
     def process_paradigm(self):
         experiments_subquery_by_breakdown = self.filtered_experiments.filter(paradigm__main=OuterRef("pk"))
 

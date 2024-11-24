@@ -5,25 +5,42 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('uncontrast_studies', '0005_auto_20241122_0913'),
+        ("uncontrast_studies", "0005_auto_20241122_0913"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='historicalunconsciousnessmeasure',
-            name='type',
-            field=models.ForeignKey(blank=True, db_constraint=False, limit_choices_to=models.Q(('name', 'Both'), _negated=True), null=True, on_delete=django.db.models.deletion.DO_NOTHING, related_name='+', to='uncontrast_studies.unconsciousnessmeasuretype'),
+            model_name="historicalunconsciousnessmeasure",
+            name="type",
+            field=models.ForeignKey(
+                blank=True,
+                db_constraint=False,
+                limit_choices_to=models.Q(("name", "Both"), _negated=True),
+                null=True,
+                on_delete=django.db.models.deletion.DO_NOTHING,
+                related_name="+",
+                to="uncontrast_studies.unconsciousnessmeasuretype",
+            ),
         ),
         migrations.AlterField(
-            model_name='unconsciousnessmeasure',
-            name='type',
-            field=models.ForeignKey(limit_choices_to=models.Q(('name', 'Both'), _negated=True), on_delete=django.db.models.deletion.PROTECT, related_name='unconsciousness_measures', to='uncontrast_studies.unconsciousnessmeasuretype'),
+            model_name="unconsciousnessmeasure",
+            name="type",
+            field=models.ForeignKey(
+                limit_choices_to=models.Q(("name", "Both"), _negated=True),
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="unconsciousness_measures",
+                to="uncontrast_studies.unconsciousnessmeasuretype",
+            ),
         ),
         migrations.AlterField(
-            model_name='unconsciousnessmeasuresubtype',
-            name='type',
-            field=models.ForeignKey(limit_choices_to=models.Q(('name', 'Both'), _negated=True), on_delete=django.db.models.deletion.PROTECT, related_name='unconsciousness_measure_sub_types', to='uncontrast_studies.unconsciousnessmeasuretype'),
+            model_name="unconsciousnessmeasuresubtype",
+            name="type",
+            field=models.ForeignKey(
+                limit_choices_to=models.Q(("name", "Both"), _negated=True),
+                on_delete=django.db.models.deletion.PROTECT,
+                related_name="unconsciousness_measure_sub_types",
+                to="uncontrast_studies.unconsciousnessmeasuretype",
+            ),
         ),
     ]

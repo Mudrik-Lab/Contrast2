@@ -181,7 +181,7 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
                         then=Count(
                             "unconsciousness_measures__experiment",
                             distinct=True,
-                            filter=~Q(unconsciousness_measures__experiment__in=experiments_with_both)
+                            filter=~Q(unconsciousness_measures__experiment__in=experiments_with_both),
                         ),
                     ),
                     default=Count("unconsciousness_measures__experiment", distinct=True),

@@ -29,7 +29,8 @@ from uncontrast_studies.open_api_parameters import (
     continuous_breakdown_options,
     bin_size_parameter,
     are_participants_excluded,
-    paradigm_single_optional_parameter, breakdown_parameter_with_significance,
+    paradigm_single_optional_parameter,
+    breakdown_parameter_with_significance,
 )
 from contrast_api.open_api_parameters import is_csv
 from uncontrast_studies.processors.distribution_of_effects_across_parameters import (

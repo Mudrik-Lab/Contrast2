@@ -214,8 +214,17 @@ class ParametersDistributionBarGraphDataProcessor(BaseProcessor):
         ).filter(
             Q(measure_type=OuterRef("name"))
             |
-            # we need to remove the case where the type is Objective/Subjective
-            (Q(unconsciousness_measures__type__name=OuterRef("name")) & Q(measure_type__isnull=True))
+            # either it's not subjective or objective - if so we can just check the measure type name
+            (
+                Q(unconsciousness_measures__type__name=OuterRef("name"))
+                & ~Q(unconsciousness_measures__type__name__in=["Objective", "Subjective"])
+            )
+            # or it is subjective or objective - if so we can need to rule out the both option
+            | (
+                Q(unconsciousness_measures__type__name=OuterRef("name"))
+                & Q(unconsciousness_measures__type__name__in=["Objective", "Subjective"])
+                & Q(measure_type__isnull=True)
+            ),
         )
 
         breakdown_query = UnConsciousnessMeasureType.objects.values("name").distinct().annotate(series_name=F("name"))

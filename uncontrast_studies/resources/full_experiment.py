@@ -3,7 +3,7 @@ from import_export import resources
 from import_export.fields import Field
 
 from contrast_api.choices import ExperimentTypeChoices, SignificanceChoices
-from uncontrast_studies.models import UnConExperiment
+from uncontrast_studies.models import UnConExperiment, UnConFinding
 
 SEPERATOR = " || "
 
@@ -92,13 +92,19 @@ class FullUnConExperimentResource(resources.ModelResource):
 
     def dehydrate_suppressed_stimuli(self, experiment: UnConExperiment):
         return SEPERATOR.join(
-            f"category: {st.category.name} {'(' + st.sub_category.name + ')' if st.sub_category else ''} -modality: {st.modality.name} "
+            f"category: {st.category.name} {'(' + st.sub_category.name + ')' if st.sub_category else ''} "
+            f"modality: {st.modality.name} "
+            f"number_of_stimuli:{st.number_of_stimuli} "
+            f"duration:{st.duration} "
+            f"mode_of_presentation:{st.mode_of_presentation}"
             for st in experiment.suppressed_stimuli.all()
         )
 
     def dehydrate_target_stimuli(self, experiment: UnConExperiment):
         return SEPERATOR.join(
-            f"category: {st.category.name} {'(' + st.sub_category.name + ')' if st.sub_category else ''} -modality: {st.modality.name} "
+            f"category: {st.category.name} {'(' + st.sub_category.name + ')' if st.sub_category else ''} "
+            f"modality: {st.modality.name} "
+            f"number_of_stimuli:{st.number_of_stimuli} "
             for st in experiment.target_stimuli.all()
         )
 
@@ -117,8 +123,8 @@ class FullUnConExperimentResource(resources.ModelResource):
     def dehydrate_finding(self, experiment: UnConExperiment):
         return SEPERATOR.join(self.resolve_finding_tag_description(finding) for finding in experiment.findings.all())
 
-    def resolve_finding_tag_description(self, finding):
-        return f"outcome: {finding.outcome} is_significant: {finding.is_significant}"
+    def resolve_finding_tag_description(self, finding: UnConFinding):
+        return f"outcome: {finding.outcome} is_significant: {finding.is_significant} is_important: {finding.is_important} number_of_trials {finding.number_of_trials}"
 
     def dehydrate_type(self, experiment: UnConExperiment):
         return next(label for value, label in ExperimentTypeChoices.choices if value == experiment.type)

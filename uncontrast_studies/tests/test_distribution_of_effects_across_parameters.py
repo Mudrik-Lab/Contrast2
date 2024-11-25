@@ -1,6 +1,7 @@
 from rest_framework import status
 
 from contrast_api.choices import StudyTypeChoices, PresentationModeChoices, SignificanceChoices, UnConSampleChoices
+from contrast_api.open_api_parameters import is_csv
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
 
@@ -135,3 +136,11 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             self.assertEqual(len(res.data), 3)  # historgram for each type
             for histogram in res.data:
                 self.assertIn(histogram["series_name"], SignificanceChoices.values)
+
+            target_url = self.reverse_with_query_params(
+                "uncontrast-experiments-graphs-distribution-of-effects-across-parameters",
+                continuous_breakdown=breakdown,
+                is_csv=True
+            )
+            res = self.client.get(target_url)
+            self.assertEqual(res.status_code, status.HTTP_200_OK)

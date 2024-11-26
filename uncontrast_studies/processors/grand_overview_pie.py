@@ -1,10 +1,7 @@
 import itertools
 
-from django.contrib.postgres.expressions import ArraySubquery
-from django.db.models import QuerySet, F, Count, Value, CharField
-from django.db.models.functions import JSONObject
+from django.db.models import QuerySet, F, Count, Value, When
 
-from contrast_api.orm_helpers import SubqueryCount
 from contrast_api.utils import cast_as_boolean
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor
@@ -49,13 +46,7 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
             ids = experiments.values_list("id", flat=True)
             return set(list(itertools.chain.from_iterable(ids)))
 
-        subquery = (
-            experiments.values("significance")
-            .distinct()
-            .annotate(experiment_count=Count("id", distinct=True))
-            .annotate(data=JSONObject(key=F("significance"), value=F("experiment_count")))
-            .values_list("data")
-        )
+
         """
         Discussion: Unlike most, we don't have "two" levels of grouping here 
         (e.g the series_name is the subset by paradigm, or whatever we're measuring 
@@ -64,15 +55,20 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
         "aggregate" which might have been better here, but returning an array with annotate with as single item
         
         """
-        qs = (
-            experiments.annotate(series=ArraySubquery(subquery))
-            .annotate(series_name=Value("Grand Overview", output_field=CharField()))
-            .annotate(value=SubqueryCount(experiments))
-            .values("series_name", "value", "series")
-        )[0:1]
+        total_value = experiments.aggregate(total_value=Count("id", distinct=True))["total_value"]
 
-        # Note we're filtering out empty timeseries with the cardinality option
-        return qs
+        aggregated_qs = (
+            experiments.annotate(key=F("significance")).values("key")
+            .annotate(value=Count("id", distinct=True))
+            .filter(value__gt=self.min_number_of_experiments)
+            .order_by("-value")
+        )
+        result = {
+            "series_name": "Grand Overview",
+            "series":list(aggregated_qs),
+            "value": total_value
+        }
+        return result
 
     def get_queryset(self):
         queryset = self.experiments

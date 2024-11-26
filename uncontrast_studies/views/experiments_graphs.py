@@ -95,7 +95,27 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "grand_overview_pie": GrandOverviewPieGraphDataProcessor,
     }
 
-    @extend_schema(responses={200: PieChartSerializer()}, parameters=[number_of_experiments_parameter, is_csv])
+    @extend_schema(responses={200: PieChartSerializer()}, parameters=[
+        number_of_experiments_parameter,
+        paradigms_multiple_optional_parameter,
+        suppressed_stimuli_categories_multiple_optional_parameter,
+        suppressed_stimuli_modalities_multiple_optional_parameter,
+        target_stimuli_categories_multiple_optional_parameter,
+        target_stimuli_modalities_multiple_optional_parameter,
+        processing_domain_multiple_optional_parameter,
+        suppression_methods_multiple_optional_parameter,
+        populations_multiple_optional_parameter,
+        consciousness_measure_phases_multiple_optional_parameter,
+        consciousness_measure_types_multiple_optional_parameter,
+        tasks_multiple_optional_parameter,
+        types_multiple_optional_parameter,
+        # is_target_same_as_suppressed_stimulus_optional_parameter,
+        # is_cm_same_participants_as_task_optional_parameter,
+        is_trial_excluded_based_on_measure_optional_parameter,
+        mode_of_presentation_optional_parameter,
+        outcome_types_optional_parameter,
+        are_participants_excluded,
+        is_csv])
     @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
     def grand_overview_pie(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)

@@ -46,7 +46,6 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
             ids = experiments.values_list("id", flat=True)
             return set(list(itertools.chain.from_iterable(ids)))
 
-
         """
         Discussion: Unlike most, we don't have "two" levels of grouping here 
         (e.g the series_name is the subset by paradigm, or whatever we're measuring 
@@ -58,16 +57,13 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
         total_value = experiments.aggregate(total_value=Count("id", distinct=True))["total_value"]
 
         aggregated_qs = (
-            experiments.annotate(key=F("significance")).values("key")
+            experiments.annotate(key=F("significance"))
+            .values("key")
             .annotate(value=Count("id", distinct=True))
             .filter(value__gt=self.min_number_of_experiments)
             .order_by("-value")
         )
-        result = {
-            "series_name": "Grand Overview",
-            "series":list(aggregated_qs),
-            "value": total_value
-        }
+        result = {"series_name": "Grand Overview", "series": list(aggregated_qs), "value": total_value}
         return result
 
     def get_queryset(self):
@@ -114,7 +110,6 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
             queryset = queryset.filter(suppression_methods__type__id__in=self.suppression_methods_types)
 
         if len(self.outcome_types):
-            # TODO: fix this later to use the type
             queryset = queryset.filter(findings__outcome__in=self.outcome_types)
 
         if len(self.is_trial_excluded_based_on_measure):

@@ -85,7 +85,7 @@ class DistributionOfEffectsAcrossParametersGraphDataProcessor(BaseProcessor):
     def _aggregate_query_by_breakdown(self, filtered_subquery, experiment_referencing_param="experiment"):
         queryset = (  # This is for each kind of significance
             UnConExperiment.objects.values("significance")
-            .order_by('significance')
+            .order_by("significance")
             .distinct("significance")
             .annotate(series_name=F("significance"))
         )

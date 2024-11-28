@@ -95,10 +95,34 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         "grand_overview_pie": GrandOverviewPieGraphDataProcessor,
     }
 
-    @extend_schema(responses={200: PieChartSerializer()}, parameters=[number_of_experiments_parameter, is_csv])
+    @extend_schema(
+        responses={200: PieChartSerializer(many=False)},
+        parameters=[
+            number_of_experiments_parameter,
+            paradigms_multiple_optional_parameter,
+            suppressed_stimuli_categories_multiple_optional_parameter,
+            suppressed_stimuli_modalities_multiple_optional_parameter,
+            target_stimuli_categories_multiple_optional_parameter,
+            target_stimuli_modalities_multiple_optional_parameter,
+            processing_domain_multiple_optional_parameter,
+            suppression_methods_multiple_optional_parameter,
+            populations_multiple_optional_parameter,
+            consciousness_measure_phases_multiple_optional_parameter,
+            consciousness_measure_types_multiple_optional_parameter,
+            tasks_multiple_optional_parameter,
+            types_multiple_optional_parameter,
+            # is_target_same_as_suppressed_stimulus_optional_parameter,
+            # is_cm_same_participants_as_task_optional_parameter,
+            is_trial_excluded_based_on_measure_optional_parameter,
+            mode_of_presentation_optional_parameter,
+            outcome_types_optional_parameter,
+            are_participants_excluded,
+            is_csv,
+        ],
+    )
     @action(detail=False, methods=["GET"], serializer_class=PieChartSerializer)
     def grand_overview_pie(self, request, *args, **kwargs):
-        return self.graph(request, graph_type=self.action, *args, **kwargs)
+        return self.graph(request, graph_type=self.action, many=False, *args, **kwargs)
 
     @extend_schema(
         responses=NationOfConsciousnessBySignificanceGraphSerializer(many=True),
@@ -219,7 +243,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         kwargs.setdefault("context", self.get_serializer_context())
         return serializer_class(instance=data, *args, **kwargs)
 
-    def graph(self, request, graph_type, *args, **kwargs):
+    def graph(self, request, graph_type, many=True, *args, **kwargs):
         queryset = self.filter_queryset(self.get_queryset())
         graph_data_processor = self.graph_processors.get(graph_type)
         if graph_data_processor is None:
@@ -228,8 +252,7 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
         graph_processor = graph_data_processor(queryset, **request.query_params)
         graph_data = graph_processor.process()
         if not graph_processor.is_csv:
-            print(graph_data)
-            serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=True)
+            serializer = self.get_serializer_by_graph_type(graph_type, data=graph_data, many=many)
 
             return Response(serializer.data, status=status.HTTP_200_OK)
         else:
@@ -240,7 +263,6 @@ class UnConExperimentsGraphsViewSet(GenericViewSet):
             """
             flattened_ids = graph_data
             dataset = FullUnConExperimentResource().export(
-                # TODO
                 queryset=UnConExperiment.objects.related().filter(id__in=flattened_ids)
             )
             response = HttpResponse(

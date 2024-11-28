@@ -140,7 +140,7 @@ class TestDistributionOfEffectsAcrossParametersGraphTestCase(UnContrastBaseTestC
             target_url = self.reverse_with_query_params(
                 "uncontrast-experiments-graphs-distribution-of-effects-across-parameters",
                 continuous_breakdown=breakdown,
-                is_csv=True
+                is_csv=True,
             )
             res = self.client.get(target_url)
             self.assertEqual(res.status_code, status.HTTP_200_OK)

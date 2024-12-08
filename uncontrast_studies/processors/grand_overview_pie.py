@@ -1,9 +1,9 @@
 import itertools
 
-from django.db.models import QuerySet, F, Count, Value, When, Case
+from django.db.models import QuerySet, F, Count, Value, When, Case, Q
 
 from contrast_api.utils import cast_as_boolean
-from uncontrast_studies.models import UnConExperiment
+from uncontrast_studies.models import UnConExperiment, UnConsciousnessMeasureType
 from uncontrast_studies.processors.base import BaseProcessor
 
 
@@ -95,7 +95,16 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
             queryset = queryset.filter(unconsciousness_measures__phase__id__in=self.consciousness_measure_phases)
 
         if len(self.consciousness_measure_types):
-            queryset = queryset.filter(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
+            both = UnConsciousnessMeasureType.objects.get(name="Both")
+
+            if both.id in self.consciousness_measure_types:
+                queryset = queryset.filter(
+                    Q(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
+                    | Q(Q(unconsciousness_measures__type__name="Subjective") & Q(unconsciousness_measures__type__name="Objective"))
+                )
+            else:
+                queryset = queryset.filter(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
+
 
         if len(self.processing_domain_main_types):
             queryset = queryset.filter(processing_domains__main__id__in=self.processing_domain_main_types)

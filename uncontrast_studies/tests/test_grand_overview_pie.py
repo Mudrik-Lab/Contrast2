@@ -1,6 +1,7 @@
 from rest_framework import status
 
 from contrast_api.choices import StudyTypeChoices, PresentationModeChoices, SignificanceChoices, UnConSampleChoices
+from uncontrast_studies.models import UnConsciousnessMeasureType
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
 
@@ -21,6 +22,14 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
         unconsciousness_measure_category_type = self.given_unconsciousness_measure_category_type_exists("category_type")
         unconsciousness_measure_category_sub_type = self.given_unconsciousness_measure_category_sub_type_exists(
             "category_sub_type", category_type=unconsciousness_measure_category_type
+        )
+        self.subjective_measure_type = self.given_unconsciousness_measure_category_type_exists("Subjective")
+        self.objective_measure_type = self.given_unconsciousness_measure_category_type_exists("Objective")
+        subjective_measure_sub_type = self.given_unconsciousness_measure_category_sub_type_exists(
+            name="Dichotomous", category_type=self.subjective_measure_type
+        )
+        objective_measure_sub_type = self.given_unconsciousness_measure_category_sub_type_exists(
+            name="Location", category_type=self.objective_measure_type
         )
         suppressed_stimulus_1 = dict(
             category=stimulus_category_type,
@@ -61,14 +70,40 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
             is_performance_above_chance=True,
             is_trial_excluded_based_on_measure=False,
         )
+        unconsciousness_measure_objective = dict(
+            phase=unconsciousness_measure_phase,
+            type=self.objective_measure_type,
+            sub_type=objective_measure_sub_type,
+            number_of_trials=8,
+            number_of_participants_in_awareness_test=30,
+            is_cm_same_participants_as_task=True,
+            is_performance_above_chance=True,
+            is_trial_excluded_based_on_measure=False,
+        )
+        unconsciousness_measure_subjective = dict(
+            phase=unconsciousness_measure_phase,
+            type=self.subjective_measure_type,
+            sub_type=subjective_measure_sub_type,
+            number_of_trials=8,
+            number_of_participants_in_awareness_test=30,
+            is_cm_same_participants_as_task=True,
+            is_performance_above_chance=True,
+            is_trial_excluded_based_on_measure=False,
+        )
         experiment_positive_1 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
             significance=SignificanceChoices.POSITIVE,  # We override it, although basically it's from findings
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1],
             samples=[sample_1],
-            unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2],
+            unconsciousness_measures=[unconsciousness_measure_1,
+                                      unconsciousness_measure_2,
+                                      unconsciousness_measure_objective,
+                                      unconsciousness_measure_subjective
+                                      ],
         )
+
+
 
         experiment_positive_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
@@ -76,7 +111,7 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1, suppressed_stimulus_2],
             samples=[sample_2],
-            unconsciousness_measures=[unconsciousness_measure_2],
+            unconsciousness_measures=[unconsciousness_measure_2, unconsciousness_measure_objective],
         )
 
         experiment_negative_1 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
@@ -85,7 +120,7 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1],
             samples=[sample_1],
-            unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2],
+            unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2, unconsciousness_measure_subjective],
         )
 
         experiment_negative_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
@@ -124,3 +159,14 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
         self.assertEqual(len(res.data["series"]), 3)
         for slice in res.data["series"]:
             self.assertIn(slice["key"], SignificanceChoices.values)
+
+    def test_both_measure_behavior(self):
+        self._setup_world()
+        filter_name = "consciousness_measure_types"
+        both = UnConsciousnessMeasureType.objects.get(name="Both")
+        filters = {filter_name: both.id}
+
+        target_url = self.reverse_with_query_params("uncontrast-experiments-graphs-grand-overview-pie",**filters)
+        res = self.client.get(target_url)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(res.data["series"]), 1 )

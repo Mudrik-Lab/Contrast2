@@ -87,11 +87,22 @@ class ParametersDistributionFreeQueriesDataProcessor(BaseProcessor):
 
         if len(self.consciousness_measure_types):
             both = UnConsciousnessMeasureType.objects.get(name="Both")
-            if (both.id in self.consciousness_measure_types) or (str(both.id) in self.consciousness_measure_types):
-                queryset = queryset.filter(
-                    Q(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
-                    | Q(Q(unconsciousness_measures__type__name="Subjective") & Q(unconsciousness_measures__type__name="Objective"))
-                )
+
+            if str(both.id) in self.consciousness_measure_types:
+                queryset = queryset.annotate(
+                measure_type=Case(
+                    When(
+                        Exists(UnConsciousnessMeasure.objects.filter(experiment=OuterRef("id"), type__name="Objective"))
+                        & Exists(
+                            UnConsciousnessMeasure.objects.filter(experiment=OuterRef("id"), type__name="Subjective")
+                        ),
+                        then=Value("Both"),
+                    ),
+                    default=Value(None),
+                    output_field=CharField(null=True),
+                        )
+                    ).filter(Q(measure_type="Both") | Q(unconsciousness_measures__type__id__in=self.consciousness_measure_types))
+
             else:
                 queryset = queryset.filter(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
 

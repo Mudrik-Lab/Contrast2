@@ -97,7 +97,7 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
         if len(self.consciousness_measure_types):
             both = UnConsciousnessMeasureType.objects.get(name="Both")
 
-            if both.id in self.consciousness_measure_types:
+            if (both.id in self.consciousness_measure_types) or (str(both.id) in self.consciousness_measure_types):
                 queryset = queryset.filter(
                     Q(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
                     | Q(Q(unconsciousness_measures__type__name="Subjective") & Q(unconsciousness_measures__type__name="Objective"))

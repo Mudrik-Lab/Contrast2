@@ -1,6 +1,6 @@
 import itertools
 
-from django.db.models import QuerySet, F, Count, Value, When
+from django.db.models import QuerySet, F, Count, Value, When, Case
 
 from contrast_api.utils import cast_as_boolean
 from uncontrast_studies.models import UnConExperiment

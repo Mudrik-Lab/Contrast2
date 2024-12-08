@@ -18,7 +18,6 @@ from studies.models import (
     Technique,
     MeasureType,
     Theory,
-    Interpretation,
 )
 from studies.models.stimulus import StimulusCategory
 from studies.processors.base import BaseProcessor

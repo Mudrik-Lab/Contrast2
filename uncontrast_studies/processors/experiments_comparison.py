@@ -1,5 +1,5 @@
 from django.db.models import QuerySet, F, Count, Exists, OuterRef, Q, Case, Subquery, When, IntegerField
-from django.db.models.functions import JSONObject, Coalesce
+from django.db.models.functions import JSONObject
 
 from contrast_api.choices import SignificanceChoices
 

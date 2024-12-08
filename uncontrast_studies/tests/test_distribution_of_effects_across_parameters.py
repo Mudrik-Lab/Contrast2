@@ -1,7 +1,6 @@
 from rest_framework import status
 
 from contrast_api.choices import StudyTypeChoices, PresentationModeChoices, SignificanceChoices, UnConSampleChoices
-from contrast_api.open_api_parameters import is_csv
 from uncontrast_studies.tests.base import UnContrastBaseTestCase
 
 

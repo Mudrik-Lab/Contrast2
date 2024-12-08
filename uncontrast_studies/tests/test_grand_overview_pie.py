@@ -121,6 +121,6 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
         target_url = self.reverse_with_query_params("uncontrast-experiments-graphs-grand-overview-pie")
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data['series']), 3)
-        for slice in res.data['series']:
-            self.assertIn(slice['key'], SignificanceChoices.values)
+        self.assertEqual(len(res.data["series"]), 3)
+        for slice in res.data["series"]:
+            self.assertIn(slice["key"], SignificanceChoices.values)

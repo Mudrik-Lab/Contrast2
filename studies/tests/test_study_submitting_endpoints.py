@@ -12,7 +12,18 @@ from contrast_api.choices import (
     ReportingChoices,
     InterpretationsChoices,
 )
-from studies.models import Study, Theory, Paradigm, Technique, TaskType, MeasureType, StimulusCategory, ModalityType
+from studies.models import (
+    Study,
+    Theory,
+    Paradigm,
+    Technique,
+    TaskType,
+    MeasureType,
+    StimulusCategory,
+    ModalityType,
+    FindingTagType,
+    FindingTagFamily,
+)
 from contrast_api.tests.base import BaseTestCase
 
 from users.models import Profile
@@ -69,6 +80,8 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         technique, created = Technique.objects.get_or_create(name="fMRI")
         task_type, created = TaskType.objects.get_or_create(name="Discrimination")
         measure_type, created = MeasureType.objects.get_or_create(name="PHI")
+        finding_typ_family, created = FindingTagFamily.objects.get_or_create(name="Spatial Areas")
+        finding_tag_type, created = FindingTagType.objects.get_or_create(name="Frontal", family=finding_typ_family)
         stimulus_category, created = StimulusCategory.objects.get_or_create(name="Animals")
         stimulus_modality, created = ModalityType.objects.get_or_create(name="Auditory")
 
@@ -80,6 +93,14 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
 
         measure_res = self.when_measure_is_added_to_experiment(  # noqa: F841
             study_id, experiment_id, measure_data=dict(type=measure_type.id, notes="this is a measure")
+        )
+
+        finding_tag_res = self.when_finding_is_added_to_experiment(  # noqa: F841
+            study_id, experiment_id,
+            finding_data=dict(type=finding_tag_type.id,
+                              family=finding_typ_family.id,
+                              technique=technique.id,
+                              offset="", onset="")
         )
 
         # check with stimulus without subcategory
@@ -418,6 +439,12 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def when_measure_is_added_to_experiment(self, study_id, experiment_id, measure_data):
         target_url = reverse("measures-list", args=[study_id, experiment_id])
         res = self.client.post(target_url, data=json.dumps(measure_data), content_type="application/json")
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        return res.data
+
+    def when_finding_is_added_to_experiment(self, study_id, experiment_id, finding_data):
+        target_url = reverse("finding_tags-list", args=[study_id, experiment_id])
+        res = self.client.post(target_url, data=json.dumps(finding_data), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
 

@@ -1,3 +1,4 @@
+from django.utils.encoding import smart_str
 from rest_framework import serializers
 
 
@@ -67,3 +68,13 @@ class PieChartSerializer(serializers.Serializer):
 
 class ComparisonNestedPieChartSerializer(serializers.Serializer):
     theories = PieChartSerializer(many=True)
+
+
+class NullableIntegerField(serializers.IntegerField):
+    def to_internal_value(self, data):
+        """
+        Handling empty stings as null
+        """
+        if data is not None and smart_str(data).strip() == "":
+            return None
+        return super().to_internal_value(data)

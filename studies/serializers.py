@@ -3,6 +3,7 @@ from drf_spectacular.utils import extend_schema_field
 from rest_framework import serializers
 
 from approval_process.models import ApprovalProcess
+from contrast_api.serializers import NullableIntegerField
 from studies.models import (
     Experiment,
     Study,
@@ -46,6 +47,8 @@ class FindingTagSerializer(serializers.ModelSerializer):
     type = serializers.PrimaryKeyRelatedField(queryset=FindingTagType.objects.all())
     family = serializers.PrimaryKeyRelatedField(queryset=FindingTagFamily.objects.all())
     technique = serializers.PrimaryKeyRelatedField(queryset=Technique.objects.all())
+    offset = NullableIntegerField(required=False)
+    onset = NullableIntegerField(required=False)
 
     class Meta:
         model = FindingTag
@@ -65,6 +68,14 @@ class FindingTagSerializer(serializers.ModelSerializer):
             "technique",
             "direction",
         )
+
+    def validate(self, data):
+        if data.get("onset") not in ["", None] and data.get("offset") in ["", None]:
+            raise serializers.ValidationError({"onset": "onset can't exist without offset"})
+
+        if data.get("offset") not in ["", None] and data.get("onset") in ["", None]:
+            raise serializers.ValidationError({"offset": "offset can't exist without onset"})
+        return data
 
 
 class InterpretationSerializer(serializers.ModelSerializer):

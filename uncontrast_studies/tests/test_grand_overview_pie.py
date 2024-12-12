@@ -96,14 +96,13 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1],
             samples=[sample_1],
-            unconsciousness_measures=[unconsciousness_measure_1,
-                                      unconsciousness_measure_2,
-                                      unconsciousness_measure_objective,
-                                      unconsciousness_measure_subjective
-                                      ],
+            unconsciousness_measures=[
+                unconsciousness_measure_1,
+                unconsciousness_measure_2,
+                unconsciousness_measure_objective,
+                unconsciousness_measure_subjective,
+            ],
         )
-
-
 
         experiment_positive_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
             study,
@@ -120,7 +119,11 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
             paradigm=specific_paradigm,
             suppressed_stimuli=[suppressed_stimulus_1],
             samples=[sample_1],
-            unconsciousness_measures=[unconsciousness_measure_1, unconsciousness_measure_2, unconsciousness_measure_subjective],
+            unconsciousness_measures=[
+                unconsciousness_measure_1,
+                unconsciousness_measure_2,
+                unconsciousness_measure_subjective,
+            ],
         )
 
         experiment_negative_2 = self.given_uncon_experiment_exists_for_study(  # noqa: F841
@@ -166,7 +169,7 @@ class TestGrandOverviewPieGraphTestCase(UnContrastBaseTestCase):
         both = UnConsciousnessMeasureType.objects.get(name="Both")
         filters = {filter_name: both.id}
 
-        target_url = self.reverse_with_query_params("uncontrast-experiments-graphs-grand-overview-pie",**filters)
+        target_url = self.reverse_with_query_params("uncontrast-experiments-graphs-grand-overview-pie", **filters)
         res = self.client.get(target_url)
         self.assertEqual(res.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(res.data["series"]), 1 )
+        self.assertEqual(len(res.data["series"]), 1)

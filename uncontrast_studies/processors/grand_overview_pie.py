@@ -102,9 +102,13 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
                 queryset = queryset.annotate(
                     measure_type=Case(
                         When(
-                            Exists(UnConsciousnessMeasure.objects.filter(experiment=OuterRef("id"), type__name="Objective"))
+                            Exists(
+                                UnConsciousnessMeasure.objects.filter(experiment=OuterRef("id"), type__name="Objective")
+                            )
                             & Exists(
-                                UnConsciousnessMeasure.objects.filter(experiment=OuterRef("id"), type__name="Subjective")
+                                UnConsciousnessMeasure.objects.filter(
+                                    experiment=OuterRef("id"), type__name="Subjective"
+                                )
                             ),
                             then=Value("Both"),
                         ),
@@ -112,11 +116,11 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
                         output_field=CharField(null=True),
                     )
                 ).filter(
-                    Q(measure_type="Both") | Q(unconsciousness_measures__type__id__in=self.consciousness_measure_types))
+                    Q(measure_type="Both") | Q(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
+                )
                 queryset
             else:
                 queryset = queryset.filter(unconsciousness_measures__type__id__in=self.consciousness_measure_types)
-
 
         if len(self.processing_domain_main_types):
             queryset = queryset.filter(processing_domains__main__id__in=self.processing_domain_main_types)

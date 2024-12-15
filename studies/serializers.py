@@ -47,8 +47,8 @@ class FindingTagSerializer(serializers.ModelSerializer):
     type = serializers.PrimaryKeyRelatedField(queryset=FindingTagType.objects.all())
     family = serializers.PrimaryKeyRelatedField(queryset=FindingTagFamily.objects.all())
     technique = serializers.PrimaryKeyRelatedField(queryset=Technique.objects.all())
-    offset = NullableIntegerField(required=False)
-    onset = NullableIntegerField(required=False)
+    offset = NullableIntegerField(required=False, allow_null=True)
+    onset = NullableIntegerField(required=False, allow_null=True)
 
     class Meta:
         model = FindingTag

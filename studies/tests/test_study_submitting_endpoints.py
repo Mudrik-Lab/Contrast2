@@ -102,6 +102,13 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
                               technique=technique.id,
                               offset="", onset="")
         )
+        finding_tag_res = self.when_finding_is_added_to_experiment(  # noqa: F841
+            study_id, experiment_id,
+            finding_data=dict(type=finding_tag_type.id,
+                              family=finding_typ_family.id,
+                              technique=technique.id,
+                              offset=None, onset=None)
+        )
 
         # check with stimulus without subcategory
 

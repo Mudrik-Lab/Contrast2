@@ -161,9 +161,9 @@ class Base(Configuration):
                 "uncontrast_studies.UnConMainParadigm",
                 "uncontrast_studies.UnConSpecificParadigm",
                 "uncontrast_studies.UnConProcessingMainDomain",
-                "uncontrast_studies.UnConProcessingSubDomain",
                 "uncontrast_studies.UnConSuppressionMethodType",
                 "uncontrast_studies.UnConSuppressionMethodSubType",
+                "uncontrast_studies.UnConTaskType",
             ),
         },
         {
@@ -177,6 +177,7 @@ class Base(Configuration):
                 "uncontrast_studies.UnConProcessingDomain",
                 "uncontrast_studies.UnConSuppressionMethod",
                 "uncontrast_studies.UnConSample",
+                "uncontrast_studies.UnConTask",
             ),
         },
         {"app": "configuration", "label": "general graphs and forms related configuration"},

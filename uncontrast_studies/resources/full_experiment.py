@@ -51,6 +51,7 @@ class FullUnConExperimentResource(resources.ModelResource):
             "Suppressed_stimuli",
             "Target_stimuli",
             "Consciousness_measures",
+            "Consciousness_measures_notes",
             "Is_target_same_as_suppressed_stimulus",
             "Is_target_stimulus",
             "findings",

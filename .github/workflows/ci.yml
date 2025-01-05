@@ -61,6 +61,7 @@ jobs:
             curl -fsS -o get-poetry.py https://install.python-poetry.org
             python get-poetry.py -y
             echo "$HOME/.local/bin" >> $GITHUB_PATH
+            poetry self add poetry-plugin-export
       - name: Install dependencies
         run: poetry install --no-interaction
       - name: Run tests
@@ -76,18 +77,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Install Poetry
         run: |
           curl -fsS -o get-poetry.py https://install.python-poetry.org
           python get-poetry.py -y
           echo "$HOME/.local/bin" >> $GITHUB_PATH
+          poetry self add poetry-plugin-export
       - name: export to requirements.txt
         run: poetry export --without-hashes -f requirements.txt --output requirements.txt
 
       - name: Check out repository frontend repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           repository: "Mudrik-Lab/ContrastFront"
           ssh-key: ${{ secrets.CONTRAST_DEPLOY_KEY }}

@@ -49,7 +49,7 @@ class FindingTag(models.Model):
         "offset",
         "band_lower_bound",
         "band_higher_bound",
-        "AAL_atlas_tag",
+        "AAL_atlas_tags",
         "analysis_type",
         "direction",
     ]

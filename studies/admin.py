@@ -33,6 +33,7 @@ from studies.models import (
     Theory,
     AggregatedInterpretation,
 )
+from studies.models.finding_tag import AALAtlasTag
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimulus
 from rangefilter.filters import NumericRangeFilter
 
@@ -546,6 +547,9 @@ class TheoryAdmin(BaseContrastAdmin):
         else:
             return ""
 
+class AALAtlasTagAdmin(ImportExportModelAdmin):
+    model = AALAtlasTag
+    list_display = ("name", "id")
 
 # admin.site.disable_action('delete_selected')  # Site wide
 admin.site.register(Study, StudyAdmin)
@@ -571,3 +575,4 @@ admin.site.register(TaskType, TaskTypeAdmin)
 admin.site.register(Task, TaskAdmin)
 admin.site.register(Technique, TechniqueAdmin)
 admin.site.register(Theory, TheoryAdmin)
+admin.site.register(AALAtlasTag, AALAtlasTagAdmin)

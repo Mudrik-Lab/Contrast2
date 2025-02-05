@@ -24,6 +24,13 @@ class FindingTagType(models.Model):
         return self.name
 
 
+class AALAtlasTag(models.Model):
+    name = models.CharField(null=False, blank=False, max_length=250)
+
+    def __str__(self):
+        return self.name
+
+
 class FindingTag(models.Model):
     """
     This is a polymorphic model. e.g different types of "finding tags" have different implementations
@@ -34,7 +41,7 @@ class FindingTag(models.Model):
     available_properties_by_family = {
         "Temporal": ["onset", "offset"],
         "Frequency": ["onset", "offset", "direction", "band_lower_bound", "band_higher_bound", "analysis_type"],
-        "Spatial Areas": ["AAL_atlas_tag"],
+        "Spatial Areas": ["AAL_atlas_tags"],
     }
     # properties changing by type, if you add one, you need to add it here also
     variable_properties = [
@@ -61,7 +68,10 @@ class FindingTag(models.Model):
     band_higher_bound = models.DecimalField(
         null=True, blank=True, max_digits=10, decimal_places=3, verbose_name="Band Higher bound in Hz"
     )
+    # Deprecated, to be removed later
     AAL_atlas_tag = models.CharField(null=True, blank=True, max_length=500, choices=AALAtlasTagChoices.choices)
+
+    AAL_atlas_tags = models.ManyToManyField(blank=True, to=AALAtlasTag, related_name="finding_tags")
     notes = models.TextField(null=True, blank=True)
     analysis_type = models.CharField(
         null=True, blank=True, max_length=100, choices=AnalysisTypeChoices.choices, default=AnalysisTypeChoices.POWER

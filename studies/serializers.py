@@ -25,6 +25,7 @@ from studies.models import (
     FindingTagFamily,
     MeasureType,
 )
+from studies.models.finding_tag import AALAtlasTag
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory, ModalityType
 
 
@@ -47,6 +48,7 @@ class FindingTagSerializer(serializers.ModelSerializer):
     type = serializers.PrimaryKeyRelatedField(queryset=FindingTagType.objects.all())
     family = serializers.PrimaryKeyRelatedField(queryset=FindingTagFamily.objects.all())
     technique = serializers.PrimaryKeyRelatedField(queryset=Technique.objects.all())
+    AAL_atlas_tags = serializers.PrimaryKeyRelatedField(queryset=AALAtlasTag.objects.all(), many=True, required=False)
     offset = NullableIntegerField(required=False, allow_null=True)
     onset = NullableIntegerField(required=False, allow_null=True)
 
@@ -62,6 +64,7 @@ class FindingTagSerializer(serializers.ModelSerializer):
             "band_lower_bound",
             "band_higher_bound",
             "AAL_atlas_tag",
+            "AAL_atlas_tags",
             "notes",
             "analysis_type",
             "is_NCC",
@@ -75,6 +78,20 @@ class FindingTagSerializer(serializers.ModelSerializer):
 
         if data.get("offset") not in ["", None] and data.get("onset") in ["", None]:
             raise serializers.ValidationError({"offset": "offset can't exist without onset"})
+
+        # Handle legacy AAL_atlas_tag field
+        if "AAL_atlas_tag" in data and data["AAL_atlas_tag"] and not "AAL_atlas_tags" in data:
+            # Get  AALAtlasTag object for the legacy tag
+            legacy_tag = data["AAL_atlas_tag"]
+            atlas_tag = AALAtlasTag.objects.get(name=legacy_tag)
+            
+            # Initialize AAL_atlas_tags if not present
+            data["AAL_atlas_tags"] = []
+            
+            # Add to AAL_atlas_tags if not already present
+            if atlas_tag not in data["AAL_atlas_tags"]:
+                data["AAL_atlas_tags"].append(atlas_tag)
+
         return data
 
 

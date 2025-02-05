@@ -6,10 +6,7 @@ from simple_history.models import HistoricalRecords
 class ModalityType(models.Model):
     class Meta:
         verbose_name_plural = "stimulus modalities"
-        ordering = [models.Case(
-            models.When(name='None', then=models.Value(0)),
-            default=models.Value(1)
-        ), 'name']
+        ordering = [models.Case(models.When(name="None", then=models.Value(0)), default=models.Value(1)), "name"]
 
     name = models.CharField(null=False, blank=False, max_length=50)
 
@@ -20,10 +17,7 @@ class ModalityType(models.Model):
 class StimulusCategory(models.Model):
     class Meta:
         verbose_name_plural = "stimulus categories"
-        ordering = [models.Case(
-            models.When(name='None', then=models.Value(0)),
-            default=models.Value(1)
-        ), 'name']
+        ordering = [models.Case(models.When(name="None", then=models.Value(0)), default=models.Value(1)), "name"]
 
     name = models.CharField(null=False, blank=False, max_length=50)
 
@@ -34,16 +28,14 @@ class StimulusCategory(models.Model):
 class StimulusSubCategory(models.Model):
     class Meta:
         verbose_name_plural = "stimulus sub categories"
-        ordering = [models.Case(
-            models.When(name='None', then=models.Value(0)),
-            default=models.Value(1)
-        ), 'name']
+        ordering = [models.Case(models.When(name="None", then=models.Value(0)), default=models.Value(1)), "name"]
 
     name = models.CharField(null=False, blank=False, max_length=50)
     parent = models.ForeignKey(null=True, blank=True, on_delete=CASCADE, to=StimulusCategory)
 
     def __str__(self):
         return self.name
+
 
 class Stimulus(models.Model):
     allowed_categories_by_modality = {

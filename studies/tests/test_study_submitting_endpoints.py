@@ -25,6 +25,7 @@ from studies.models import (
     FindingTagFamily,
 )
 from contrast_api.tests.base import BaseTestCase
+from studies.models.finding_tag import AALAtlasTag
 
 from users.models import Profile
 
@@ -35,6 +36,9 @@ from users.models import Profile
 class SubmittedStudiesViewSetTestCase(BaseTestCase):
     def setUp(self) -> None:
         super().setUp()
+        self.aal_tag1 = AALAtlasTag.objects.create(name="Frontal_Sup_L")
+        self.aal_tag2 = AALAtlasTag.objects.create(name="Frontal_Sup_R")
+        self.aal_tag3 = AALAtlasTag.objects.create(name="Backend_Sup_R")
 
     def tearDown(self) -> None:
         super().tearDown()
@@ -96,18 +100,18 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         )
 
         finding_tag_res = self.when_finding_is_added_to_experiment(  # noqa: F841
-            study_id, experiment_id,
-            finding_data=dict(type=finding_tag_type.id,
-                              family=finding_typ_family.id,
-                              technique=technique.id,
-                              offset="", onset="")
+            study_id,
+            experiment_id,
+            finding_data=dict(
+                type=finding_tag_type.id, family=finding_typ_family.id, technique=technique.id, offset="", onset=""
+            ),
         )
         finding_tag_res = self.when_finding_is_added_to_experiment(  # noqa: F841
-            study_id, experiment_id,
-            finding_data=dict(type=finding_tag_type.id,
-                              family=finding_typ_family.id,
-                              technique=technique.id,
-                              offset=None, onset=None)
+            study_id,
+            experiment_id,
+            finding_data=dict(
+                type=finding_tag_type.id, family=finding_typ_family.id, technique=technique.id, offset=None, onset=None
+            ),
         )
 
         # check with stimulus without subcategory
@@ -350,6 +354,50 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         self.assertEqual(study.approval_process.comments.last().text, "Submission rejected")
         self.assertEqual(len(study.approval_process.comments.all()), 2)
 
+    def test_finding_with_aal_atlas_tags(self):
+        # Create study and experiment first
+        self.given_user_exists(username="submitting_user", email="submitting_user@test.com")
+        self.given_user_authenticated("submitting_user", "12345")
+        author1 = self.given_an_author_exists("author1")
+        study_res = self.when_study_created_by_user_via_api(authors_key_words=[], authors=[author1.id])
+
+        study_id = study_res["id"]
+        experiment_data = self.when_experiment_is_added_to_study_via_api(
+            study_id=study_id,
+            name="Test Experiment"
+        )
+        experiment_id = experiment_data["id"]
+
+        # Create finding with AAL atlas tags
+        finding_data = {
+            "family": "Spatial Areas",
+            "type": "Activation",
+            "AAL_atlas_tags": [self.aal_tag1.id, self.aal_tag2.id],
+            "is_NCC": True
+        }
+
+        finding_typ_family, created = FindingTagFamily.objects.get_or_create(name="Spatial Areas")
+        finding_tag_type, created = FindingTagType.objects.get_or_create(name="Frontal", family=finding_typ_family)
+        technique, created = Technique.objects.get_or_create(name="fMRI")
+
+        finding_tag_res = self.when_finding_is_added_to_experiment(  # noqa: F841
+            study_id,
+            experiment_id,
+            finding_data=dict(
+                type=finding_tag_type.id, family=finding_typ_family.id, technique=technique.id,
+                AAL_atlas_tags=[self.aal_tag1.id, self.aal_tag2.id]
+            ),
+        )
+
+
+
+        # Verify the finding was created with correct tags
+        experiments_res = self.get_experiments_for_study(study_id)
+        first_experiment = experiments_res[0]
+        self.assertIn(self.aal_tag1.id, first_experiment["finding_tags"][0]["AAL_atlas_tags"])
+        self.assertIn(self.aal_tag2.id, first_experiment["finding_tags"][0]["AAL_atlas_tags"])
+        self.assertNotIn(self.aal_tag3.id, first_experiment["finding_tags"][0]["AAL_atlas_tags"])
+
     def when_study_created_by_user_via_api(self, **kwargs):
         default_study = dict(
             DOI="10.1016/j.cortex.2017.07.010",
@@ -454,6 +502,9 @@ class SubmittedStudiesViewSetTestCase(BaseTestCase):
         res = self.client.post(target_url, data=json.dumps(finding_data), content_type="application/json")
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         return res.data
+        
+
+
 
     def when_interpretation_is_added_to_experiment(self, study_id, experiment_id, interpretation_data):
         target_url = reverse("interpretations-list", args=[study_id, experiment_id])

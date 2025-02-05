@@ -37,6 +37,7 @@ from studies.models import (
     ModalityType,
     Experiment,
 )
+from studies.models.finding_tag import AALAtlasTag
 from studies.models.stimulus import StimulusCategory, StimulusSubCategory
 from uncontrast_studies.models import (
     UnConSpecificParadigm,
@@ -159,6 +160,7 @@ class ConfigurationView(GenericViewSet):
         available_populations_types = SampleChoices.values
         available_theory_driven_types = TheoryDrivenChoices.values
         available_AAL_atlas_tag_types = AALAtlasTagChoices.values
+        available_AAL_atlas_tags_types = AALAtlasTag.objects.all()
         available_analysis_type_choices = AnalysisTypeChoices.values
         available_direction_choices = DirectionChoices.values
         available_consciousness_measure_phase_type = ConsciousnessMeasurePhaseType.objects.all()
@@ -179,6 +181,7 @@ class ConfigurationView(GenericViewSet):
             available_populations_types=available_populations_types,
             available_theory_driven_types=available_theory_driven_types,
             available_AAL_atlas_tag_types=available_AAL_atlas_tag_types,
+            available_AAL_atlas_tags_types=available_AAL_atlas_tags_types,
             available_analysis_type_choices=available_analysis_type_choices,
             available_direction_choices=available_direction_choices,
             available_experiment_types=available_experiment_types,

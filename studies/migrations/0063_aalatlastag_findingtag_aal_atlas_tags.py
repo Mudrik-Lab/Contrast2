@@ -4,22 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('studies', '0062_alter_modalitytype_options_and_more'),
+        ("studies", "0062_alter_modalitytype_options_and_more"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AALAtlasTag',
+            name="AALAtlasTag",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=250)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("name", models.CharField(max_length=250)),
             ],
         ),
         migrations.AddField(
-            model_name='findingtag',
-            name='AAL_atlas_tags',
-            field=models.ManyToManyField(blank=True, related_name='finding_tags', to='studies.aalatlastag'),
+            model_name="findingtag",
+            name="AAL_atlas_tags",
+            field=models.ManyToManyField(blank=True, related_name="finding_tags", to="studies.aalatlastag"),
         ),
     ]

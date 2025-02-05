@@ -136,7 +136,7 @@ class FullExperimentResource(resources.ModelResource):
             and finding.technique is not None
             and finding.technique.name.lower() == "fmri"
         ):
-            tags = '|'.join([tag.name for tag in finding.AAL_atlas_tags.all()])
+            tags = "|".join([tag.name for tag in finding.AAL_atlas_tags.all()])
             resources = base_finding_resources + [f"atlas_tags: {tags}"]
             return INNER_SEPERATOR.join(resources)
 

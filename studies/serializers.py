@@ -84,10 +84,10 @@ class FindingTagSerializer(serializers.ModelSerializer):
             # Get  AALAtlasTag object for the legacy tag
             legacy_tag = data["AAL_atlas_tag"]
             atlas_tag = AALAtlasTag.objects.get(name=legacy_tag)
-            
+
             # Initialize AAL_atlas_tags if not present
             data["AAL_atlas_tags"] = []
-            
+
             # Add to AAL_atlas_tags if not already present
             if atlas_tag not in data["AAL_atlas_tags"]:
                 data["AAL_atlas_tags"].append(atlas_tag)

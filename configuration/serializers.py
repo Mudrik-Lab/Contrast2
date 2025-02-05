@@ -15,6 +15,7 @@ from studies.models import (
     TaskType,
     Author,
 )
+from studies.models.finding_tag import AALAtlasTag
 from studies.models.stimulus import StimulusSubCategory, ModalityType, StimulusCategory
 from uncontrast_studies.models import (
     UnConsciousnessMeasureSubType,
@@ -54,6 +55,12 @@ class FindingTagTypeSerializer(serializers.ModelSerializer):
 class FindingTagFamilySerializer(serializers.ModelSerializer):
     class Meta:
         model = FindingTagFamily
+        fields = ("name", "id")
+
+
+class AALAtlasTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AALAtlasTag
         fields = ("name", "id")
 
 
@@ -202,6 +209,7 @@ class StudiesConfigurationSerializer(serializers.Serializer):
     available_populations_types = serializers.ListSerializer(child=serializers.CharField())
     available_theory_driven_types = serializers.ListSerializer(child=serializers.CharField())
     available_AAL_atlas_tag_types = serializers.ListSerializer(child=serializers.CharField())
+    available_AAL_atlas_tags_types = AALAtlasTagSerializer(many=True)
     available_analysis_type_choices = serializers.ListSerializer(child=serializers.CharField())
     available_direction_choices = serializers.ListSerializer(child=serializers.CharField())
     available_experiment_types = ExperimentTypeSerializer(many=True)

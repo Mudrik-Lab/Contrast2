@@ -551,6 +551,11 @@ class AALAtlasTagAdmin(ImportExportModelAdmin):
     model = AALAtlasTag
     list_display = ("name", "id")
 
+class AALAtlasTagAdmin(ImportExportModelAdmin):
+    model = AALAtlasTag
+    list_display = ("name", "id")
+
+
 # admin.site.disable_action('delete_selected')  # Site wide
 admin.site.register(Study, StudyAdmin)
 admin.site.register(Experiment, ExperimentAdmin)

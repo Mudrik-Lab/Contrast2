@@ -190,14 +190,7 @@ class ExperimentInline(admin.StackedInline):
 
     extra = 0
 
-    # inlines = ( # need to migrate this to be sub inline
-    #     InterpretationInline,
-    #     SampleInline,
-    #     FindingTagInline,
-    #     MeasureInline,
-    #     ConsciousnessMeasureInline,
-    #     StimulusInline,
-    # )
+
 
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
@@ -381,6 +374,8 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
     list_filter = ("family",)
     search_fields = ("name",)
 
+class AALAtlasTagInline(admin.StackedInline):
+    model = FindingTag.AAL_atlas_tags.through
 
 class FindingTagAdmin(BaseContrastAdmin):
     model = FindingTag
@@ -397,6 +392,7 @@ class FindingTagAdmin(BaseContrastAdmin):
         "band_higher_bound",
         "direction",
         "AAL_atlas_tag",
+        # "AAL_atlas_tags",
         "notes",
     )
     list_filter = (
@@ -412,6 +408,8 @@ class FindingTagAdmin(BaseContrastAdmin):
         ("technique", admin.RelatedOnlyFieldListFilter),
         "analysis_type",
     )
+
+    inlines = [AALAtlasTagInline]
 
 
 class InterpretationAdmin(ImportExportModelAdmin):

@@ -146,7 +146,7 @@ class Base(Configuration):
                 "studies.MeasureType",
                 "studies.ConsciousnessMeasureType",
                 "studies.ConsciousnessMeasurePhaseType",
-                "studies.AALAtlasTag"
+                "studies.AALAtlasTag",
             ),
         },
         {

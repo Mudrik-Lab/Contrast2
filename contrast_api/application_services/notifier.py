@@ -32,7 +32,7 @@ class NotifierService:
         subject = "Reset your ContrastDb password"
         quoted_email = urllib.parse.quote_plus(recipient)
         reset_email_link = mark_safe(
-            f'{request.scheme}://{request.get_host()}/reset_password?email={quoted_email}&token={kwargs["token"]}'
+            f"{request.scheme}://{request.get_host()}/reset_password?email={quoted_email}&token={kwargs['token']}"
         )
         message = render_to_string(
             "password_reset_email.html", {"user": kwargs["user"], "reset_email_link": reset_email_link}

@@ -190,8 +190,6 @@ class ExperimentInline(admin.StackedInline):
 
     extra = 0
 
-
-
     def get_queryset(self, request):
         qs = super().get_queryset(request=request)
         # trying to optimize this view, but alas, currently the custom Prefetch doesn't seem to be working
@@ -374,13 +372,15 @@ class FindingTagTypeAdmin(ImportExportModelAdmin):
     list_filter = ("family",)
     search_fields = ("name",)
 
+
 class AALAtlasTagInline(admin.StackedInline):
     model = FindingTag.AAL_atlas_tags.through
+
 
 class FindingTagAdmin(BaseContrastAdmin):
     model = FindingTag
     search_fields = ("notes",)
-    exclude = ('AAL_atlas_tags',)
+    exclude = ("AAL_atlas_tags",)
     list_display = (
         "id",
         "experiment_id",
@@ -544,9 +544,11 @@ class TheoryAdmin(BaseContrastAdmin):
         else:
             return ""
 
+
 class AALAtlasTagAdmin(ImportExportModelAdmin):
     model = AALAtlasTag
     list_display = ("name", "id")
+
 
 class AALAtlasTagAdmin(ImportExportModelAdmin):
     model = AALAtlasTag

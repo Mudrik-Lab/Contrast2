@@ -380,7 +380,7 @@ class AALAtlasTagInline(admin.StackedInline):
 class FindingTagAdmin(BaseContrastAdmin):
     model = FindingTag
     search_fields = ("notes",)
-    exclude = ('AAL_atlas_tags')
+    exclude = ('AAL_atlas_tags',)
     list_display = (
         "id",
         "experiment_id",

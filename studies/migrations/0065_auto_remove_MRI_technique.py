@@ -17,6 +17,7 @@ def remove_redundant_mri_techniques_from_experiments(apps, schema_editor):
     true_mri_and_fmri_experiments_ids = [714]
     Experiment = apps.get_model("studies", "Experiment")
     Technique = apps.get_model("studies", "Technique")
+    FindingTag = apps.get_model("studies", "FindingTag")
 
     try:
         fmri_technique = Technique.objects.get(name="fMRI")
@@ -38,6 +39,12 @@ def remove_redundant_mri_techniques_from_experiments(apps, schema_editor):
 
     experiment_count = experiments_to_modify.count()
     logger.info(f"Migration completed. Modified {experiment_count} experiments")
+
+    findings_to_modify = FindingTag.objects.filter(experiment__in=experiments_to_modify)
+
+    for finding in findings_to_modify:
+        if finding.techniques__isnull:
+            finding.techniques.add(fmri_technique)
 
 
 class Migration(migrations.Migration):

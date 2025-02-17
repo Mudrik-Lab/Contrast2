@@ -33,23 +33,23 @@ def remove_redundant_mri_techniques_from_experiments(apps, schema_editor):
         experiment_model=Experiment,
         max_id=MAX_EXPERIMENT_ID,
         safe_list=true_mri_and_fmri_experiments_ids,
-        first_technique=fmri_technique,
-        second_technique=mri_technique,
+        first_technique=fmri_technique.id,
+        second_technique=mri_technique.id,
     )
 
     for experiment in experiments_to_modify:
         experiment.techniques.remove(mri_technique)
-        experiment.save()
         logger.info(f"Removed MRI technique from Experiment {experiment.id}")
 
     experiment_count = experiments_to_modify.count()
     logger.info(f"Migration completed. Modified {experiment_count} experiments")
 
-    findings_to_modify = FindingTag.objects.filter(experiment__in=experiments_to_modify)
+    findings_to_modify = FindingTag.objects.filter(experiment__in=experiments_to_modify).filter(technique__isnull=True)
 
     for finding in findings_to_modify:
-        if finding.techniques__isnull:
-            finding.techniques.add(fmri_technique)
+        finding.techniques.add(fmri_technique)
+        finding.save()
+        logger.info(f"Added fMRI technique to Finding {finding.id}")
 
 
 class Migration(migrations.Migration):

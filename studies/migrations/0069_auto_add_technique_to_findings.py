@@ -24,10 +24,16 @@ def add_technique_to_findings(apps, schema_editor):
         raise Exception("Required technique 'fMRI' not found")
 
     try:
-        intracranial_eeg_findings_to_modify = FindingTag.objects.filter(experiment__in=experiments_ids).filter(
-            experiment__techniques=intracranial_eeg_technique).filter(technique__isnull=False)
-        fmri_findings_to_modify = FindingTag.objects.filter(experiment__in=experiments_ids).filter(
-            experiment__techniques=fmri_technique).filter(technique__isnull=False)
+        intracranial_eeg_findings_to_modify = (
+            FindingTag.objects.filter(experiment__in=experiments_ids)
+            .filter(experiment__techniques=intracranial_eeg_technique)
+            .filter(technique__isnull=False)
+        )
+        fmri_findings_to_modify = (
+            FindingTag.objects.filter(experiment__in=experiments_ids)
+            .filter(experiment__techniques=fmri_technique)
+            .filter(technique__isnull=False)
+        )
     except EmptyResultSet:
         raise Exception("no findings to modify")
 
@@ -50,7 +56,7 @@ def add_technique_to_findings(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('studies', '0068_auto_remove_redundant_techniques'),
+        ("studies", "0068_auto_remove_redundant_techniques"),
     ]
 
     operations = [

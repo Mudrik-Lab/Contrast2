@@ -28,19 +28,16 @@ def add_technique_to_findings(apps, schema_editor):
     except Technique.DoesNotExist:
         raise Exception("Required technique 'fMRI' not found")
 
-    try:
-        intracranial_eeg_findings_to_modify = (
-            FindingTag.objects.filter(experiment__in=experiments_ids)
-            .filter(experiment__techniques=intracranial_eeg_technique)
-            .filter(technique__isnull=False)
-        )
-        fmri_findings_to_modify = (
-            FindingTag.objects.filter(experiment__in=experiments_ids)
-            .filter(experiment__techniques=fmri_technique)
-            .filter(technique__isnull=False)
-        )
-    except EmptyResultSet:
-        raise Exception("no findings to modify")
+    intracranial_eeg_findings_to_modify = (
+        FindingTag.objects.filter(experiment__in=experiments_ids)
+        .filter(experiment__techniques=intracranial_eeg_technique)
+        .filter(technique__isnull=False)
+    )
+    fmri_findings_to_modify = (
+        FindingTag.objects.filter(experiment__in=experiments_ids)
+        .filter(experiment__techniques=fmri_technique)
+        .filter(technique__isnull=False)
+    )
 
     for finding in intracranial_eeg_findings_to_modify:
         try:

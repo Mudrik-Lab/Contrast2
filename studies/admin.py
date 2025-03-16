@@ -58,16 +58,26 @@ class ExperimentForm(forms.ModelForm):
                 f"'{TheoryDrivenChoices.DRIVEN.label}' or '{TheoryDrivenChoices.MENTIONING.label}'. "
                 f"Not required for '{TheoryDrivenChoices.POST_HOC.label}'."
             )
-    
+        self.fields['paradigms'].help_text = "There should be at least one paradigm"
+        self.fields['techniques'].help_text = "There should be at least one technique"
+
     def clean(self):
         cleaned_data = super().clean()
         theory_driven = cleaned_data.get('theory_driven')
         theory_driven_theories = cleaned_data.get('theory_driven_theories', [])
+        paradigms = cleaned_data.get('paradigms', [])
+        techniques = cleaned_data.get('techniques', [])
         
         # Check if theory_driven is DRIVEN or MENTIONING but no theories selected
         if theory_driven in [TheoryDrivenChoices.DRIVEN, TheoryDrivenChoices.MENTIONING] and not theory_driven_theories:
             self.add_error('theory_driven_theories', 
                           f"Theory driven theories is required when theory driven is set to {theory_driven}")
+        
+        # Validate paradigms and techniques
+        if not paradigms:
+            self.add_error('paradigms', "There should be at least one paradigm")
+        if not techniques:
+            self.add_error('techniques', "There should be at least one technique")
         
         return cleaned_data
 

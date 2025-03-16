@@ -83,9 +83,9 @@ We are currently using postgres. You need to set up a user,
 
 5. To load the pre-existing data you need to: 
    6. 
-      * [Download this file](https://docs.google.com/spreadsheets/d/180WivImbqDv6MBabsHIt2dqvHKS-xDZz/edit?usp=sharing&ouid=115553053451052458030&rtpof=true&sd=true)
+      * [Download this file](https://docs.google.com/spreadsheets/d/1m5wYugDEUddOuQ0Ty_tplmlDBkOEc3FxpV45qNBzCGk/edit?gid=1985234368#gid=1985234368)
       in .xlsx format for **ConTrast**, or
-      * [Download this file](https://docs.google.com/spreadsheets/d/16icOOS2XWvFel80k9Gw3pC-r3EsaOi-U/edit?usp=drive_link&ouid=115553053451052458030&rtpof=true&sd=true) in .xlsx format for **UnConTrast**
+      * [Download this file](https://docs.google.com/spreadsheets/d/1h_I5Z4msPJI_W2Lc2UViZfqoth7Ojc7v/edit?gid=135649595#gid=135649595) in .xlsx format for **UnConTrast**
    7.
       * Save the file in
       ``` /studies/data``` directory for **ConTrast**, or

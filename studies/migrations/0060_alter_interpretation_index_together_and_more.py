@@ -4,24 +4,43 @@ from django.db import migrations, models
 from django.conf import settings
 
 
+def check_constraint_exists(apps, schema_editor):
+    """Check if the unique_theory constraint already exists"""
+    with schema_editor.connection.cursor() as cursor:
+        cursor.execute("""
+            SELECT COUNT(*) FROM pg_constraint
+            WHERE conname = 'unique_theory';
+        """)
+        exists = cursor.fetchone()[0] > 0
+        return exists
+
+def conditional_add_constraint(apps, schema_editor):
+    if not check_constraint_exists(apps, schema_editor):
+        # Only add the constraint if it doesn't exist
+        migration = migrations.AddConstraint(
+            model_name="interpretation",
+            constraint=models.UniqueConstraint(fields=("experiment", "theory"), name="unique_theory"),
+        )
+        migration.database_forwards("studies", schema_editor, apps.get_model("studies", "Interpretation"), None)
+
+def conditional_remove_constraint(apps, schema_editor):
+    if check_constraint_exists(apps, schema_editor):
+        # Only remove the constraint if it exists
+        migration = migrations.RemoveConstraint(
+            model_name="interpretation",
+            name="unique_theory",
+        )
+        migration.database_backwards("studies", schema_editor, apps.get_model("studies", "Interpretation"), None)
+
 class Migration(migrations.Migration):
     dependencies = [
         ("studies", "0059_alter_historicalstudy_authors_key_words_and_more"),
     ]
 
-    original_operations = [
-        # migrations.AlterIndexTogether(
-        #     name="interpretation",
-        #     index_together=set(),
-        # ),
-        migrations.AddConstraint(
-            model_name="interpretation",
-            constraint=models.UniqueConstraint(fields=("experiment", "theory"), name="unique_theory"),
+    operations = [
+        migrations.RunPython(
+            code=conditional_add_constraint,
+            reverse_code=conditional_remove_constraint,
         ),
     ]
-    testing_operations = []
-    if settings.NAME == "testing":
-        operations = testing_operations
-    else:
-        operations = original_operations
-    operations = operations
+

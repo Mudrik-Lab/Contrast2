@@ -2,6 +2,7 @@ from typing import List
 
 from django.contrib import admin, messages
 from django.db.models import Prefetch
+from django import forms
 
 from import_export.admin import ImportExportModelAdmin, ImportExportMixin, ExportActionMixin
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +11,7 @@ from import_export.formats.base_formats import CSV
 
 from contrast_api.admin_utils import SimpleHistoryWithDeletedAdmin
 from contrast_api.domain_services.study_lifecycle import StudyLifeCycleService
-from contrast_api.choices import InterpretationsChoices
+from contrast_api.choices import InterpretationsChoices, TheoryDrivenChoices
 from studies.models import (
     Study,
     Experiment,
@@ -40,6 +41,45 @@ from rangefilter.filters import NumericRangeFilter
 from studies.resources.full_experiment import FullExperimentResource
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.resources.full_experiment import FullUnConExperimentResource
+
+
+# Custom form for Experiment that handles theory_driven validation
+class ExperimentForm(forms.ModelForm):
+    class Meta:
+        model = Experiment
+        fields = '__all__'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'theory_driven_theories' in self.fields:
+            self.fields['theory_driven_theories'].required = False
+            self.fields['theory_driven_theories'].help_text = (
+                f"This field is required only when Theory Driven is set to "
+                f"'{TheoryDrivenChoices.DRIVEN.label}' or '{TheoryDrivenChoices.MENTIONING.label}'. "
+                f"Not required for '{TheoryDrivenChoices.POST_HOC.label}'."
+            )
+        self.fields['paradigms'].help_text = "There should be at least one paradigm"
+        self.fields['techniques'].help_text = "There should be at least one technique"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        theory_driven = cleaned_data.get('theory_driven')
+        theory_driven_theories = cleaned_data.get('theory_driven_theories', [])
+        paradigms = cleaned_data.get('paradigms', [])
+        techniques = cleaned_data.get('techniques', [])
+        
+        # Check if theory_driven is DRIVEN or MENTIONING but no theories selected
+        if theory_driven in [TheoryDrivenChoices.DRIVEN, TheoryDrivenChoices.MENTIONING] and not theory_driven_theories:
+            self.add_error('theory_driven_theories', 
+                          f"Theory driven theories is required when theory driven is set to {theory_driven}")
+        
+        # Validate paradigms and techniques
+        if not paradigms:
+            self.add_error('paradigms', "There should be at least one paradigm")
+        if not techniques:
+            self.add_error('techniques', "There should be at least one technique")
+        
+        return cleaned_data
 
 
 class BaseContrastAdmin(ImportExportMixin, SimpleHistoryWithDeletedAdmin):
@@ -103,6 +143,7 @@ class ConsciousnessMeasureInline(ExperimentRelatedInline, admin.StackedInline):
 
 
 class ExperimentAdmin(BaseContrastAdmin):
+    form = ExperimentForm
     list_display = (
         "id",
         "type_of_consciousness",
@@ -168,6 +209,7 @@ class ExperimentAdmin(BaseContrastAdmin):
 
 class ExperimentInline(admin.StackedInline):
     model = Experiment
+    form = ExperimentForm
     fk_name = "study"
     filter_horizontal = ("techniques", "paradigms")
     readonly_fields = ("study",)
@@ -185,9 +227,7 @@ class ExperimentInline(admin.StackedInline):
         "techniques",
         "paradigms",
     )
-    # fields =
     show_change_link = True
-
     extra = 0
 
     def get_queryset(self, request):
@@ -312,7 +352,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     """
 
     export_formats = [CSV]
-
+    
     def get_export_data(self, file_format, request, queryset, **kwargs):
         requested_resource_id = request.POST.get("resource")
         messages.info(request, "Note we support exporting only a single kind of study")
@@ -543,11 +583,6 @@ class TheoryAdmin(BaseContrastAdmin):
             return obj.parent.name
         else:
             return ""
-
-
-class AALAtlasTagAdmin(ImportExportModelAdmin):
-    model = AALAtlasTag
-    list_display = ("name", "id")
 
 
 class AALAtlasTagAdmin(ImportExportModelAdmin):

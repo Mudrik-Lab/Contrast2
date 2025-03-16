@@ -54,13 +54,5 @@ class Experiment(models.Model):
     history = HistoricalRecords()
     objects = ExperimentManager()
 
-    def clean(self):
-        if self.id:
-            # when creating an experiment via admin, this fails
-            if self.paradigms.count() == 0 or self.paradigms is None:
-                raise ValidationError({"paradigms": "There should be at least one"})
-            if self.techniques.count() == 0 or self.techniques is None:
-                raise ValidationError({"techniques": "There should be at least one"})
-
     def __str__(self):
         return f"study {self.study_id}, id {self.id}"

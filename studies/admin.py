@@ -39,6 +39,7 @@ from studies.models.stimulus import StimulusCategory, StimulusSubCategory, Stimu
 from rangefilter.filters import NumericRangeFilter
 
 from studies.resources.full_experiment import FullExperimentResource
+from studies.resources.finding_tag import FindingTagResource
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.resources.full_experiment import FullUnConExperimentResource
 
@@ -103,18 +104,32 @@ class TheoryInterpretationFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         lookups = []
+        # Add general interpretation type options first
+        for interpretation_value, interpretation_label in InterpretationsChoices.choices:
+            value = f"general_{interpretation_value}"
+            label = f"All {interpretation_label}"
+            lookups.append((value, label))
+        
+        # Add theory-specific options
         theories: List[str] = Theory.objects.filter(parent__isnull=True).values_list("name", flat=True)
         for interpretation_value, interpretation_label in InterpretationsChoices.choices:
             for theory_name in theories:
                 value = f"{theory_name}_{interpretation_value}"
-                label = f"{theory_name.capitalize()} {interpretation_value.capitalize()}"
+                label = f"{theory_name.capitalize()} {interpretation_label}"
                 lookups.append((value, label))
         return lookups
 
     def queryset(self, request, queryset):
         if self.value():
-            theory_name, relation_type = self.value().split("_")
-            interpretations = Interpretation.objects.filter(type=relation_type, theory__parent__name=theory_name)
+            value = self.value()
+            if value.startswith('general_'):
+                # Handle general interpretation type filter
+                relation_type = value.split('_')[1]
+                interpretations = Interpretation.objects.filter(type=relation_type)
+            else:
+                # Handle theory-specific filter
+                theory_name, relation_type = value.split("_")
+                interpretations = Interpretation.objects.filter(type=relation_type, theory__parent__name=theory_name)
             return queryset.filter(experiment__in=interpretations.values("experiment"))
 
 
@@ -419,6 +434,7 @@ class AALAtlasTagInline(admin.StackedInline):
 
 class FindingTagAdmin(BaseContrastAdmin):
     model = FindingTag
+    resource_class = FindingTagResource
     search_fields = ("notes",)
     exclude = ("AAL_atlas_tags",)
     list_display = (
@@ -449,6 +465,28 @@ class FindingTagAdmin(BaseContrastAdmin):
     )
 
     inlines = [AALAtlasTagInline]
+
+    def get_queryset(self, request):
+        return (
+            super()
+            .get_queryset(request)
+            .select_related(
+                "family",
+                "type",
+                "technique",
+                "experiment"
+            )
+            .prefetch_related(
+                "AAL_atlas_tags",
+                Prefetch(
+                    "experiment__theories",
+                    queryset=Interpretation.objects.select_related(
+                        "theory",
+                        "theory__parent"
+                    )
+                )
+            )
+        )
 
 
 class InterpretationAdmin(ImportExportModelAdmin):

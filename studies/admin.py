@@ -48,38 +48,40 @@ from uncontrast_studies.resources.full_experiment import FullUnConExperimentReso
 class ExperimentForm(forms.ModelForm):
     class Meta:
         model = Experiment
-        fields = '__all__'
-    
+        fields = "__all__"
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if 'theory_driven_theories' in self.fields:
-            self.fields['theory_driven_theories'].required = False
-            self.fields['theory_driven_theories'].help_text = (
+        if "theory_driven_theories" in self.fields:
+            self.fields["theory_driven_theories"].required = False
+            self.fields["theory_driven_theories"].help_text = (
                 f"This field is required only when Theory Driven is set to "
                 f"'{TheoryDrivenChoices.DRIVEN.label}' or '{TheoryDrivenChoices.MENTIONING.label}'. "
                 f"Not required for '{TheoryDrivenChoices.POST_HOC.label}'."
             )
-        self.fields['paradigms'].help_text = "There should be at least one paradigm"
-        self.fields['techniques'].help_text = "There should be at least one technique"
+        self.fields["paradigms"].help_text = "There should be at least one paradigm"
+        self.fields["techniques"].help_text = "There should be at least one technique"
 
     def clean(self):
         cleaned_data = super().clean()
-        theory_driven = cleaned_data.get('theory_driven')
-        theory_driven_theories = cleaned_data.get('theory_driven_theories', [])
-        paradigms = cleaned_data.get('paradigms', [])
-        techniques = cleaned_data.get('techniques', [])
-        
+        theory_driven = cleaned_data.get("theory_driven")
+        theory_driven_theories = cleaned_data.get("theory_driven_theories", [])
+        paradigms = cleaned_data.get("paradigms", [])
+        techniques = cleaned_data.get("techniques", [])
+
         # Check if theory_driven is DRIVEN or MENTIONING but no theories selected
         if theory_driven in [TheoryDrivenChoices.DRIVEN, TheoryDrivenChoices.MENTIONING] and not theory_driven_theories:
-            self.add_error('theory_driven_theories', 
-                          f"Theory driven theories is required when theory driven is set to {theory_driven}")
-        
+            self.add_error(
+                "theory_driven_theories",
+                f"Theory driven theories is required when theory driven is set to {theory_driven}",
+            )
+
         # Validate paradigms and techniques
         if not paradigms:
-            self.add_error('paradigms', "There should be at least one paradigm")
+            self.add_error("paradigms", "There should be at least one paradigm")
         if not techniques:
-            self.add_error('techniques', "There should be at least one technique")
-        
+            self.add_error("techniques", "There should be at least one technique")
+
         return cleaned_data
 
 
@@ -109,7 +111,7 @@ class TheoryInterpretationFilter(admin.SimpleListFilter):
             value = f"general_{interpretation_value}"
             label = f"All {interpretation_label}"
             lookups.append((value, label))
-        
+
         # Add theory-specific options
         theories: List[str] = Theory.objects.filter(parent__isnull=True).values_list("name", flat=True)
         for interpretation_value, interpretation_label in InterpretationsChoices.choices:
@@ -122,9 +124,9 @@ class TheoryInterpretationFilter(admin.SimpleListFilter):
     def queryset(self, request, queryset):
         if self.value():
             value = self.value()
-            if value.startswith('general_'):
+            if value.startswith("general_"):
                 # Handle general interpretation type filter
-                relation_type = value.split('_')[1]
+                relation_type = value.split("_")[1]
                 interpretations = Interpretation.objects.filter(type=relation_type)
             else:
                 # Handle theory-specific filter
@@ -367,7 +369,7 @@ class StudyAdmin(BaseContrastAdmin, ExportActionMixin):
     """
 
     export_formats = [CSV]
-    
+
     def get_export_data(self, file_format, request, queryset, **kwargs):
         requested_resource_id = request.POST.get("resource")
         messages.info(request, "Note we support exporting only a single kind of study")
@@ -470,21 +472,12 @@ class FindingTagAdmin(BaseContrastAdmin):
         return (
             super()
             .get_queryset(request)
-            .select_related(
-                "family",
-                "type",
-                "technique",
-                "experiment"
-            )
+            .select_related("family", "type", "technique", "experiment")
             .prefetch_related(
                 "AAL_atlas_tags",
                 Prefetch(
-                    "experiment__theories",
-                    queryset=Interpretation.objects.select_related(
-                        "theory",
-                        "theory__parent"
-                    )
-                )
+                    "experiment__theories", queryset=Interpretation.objects.select_related("theory", "theory__parent")
+                ),
             )
         )
 

@@ -14,6 +14,7 @@ def check_constraint_exists(apps, schema_editor):
         exists = cursor.fetchone()[0] > 0
         return exists
 
+
 def conditional_add_constraint(apps, schema_editor):
     if not check_constraint_exists(apps, schema_editor):
         # Only add the constraint if it doesn't exist
@@ -23,6 +24,7 @@ def conditional_add_constraint(apps, schema_editor):
         )
         migration.database_forwards("studies", schema_editor, apps.get_model("studies", "Interpretation"), None)
 
+
 def conditional_remove_constraint(apps, schema_editor):
     if check_constraint_exists(apps, schema_editor):
         # Only remove the constraint if it exists
@@ -31,6 +33,7 @@ def conditional_remove_constraint(apps, schema_editor):
             name="unique_theory",
         )
         migration.database_backwards("studies", schema_editor, apps.get_model("studies", "Interpretation"), None)
+
 
 class Migration(migrations.Migration):
     dependencies = [
@@ -43,4 +46,3 @@ class Migration(migrations.Migration):
             reverse_code=conditional_remove_constraint,
         ),
     ]
-

@@ -10,6 +10,8 @@ import matplotlib.pyplot as plt
 
 import nibabel as nib
 
+from configuration.initial_setup import ParentTheories
+
 
 class BrainViews:
     LATERAL = "lateral"
@@ -60,10 +62,10 @@ class BrainImageCreatorService:
         self.findings_df = findings_df
         self.theory = theory
         self.theory_to_color_hex = {
-            "Higher Order": "#6969B0",
-            "Global Workspace": "#D76964",
-            "Integrated Information": "#ECE76D",
-            "First Order & Predictive Processing": "#60A7C2",
+            ParentTheories.HIGHER_ORDER: "#6969B0",
+            ParentTheories.GLOBAL_WORKSPACE: "#D76964",
+            ParentTheories.INTEGRATED_INFORMATION: "#ECE76D",
+            ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING: "#60A7C2",
         }
         self.fsaverage, self.aal = get_AAL_Atlas_datasets()
 

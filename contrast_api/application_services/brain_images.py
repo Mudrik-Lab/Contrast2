@@ -1,4 +1,5 @@
 import base64
+import functools
 import io
 from typing import Dict
 
@@ -50,7 +51,7 @@ cross_version_mapping_one_to_many = {
     "Cingulate_Ant_L": ["ACC_sub_L", "ACC_pre_L", "ACC_sup_L"],  # {all of these areas are relevant}
 }
 
-
+@functools.cache
 def get_AAL_Atlas_datasets():
     fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage6")
     aal = datasets.fetch_atlas_aal(version="3v2")

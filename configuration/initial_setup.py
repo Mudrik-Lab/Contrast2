@@ -2,11 +2,11 @@ current_child_theories = ["GNW", "IIT", "HOT", "RPT"]
 
 
 class ParentTheories:
-    GLOBAL_WORKSPACE = "Global workspace theories"
-    INTEGRATED_INFORMATION = "Integrated information theories"
-    HIGHER_ORDER = "Higher Order Theories"
-    FIRST_ORDER_AND_PREDICTIVE_PROCESSING = "First order & predictive processing theories"
-    OTHER = "Other theories"
+    GLOBAL_WORKSPACE = "Global Workspace"
+    INTEGRATED_INFORMATION = "Integrated Information"
+    HIGHER_ORDER = "Higher Order"
+    FIRST_ORDER_AND_PREDICTIVE_PROCESSING = "First Order & Predictive Processing"
+    OTHER = "Other"
 
 
 consciousness_measure_types = [

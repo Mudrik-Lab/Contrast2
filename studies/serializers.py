@@ -387,3 +387,9 @@ class NationOfConsciousnessByTheoryGraphSerializer(serializers.Serializer):
 
     def get_country_name(self, obj) -> str:
         return countries.name(obj["country"])
+
+
+class BrainImagesSerializer(serializers.Serializer):
+    theory = serializers.CharField()
+    medial = serializers.CharField()
+    lateral = serializers.CharField()

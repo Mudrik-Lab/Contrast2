@@ -29,6 +29,8 @@ class StudiesConfig(AppConfig):
 
     def ready(self):
         from studies.models import Interpretation
+        from contrast_api.application_services.brain_images import get_AAL_Atlas_datasets
 
         post_save.connect(receiver=setup_aggregated_interpretations_via_direct_create, sender=Interpretation)
         m2m_changed.connect(receiver=setup_aggregated_interpretations_via_add, sender=Interpretation)
+        get_AAL_Atlas_datasets()  ## init the library startup once, so it would download on start

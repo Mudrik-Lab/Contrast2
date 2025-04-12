@@ -40,6 +40,7 @@ from studies.open_api_parameters import (
     theory_added_breakdown_parameter,
 )
 from contrast_api.open_api_parameters import is_csv
+from studies.processors.brain_images import BrainImagesDataProcessor
 from studies.processors.theories_support_matrix import TheoryGrandOverviewGraphDataProcessor
 from studies.processors.trends_over_time import TrendsOverYearsGraphDataProcessor
 from studies.processors.frequencies import FrequenciesGraphDataProcessor
@@ -57,6 +58,7 @@ from studies.resources.full_experiment import FullExperimentResource
 from studies.serializers import (
     FullExperimentSerializer,
     NationOfConsciousnessByTheoryGraphSerializer,
+    BrainImagesSerializer,
 )
 from contrast_api.serializers import (
     TrendsOverYearsGraphSerializer,
@@ -90,6 +92,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "parameters_distribution_free_queries": BarGraphSerializer,
         "theory_driven_distribution_pie": NestedPieChartSerializer,
         "theory_grand_overview_bar": StackedBarGraphSerializer,
+        "brain_images": BrainImagesSerializer,
     }
 
     graph_processors = {
@@ -105,6 +108,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         "timings": TimingsGraphDataProcessor,
         "theory_driven_distribution_pie": TheoryDrivenDistributionPieGraphDataProcessor,
         "theory_grand_overview_bar": TheoryGrandOverviewGraphDataProcessor,
+        "brain_images": BrainImagesDataProcessor,
     }
 
     @extend_schema(
@@ -120,6 +124,21 @@ class ExperimentsGraphsViewSet(GenericViewSet):
     )
     @action(detail=False, methods=["GET"], serializer_class=NestedPieChartSerializer)
     def theory_driven_distribution_pie(self, request, *args, **kwargs):
+        return self.graph(request, graph_type=self.action, *args, **kwargs)
+
+    @extend_schema(
+        responses=BrainImagesSerializer(many=True),
+        parameters=[
+            OpenApiParameter(name="theory", type=str, required=True, many=False, description="theory filter"),
+            number_of_experiments_parameter,
+            is_reporting_filter_parameter,
+            theory_driven_filter_parameter,
+            type_of_consciousness_filter_parameter,
+            is_csv,
+        ],
+    )
+    @action(detail=False, methods=["GET"], serializer_class=BrainImagesSerializer)
+    def brain_images(self, request, *args, **kwargs):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(

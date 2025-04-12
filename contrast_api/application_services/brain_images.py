@@ -4,13 +4,11 @@ import io
 from typing import Dict
 
 import pandas as pd
+import numpy as np
 from nilearn import datasets, image, surface, plotting
-
 from matplotlib.colors import LinearSegmentedColormap, to_rgba
 import matplotlib.pyplot as plt
-
 import nibabel as nib
-
 from configuration.initial_setup import ParentTheories
 
 
@@ -18,8 +16,6 @@ class BrainViews:
     LATERAL = "lateral"
     MEDIAL = "medial"
 
-
-import numpy as np
 
 cross_version_mapping = {
     "Frontal_Inf_Orb_L": "Frontal_Inf_Orb_2_L",
@@ -48,8 +44,9 @@ cross_version_mapping_one_to_many = {
         "Thal_PuA_L",
         "Thal_PuL_L",
     ],  # {Thalamus includes all of these sub-regions}
-    "Cingulate_Ant_L": ["ACC_sub_L", "ACC_pre_L", "ACC_sup_L"],  # {all of these areas are relevant}
+    "Cingulate_Ant_L": ["ACC_sub_L", "ACC_pre_L", "ACC_sup_L"],
 }
+
 
 @functools.cache
 def get_AAL_Atlas_datasets():
@@ -158,13 +155,15 @@ class BrainImageCreatorService:
         Visualizes selected regions from the AAL atlas as a 2D surface mapping of a 3D brain surface.
 
         Parameters:
-        - theory_color_mapping: dict, a mapping of theories to their color schemes.
+        - theory: str the name of the theory
+        - color: str hex value of the base color of theory
         - dataframe: pd.DataFrame, a dataframe containing the AAL regions for each theory and their frequencies.
+        - view: str lateral or medial
+        - format: Enum[str] ['png','svg']
 
         Output:
         - Saves PNG files for each theory with the visualized regions.
         """
-        # create an empty image to hold the combined regions
         aal_img = image.load_img(self.aal.maps)
         affine = aal_img.affine
 
@@ -182,7 +181,6 @@ class BrainImageCreatorService:
         # Project volumetric data to surface
         texture = surface.vol_to_surf(new_combined_img, self.fsaverage.pial_left)
 
-        # Create both views using the helper function
         return self.create_brain_plot(view, theory, total, max_num, texture, cmap, format)
 
     def get_areas_and_frequencies(self, theory, dataframe: pd.DataFrame):
@@ -199,7 +197,7 @@ class BrainImageCreatorService:
     def get_aal_region_code_L(self, region: str):
         """
         this function takes in a region (string) and returns a dict including the region
-        name (str) and the rightside and leftside atlas indices (int) for that region,
+        name (str) and the  leftside atlas indices (int) for that region,
         if exists. if the region doesn't exist for that atlas, returns a tuple of
         region name and 0. case sensitive.
         """

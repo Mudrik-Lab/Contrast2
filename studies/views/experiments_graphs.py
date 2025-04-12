@@ -127,7 +127,7 @@ class ExperimentsGraphsViewSet(GenericViewSet):
         return self.graph(request, graph_type=self.action, *args, **kwargs)
 
     @extend_schema(
-        responses=BrainImagesSerializer(many=False),
+        responses=BrainImagesSerializer(many=True),
         parameters=[
             OpenApiParameter(name="theory", type=str, required=True, many=False, description="theory filter"),
             number_of_experiments_parameter,

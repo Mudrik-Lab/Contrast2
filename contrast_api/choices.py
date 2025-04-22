@@ -155,8 +155,8 @@ class AALAtlasTagChoices(TextChoices):
 
 
 class StudyTypeChoices(TextChoices):
-    CONSCIOUSNESS = _("Consciousness")
-    UNCONSCIOUSNESS = _("UnConsciousness")
+    CONSCIOUSNESS = "Consciousness"
+    UNCONSCIOUSNESS = "UnConsciousness"
 
 
 class SignificanceChoices(TextChoices):

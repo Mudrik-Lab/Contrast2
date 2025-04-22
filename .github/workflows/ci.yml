@@ -33,7 +33,7 @@ jobs:
       matrix:
         python-version: [ "3.11" ]
         
-    container: python:${{ matrix.python-version }}-bullseye
+    container: python:${{ matrix.python-version }}-bookworm
         
     services:
       # Label used to access the service container

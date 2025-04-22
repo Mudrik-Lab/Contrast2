@@ -17,7 +17,7 @@ and the [code here under the GNU GPLv3 open source license](./LICENSE)
 see [CONTRIBUTING](./CONTRIBUTING.md)
 
 # Technology and setup
-python 3.10
+python 3.11
 Django + drf + django-filter
 DB is postgresql
 Django configurations for settings file

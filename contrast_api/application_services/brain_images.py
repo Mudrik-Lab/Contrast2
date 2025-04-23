@@ -1,6 +1,7 @@
 import base64
 import functools
 import io
+import logging
 from typing import Dict
 
 import pandas as pd
@@ -10,6 +11,8 @@ from matplotlib.colors import LinearSegmentedColormap, to_rgba
 import matplotlib.pyplot as plt
 import nibabel as nib
 from configuration.initial_setup import ParentTheories
+
+logger = logging.getLogger(__name__)
 
 
 class BrainViews:
@@ -164,6 +167,7 @@ class BrainImageCreatorService:
         Output:
         - Saves PNG files for each theory with the visualized regions.
         """
+        logger.info(f"Starting to process brain image for {theory} and view {view} ")
         aal_img = image.load_img(self.aal.maps)
         affine = aal_img.affine
 
@@ -180,8 +184,11 @@ class BrainImageCreatorService:
 
         # Project volumetric data to surface
         texture = surface.vol_to_surf(new_combined_img, self.fsaverage.pial_left)
+        logger.info(f"Plotting {theory} for {view} view")
+        result =  self.create_brain_plot(view, theory, total, max_num, texture, cmap, format)
 
-        return self.create_brain_plot(view, theory, total, max_num, texture, cmap, format)
+        logger.info(f"Finished Plotting {theory} for {view} view")
+        return result
 
     def get_areas_and_frequencies(self, theory, dataframe: pd.DataFrame):
         """
@@ -240,7 +247,7 @@ class BrainImageCreatorService:
         """Helper function to create and set up a brain visualization figure."""
         title = f"{theory}, N={total} \n {view_type.title()} View"
 
-        fig = plt.figure(figsize=(10, 10))
+        fig = plt.figure(figsize=(10, 10), dpi=90)
         plt.subplots_adjust(bottom=0.15)
 
         plotting.plot_surf_stat_map(
@@ -262,7 +269,7 @@ class BrainImageCreatorService:
         caption_text = f"Normalized color scale, where 1 is the most active region, N={max_num} experiments"
         fig.text(0.5, 0.05, caption_text, ha="center", va="bottom", fontsize=14)
         buffer = io.BytesIO()
-        plt.savefig(buffer, format=format)
+        plt.savefig(buffer, format=format, dpi=90)
         plt.close(fig)
         buffer.seek(0)
         image_bytes = buffer.getvalue()

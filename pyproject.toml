@@ -6,8 +6,8 @@ authors = []
 package-mode = false
 
 [tool.poetry.dependencies]
-python = ">3.10,<3.11"
-Django = "5.1.7"
+python = ">3.10,<3.12"
+Django = "5.1.8"
 django-configurations = "^2.5.1"
 dj-database-url = "^2.3.0"
 djangorestframework = "^3.15.2"
@@ -28,7 +28,6 @@ django-nested-inline = "^0.4.6"
 # following needed as original package is unmaintained
 django-modeladmin-reorder = {git = "https://github.com/bloodwithmilk25/django-modeladmin-reorder.git", rev = "master"}
 django-spa = {git = "https://github.com/VBobCat/django-spa.git", rev = "master"}
-#django-countries = {git = "https://github.com/SmileyChris/django-countries", rev="58f258402072a18756a15daa81325428382bd946"}
 django-countries = "7.6.1"
 numpy = "^2.2.4"
 pandas = "^2.2.3"

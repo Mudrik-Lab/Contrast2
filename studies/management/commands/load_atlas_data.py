@@ -10,7 +10,7 @@ class Command(BaseCommand):
         
         # Load and cache fsaverage dataset
         self.stdout.write("Loading fsaverage dataset...")
-        fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage6")
+        fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage5")
         self.stdout.write(f"Loaded fsaverage dataset: {fsaverage.keys()}")
         
         # Load and cache AAL atlas

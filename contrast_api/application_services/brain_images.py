@@ -53,9 +53,9 @@ cross_version_mapping_one_to_many = {
 
 @functools.cache
 def get_AAL_Atlas_datasets():
-    fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage6")
+    fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage5")
     aal = datasets.fetch_atlas_aal(version="3v2")
-    return fsaverage, aal
+    return fsaverage.pial_left, fsaverage.sulc_left, aal
 
 
 class BrainImageCreatorService:
@@ -68,7 +68,7 @@ class BrainImageCreatorService:
             ParentTheories.INTEGRATED_INFORMATION: "#ECE76D",
             ParentTheories.FIRST_ORDER_AND_PREDICTIVE_PROCESSING: "#60A7C2",
         }
-        self.fsaverage, self.aal = get_AAL_Atlas_datasets()
+        self.fsaverage_pial_left, self.fsaverage_sulc_left, self.aal = get_AAL_Atlas_datasets()
 
     def create_brain_image(self) -> Dict:
         # process the dataframe
@@ -183,7 +183,7 @@ class BrainImageCreatorService:
         new_combined_img = nib.Nifti1Image(combined_img, affine=affine)
 
         # Project volumetric data to surface
-        texture = surface.vol_to_surf(new_combined_img, self.fsaverage.pial_left)
+        texture = surface.vol_to_surf(new_combined_img, self.fsaverage_pial_left)
         logger.info(f"Plotting {theory} for {view} view")
         result =  self.create_brain_plot(view, theory, total, max_num, texture, cmap, format)
 
@@ -251,7 +251,7 @@ class BrainImageCreatorService:
         plt.subplots_adjust(bottom=0.15)
 
         plotting.plot_surf_stat_map(
-            self.fsaverage.pial_left,
+            self.fsaverage_pial_left,
             texture,
             hemi="left",
             view=view_type,
@@ -259,7 +259,7 @@ class BrainImageCreatorService:
             cmap=cmap,
             darkness=1,
             bg_on_data=False,
-            bg_map=self.fsaverage.sulc_left,
+            bg_map=self.fsaverage_sulc_left,
             threshold=None,
             avg_method="mean",
             title=title,

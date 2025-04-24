@@ -74,13 +74,19 @@ class BrainImageCreatorService:
     def create_brain_image(self) -> Dict:
         # process the dataframe
         if self.findings_df.empty:
-            return {BrainViews.MEDIAL: "", BrainViews.LATERAL: "", "theory": self.theory}
+            return {
+                BrainViews.MEDIAL: "",
+                BrainViews.LATERAL: "",
+                "theory": self.theory,
+                "title text": "",
+                "caption text": "",
+            }
 
         df = self.process_tags_interpretations(self.findings_df)
 
         # generate the normalized dataframe
-
         deduplicated_df = self.deduplicate_df(df)
+
         # create the brain image
         dfs = {}
         for theory in self.theory_to_color_hex.keys():
@@ -90,15 +96,21 @@ class BrainImageCreatorService:
         combined_df = combined_df.reset_index(level=0)
         combined_df.reset_index(drop=True, inplace=True)
         color = self.theory_to_color_hex[self.theory]
-        brain_image_lateral = self.plot_brain_regions(
+        brain_image_lateral, title, caption_text = self.plot_brain_regions(
             theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.LATERAL
         )
-        brain_image_medial = self.plot_brain_regions(
+        brain_image_medial, title, caption_text = self.plot_brain_regions(
             theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.MEDIAL
         )
         gc.collect()
 
-        return {BrainViews.MEDIAL: brain_image_medial, BrainViews.LATERAL: brain_image_lateral, "theory": self.theory}
+        return {
+            BrainViews.MEDIAL: brain_image_medial,
+            BrainViews.LATERAL: brain_image_lateral,
+            "theory": self.theory,
+            "title text": title,
+            "caption text": caption_text,
+        }
 
     def create_cmap(self, frequencies, theory, color):
         color_list = [(0, (0, 0, 0, 0))]
@@ -187,10 +199,12 @@ class BrainImageCreatorService:
         # Project volumetric data to surface
         texture = surface.vol_to_surf(new_combined_img, self.fsaverage_pial_left)
         logger.info(f"Plotting {theory} for {view} view")
-        result =  self.create_brain_plot(view, theory, total, max_num, texture, cmap, format)
+        result = self.create_brain_plot(view, texture, cmap, format)
+        title = f"{theory}, N={total}"
+        caption_text = f"Normalized color scale, where 1 is the most active region, N={max_num} experiments"
 
         logger.info(f"Finished Plotting {theory} for {view} view")
-        return result
+        return result, title, caption_text
 
     def get_areas_and_frequencies(self, theory, dataframe: pd.DataFrame):
         """
@@ -245,19 +259,18 @@ class BrainImageCreatorService:
 
         return combined_img_data
 
-    def create_brain_plot(self, view_type: str, theory, total, max_num, texture, cmap, format="png"):
+    def create_brain_plot(self, view_type: str, texture, cmap, file_format="png"):
         """Helper function to create and set up a brain visualization figure."""
-        title = f"{theory}, N={total} \n {view_type.title()} View"
-
+        title = f"{view_type.title()} View"
         fig = plt.figure(figsize=(10, 10), dpi=90)
-        plt.subplots_adjust(bottom=0.15)
+        is_colorbar = view_type == "lateral"
 
         plotting.plot_surf_stat_map(
             self.fsaverage_pial_left,
             texture,
             hemi="left",
             view=view_type,
-            colorbar=True,
+            colorbar=is_colorbar,
             cmap=cmap,
             darkness=1,
             bg_on_data=False,
@@ -268,10 +281,8 @@ class BrainImageCreatorService:
             figure=fig,
         )
 
-        caption_text = f"Normalized color scale, where 1 is the most active region, N={max_num} experiments"
-        fig.text(0.5, 0.05, caption_text, ha="center", va="bottom", fontsize=14)
         buffer = io.BytesIO()
-        plt.savefig(buffer, format=format, dpi=90)
+        plt.savefig(buffer, format=file_format, dpi=90)
         plt.close(fig)
         buffer.seek(0)
         image_bytes = buffer.getvalue()

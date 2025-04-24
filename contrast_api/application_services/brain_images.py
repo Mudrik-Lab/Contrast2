@@ -52,7 +52,7 @@ cross_version_mapping_one_to_many = {
 }
 
 
-@functools.cache
+# @functools.cache
 def get_AAL_Atlas_datasets():
     fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage5")
     aal = datasets.fetch_atlas_aal(version="3v2")

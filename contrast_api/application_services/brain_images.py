@@ -1,5 +1,6 @@
 import base64
 import functools
+import gc
 import io
 import logging
 from typing import Dict
@@ -95,6 +96,7 @@ class BrainImageCreatorService:
         brain_image_medial = self.plot_brain_regions(
             theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.MEDIAL
         )
+        gc.collect()
 
         return {BrainViews.MEDIAL: brain_image_medial, BrainViews.LATERAL: brain_image_lateral, "theory": self.theory}
 

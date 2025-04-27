@@ -393,3 +393,5 @@ class BrainImagesSerializer(serializers.Serializer):
     theory = serializers.CharField()
     medial = serializers.CharField()
     lateral = serializers.CharField()
+    title_text = serializers.CharField()
+    caption_text = serializers.CharField()

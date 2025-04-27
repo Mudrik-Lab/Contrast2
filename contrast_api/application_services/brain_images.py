@@ -108,8 +108,8 @@ class BrainImageCreatorService:
             BrainViews.MEDIAL: brain_image_medial,
             BrainViews.LATERAL: brain_image_lateral,
             "theory": self.theory,
-            "title text": title,
-            "caption text": caption_text,
+            "title_text": title,
+            "caption_text": caption_text,
         }
 
     def create_cmap(self, frequencies, theory, color):

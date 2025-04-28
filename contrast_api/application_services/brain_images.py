@@ -96,11 +96,11 @@ class BrainImageCreatorService:
         combined_df = combined_df.reset_index(level=0)
         combined_df.reset_index(drop=True, inplace=True)
         color = self.theory_to_color_hex[self.theory]
-        brain_image_lateral, title, caption_text = self.plot_brain_regions(
-            theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.LATERAL
-        )
         brain_image_medial, title, caption_text = self.plot_brain_regions(
             theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.MEDIAL
+        )
+        brain_image_lateral, title, caption_text = self.plot_brain_regions(
+            theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.LATERAL
         )
         gc.collect()
 
@@ -110,6 +110,7 @@ class BrainImageCreatorService:
             "theory": self.theory,
             "title_text": title,
             "caption_text": caption_text,
+            "color": color,
         }
 
     def create_cmap(self, frequencies, theory, color):
@@ -167,7 +168,7 @@ class BrainImageCreatorService:
 
         return df
 
-    def plot_brain_regions(self, theory: str, color: str, dataframe: pd.DataFrame, view: str, format="png"):
+    def plot_brain_regions(self, theory: str, color: str, dataframe: pd.DataFrame, view: str, save_format="png"):
         """
         Visualizes selected regions from the AAL atlas as a 2D surface mapping of a 3D brain surface.
 
@@ -176,7 +177,7 @@ class BrainImageCreatorService:
         - color: str hex value of the base color of theory
         - dataframe: pd.DataFrame, a dataframe containing the AAL regions for each theory and their frequencies.
         - view: str lateral or medial
-        - format: Enum[str] ['png','svg']
+        - save_format: Enum[str] ['png','svg']
 
         Output:
         - Saves PNG files for each theory with the visualized regions.
@@ -199,7 +200,7 @@ class BrainImageCreatorService:
         # Project volumetric data to surface
         texture = surface.vol_to_surf(new_combined_img, self.fsaverage_pial_left)
         logger.info(f"Plotting {theory} for {view} view")
-        result = self.create_brain_plot(view, texture, cmap, format)
+        result = self.create_brain_plot(view, texture, cmap, save_format)
         title = f"{theory}, N={total}"
         caption_text = f"Normalized color scale, where 1 is the most active region, N={max_num} experiments"
 
@@ -263,20 +264,18 @@ class BrainImageCreatorService:
         """Helper function to create and set up a brain visualization figure."""
         title = f"{view_type.title()} View"
         fig = plt.figure(figsize=(10, 10), dpi=90)
-        is_colorbar = view_type == "lateral"
 
         plotting.plot_surf_stat_map(
             self.fsaverage_pial_left,
             texture,
             hemi="left",
             view=view_type,
-            colorbar=is_colorbar,
+            colorbar=False,
             cmap=cmap,
             darkness=1,
             bg_on_data=False,
             bg_map=self.fsaverage_sulc_left,
             threshold=None,
-            avg_method="mean",
             title=title,
             figure=fig,
         )

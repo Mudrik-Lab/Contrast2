@@ -396,3 +396,4 @@ class BrainImagesSerializer(serializers.Serializer):
     title_text = serializers.CharField()
     caption_text = serializers.CharField()
     color = serializers.CharField()
+    color_list = serializers.ListSerializer(child=serializers.CharField())

@@ -96,10 +96,10 @@ class BrainImageCreatorService:
         combined_df = combined_df.reset_index(level=0)
         combined_df.reset_index(drop=True, inplace=True)
         color = self.theory_to_color_hex[self.theory]
-        brain_image_medial, title, caption_text = self.plot_brain_regions(
+        brain_image_medial, title, caption_text, color_list = self.plot_brain_regions(
             theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.MEDIAL
         )
-        brain_image_lateral, title, caption_text = self.plot_brain_regions(
+        brain_image_lateral, title, caption_text, color_list = self.plot_brain_regions(
             theory=self.theory, color=color, dataframe=combined_df, view=BrainViews.LATERAL
         )
         gc.collect()
@@ -111,6 +111,7 @@ class BrainImageCreatorService:
             "title_text": title,
             "caption_text": caption_text,
             "color": color,
+            "color_list": color_list,
         }
 
     def create_cmap(self, frequencies, theory, color):
@@ -118,8 +119,7 @@ class BrainImageCreatorService:
 
         for frequency in sorted(list(set(frequencies))):
             color_list.append((frequency, to_rgba(color, alpha=frequency * 0.95)))
-        color_list.append((1, to_rgba(color, alpha=1)))
-        return LinearSegmentedColormap.from_list(name=theory, colors=color_list)
+        return color_list
 
     def deduplicate_df(self, df: pd.DataFrame):
         # Group by 'AAL_Label' and aggregate the other columns
@@ -192,7 +192,8 @@ class BrainImageCreatorService:
         tags_count = theory_df["original_frequency"]
         max_num = max(tags_count)
 
-        cmap = self.create_cmap(frequencies, theory, color)
+        color_list = self.create_cmap(frequencies, theory, color)
+        cmap = LinearSegmentedColormap.from_list(name=theory, colors=color_list)
 
         combined_img = self.combine_image_data(theory, dataframe, aal_img)
         new_combined_img = nib.Nifti1Image(combined_img, affine=affine)
@@ -205,7 +206,7 @@ class BrainImageCreatorService:
         caption_text = f"Normalized color scale, where 1 is the most active region, N={max_num} experiments"
 
         logger.info(f"Finished Plotting {theory} for {view} view")
-        return result, title, caption_text
+        return result, title, caption_text, color_list
 
     def get_areas_and_frequencies(self, theory, dataframe: pd.DataFrame):
         """

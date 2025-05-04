@@ -78,8 +78,10 @@ class BrainImageCreatorService:
                 BrainViews.MEDIAL: "",
                 BrainViews.LATERAL: "",
                 "theory": self.theory,
-                "title text": "",
-                "caption text": "",
+                "title_text": "",
+                "caption_text": "",
+                "color": "",
+                "color_list": [],
             }
 
         df = self.process_tags_interpretations(self.findings_df)
@@ -182,6 +184,7 @@ class BrainImageCreatorService:
         Output:
         - Saves PNG files for each theory with the visualized regions.
         """
+
         logger.info(f"Starting to process brain image for {theory} and view {view} ")
         aal_img = image.load_img(self.aal.maps)
         affine = aal_img.affine

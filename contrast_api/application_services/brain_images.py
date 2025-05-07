@@ -285,7 +285,7 @@ class BrainImageCreatorService:
         )
 
         buffer = io.BytesIO()
-        plt.savefig(buffer, format=file_format, dpi=90)
+        plt.savefig(buffer, format=file_format, dpi=90, transparent=True)
         plt.close(fig)
         buffer.seek(0)
         image_bytes = buffer.getvalue()

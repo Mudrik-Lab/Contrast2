@@ -727,19 +727,19 @@ test = ["cryptography", "freezegun", "pytest", "pytest-cov", "pytest-django", "p
 
 [[package]]
 name = "drf-nested-routers"
-version = "0.94.1"
+version = "0.95.0"
 description = "Nested resources for the Django Rest Framework"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "drf-nested-routers-0.94.1.tar.gz", hash = "sha256:2b846385ed95c9f17bf4242db3b264ac826b5af00dda6c737d3fe7cc7bf2c7db"},
-    {file = "drf_nested_routers-0.94.1-py2.py3-none-any.whl", hash = "sha256:3a8ec45a025c0f39188ec1ec415244beb875a6f4db87911a1f5a606d09b68c9f"},
+    {file = "drf_nested_routers-0.95.0-py2.py3-none-any.whl", hash = "sha256:dd489c33d667aaa81383ffaa8c74781d2b353d8f0795716ae37fc59ee297b7c4"},
+    {file = "drf_nested_routers-0.95.0.tar.gz", hash = "sha256:815978f802e578fd7035c74040c104909cbe97615de89a275d77e928f4029891"},
 ]
 
 [package.dependencies]
 Django = ">=4.2"
-djangorestframework = ">=3.14.0"
+djangorestframework = ">=3.15.0"
 
 [[package]]
 name = "drf-spectacular"
@@ -2460,4 +2460,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">3.10,<3.12"
-content-hash = "c1f8bcda2db8cd9e040daa0497a9ffb188b929367f0a25ddfc4b5baa107948f1"
+content-hash = "8d751c1f936cd9f625ecc5242e827c5d8cf7cd39070d3b3e4eb8071afac14cb5"

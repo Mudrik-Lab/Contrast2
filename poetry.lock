@@ -656,14 +656,14 @@ sftp = ["paramiko (>=1.15)"]
 
 [[package]]
 name = "django-two-factor-auth"
-version = "1.17.0"
+version = "1.18.1"
 description = "Complete Two-Factor Authentication for Django"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "django_two_factor_auth-1.17.0-py3-none-any.whl", hash = "sha256:622e78b0d6cf12eeafa239665d99c1221c399228f2f902fe478aea7759995e0e"},
-    {file = "django_two_factor_auth-1.17.0.tar.gz", hash = "sha256:a2dcc3efedd0ce4b4c14d389766c9fd8e13cabdff5e4e1b645adeb650c550cf7"},
+    {file = "django_two_factor_auth-1.18.1-py3-none-any.whl", hash = "sha256:ccc9cee10be880037914e572389be6dcae93947709a8a9ff01fb23f7dee254f2"},
+    {file = "django_two_factor_auth-1.18.1.tar.gz", hash = "sha256:9d624db63123141cd95a6afe3d626105c3c29a7c8e25a3d93411dd1fac0be464"},
 ]
 
 [package.dependencies]
@@ -672,10 +672,11 @@ django-formtools = "*"
 django_otp = ">=0.8.0"
 django-phonenumber-field = "<9"
 phonenumbers = {version = ">=7.0.9,<8.99", optional = true, markers = "extra == \"phonenumbers\""}
-qrcode = ">=4.0.0,<7.99"
+qrcode = "<9"
 
 [package.extras]
 call = ["twilio (>=6.0)"]
+docs = ["django-two-factor-auth[call]", "django-two-factor-auth[phonenumberslite]", "django-two-factor-auth[webauthn]", "django-two-factor-auth[yubikey]", "sphinx", "sphinx_rtd_theme"]
 linting = ["isort (<=5.99)", "ruff"]
 phonenumbers = ["phonenumbers (>=7.0.9,<8.99)"]
 phonenumberslite = ["phonenumberslite (>=7.0.9,<8.99)"]
@@ -2460,4 +2461,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">3.10,<3.12"
-content-hash = "59078dca004341faa02e96d0911036db8c0327ebfdbfaf76892d00b41d287db1"
+content-hash = "5a95d2cdbad5bf8d1f51ca0222da439a057600f4f5fb6106c99905699c60c5be"

@@ -44,7 +44,7 @@ nilearn = "^0.12.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "^8.4.1"
-ruff = "^0.11.4"
+ruff = "^0.14.4"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

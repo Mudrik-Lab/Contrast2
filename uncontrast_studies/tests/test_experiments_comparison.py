@@ -133,8 +133,7 @@ class TestExperimentsComparisonGraphTestCase(UnContrastBaseTestCase):
 
         # Call the paradigm breakdown endpoint
         target_url = self.reverse_with_query_params(
-            "uncontrast-experiments-graphs-parameters-distribution-experiments-comparison",
-            breakdown="paradigm"
+            "uncontrast-experiments-graphs-parameters-distribution-experiments-comparison", breakdown="paradigm"
         )
         res = self.client.get(target_url)
 
@@ -154,7 +153,6 @@ class TestExperimentsComparisonGraphTestCase(UnContrastBaseTestCase):
                 for data_point in series:
                     self.assertIn("key", data_point)
                     self.assertIn("value", data_point)
-
 
                     # Key should be the actual paradigm name from our test data
                     self.assertEqual(data_point["key"], "main_paradigm")

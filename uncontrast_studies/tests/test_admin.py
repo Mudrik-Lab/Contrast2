@@ -4,14 +4,13 @@ from django.urls import reverse
 
 User = get_user_model()
 
+
 class AdminViewsTest(TestCase):
     def setUp(self):
         self.username = "testadmin_uncontrast"
         self.password = "testpassword_uncontrast"
         self.admin_user = User.objects.create_superuser(
-            username=self.username,
-            password=self.password,
-            email="testadmin_uncontrast@example.com"
+            username=self.username, password=self.password, email="testadmin_uncontrast@example.com"
         )
 
     def test_uncon_experiment_admin_changelist_loads(self):

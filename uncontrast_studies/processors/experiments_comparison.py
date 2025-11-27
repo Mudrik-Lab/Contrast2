@@ -15,7 +15,8 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConSuppressionMethodType,
     UnConOutcome,
-    UnConSpecificParadigm, UnConMainParadigm,
+    UnConSpecificParadigm,
+    UnConMainParadigm,
 )
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor

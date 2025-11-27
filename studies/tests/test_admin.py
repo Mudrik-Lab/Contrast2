@@ -15,14 +15,13 @@ from django_countries import countries
 
 User = get_user_model()
 
+
 class AdminViewsTest(TestCase):
     def setUp(self):
         self.username = "testadmin"
         self.password = "testpassword"
         self.admin_user = User.objects.create_superuser(
-            username=self.username,
-            password=self.password,
-            email="testadmin@example.com"
+            username=self.username, password=self.password, email="testadmin@example.com"
         )
         self.client.login(username=self.username, password=self.password)
 
@@ -36,7 +35,7 @@ class AdminViewsTest(TestCase):
             type="ORIGINAL",
             is_author_submitter=True,
             submitter=self.admin_user,
-            abbreviated_source_title="Journal X"
+            abbreviated_source_title="Journal X",
         )
         self.study_approved = Study.objects.create(
             title="Study Approved",
@@ -47,7 +46,7 @@ class AdminViewsTest(TestCase):
             type="REPLICATION",
             is_author_submitter=False,
             submitter=self.admin_user,
-            abbreviated_source_title="Journal Y"
+            abbreviated_source_title="Journal Y",
         )
         self.study_rejected = Study.objects.create(
             title="Study Rejected",
@@ -57,7 +56,7 @@ class AdminViewsTest(TestCase):
             countries=["US"],
             type="META_ANALYSIS",
             submitter=self.admin_user,
-            abbreviated_source_title="Journal X"
+            abbreviated_source_title="Journal X",
         )
 
     def test_study_admin_changelist_loads(self):
@@ -182,7 +181,7 @@ class AdminViewsTest(TestCase):
         response = self.client.get(url, {"year__gte": "2020", "year__lte": "2020"})
         self.assertEqual(response.status_code, 200)
         queryset = response.context["cl"].queryset
-        self.assertEqual(queryset.count(), 2) # Study Pending and Study Rejected are year 2020
+        self.assertEqual(queryset.count(), 2)  # Study Pending and Study Rejected are year 2020
         self.assertTrue(all(s.year == 2020 for s in queryset))
 
         response = self.client.get(url, {"year__gte": "2021", "year__lte": "2021"})
@@ -197,7 +196,7 @@ class AdminViewsTest(TestCase):
         response = self.client.get(url, {"country": "US"})
         self.assertEqual(response.status_code, 200)
         queryset = response.context["cl"].queryset
-        self.assertEqual(queryset.count(), 2) # Study Pending and Study Rejected are US
+        self.assertEqual(queryset.count(), 2)  # Study Pending and Study Rejected are US
         for study in queryset:
             self.assertTrue(any(country_code == "US" for country_code in study.countries))
 
@@ -229,14 +228,14 @@ class AdminViewsTest(TestCase):
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         exp2 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.STATE,
-            type=ExperimentTypeChoices.NEUROSCIENTIFIC, # "EEG" mapped to NEUROSCIENTIFIC
+            type=ExperimentTypeChoices.NEUROSCIENTIFIC,  # "EEG" mapped to NEUROSCIENTIFIC
             is_reporting=ReportingChoices.NO_REPORT,
-            theory_driven=TheoryDrivenChoices.POST_HOC
+            theory_driven=TheoryDrivenChoices.POST_HOC,
         )
 
         url = reverse("admin:studies_experiment_changelist")
@@ -246,21 +245,36 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset.count(), 1)
         self.assertEqual(queryset.first().type_of_consciousness, TypeOfConsciousnessChoices.CONTENT)
 
-
     def test_findingtag_admin_filter_by_direction(self):
         exp = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         # FindingTags require a family and type. "Temporal" family requires onset & offset.
         default_family = FindingTagFamily.objects.create(name="Temporal")
         default_type = FindingTagType.objects.create(name="DefaultType", family=default_family)
 
-        ft1 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, direction=DirectionChoices.POSITIVE, is_NCC=True, onset=10, offset=20)
-        ft2 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, direction=DirectionChoices.NEGATIVE, is_NCC=False, onset=30, offset=40)
+        ft1 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            direction=DirectionChoices.POSITIVE,
+            is_NCC=True,
+            onset=10,
+            offset=20,
+        )
+        ft2 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            direction=DirectionChoices.NEGATIVE,
+            is_NCC=False,
+            onset=30,
+            offset=40,
+        )
 
         url = reverse("admin:studies_findingtag_changelist")
         response = self.client.get(url, {"direction__exact": DirectionChoices.POSITIVE.value})
@@ -269,20 +283,35 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset.count(), 1)
         self.assertEqual(queryset.first().direction, DirectionChoices.POSITIVE)
 
-
     def test_findingtag_admin_filter_by_is_ncc(self):
         exp = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         default_family = FindingTagFamily.objects.create(name="Temporal")
         default_type = FindingTagType.objects.create(name="DefaultType", family=default_family)
 
-        ft1 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, direction=DirectionChoices.POSITIVE, is_NCC=True, onset=10, offset=20)
-        ft2 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, direction=DirectionChoices.NEGATIVE, is_NCC=False, onset=30, offset=40)
+        ft1 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            direction=DirectionChoices.POSITIVE,
+            is_NCC=True,
+            onset=10,
+            offset=20,
+        )
+        ft2 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            direction=DirectionChoices.NEGATIVE,
+            is_NCC=False,
+            onset=30,
+            offset=40,
+        )
 
         url = reverse("admin:studies_findingtag_changelist")
         # Filter for is_NCC = True
@@ -299,22 +328,27 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset_false.count(), 1)
         self.assertFalse(queryset_false.first().is_NCC)
 
-
     def test_findingtag_admin_filter_by_family(self):
         exp = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
 
-        family1 = FindingTagFamily.objects.create(name="Temporal") # "Temporal" family requires onset & offset for its tags
+        family1 = FindingTagFamily.objects.create(
+            name="Temporal"
+        )  # "Temporal" family requires onset & offset for its tags
         type1 = FindingTagType.objects.create(name="TypeAlpha", family=family1)
-        family2 = FindingTagFamily.objects.create(name="OtherFamily") # This family does not have specific onset/offset needs by default
+        family2 = FindingTagFamily.objects.create(
+            name="OtherFamily"
+        )  # This family does not have specific onset/offset needs by default
         type2 = FindingTagType.objects.create(name="TypeBeta", family=family2)
 
-        ft1 = FindingTag.objects.create(experiment=exp, family=family1, type=type1, direction=DirectionChoices.POSITIVE, onset=10, offset=20)
+        ft1 = FindingTag.objects.create(
+            experiment=exp, family=family1, type=type1, direction=DirectionChoices.POSITIVE, onset=10, offset=20
+        )
         ft2 = FindingTag.objects.create(experiment=exp, family=family2, type=type2, direction=DirectionChoices.POSITIVE)
 
         url = reverse("admin:studies_findingtag_changelist")
@@ -324,21 +358,41 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset.count(), 1)
         self.assertEqual(queryset.first().family, family1)
 
-
     def test_findingtag_admin_filter_by_onset_range(self):
         exp = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         default_family = FindingTagFamily.objects.create(name="Temporal")
         default_type = FindingTagType.objects.create(name="DefaultType", family=default_family)
 
-        ft1 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, onset=100, offset=110, direction=DirectionChoices.POSITIVE)
-        ft2 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, onset=150, offset=160, direction=DirectionChoices.POSITIVE)
-        ft3 = FindingTag.objects.create(experiment=exp, family=default_family, type=default_type, onset=200, offset=210, direction=DirectionChoices.POSITIVE)
+        ft1 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            onset=100,
+            offset=110,
+            direction=DirectionChoices.POSITIVE,
+        )
+        ft2 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            onset=150,
+            offset=160,
+            direction=DirectionChoices.POSITIVE,
+        )
+        ft3 = FindingTag.objects.create(
+            experiment=exp,
+            family=default_family,
+            type=default_type,
+            onset=200,
+            offset=210,
+            direction=DirectionChoices.POSITIVE,
+        )
 
         url = reverse("admin:studies_findingtag_changelist")
         # Filter for onset between 140 and 210
@@ -349,21 +403,20 @@ class AdminViewsTest(TestCase):
         self.assertIn(ft2, queryset)
         self.assertIn(ft3, queryset)
 
-
     def test_experiment_admin_filter_by_type(self):
         exp1 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         exp2 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.STATE,
-            type=ExperimentTypeChoices.NEUROSCIENTIFIC, # "EEG" mapped to NEUROSCIENTIFIC
+            type=ExperimentTypeChoices.NEUROSCIENTIFIC,  # "EEG" mapped to NEUROSCIENTIFIC
             is_reporting=ReportingChoices.NO_REPORT,
-            theory_driven=TheoryDrivenChoices.POST_HOC
+            theory_driven=TheoryDrivenChoices.POST_HOC,
         )
 
         url = reverse("admin:studies_experiment_changelist")
@@ -373,21 +426,20 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset.count(), 1)
         self.assertEqual(queryset.first().type, ExperimentTypeChoices.NEUROSCIENTIFIC)
 
-
     def test_experiment_admin_filter_by_is_reporting(self):
         exp1 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         exp2 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.STATE,
-            type=ExperimentTypeChoices.NEUROSCIENTIFIC, # "EEG" mapped to NEUROSCIENTIFIC
+            type=ExperimentTypeChoices.NEUROSCIENTIFIC,  # "EEG" mapped to NEUROSCIENTIFIC
             is_reporting=ReportingChoices.NO_REPORT,
-            theory_driven=TheoryDrivenChoices.POST_HOC
+            theory_driven=TheoryDrivenChoices.POST_HOC,
         )
 
         url = reverse("admin:studies_experiment_changelist")
@@ -403,21 +455,20 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset_false.count(), 1)
         self.assertEqual(queryset_false.first().is_reporting, ReportingChoices.NO_REPORT)
 
-
     def test_experiment_admin_filter_by_theory_driven(self):
         exp1 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.CONTENT,
             type=ExperimentTypeChoices.BEHAVIORAL,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         exp2 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.STATE,
-            type=ExperimentTypeChoices.NEUROSCIENTIFIC, # "EEG" mapped to NEUROSCIENTIFIC
+            type=ExperimentTypeChoices.NEUROSCIENTIFIC,  # "EEG" mapped to NEUROSCIENTIFIC
             is_reporting=ReportingChoices.NO_REPORT,
-            theory_driven=TheoryDrivenChoices.POST_HOC
+            theory_driven=TheoryDrivenChoices.POST_HOC,
         )
 
         url = reverse("admin:studies_experiment_changelist")
@@ -427,21 +478,20 @@ class AdminViewsTest(TestCase):
         self.assertEqual(queryset.count(), 1)
         self.assertEqual(queryset.first().theory_driven, TheoryDrivenChoices.DRIVEN)
 
-
     def test_experiment_admin_filter_by_study_approval_status(self):
         exp1 = Experiment.objects.create(
             study=self.study_approved,
             type_of_consciousness=TypeOfConsciousnessChoices.BOTH,
             type=ExperimentTypeChoices.BOTH,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
         exp2 = Experiment.objects.create(
             study=self.study_pending,
             type_of_consciousness=TypeOfConsciousnessChoices.BOTH,
             type=ExperimentTypeChoices.BOTH,
             is_reporting=ReportingChoices.REPORT,
-            theory_driven=TheoryDrivenChoices.DRIVEN
+            theory_driven=TheoryDrivenChoices.DRIVEN,
         )
 
         url = reverse("admin:studies_experiment_changelist")

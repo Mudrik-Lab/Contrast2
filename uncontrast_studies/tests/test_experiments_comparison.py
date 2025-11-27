@@ -126,3 +126,39 @@ class TestExperimentsComparisonGraphTestCase(UnContrastBaseTestCase):
             self.assertEqual(res.status_code, status.HTTP_200_OK)
             for sub_graph in res.data:
                 self.assertIn(sub_graph["series_name"], SignificanceChoices.values)
+
+    def test_paradigm_breakdown_returns_paradigm_names(self):
+        """Test that paradigm breakdown returns paradigm names, not numeric IDs"""
+        self._setup_world()
+
+        # Call the paradigm breakdown endpoint
+        target_url = self.reverse_with_query_params(
+            "uncontrast-experiments-graphs-parameters-distribution-experiments-comparison",
+            breakdown="paradigm"
+        )
+        res = self.client.get(target_url)
+
+        # Assert successful response
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(res.data, list)
+
+        # Verify paradigm breakdown data structure
+        for sub_graph in res.data:
+            # Each sub-graph represents a significance level (Positive, Negative, Mixed)
+            self.assertIn("series_name", sub_graph)
+            self.assertIn(sub_graph["series_name"], SignificanceChoices.values)
+
+            # Verify series data contains paradigm names, not numeric IDs
+            series = sub_graph.get("series", [])
+            if len(series) > 0:
+                for data_point in series:
+                    self.assertIn("key", data_point)
+                    self.assertIn("value", data_point)
+
+
+                    # Key should be the actual paradigm name from our test data
+                    self.assertEqual(data_point["key"], "specific_paradigm")
+
+                    # Value should be experiment count
+                    self.assertIsInstance(data_point["value"], int)
+                    self.assertGreater(data_point["value"], 0)

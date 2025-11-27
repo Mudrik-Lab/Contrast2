@@ -25,3 +25,4 @@ uncontrast_studies/data/*.xls
 uncontrast_studies/data/*.xlsx
 /uncontrast_studies/data/logs
 /uncontrast_studies/data/old_datasets
+backup.sql

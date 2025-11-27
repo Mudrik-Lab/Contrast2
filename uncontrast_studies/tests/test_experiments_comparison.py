@@ -157,7 +157,7 @@ class TestExperimentsComparisonGraphTestCase(UnContrastBaseTestCase):
 
 
                     # Key should be the actual paradigm name from our test data
-                    self.assertEqual(data_point["key"], "specific_paradigm")
+                    self.assertEqual(data_point["key"], "main_paradigm")
 
                     # Value should be experiment count
                     self.assertIsInstance(data_point["value"], int)

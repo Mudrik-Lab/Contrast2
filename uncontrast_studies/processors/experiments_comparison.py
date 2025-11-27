@@ -36,10 +36,10 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_paradigm(self, experiments: QuerySet[UnConExperiment]):
         subquery = (
-            UnConMainParadigm.objects.filter(experiments__in=experiments)
+            UnConMainParadigm.objects.filter(specific_paradigm__experiments__in=experiments)
             .distinct()
             .values("name")
-            .annotate(experiment_count=Count("experiments", distinct=True))
+            .annotate(experiment_count=Count("specific_paradigm__experiments", distinct=True))
             .annotate(key=F("name"))
         )
         return subquery

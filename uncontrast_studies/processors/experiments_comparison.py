@@ -15,6 +15,8 @@ from uncontrast_studies.models import (
     UnConSuppressedStimulus,
     UnConSuppressionMethodType,
     UnConOutcome,
+    UnConSpecificParadigm,
+    UnConMainParadigm,
 )
 from uncontrast_studies.models import UnConExperiment
 from uncontrast_studies.processors.base import BaseProcessor
@@ -35,10 +37,11 @@ class ComparisonParametersDistributionPieGraphDataProcessor(BaseProcessor):
 
     def process_paradigm(self, experiments: QuerySet[UnConExperiment]):
         subquery = (
-            experiments.distinct()
-            .values("paradigm")
-            .annotate(experiment_count=Count("id", distinct=True))
-            .annotate(key=F("paradigm"))
+            UnConMainParadigm.objects.filter(specific_paradigm__experiments__in=experiments)
+            .distinct()
+            .values("name")
+            .annotate(experiment_count=Count("specific_paradigm__experiments", distinct=True))
+            .annotate(key=F("name"))
         )
         return subquery
 

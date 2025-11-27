@@ -1,27 +1,42 @@
----
-description: this rule describes standards and best practice for dealing with django admin
-globs: **/admin.py,**/admin/*.py
-alwaysApply: false
----
+# Agent Instructions for Contrast2 Project
 
-# Django Admin Best Practices
+## Before You Start
 
-This rule provides general guidance for structuring and maintaining Django admin files, following best practices and common patterns for Django projects.
+**IMPORTANT:** Before implementing features or exploring the codebase, read the [knowledgebase.md](./knowledgebase.md) file to understand:
+- Technology stack (Django 5.1.8, Python 3.11, PostgreSQL)
+- Project structure (studies, uncontrast_studies apps)
+- API architecture (DRF, JWT, multi-SPA)
+- Testing framework (pytest, Django Testing)
+- CI/CD pipeline (GitHub Actions, Heroku)
+- Deployment configuration (Docker, Heroku)
+- Development practices (ruff, service layers)
 
-## 1. Base Admin Classes
+## Testing Requirements
+
+When implementing changes, always run tests with the Testing configuration:
+
+```bash
+DJANGO_CONFIGURATION=Testing python manage.py test
+```
+
+## Django Admin Best Practices
+
+When working with Django admin files (`**/admin.py`, `**/admin/*.py`), follow these standards:
+
+### 1. Base Admin Classes
 - Create and use base admin classes for shared functionality
 - Use mixins (e.g., ImportExportMixin) for specific features
 - Inherit from `ModelAdmin` for standard admin functionality
 - Use custom base classes for project-wide admin features
 
-## 2. Model Registration
+### 2. Model Registration
 - Register all models in their respective app's `admin.py`
 - Use descriptive admin class names (e.g., `UserAdmin`, `ProductAdmin`)
 - Group related models together in the admin file
 - Use consistent ordering of model registrations
 - Prefer the `@admin.register(Model)` decorator for cleaner registration
 
-## 3. Admin Class Structure
+### 3. Admin Class Structure
 - Define `list_display` first
 - Follow with `list_filter`
 - Then define `search_fields`
@@ -29,9 +44,9 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Define `inlines` at the end
 - Use consistent field ordering in `list_display`
 - Group related attributes together
-- refrain from using fields which are properties in list_display unless they are part of a select_related query
+- Refrain from using properties in `list_display` unless they are part of a `select_related` query
 
-## 4. Inline Classes
+### 4. Inline Classes
 - Create base inline classes for common inline patterns
 - Set `show_change_link = True` for inlines when appropriate
 - Set `extra = 0` for inlines to prevent empty forms
@@ -39,7 +54,7 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Define `fk_name` when needed for complex relationships
 - Use `min_num` and `max_num` for inline limits
 
-## 5. List Filters
+### 5. List Filters
 - Create custom filters by inheriting from `admin.SimpleListFilter`
 - Use `RelatedOnlyFieldListFilter` for foreign key fields
 - Use `NumericRangeFilter` for numeric fields
@@ -47,7 +62,7 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Use descriptive filter titles
 - Implement efficient queryset methods
 
-## 6. Form Classes
+### 6. Form Classes
 - Create custom forms for complex validation
 - Define form fields in the `Meta` class
 - Add custom validation in `clean()`
@@ -55,7 +70,7 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Add helpful `help_text` for fields
 - Use appropriate widgets for field types
 
-## 7. Import/Export Functionality
+### 7. Import/Export Functionality
 - Use django-import-export for data import/export
 - Create custom resource classes for complex models
 - Define export formats (e.g., CSV, XLSX)
@@ -63,7 +78,7 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Handle related model exports properly
 - Add export actions to admin classes
 
-## 8. QuerySet Optimization
+### 8. QuerySet Optimization
 - Override `get_queryset()` for performance optimization
 - Use `select_related()` for foreign key relationships
 - Use `prefetch_related()` for many-to-many relationships
@@ -71,7 +86,7 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Implement efficient filtering
 - Use database indexes appropriately
 
-## 9. Custom Actions
+### 9. Custom Actions
 - Define admin actions as functions with `@admin.action` decorator
 - Use descriptive action names
 - Add confirmation for destructive actions
@@ -79,7 +94,7 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Implement proper error handling
 - Add action permissions when needed
 
-## 10. Display Methods
+### 10. Display Methods
 - Use `@admin.display` decorator for custom display methods
 - Handle empty values appropriately
 - Keep display methods simple and focused
@@ -87,9 +102,9 @@ This rule provides general guidance for structuring and maintaining Django admin
 - Use consistent formatting
 - Implement efficient display methods
 
-## Implementation Patterns
+### Implementation Patterns
 
-### Model-Specific Example
+#### Model-Specific Example
 ```python
 @admin.register(Model)
 class ModelAdmin(BaseAdmin):
@@ -100,7 +115,7 @@ class ModelAdmin(BaseAdmin):
     inlines = [RelatedInline]
 ```
 
-### Inline Example
+#### Inline Example
 ```python
 class RelatedInline(admin.StackedInline):
     model = RelatedModel
@@ -111,7 +126,7 @@ class RelatedInline(admin.StackedInline):
     max_num = 5
 ```
 
-### Filter Example
+#### Filter Example
 ```python
 class CustomFilter(admin.SimpleListFilter):
     title = "Filter Title"
@@ -129,7 +144,7 @@ class CustomFilter(admin.SimpleListFilter):
         return queryset
 ```
 
-## Best Practices
+## General Best Practices
 
 - Optimize database queries (use `select_related`, `prefetch_related`)
 - Use `readonly_fields` and permission checks for security
@@ -138,5 +153,11 @@ class CustomFilter(admin.SimpleListFilter):
 - Provide helpful `help_text` and clear error messages
 - Use consistent formatting and naming
 - Group related models and imports together
-- Follow PEP 8 guidelines
+- Follow PEP 8 guidelines (120-char line length via ruff)
 - Regularly review and update admin code
+
+## Code Quality
+
+- Run `ruff check . --fix` before committing
+- Run `ruff format` for consistent formatting
+- Ensure all tests pass with `DJANGO_CONFIGURATION=Testing python manage.py test`

@@ -260,6 +260,21 @@ class AcrossTheYearsGraphTestCase(BaseTestCase):
 
         # sanity check
 
+    def test_across_the_years_csv_experiment_field_breakdowns(self):
+        """Regression: CSV export for breakdowns on Experiment fields must not fail
+        with 'SELECT DISTINCT ON expressions must match initial ORDER BY'."""
+        self._given_world_setup()
+        for breakdown in ["reporting", "theory_driven", "type_of_consciousness"]:
+            with self.subTest(breakdown=breakdown):
+                target_url = self.reverse_with_query_params(
+                    "experiments-graphs-across-the-years",
+                    breakdown=breakdown,
+                    is_csv="true",
+                )
+                res = self.client.get(target_url)
+                self.assertEqual(res.status_code, status.HTTP_200_OK)
+                self.assertEqual(res["Content-Type"], "text/csv")
+
     def test_across_the_years_sanity_check(self):
         (
             another_different_child_paradigm,

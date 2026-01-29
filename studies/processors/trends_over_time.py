@@ -201,7 +201,7 @@ class TrendsOverYearsGraphDataProcessor(BaseProcessor):
     def _aggregate_query_by_breakdown(self, queryset: QuerySet, filtered_subquery: QuerySet):
         # Hopefully this is generic enough to be reused
         if self.is_csv:
-            ids = queryset.annotate(experiments=ArraySubquery(filtered_subquery.values_list("id"))).values_list(
+            ids = queryset.order_by().annotate(experiments=ArraySubquery(filtered_subquery.values_list("id"))).values_list(
                 "experiments", flat=True
             )
             return set(list(itertools.chain.from_iterable(ids)))

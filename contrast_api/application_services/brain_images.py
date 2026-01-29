@@ -1,8 +1,13 @@
 import base64
-import functools
 import gc
 import io
 import logging
+import os
+import ssl
+import tarfile
+import tempfile
+import urllib.request
+from pathlib import Path
 from typing import Dict
 
 import pandas as pd
@@ -14,6 +19,9 @@ import nibabel as nib
 from configuration.initial_setup import ParentTheories
 
 logger = logging.getLogger(__name__)
+
+AAL_URL = "https://www.gin.cnrs.fr/wp-content/uploads/AAL3v2_for_SPM12.tar.gz"
+AAL_DATA_DIR = Path.home() / "nilearn_data" / "aal_3v2"
 
 
 class BrainViews:
@@ -52,8 +60,41 @@ cross_version_mapping_one_to_many = {
 }
 
 
+def _ensure_aal_atlas():
+    """Download and extract AAL atlas if not already cached.
+
+    nilearn's fetch_atlas_aal hits an SSL error on some environments
+    (e.g. Heroku). This pre-downloads the archive with SSL verification
+    disabled so nilearn finds the cached files and skips its own download.
+    """
+    expected_file = AAL_DATA_DIR / "AAL3" / "AAL3v1.nii"
+    if expected_file.exists():
+        return
+
+    logger.info("AAL atlas not found at %s, downloading manually...", AAL_DATA_DIR)
+    AAL_DATA_DIR.mkdir(parents=True, exist_ok=True)
+
+    ctx = ssl.create_default_context()
+    ctx.check_hostname = False
+    ctx.verify_mode = ssl.CERT_NONE
+
+    with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:
+        tmp_path = tmp.name
+    try:
+        with urllib.request.urlopen(AAL_URL, context=ctx) as response:
+            with open(tmp_path, "wb") as out_file:
+                out_file.write(response.read())
+        logger.info("AAL download complete, extracting...")
+        with tarfile.open(tmp_path, "r:gz") as tar:
+            tar.extractall(path=AAL_DATA_DIR)
+        logger.info("Extracted AAL atlas to %s", AAL_DATA_DIR)
+    finally:
+        os.unlink(tmp_path)
+
+
 # @functools.cache
 def get_AAL_Atlas_datasets():
+    _ensure_aal_atlas()
     fsaverage = datasets.fetch_surf_fsaverage(mesh="fsaverage5")
     aal = datasets.fetch_atlas_aal(version="3v2")
     return fsaverage.pial_left, fsaverage.sulc_left, aal

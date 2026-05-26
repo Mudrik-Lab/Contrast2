@@ -40,7 +40,7 @@ class BrainImagesDataProcessor(BaseProcessor):
     def process(self):
         queryset = self.get_queryset()
         if self.is_csv:
-            return queryset.values_list("id", flat=True)
+            return queryset.values_list("experiment_id", flat=True)
 
         # turn queryset to pandas df
 

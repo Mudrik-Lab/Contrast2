@@ -56,7 +56,7 @@ class NationOfConsciousnessDataProcessor(BaseProcessor):
             queryset.values("country", "significance")
             .annotate(value=Count("id"))
             .filter(value__gt=self.min_number_of_experiments)
-            .order_by("-value", "country")
+            .order_by("-value", "country", "significance")
         )
         retval = []
         for series in aggregated_qs:

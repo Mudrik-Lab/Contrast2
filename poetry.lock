@@ -609,18 +609,18 @@ files = [
 
 [[package]]
 name = "django-simple-history"
-version = "3.11.0"
+version = "3.13.0"
 description = "Store model history and view/revert changes from admin site."
 optional = false
 python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django_simple_history-3.11.0-py3-none-any.whl", hash = "sha256:f3c298db49e418ffce7fb709a5e83108452ea2179ec5c4b9232484c25427192a"},
-    {file = "django_simple_history-3.11.0.tar.gz", hash = "sha256:2c587479cf2c3071e9aa555d0d11b73676994db4910770958f57659ade2deffe"},
+    {file = "django_simple_history-3.13.0-py3-none-any.whl", hash = "sha256:1cf1d83054479f64aee022023afc1671843aa0a99888799c5c4c3966b0252521"},
+    {file = "django_simple_history-3.13.0.tar.gz", hash = "sha256:ca3c1e4ccd5f16f45fbbef6015ee2a246465fd9bd924100df8e9dfb368c4f26c"},
 ]
 
 [package.dependencies]
-django = ">=4.2"
+django = ">=5.2"
 
 [[package]]
 name = "django-spa"

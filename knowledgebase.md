@@ -6,7 +6,7 @@ This document provides a comprehensive overview of the Contrast2 Django project 
 
 ### Core Framework
 - **Python:** 3.11 (>3.10, <3.12)
-- **Django:** 5.1.8
+- **Django:** 5.2.17 (LTS)
 - **Django REST Framework:** 3.16.1
 - **Dependency Management:** Poetry (pyproject.toml)
 
@@ -29,7 +29,7 @@ This document provides a comprehensive overview of the Contrast2 Django project 
 - **boto3:** 1.40.59+ (AWS S3)
 - **django-storages:** 1.14.6
 - **whitenoise:** 6.2.0 (static files)
-- **Pillow:** 11.2.1 (images)
+- **Pillow:** 12.3.0 (images)
 
 ### Scientific Computing
 - **numpy:** 2.2.4
@@ -39,7 +39,7 @@ This document provides a comprehensive overview of the Contrast2 Django project 
 - **nilearn:** 0.12.1 (neuroimaging)
 
 ### Development Tools
-- **pytest:** 8.4.1
+- **pytest:** 9.1.1
 - **ruff:** 0.11.4 (linting, 120-char lines)
 - **gunicorn:** 23.0.0 (production server)
 - **sentry-sdk:** 2.38.0 (error tracking)
@@ -156,7 +156,7 @@ Contrast2/
 ## Testing
 
 ### Framework
-- **pytest:** 8.4.1
+- **pytest:** 9.1.1
 - **Test Database:** PostgreSQL port 5433
 - **Configuration:** DJANGO_CONFIGURATION=Testing
 

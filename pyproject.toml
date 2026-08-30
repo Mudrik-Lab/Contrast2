@@ -7,7 +7,7 @@ package-mode = false
 
 [tool.poetry.dependencies]
 python = ">3.10,<3.12"
-Django = "5.1.8"
+Django = "5.2.17"
 django-configurations = "^2.5.1"
 dj-database-url = "^3.0.1"
 djangorestframework = "^3.16.1"
@@ -15,7 +15,7 @@ django-filter = "^25.1"
 django-extensions = "^4.1"
 django-import-export = "^4.3.13"
 django-storages = "^1.14.6"
-Pillow = "^11.2.1"
+Pillow = "^12.3.0"
 django-cors-headers = "^4.9.0"
 django-querycount = "^0.8.3"
 gunicorn = "^23.0.0"

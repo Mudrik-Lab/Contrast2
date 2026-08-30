@@ -6,20 +6,28 @@ on:
   pull_request:
     branches:
       - '**'
+
+# Least privilege by default; jobs opt in to more where they need it.
+permissions:
+  contents: read
+
 jobs:
   security-job:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write # upload-sarif publishes to the code scanning API
     if: | # security runs either on main or PR
       github.event_name == 'push' && contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref) || 
       (github.event_name == 'pull_request')
     steps:
     - name: Check out repository code
-      uses: actions/checkout@v4
-    - uses: microsoft/DevSkim-Action@v1
+      uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+    - uses: microsoft/DevSkim-Action@4b5047945a44163b94642a1cecc0d93a3f428cc6 # v1.0.16
       with:
         output-filename: devskim-results.sarif
 
-    - uses: github/codeql-action/upload-sarif@v3
+    - uses: github/codeql-action/upload-sarif@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4
       with:
         sarif_file: devskim-results.sarif
         category: DevSkim
@@ -32,9 +40,7 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [ "3.11" ]
-        # 15 is what production runs today, 18 is the upgrade target.
-        # Drop 15 once production has been upgraded.
-        postgres-version: [ "15", "18" ]
+        postgres-version: [  "18" ]
 
     container: python:${{ matrix.python-version }}-bookworm
 
@@ -58,7 +64,7 @@ jobs:
       - run: echo "Starting build"
       - run: apt update && apt install -y gcc libpq-dev libz-dev
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Install Poetry
         run: |
             curl -fsS -o get-poetry.py https://install.python-poetry.org
@@ -76,10 +82,10 @@ jobs:
   deploy:
     if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
     needs: [test-job, security-job]
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
 #      - name: Install Poetry
 #        run: |
@@ -90,7 +96,7 @@ jobs:
 #        run: poetry self add poetry-plugin-export && poetry export --without-hashes -f requirements.txt --output requirements.txt
 
       - name: Check out repository frontend repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: "Mudrik-Lab/ContrastFront"
           ssh-key: ${{ secrets.CONTRAST_DEPLOY_KEY }}
@@ -98,7 +104,7 @@ jobs:
 
 
       - name: build front app
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: 18
 
@@ -119,7 +125,7 @@ jobs:
 
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
-        uses: akhileshns/heroku-deploy@v3.13.15
+        uses: akhileshns/heroku-deploy@581dd286c962b6972d427fcf8980f60755c15520 # v3.13.15
         with:
           heroku_email: ${{secrets.HEROKU_USER_EMAIL}}
           # https://help.heroku.com/PBGP6IDE/how-should-i-generate-an-api-key-that-allows-me-to-use-the-heroku-platform-api

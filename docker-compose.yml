@@ -1,4 +1,4 @@
-version: "3.9"
+#version: "3.9"
 
 services:
   nginx:
@@ -15,12 +15,15 @@ services:
       web:
         condition: service_healthy
   db:
-    image: postgres:13
+    image: postgres:18
     container_name: postgres_contrast_api
     environment:
       - POSTGRES_DB=contrast_api_db #todo
       - POSTGRES_USER=contrast_api_user
       - POSTGRES_PASSWORD=contrast_api_pass
+      # postgres:18 moved its default PGDATA to /var/lib/postgresql/18/docker;
+      # pin it back so the ./data/postgres bind mount below is the real cluster
+      - PGDATA=/var/lib/postgresql/data
     ports:
       - "5433:5432"
     volumes:

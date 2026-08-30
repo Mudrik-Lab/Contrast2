@@ -11,7 +11,7 @@ This document provides a comprehensive overview of the Contrast2 Django project 
 - **Dependency Management:** Poetry (pyproject.toml)
 
 ### Database
-- **PostgreSQL:** 13-15
+- **PostgreSQL:** 18 (local + CI; production on Heroku)
 - **Connection:** postgresql://contrast_api_user:contrast_api_pass@127.0.0.1:5432/contrast_api_db
 
 ### Key Django Packages
@@ -181,7 +181,7 @@ DJANGO_CONFIGURATION=Testing python manage.py test
 1. **Security:** DevSkim scanning
 2. **Test:**
    - Ubuntu + Python 3.11
-   - PostgreSQL 15 service
+   - PostgreSQL service, matrix over 15 and 18
    - Poetry install
    - Run tests with -v 3
 3. **Deploy:**

@@ -62,7 +62,7 @@ class GrandOverviewPieGraphDataProcessor(BaseProcessor):
             .values("key")
             .annotate(value=Count("id", distinct=True))
             .filter(value__gt=self.min_number_of_experiments)
-            .order_by("-value")
+            .order_by("-value", "key")
         )
         result = {"series_name": "Grand Overview", "series": list(aggregated_qs), "value": total_value}
         return result

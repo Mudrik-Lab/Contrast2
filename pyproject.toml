@@ -28,7 +28,7 @@ django-nested-inline = "^0.4.6"
 # following needed as original package is unmaintained
 django-modeladmin-reorder = {git = "https://github.com/bloodwithmilk25/django-modeladmin-reorder.git", rev = "master"}
 django-spa = {git = "https://github.com/VBobCat/django-spa.git", rev = "master"}
-django-countries = "7.6.1"
+django-countries = "9.0.0"
 numpy = "^2.2.4"
 pandas = "^2.2.3"
 whitenoise = "6.2.0" # currently should be hardcoded to 6.2.0

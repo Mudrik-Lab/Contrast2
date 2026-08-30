@@ -32,14 +32,17 @@ jobs:
       max-parallel: 4
       matrix:
         python-version: [ "3.11" ]
-        
+        # 15 is what production runs today, 18 is the upgrade target.
+        # Drop 15 once production has been upgraded.
+        postgres-version: [ "15", "18" ]
+
     container: python:${{ matrix.python-version }}-bookworm
-        
+
     services:
       # Label used to access the service container
       postgres:
         # Docker Hub image
-        image: postgres:15
+        image: postgres:${{ matrix.postgres-version }}
         # Provide the password for postgres
         env:
           POSTGRES_DB: django_db

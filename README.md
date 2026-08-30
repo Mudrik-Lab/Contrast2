@@ -163,3 +163,42 @@ ruff format
 ```
 
 We're using `ruff format` for formatting please adjust prs accordingly
+## Upgrading a local Postgres cluster to a new major version
+
+Postgres refuses to start on a data directory created by a different major
+version, so `data/postgres` cannot be carried across an image bump. Dump with
+the *new* version's client, recreate the cluster, restore:
+
+```bash
+# 1. with the OLD container still running, dump using the NEW client
+docker run --rm -e PGPASSWORD=contrast_api_pass -v "$PWD/data:/out" postgres:18 \
+  pg_dump -h host.docker.internal -p 5433 -U contrast_api_user -d contrast_api_db \
+  --no-owner --no-privileges -Fc -f /out/pgdump-$(date +%Y%m%d).dump
+
+# 2. keep the old cluster around until the new one is verified
+docker compose down
+mv data/postgres data/postgres-old
+
+# 3. bump the image in docker-compose.yml, then let initdb build a new cluster
+docker compose up -d db
+
+# 4. restore
+docker exec -i postgres_contrast_api pg_restore -U contrast_api_user \
+  -d contrast_api_db --no-owner --no-privileges < data/pgdump-YYYYMMDD.dump
+```
+
+Rollback is `mv data/postgres-old data/postgres` plus reverting the image tag.
+
+Two things that bite here:
+
+- **`postgres:18` moved its default `PGDATA`** from `/var/lib/postgresql/data`
+  to `/var/lib/postgresql/18/docker`. `docker-compose.yml` pins `PGDATA` back to
+  the old path so the `./data/postgres` bind mount is still the real cluster.
+  Without that pin the data silently lives in an anonymous volume.
+- **Dump with the newer `pg_dump`.** A dump produced by pg_dump 18 contains
+  `SET transaction_timeout = 0;`, which only exists in Postgres 17+; restoring
+  such a dump into an older server errors on that line.
+
+Local seed data (paradigms, atlas tags, measure types) is not reproducible from
+this repo — it is not in git and the `load_*_data` commands need CSVs that are
+gitignored. Take a dump before touching `data/postgres`.

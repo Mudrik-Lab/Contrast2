@@ -1,12 +1,10 @@
 import base64
 import gc
+import gzip
 import io
 import logging
-import os
-import ssl
-import tarfile
+import shutil
 import tempfile
-import urllib.request
 from pathlib import Path
 from typing import Dict
 
@@ -20,7 +18,7 @@ from configuration.initial_setup import ParentTheories
 
 logger = logging.getLogger(__name__)
 
-AAL_URL = "https://www.gin.cnrs.fr/wp-content/uploads/AAL3v2_for_SPM12.tar.gz"
+VENDORED_AAL_DIR = Path(__file__).resolve().parent.parent / "data" / "aal3"
 AAL_DATA_DIR = Path.home() / "nilearn_data" / "aal_3v2"
 
 
@@ -61,35 +59,39 @@ cross_version_mapping_one_to_many = {
 
 
 def _ensure_aal_atlas():
-    """Download and extract AAL atlas if not already cached.
+    """Populate nilearn's AAL cache from the atlas vendored in this repo.
 
-    nilearn's fetch_atlas_aal hits an SSL error on some environments
-    (e.g. Heroku). This pre-downloads the archive with SSL verification
-    disabled so nilearn finds the cached files and skips its own download.
+    fetch_atlas_aal only reads AAL3/AAL3v1.nii and AAL3/AAL3v1.xml, and skips
+    its own download when both are already on disk. Both are kept under
+    VENDORED_AAL_DIR, so no network call is involved. See that directory's
+    README for provenance, license and citation.
     """
-    expected_file = AAL_DATA_DIR / "AAL3" / "AAL3v1.nii"
-    if expected_file.exists():
+    target_dir = AAL_DATA_DIR / "AAL3"
+    nii_target = target_dir / "AAL3v1.nii"
+    xml_target = target_dir / "AAL3v1.xml"
+    if nii_target.exists() and xml_target.exists():
         return
 
-    logger.info("AAL atlas not found at %s, downloading manually...", AAL_DATA_DIR)
-    AAL_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    logger.info("Populating AAL atlas cache at %s from vendored copy", target_dir)
+    target_dir.mkdir(parents=True, exist_ok=True)
 
-    ctx = ssl.create_default_context()
-    ctx.check_hostname = False
-    ctx.verify_mode = ssl.CERT_NONE
+    if not xml_target.exists():
+        shutil.copyfile(VENDORED_AAL_DIR / "AAL3v1.xml", xml_target)
 
-    with tempfile.NamedTemporaryFile(suffix=".tar.gz", delete=False) as tmp:
-        tmp_path = tmp.name
-    try:
-        with urllib.request.urlopen(AAL_URL, context=ctx) as response:
-            with open(tmp_path, "wb") as out_file:
-                out_file.write(response.read())
-        logger.info("AAL download complete, extracting...")
-        with tarfile.open(tmp_path, "r:gz") as tar:
-            tar.extractall(path=AAL_DATA_DIR)
-        logger.info("Extracted AAL atlas to %s", AAL_DATA_DIR)
-    finally:
-        os.unlink(tmp_path)
+    if not nii_target.exists():
+        # nilearn looks for the uncompressed name, so expand the vendored .gz.
+        # Write to a sibling temp file first so a crash mid-write cannot leave
+        # a truncated .nii that later runs would treat as a valid cache hit.
+        with tempfile.NamedTemporaryFile(dir=target_dir, suffix=".nii.part", delete=False) as tmp:
+            tmp_path = Path(tmp.name)
+        try:
+            with gzip.open(VENDORED_AAL_DIR / "AAL3v1.nii.gz", "rb") as src, open(tmp_path, "wb") as dst:
+                shutil.copyfileobj(src, dst)
+            tmp_path.replace(nii_target)
+        finally:
+            tmp_path.unlink(missing_ok=True)
+
+    logger.info("AAL atlas cache ready at %s", target_dir)
 
 
 # @functools.cache

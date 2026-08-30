@@ -123,6 +123,15 @@ jobs:
       - name: adding front code to django - uncontrast front
         run: cp -r ./ContrastFront/dist-uncontrast/* frontapp/uncontrast
 
+      # heroku-deploy shells out to the Heroku CLI (`heroku git:remote`, `heroku create`)
+      # but does not bundle it, and the ubuntu-24.04 runner image does not ship it.
+      # The standalone installer carries its own Node, so the job's Node 18 -- which is
+      # below the npm heroku package's `engines: node >=20` -- does not matter here.
+      - name: Install Heroku CLI
+        run: |
+          curl -fsSL https://cli-assets.heroku.com/install.sh | sh
+          heroku --version
+
       - name: Deploying to heroku
         if: contains(fromJson('["refs/heads/master", "refs/heads/main"]'), github.ref)
         uses: akhileshns/heroku-deploy@581dd286c962b6972d427fcf8980f60755c15520 # v3.13.15

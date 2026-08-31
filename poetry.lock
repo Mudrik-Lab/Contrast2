@@ -376,26 +376,29 @@ files = [
 
 [[package]]
 name = "django-anymail"
-version = "13.1"
-description = "Django email backends and webhooks for Amazon SES, Brevo,  MailerSend, Mailgun, Mailjet, Mandrill, Postal, Postmark, Resend,  Scaleway TEM, SendGrid, SparkPost, and Unisender Go  (EmailBackend, transactional email tracking and inbound email signals)"
+version = "15.1"
+description = "Django email backends and webhooks for Amazon SES, Brevo,  MailerSend, Mailgun, Mailjet, Mailtrap, Mandrill, Postal, Postmark, Resend,  Scaleway TEM, SendGrid, SparkPost, and Unisender Go  (EmailBackend, transactional email tracking and inbound email signals)"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "django_anymail-13.1-py3-none-any.whl", hash = "sha256:63e48402ec8258f17640eb73c8c64141f16d2f8ae7d448d0fb1c66e82b7cbcf6"},
-    {file = "django_anymail-13.1.tar.gz", hash = "sha256:b51783176f8a8382e958808151551558e4a46d1375fbc343742d1ebd06ce8e9e"},
+    {file = "django_anymail-15.1-py3-none-any.whl", hash = "sha256:cb482b0e2b0aea665c83d49e3f13bb0673210aa0de285b1748a3b5e6277fc826"},
+    {file = "django_anymail-15.1.tar.gz", hash = "sha256:299fb12a21ac4101e9706c2ade461d18deacbb6bc3750cfa6ca08aeea1fc9442"},
 ]
 
 [package.dependencies]
-django = ">=4.0"
+django = ">=5.0"
+idna = "*"
 requests = ">=2.4.3"
+typing-extensions = {version = ">=4.12", markers = "python_version < \"3.11\""}
 urllib3 = ">=1.25.0"
 
 [package.extras]
 amazon-ses = ["boto3 (>=1.24.6)"]
-postal = ["cryptography ; python_version >= \"3.9\""]
+postal = ["cryptography"]
 resend = ["svix"]
-sendgrid = ["cryptography ; python_version >= \"3.9\""]
+sendgrid = ["cryptography"]
+uts46 = ["uts46"]
 
 [[package]]
 name = "django-configurations"
@@ -2596,4 +2599,4 @@ brotli = ["Brotli"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">3.10,<3.12"
-content-hash = "29d3a343f5dbd938d2697c5163744db38cf3dac4ff455e0d4cdedce6b69448bb"
+content-hash = "df2c5b810973ac64d50b5029cdf0614c1e7f727c71382e3d8ca9c21252741c1c"
